@@ -1,0 +1,156 @@
+import { NextResponse } from "next/server"
+import { getCurrentUser } from "@/lib/auth"
+import { db } from "@/lib/db"
+import { TaskStatus } from "@prisma/client"
+import { z } from "zod"
+
+const createTaskSchema = z.object({
+  title: z.string().min(1, "Tytuł jest wymagany"),
+  description: z.string().optional(),
+  dueDate: z.string().optional(),
+  status: z.nativeEnum(TaskStatus).default(TaskStatus.TODO),
+  assignedTo: z.string().optional(),
+  clientId: z.string().optional(),
+  sharedGroupIds: z.array(z.string()).optional(),
+})
+
+export async function POST(request: Request) {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const validatedData = createTaskSchema.parse(body)
+
+    // If clientId is provided, check access
+    if (validatedData.clientId) {
+      const client = await db.client.findUnique({
+        where: { id: validatedData.clientId },
+      })
+
+      if (!client) {
+        return NextResponse.json({ error: "Klient nie znaleziony" }, { status: 404 })
+      }
+
+      if (
+        user.role !== "ADMIN" &&
+        client.assignedTo !== user.id
+      ) {
+        return NextResponse.json({ error: "Brak uprawnień" }, { status: 403 })
+      }
+    }
+
+    const task = await db.task.create({
+      data: {
+        title: validatedData.title,
+        description: validatedData.description || null,
+        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
+        status: validatedData.status,
+        assignedTo: validatedData.assignedTo || null,
+        clientId: validatedData.clientId || null,
+        sharedGroups: validatedData.sharedGroupIds
+          ? {
+              connect: validatedData.sharedGroupIds.map((id) => ({ id })),
+            }
+          : undefined,
+      },
+    })
+
+    // Log activity
+    await db.activityLog.create({
+      data: {
+        userId: user.id,
+        action: "TASK_CREATED",
+        entityType: "Task",
+        entityId: task.id,
+        details: {
+          title: task.title,
+          clientId: validatedData.clientId,
+        },
+      },
+    })
+
+    return NextResponse.json({ task }, { status: 201 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    console.error("Task creation error:", error)
+    return NextResponse.json(
+      { error: "Wystąpił błąd podczas tworzenia zadania" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(request: Request) {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get("status")
+    const assignedTo = searchParams.get("assignedTo")
+    const clientId = searchParams.get("clientId")
+
+    const where: any = {}
+
+    if (user.role !== "ADMIN") {
+      where.OR = [
+        { assignedTo: user.id },
+        { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
+      ]
+    }
+
+    if (status) {
+      where.status = status as TaskStatus
+    }
+
+    if (assignedTo) {
+      where.assignedTo = assignedTo
+    }
+
+    if (clientId) {
+      where.clientId = clientId
+    }
+
+    const tasks = await db.task.findMany({
+      where,
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        client: {
+          select: {
+            id: true,
+            agencyName: true,
+          },
+        },
+      },
+      orderBy: {
+        dueDate: "asc",
+      },
+    })
+
+    return NextResponse.json({ tasks })
+  } catch (error) {
+    console.error("Tasks fetch error:", error)
+    return NextResponse.json(
+      { error: "Wystąpił błąd podczas pobierania zadań" },
+      { status: 500 }
+    )
+  }
+}
+

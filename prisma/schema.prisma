@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum ClientStatus {
+  NEW_LEAD
+  IN_CONTACT
+  DEMO_SENT
+  NEGOTIATION
+  ACTIVE_CLIENT
+  LOST
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ContactType {
+  PHONE_CALL
+  MEETING
+  EMAIL
+  LINKEDIN_MESSAGE
+  OTHER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  password      String?   // Nullable for OAuth users
+  role          UserRole  @default(USER)
+  position      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  assignedClients Client[]      @relation("ClientAssignee")
+  assignedTasks   Task[]         @relation("TaskAssignee")
+  contacts        Contact[]
+  groups          UserGroup[]
+  activities      ActivityLog[]
+
+  @@map("users")
+}
+
+model Group {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users         UserGroup[]
+  sharedClients Client[]      @relation("GroupSharedClients")
+  sharedTasks   Task[]        @relation("GroupSharedTasks")
+  sharedContacts Contact[]     @relation("GroupSharedContacts")
+
+  @@map("groups")
+}
+
+model UserGroup {
+  id        String   @id @default(cuid())
+  userId    String
+  groupId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@map("user_groups")
+}
+
+model Client {
+  id          String       @id @default(cuid())
+  firstName   String
+  lastName    String
+  agencyName  String?
+  email       String?
+  phone        String?
+  website     String?
+  address     String?
+  source      String?      // Lead source
+  status      ClientStatus @default(NEW_LEAD)
+  assignedTo  String?      // User ID
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  assignee      User?               @relation("ClientAssignee", fields: [assignedTo], references: [id])
+  contacts      Contact[]
+  tasks         Task[]
+  statusHistory ClientStatusHistory[]
+  sharedGroups  Group[]              @relation("GroupSharedClients")
+
+  @@map("clients")
+}
+
+model ClientStatusHistory {
+  id        String       @id @default(cuid())
+  clientId  String
+  status    ClientStatus
+  changedAt DateTime     @default(now())
+  changedBy String?      // User ID
+  notes     String?
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_status_history")
+}
+
+model Contact {
+  id        String      @id @default(cuid())
+  clientId  String
+  type      ContactType
+  date      DateTime    @default(now())
+  notes     String
+  userId    String      // User who created the contact
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relations
+  client        Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user          User         @relation(fields: [userId], references: [id])
+  attachments   Attachment[]
+  sharedGroups  Group[]      @relation("GroupSharedContacts")
+
+  @@map("contacts")
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  contactId String
+  filename  String
+  path      String   // File path or URL
+  size      Int?     // File size in bytes
+  mimeType  String?
+  createdAt DateTime @default(now())
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  status      TaskStatus @default(TODO)
+  assignedTo  String?    // User ID
+  clientId    String?    // Optional client relation
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  assignee     User?   @relation("TaskAssignee", fields: [assignedTo], references: [id])
+  client       Client? @relation(fields: [clientId], references: [id])
+  sharedGroups Group[] @relation("GroupSharedTasks")
+
+  @@map("tasks")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String   // e.g., "CREATE_CLIENT", "UPDATE_CLIENT", "DELETE_CONTACT"
+  entityType String  // e.g., "Client", "Contact", "Task"
+  entityId  String?
+  details   Json?    // Additional details as JSON
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
+
