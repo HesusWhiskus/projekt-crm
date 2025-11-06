@@ -80,11 +80,11 @@ export function DashboardNav({
           <div className="flex items-center space-x-8">
             <Link
               href="/dashboard"
-              className="flex items-center space-x-2 text-xl font-bold"
+              className="flex flex-col items-center space-y-1"
               style={{ color: "var(--color-primary, #3b82f6)" }}
             >
               {systemLogo && systemLogo.trim() !== "" && (
-                <div className="relative w-8 h-8">
+                <div className="relative w-16 h-12">
                   {systemLogo.startsWith("http") ? (
                     <Image
                       src={systemLogo}
@@ -102,7 +102,7 @@ export function DashboardNav({
                   )}
                 </div>
               )}
-              <span>{systemName}</span>
+              <span className="text-xl font-bold">{systemName}</span>
             </Link>
             <div className="hidden md:flex space-x-1">
               {navigation.map((item) => {
