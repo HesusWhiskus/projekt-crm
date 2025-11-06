@@ -5,6 +5,14 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.1.3-beta] - 2025-11-06
+
+### Naprawiono
+- Przywrócono oryginalną walidację dla opcjonalnych pól UUID (assignedTo, clientId, userId) - usunięto zbyt restrykcyjną walidację UUID która powodowała błędy przy zapisywaniu/edytowaniu zadań, klientów i kontaktów
+- System działa teraz jak przed zmianami bezpieczeństwa - walidacja UUID pozostaje tylko dla path parameters i query parameters
+
+---
+
 ## [0.1.2-beta] - 2025-11-06
 
 ### Naprawiono

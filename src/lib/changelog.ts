@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.1.3-beta',
+    date: '2025-11-06',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Przywrócono oryginalną walidację dla opcjonalnych pól UUID - naprawiono błędy przy zapisywaniu/edytowaniu zadań, klientów i kontaktów',
+      },
+    ],
+  },
+  {
     version: '0.1.2-beta',
     date: '2025-11-06',
     changes: [
