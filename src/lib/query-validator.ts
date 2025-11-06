@@ -14,14 +14,16 @@ export const clientQuerySchema = z.object({
     'LOST',
   ]).optional(),
   search: z.string().max(100, 'Wyszukiwanie jest zbyt długie (max 100 znaków)').optional(),
-  assignedTo: z.string().uuid('Nieprawidłowy format ID użytkownika').optional().or(z.literal("")),
+  assignedTo: z.string().min(1, 'Nieprawidłowy format ID użytkownika').optional().or(z.literal("")), // CUID format, not UUID
+  noContactDays: z.string().optional(), // Number of days as string, will be converted to number
+  followUpToday: z.string().optional(), // Boolean as string "true"/"false"
 })
 
 /**
  * Schema for validating contact query parameters
  */
 export const contactQuerySchema = z.object({
-  clientId: z.string().uuid('Nieprawidłowy format ID klienta').optional().or(z.literal("")),
+  clientId: z.string().min(1, 'Nieprawidłowy format ID klienta').optional().or(z.literal("")), // CUID format, not UUID
   type: z.enum([
     'PHONE_CALL',
     'MEETING',
@@ -29,7 +31,7 @@ export const contactQuerySchema = z.object({
     'LINKEDIN_MESSAGE',
     'OTHER',
   ]).optional(),
-  userId: z.string().uuid('Nieprawidłowy format ID użytkownika').optional().or(z.literal("")),
+  userId: z.string().min(1, 'Nieprawidłowy format ID użytkownika').optional().or(z.literal("")), // CUID format, not UUID
 })
 
 /**
@@ -37,7 +39,7 @@ export const contactQuerySchema = z.object({
  */
 export const taskQuerySchema = z.object({
   status: z.enum(['TODO', 'IN_PROGRESS', 'COMPLETED']).optional(),
-  assignedTo: z.string().uuid('Nieprawidłowy format ID użytkownika').optional().or(z.literal("")),
+  assignedTo: z.string().min(1, 'Nieprawidłowy format ID użytkownika').optional().or(z.literal("")), // CUID format, not UUID
 })
 
 /**
