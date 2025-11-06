@@ -17,9 +17,18 @@ const updateContactSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ).optional(),
   notes: z.string().min(1, "Notatka jest wymagana").max(10000, "Notatka jest zbyt długa (max 10000 znaków)").trim().optional(),
-  userId: uuidSchema.optional(),
-  clientId: uuidSchema.optional(),
-  sharedGroupIds: z.array(uuidSchema).optional(),
+  userId: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    uuidSchema.optional()
+  ),
+  clientId: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    uuidSchema.optional()
+  ),
+  sharedGroupIds: z.preprocess(
+    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
+    z.array(uuidSchema).optional()
+  ),
 })
 
 export async function PATCH(

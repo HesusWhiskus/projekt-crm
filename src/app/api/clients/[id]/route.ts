@@ -16,8 +16,14 @@ const updateClientSchema = z.object({
   address: textFieldSchema(500, "Adres").optional(),
   source: textFieldSchema(100, "Źródło").optional(),
   status: z.nativeEnum(ClientStatus).optional(),
-  assignedTo: z.string().uuid("Nieprawidłowy format ID użytkownika").optional().nullable(),
-  sharedGroupIds: z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional(),
+  assignedTo: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? null : val),
+    z.string().uuid("Nieprawidłowy format ID użytkownika").nullable().optional()
+  ),
+  sharedGroupIds: z.preprocess(
+    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
+    z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional()
+  ),
 })
 
 export async function GET(

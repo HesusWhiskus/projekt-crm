@@ -16,8 +16,14 @@ const createClientSchema = z.object({
   address: textFieldSchema(500, "Adres"),
   source: textFieldSchema(100, "Źródło"),
   status: z.nativeEnum(ClientStatus).default(ClientStatus.NEW_LEAD),
-  assignedTo: z.string().uuid("Nieprawidłowy format ID użytkownika").optional().nullable(),
-  sharedGroupIds: z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional(),
+  assignedTo: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? null : val),
+    z.string().uuid("Nieprawidłowy format ID użytkownika").nullable().optional()
+  ),
+  sharedGroupIds: z.preprocess(
+    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
+    z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional()
+  ),
 })
 
 export async function POST(request: Request) {

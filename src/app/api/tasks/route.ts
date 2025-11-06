@@ -26,7 +26,10 @@ const createTaskSchema = z.object({
     (val) => (val === "" || val === null || val === undefined ? null : val),
     z.string().uuid("Nieprawidłowy format ID klienta").nullable().optional()
   ),
-  sharedGroupIds: z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional(),
+  sharedGroupIds: z.preprocess(
+    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
+    z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional()
+  ),
 })
 
 export async function POST(request: Request) {

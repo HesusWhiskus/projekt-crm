@@ -20,9 +20,18 @@ const createContactSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ),
   notes: z.string().min(1, "Notatka jest wymagana").max(10000, "Notatka jest zbyt długa (max 10000 znaków)").trim(),
-  userId: uuidSchema,
-  clientId: uuidSchema,
-  sharedGroupIds: z.array(uuidSchema).optional(),
+  userId: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    uuidSchema
+  ),
+  clientId: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    uuidSchema
+  ),
+  sharedGroupIds: z.preprocess(
+    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
+    z.array(uuidSchema).optional()
+  ),
 })
 
 export async function POST(request: Request) {
