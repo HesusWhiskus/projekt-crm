@@ -8,7 +8,24 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const user = await getCurrentUser()
+  const sessionUser = await getCurrentUser()
+
+  if (!sessionUser) {
+    redirect("/signin")
+  }
+
+  // Get full user data from database (to get latest name and position)
+  const user = await db.user.findUnique({
+    where: { id: sessionUser.id },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      image: true,
+      role: true,
+      position: true,
+    },
+  })
 
   if (!user) {
     redirect("/signin")

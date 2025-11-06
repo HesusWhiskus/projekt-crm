@@ -24,6 +24,7 @@ interface DashboardNavProps {
     name?: string | null
     image?: string | null
     role: UserRole
+    position?: string | null
   }
   systemName: string
   systemLogo: string | null
@@ -128,7 +129,10 @@ export function DashboardNav({
           <div className="flex items-center space-x-4">
             <div className="text-sm text-gray-700">
               <div className="font-medium">{user.name || user.email}</div>
-              {user.role === "ADMIN" && (
+              {user.position && (
+                <div className="text-xs text-gray-500">{user.position}</div>
+              )}
+              {!user.position && user.role === "ADMIN" && (
                 <div className="text-xs text-gray-500">Administrator</div>
               )}
             </div>
