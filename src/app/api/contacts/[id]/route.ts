@@ -118,9 +118,10 @@ export async function PATCH(
 
     // Prepare update data
     const updateData: any = {}
-    if (validatedData.type !== undefined) updateData.type = validatedData.type
+    if (validatedData.type !== undefined) updateData.type = validatedData.type || null
     if (validatedData.date !== undefined) updateData.date = new Date(validatedData.date)
     if (validatedData.notes !== undefined) updateData.notes = validatedData.notes
+    if (validatedData.isNote !== undefined) updateData.isNote = validatedData.isNote
     if (validatedData.userId !== undefined) updateData.userId = validatedData.userId
     if (validatedData.clientId !== undefined) updateData.clientId = validatedData.clientId
 
