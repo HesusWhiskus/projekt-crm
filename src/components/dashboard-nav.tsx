@@ -83,7 +83,7 @@ export function DashboardNav({
               className="flex flex-col items-center space-y-1"
               style={{ color: "var(--color-primary, #3b82f6)" }}
             >
-              {systemLogo && systemLogo.trim() !== "" && (
+              {systemLogo && systemLogo.trim() !== "" ? (
                 <div className="relative w-16 h-12">
                   {systemLogo.startsWith("http") ? (
                     <Image
@@ -101,8 +101,9 @@ export function DashboardNav({
                     />
                   )}
                 </div>
+              ) : (
+                <span className="text-xl font-bold">{systemName}</span>
               )}
-              <span className="text-xl font-bold">{systemName}</span>
             </Link>
             <div className="hidden md:flex space-x-1">
               {navigation.map((item) => {

@@ -25,7 +25,7 @@ export async function AuthHeader() {
 
   return (
     <div className="flex flex-col items-center space-y-3 mb-6">
-      {systemLogo && (
+      {systemLogo ? (
         <div className="relative w-24 h-16">
           {systemLogo.startsWith("http") ? (
             <Image
@@ -43,8 +43,9 @@ export async function AuthHeader() {
             />
           )}
         </div>
+      ) : (
+        <h1 className="text-2xl font-bold">{systemName}</h1>
       )}
-      <h1 className="text-2xl font-bold">{systemName}</h1>
     </div>
   )
 }
