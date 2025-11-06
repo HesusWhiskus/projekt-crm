@@ -14,14 +14,14 @@ export const clientQuerySchema = z.object({
     'LOST',
   ]).optional(),
   search: z.string().max(100, 'Wyszukiwanie jest zbyt długie (max 100 znaków)').optional(),
-  assignedTo: z.string().uuid('Nieprawidłowy format ID użytkownika').optional(),
+  assignedTo: z.string().uuid('Nieprawidłowy format ID użytkownika').optional().or(z.literal("")),
 })
 
 /**
  * Schema for validating contact query parameters
  */
 export const contactQuerySchema = z.object({
-  clientId: z.string().uuid('Nieprawidłowy format ID klienta').optional(),
+  clientId: z.string().uuid('Nieprawidłowy format ID klienta').optional().or(z.literal("")),
   type: z.enum([
     'PHONE_CALL',
     'MEETING',
@@ -29,7 +29,7 @@ export const contactQuerySchema = z.object({
     'LINKEDIN_MESSAGE',
     'OTHER',
   ]).optional(),
-  userId: z.string().uuid('Nieprawidłowy format ID użytkownika').optional(),
+  userId: z.string().uuid('Nieprawidłowy format ID użytkownika').optional().or(z.literal("")),
 })
 
 /**
@@ -37,7 +37,7 @@ export const contactQuerySchema = z.object({
  */
 export const taskQuerySchema = z.object({
   status: z.enum(['TODO', 'IN_PROGRESS', 'COMPLETED']).optional(),
-  assignedTo: z.string().uuid('Nieprawidłowy format ID użytkownika').optional(),
+  assignedTo: z.string().uuid('Nieprawidłowy format ID użytkownika').optional().or(z.literal("")),
 })
 
 /**
@@ -55,8 +55,9 @@ export function validateQueryParams<T extends z.ZodTypeAny>(
   const params: Record<string, string | undefined> = {}
   
   // Extract all parameters from searchParams
+  // Convert empty strings to undefined for optional fields
   for (const [key, value] of searchParams.entries()) {
-    params[key] = value
+    params[key] = value === "" ? undefined : value
   }
   
   return schema.parse(params)
