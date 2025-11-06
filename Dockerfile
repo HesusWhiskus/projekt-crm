@@ -43,7 +43,10 @@ COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
 # Create startup script that runs migrations then starts the app
 RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'npx prisma migrate deploy || npx prisma db push || true' >> /app/start.sh && \
+    echo 'set -e' >> /app/start.sh && \
+    echo 'echo "Starting database migrations..."' >> /app/start.sh && \
+    echo 'npx prisma migrate deploy 2>&1 || (echo "migrate deploy failed, trying db push..." && npx prisma db push 2>&1 || echo "db push also failed, continuing...")' >> /app/start.sh && \
+    echo 'echo "Migrations completed, starting application..."' >> /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh && \
     chown nextjs:nodejs /app/start.sh
