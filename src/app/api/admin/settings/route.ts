@@ -2,9 +2,6 @@ import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
-import { writeFile, mkdir } from "fs/promises"
-import { join } from "path"
-import { existsSync } from "fs"
 
 const updateSettingsSchema = z.object({
   systemName: z.string().min(1).optional(),
@@ -81,13 +78,15 @@ export async function PATCH(request: Request) {
 
       // Handle logo
       if (removeLogo) {
-        // Remove logo
-        await db.systemSettings.deleteMany({
+        // Remove logo (set to empty string)
+        await db.systemSettings.upsert({
           where: { key: "system_logo" },
+          create: { key: "system_logo", value: "" },
+          update: { value: "" },
         })
       } else if (logo && logo.size > 0) {
         // Validate file type
-        if (!logo.type.match(/^image\/(png|jpeg|jpg|svg)$/)) {
+        if (!logo.type.match(/^image\/(png|jpeg|jpg|svg\+xml|svg)$/)) {
           return NextResponse.json(
             { error: "Nieprawidłowy format pliku. Dozwolone: PNG, JPG, SVG" },
             { status: 400 }
@@ -102,19 +101,11 @@ export async function PATCH(request: Request) {
           )
         }
 
-        // Save logo to public/uploads/logo
-        const uploadsDir = join(process.cwd(), "public", "uploads", "logo")
-        if (!existsSync(uploadsDir)) {
-          await mkdir(uploadsDir, { recursive: true })
-        }
-
+        // Convert logo to base64 data URL (for Railway compatibility - no file system write permissions)
         const bytes = await logo.arrayBuffer()
         const buffer = Buffer.from(bytes)
-        const filename = `logo-${Date.now()}.${logo.name.split(".").pop()}`
-        const filepath = join(uploadsDir, filename)
-
-        await writeFile(filepath, buffer)
-        const logoUrl = `/uploads/logo/${filename}`
+        const base64 = buffer.toString("base64")
+        const logoUrl = `data:${logo.type};base64,${base64}`
 
         await db.systemSettings.upsert({
           where: { key: "system_logo" },

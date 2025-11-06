@@ -83,7 +83,7 @@ export function DashboardNav({
               className="flex items-center space-x-2 text-xl font-bold"
               style={{ color: "var(--color-primary, #3b82f6)" }}
             >
-              {systemLogo && (
+              {systemLogo && systemLogo.trim() !== "" && (
                 <div className="relative w-8 h-8">
                   {systemLogo.startsWith("http") ? (
                     <Image
