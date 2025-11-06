@@ -18,8 +18,14 @@ const updateTaskSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ).optional().or(z.literal("")),
   status: z.nativeEnum(TaskStatus).optional(),
-  assignedTo: z.string().uuid("Nieprawidłowy format ID użytkownika").optional().nullable(),
-  clientId: z.string().uuid("Nieprawidłowy format ID klienta").optional().nullable(),
+  assignedTo: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? null : val),
+    z.string().uuid("Nieprawidłowy format ID użytkownika").nullable().optional()
+  ),
+  clientId: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? null : val),
+    z.string().uuid("Nieprawidłowy format ID klienta").nullable().optional()
+  ),
   sharedGroupIds: z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional(),
 })
 
