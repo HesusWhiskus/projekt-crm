@@ -3,7 +3,6 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { ContactType } from "@prisma/client"
 import { z } from "zod"
-import { uuidSchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 
 const updateContactSchema = z.object({
@@ -27,16 +26,11 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Validate UUID
-    console.log("[DEBUG CONTACTS PATCH] params.id:", params.id, "type:", typeof params.id)
-    let validatedId: string
-    try {
-      validatedId = uuidSchema.parse(params.id)
-      console.log("[DEBUG CONTACTS PATCH] Validated ID:", validatedId)
-    } catch (error: any) {
-      console.error("[DEBUG CONTACTS PATCH] UUID validation error:", error?.message || error)
+    // Validate ID (CUID format used by Prisma)
+    if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
       return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
     }
+    const validatedId = params.id.trim()
     
     const user = await getCurrentUser()
     if (!user) {
@@ -195,13 +189,11 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Validate UUID
-    let validatedId: string
-    try {
-      validatedId = uuidSchema.parse(params.id)
-    } catch {
+    // Validate ID (CUID format used by Prisma)
+    if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
       return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
     }
+    const validatedId = params.id.trim()
     
     const user = await getCurrentUser()
     if (!user) {
