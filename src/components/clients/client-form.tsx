@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ClientStatus, UserRole } from "@prisma/client"
+import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
 
 interface ClientFormProps {
   users: Array<{
@@ -34,6 +34,8 @@ interface ClientFormProps {
     address: string | null
     source: string | null
     status: ClientStatus
+    priority: ClientPriority | null
+    nextFollowUpAt: Date | null
     assignedTo: string | null
     sharedGroups?: Array<{
       id: string
@@ -53,6 +55,12 @@ const statusOptions: Record<ClientStatus, string> = {
   LOST: "Utracony",
 }
 
+const priorityOptions: Record<ClientPriority, string> = {
+  LOW: "Niski",
+  MEDIUM: "Średni",
+  HIGH: "Wysoki",
+}
+
 export function ClientForm({ users, groups, currentUser, client, onClose, onSuccess }: ClientFormProps) {
   const [formData, setFormData] = useState({
     firstName: client?.firstName || "",
@@ -64,6 +72,8 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
     address: client?.address || "",
     source: client?.source || "",
     status: client?.status || ("NEW_LEAD" as ClientStatus),
+    priority: client?.priority || null,
+    nextFollowUpAt: client?.nextFollowUpAt ? new Date(client.nextFollowUpAt).toISOString().slice(0, 16) : "",
     assignedTo: client?.assignedTo || currentUser?.id || "",
     sharedGroupIds: client?.sharedGroups?.map(g => g.id) || [] as string[],
   })
@@ -89,6 +99,8 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
         address: formData.address || undefined,
         source: formData.source || undefined,
         status: formData.status,
+        priority: formData.priority || undefined,
+        nextFollowUpAt: formData.nextFollowUpAt || undefined,
       }
       
       if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
@@ -210,6 +222,35 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
                   </option>
                 ))}
               </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="priority">Priorytet</Label>
+              <Select
+                id="priority"
+                value={formData.priority || ""}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value ? (e.target.value as ClientPriority) : null })}
+                disabled={isLoading}
+              >
+                <option value="">Brak priorytetu</option>
+                {Object.entries(priorityOptions).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="nextFollowUpAt">Następny follow-up</Label>
+              <Input
+                id="nextFollowUpAt"
+                type="datetime-local"
+                value={formData.nextFollowUpAt}
+                onChange={(e) => setFormData({ ...formData, nextFollowUpAt: e.target.value })}
+                disabled={isLoading}
+              />
             </div>
           </div>
 

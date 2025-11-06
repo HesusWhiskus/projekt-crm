@@ -31,9 +31,10 @@ interface ContactFormProps {
   }
   contact?: {
     id: string
-    type: ContactType
+    type: ContactType | null
     date: Date
     notes: string
+    isNote: boolean
     userId: string
     clientId?: string
     sharedGroups?: Array<{
@@ -56,11 +57,12 @@ const contactTypeOptions: Record<ContactType, string> = {
 
 export function ContactForm({ clientId, clients, users, groups, currentUser, contact, onClose, onSuccess, onAddClient }: ContactFormProps) {
   const [formData, setFormData] = useState({
-    type: (contact?.type || "PHONE_CALL") as ContactType,
+    type: (contact?.type || "PHONE_CALL") as ContactType | null,
     date: contact
       ? new Date(contact.date).toISOString().slice(0, 16)
       : new Date().toISOString().slice(0, 16),
     notes: contact?.notes || "",
+    isNote: contact?.isNote || false,
     userId: contact?.userId || currentUser?.id || "",
     clientId: contact ? (contact.clientId || clientId || "") : (clientId || ""),
     sharedGroupIds: contact?.sharedGroups?.map((g) => g.id) || [] as string[],
@@ -82,9 +84,13 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
 
     try {
       const formDataToSend = new FormData()
-      formDataToSend.append("type", formData.type)
+      // Only append type if it's not a note
+      if (!formData.isNote && formData.type) {
+        formDataToSend.append("type", formData.type)
+      }
       formDataToSend.append("date", new Date(formData.date).toISOString())
       formDataToSend.append("notes", formData.notes)
+      formDataToSend.append("isNote", formData.isNote ? "true" : "false")
       formDataToSend.append("userId", formData.userId)
       formDataToSend.append("clientId", formData.clientId || clientId || "")
       
