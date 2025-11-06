@@ -41,6 +41,9 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 # Copy Prisma binaries for migrations
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
+# Fix permissions for Prisma engines directory
+RUN chown -R nextjs:nodejs /app/node_modules/@prisma
+
 # Create startup script that runs migrations then starts the app
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
