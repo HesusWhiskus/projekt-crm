@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { UserRole } from "@prisma/client"
 import Image from "next/image"
@@ -32,6 +33,7 @@ interface DashboardNavProps {
   userColorScheme: {
     primaryColor?: string | null
     themeName?: string | null
+    theme?: string | null
   } | null
   defaultColorScheme: {
     primaryColor?: string
@@ -55,6 +57,16 @@ export function DashboardNav({
   defaultColorScheme,
 }: DashboardNavProps) {
   const pathname = usePathname()
+  const { setTheme, theme } = useTheme()
+
+  // Apply theme from user preferences
+  useEffect(() => {
+    if (userColorScheme?.theme) {
+      setTheme(userColorScheme.theme)
+    } else if (!theme) {
+      setTheme("light")
+    }
+  }, [userColorScheme?.theme, setTheme, theme])
 
   // Apply color scheme (only on client)
   useEffect(() => {
@@ -75,7 +87,7 @@ export function DashboardNav({
   }, [userColorScheme, defaultColorScheme])
 
   return (
-    <nav className="bg-white border-b border-gray-200">
+    <nav className="bg-card border-b border-border">
       <div className="max-w-[98%] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">

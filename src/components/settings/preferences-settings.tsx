@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Select } from "@/components/ui/select"
 import { ColorSchemePicker } from "./color-scheme-picker"
 
 interface PreferencesSettingsProps {
@@ -27,6 +30,7 @@ export function PreferencesSettings({
   defaultColorScheme,
 }: PreferencesSettingsProps) {
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
   const [colorScheme, setColorScheme] = useState<{
     primaryColor?: string
     themeName: string
@@ -34,9 +38,17 @@ export function PreferencesSettings({
     primaryColor: preferences?.primaryColor || defaultColorScheme?.primaryColor || "#3b82f6",
     themeName: preferences?.themeName || defaultColorScheme?.themeName || "blue",
   })
+  const [currentTheme, setCurrentTheme] = useState<string>(preferences?.theme || theme || "light")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (preferences?.theme) {
+      setCurrentTheme(preferences.theme)
+      setTheme(preferences.theme)
+    }
+  }, [preferences?.theme, setTheme])
 
   useEffect(() => {
     // Apply color scheme to document (only on client)
@@ -68,6 +80,7 @@ export function PreferencesSettings({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          theme: currentTheme,
           colorScheme: {
             primaryColor: colorScheme.primaryColor,
             themeName: colorScheme.themeName,
@@ -83,6 +96,7 @@ export function PreferencesSettings({
       }
 
       setSuccess("Preferencje zostały zapisane pomyślnie")
+      setTheme(currentTheme)
       router.refresh()
     } catch (error) {
       setError("Wystąpił błąd podczas zapisywania preferencji")
@@ -92,39 +106,63 @@ export function PreferencesSettings({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Kolorystyka interfejsu</CardTitle>
-        <CardDescription>
-          Dostosuj kolory interfejsu do swoich preferencji
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {error && (
-          <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-md">
-            {error}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Tryb wyświetlania</CardTitle>
+          <CardDescription>
+            Wybierz tryb jasny lub ciemny
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="theme">Motyw</Label>
+            <Select
+              id="theme"
+              value={currentTheme}
+              onChange={(e) => setCurrentTheme(e.target.value)}
+            >
+              <option value="light">Jasny</option>
+              <option value="dark">Ciemny</option>
+            </Select>
           </div>
-        )}
-        {success && (
-          <div className="p-3 bg-green-500/10 text-green-700 text-sm rounded-md">
-            {success}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Kolorystyka interfejsu</CardTitle>
+          <CardDescription>
+            Dostosuj kolory interfejsu do swoich preferencji
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {error && (
+            <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-md">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="p-3 bg-green-500/10 text-green-700 text-sm rounded-md">
+              {success}
+            </div>
+          )}
+
+          <ColorSchemePicker
+            value={preferences}
+            defaultColorScheme={defaultColorScheme}
+            onChange={setColorScheme}
+            showSystemOption={!!defaultColorScheme}
+          />
+
+          <div className="pt-4 border-t">
+            <Button onClick={handleSave} disabled={isLoading}>
+              {isLoading ? "Zapisywanie..." : "Zapisz zmiany"}
+            </Button>
           </div>
-        )}
-
-        <ColorSchemePicker
-          value={preferences}
-          defaultColorScheme={defaultColorScheme}
-          onChange={setColorScheme}
-          showSystemOption={!!defaultColorScheme}
-        />
-
-        <div className="pt-4 border-t">
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? "Zapisywanie..." : "Zapisz zmiany"}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

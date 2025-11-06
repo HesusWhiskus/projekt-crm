@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { ClientStatus, UserRole } from "@prisma/client"
+import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
 import { Plus, Search, Download, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
 import Link from "next/link"
 import { ClientForm } from "./client-form"
@@ -20,6 +20,7 @@ interface Client {
   email: string | null
   phone: string | null
   status: ClientStatus
+  priority: ClientPriority | null
   source: string | null
   assignee: {
     id: string
@@ -62,7 +63,28 @@ const statusLabels: Record<ClientStatus, string> = {
   LOST: "Utracony",
 }
 
-type SortField = "firstName" | "lastName" | "agencyName" | "email" | "phone" | "status" | "assignee" | null
+const statusColors: Record<ClientStatus, string> = {
+  NEW_LEAD: "bg-blue-100 text-blue-800",
+  IN_CONTACT: "bg-yellow-100 text-yellow-800",
+  DEMO_SENT: "bg-purple-100 text-purple-800",
+  NEGOTIATION: "bg-orange-100 text-orange-800",
+  ACTIVE_CLIENT: "bg-green-100 text-green-800",
+  LOST: "bg-red-100 text-red-800",
+}
+
+const priorityLabels: Record<ClientPriority, string> = {
+  LOW: "Niski",
+  MEDIUM: "Średni",
+  HIGH: "Wysoki",
+}
+
+const priorityColors: Record<ClientPriority, string> = {
+  LOW: "bg-blue-100 text-blue-800",
+  MEDIUM: "bg-yellow-100 text-yellow-800",
+  HIGH: "bg-red-100 text-red-800",
+}
+
+type SortField = "firstName" | "lastName" | "agencyName" | "email" | "phone" | "status" | "priority" | "assignee" | null
 type SortDirection = "asc" | "desc" | null
 
 export function ClientsList({ clients, users, groups, currentUser }: ClientsListProps) {
@@ -142,6 +164,10 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
           case "status":
             aValue = a.status
             bValue = b.status
+            break
+          case "priority":
+            aValue = a.priority || ""
+            bValue = b.priority || ""
             break
           case "assignee":
             aValue = a.assignee?.name || a.assignee?.email || ""
@@ -378,7 +404,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                      className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap w-24"
                       onClick={() => handleSort("phone")}
                     >
                       <div className="flex items-center">
@@ -387,12 +413,21 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                      className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap w-28"
                       onClick={() => handleSort("status")}
                     >
                       <div className="flex items-center">
                         Status
                         {getSortIcon("status")}
+                      </div>
+                    </th>
+                    <th
+                      className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap w-24"
+                      onClick={() => handleSort("priority")}
+                    >
+                      <div className="flex items-center">
+                        Priorytet
+                        {getSortIcon("priority")}
                       </div>
                     </th>
                     <th
@@ -427,13 +462,22 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                           {client.email || "-"}
                         </div>
                       </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-2 py-3 whitespace-nowrap text-sm text-gray-900">
                         {client.phone || "-"}
                       </td>
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                      <td className="px-2 py-3 whitespace-nowrap">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[client.status]}`}>
                           {statusLabels[client.status]}
                         </span>
+                      </td>
+                      <td className="px-2 py-3 whitespace-nowrap">
+                        {client.priority ? (
+                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${priorityColors[client.priority]}`}>
+                            {priorityLabels[client.priority]}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-gray-400">-</span>
+                        )}
                       </td>
                       <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
                         <div className="truncate max-w-[150px]" title={client.assignee?.name || client.assignee?.email || undefined}>
