@@ -11,7 +11,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 - Równość priorytetów w kolumnie - wszystkie priorytety mają jednakową szerokość (min-w-[100px])
 - Widoczność wszystkich pól w ustawieniach w trybie ciemnym - zastąpiono wszystkie hardcoded kolory (`bg-gray-*`, `text-gray-*`) zmiennymi CSS (`bg-muted`, `text-foreground`, `text-muted-foreground`)
 - Czytelność formularzy w trybie ciemnym - wszystkie pola input są teraz widoczne
-- Skalowanie logo - teraz wszystkie obrazy (również mniejsze i kwadratowe) są zawsze przeskalowywane do preferowanego rozmiaru 224x64px z zachowaniem proporcji
+- Skalowanie logo - naprawiono użycie naturalWidth/naturalHeight dla prawidłowego odczytu wymiarów, teraz wszystkie obrazy (PNG, JPG, SVG, również mniejsze i kwadratowe) są zawsze przeskalowywane do preferowanego rozmiaru 224x64px z zachowaniem proporcji
 
 ### Dodano
 - Automatyczna konwersja i skalowanie logo:

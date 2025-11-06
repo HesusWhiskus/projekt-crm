@@ -27,7 +27,7 @@ export const changelog: ChangelogEntry[] = [
       },
       {
         type: 'fixed',
-        description: 'Naprawiono skalowanie logo - teraz wszystkie obrazy (również mniejsze i kwadratowe) są zawsze przeskalowywane do preferowanego rozmiaru',
+        description: 'Naprawiono skalowanie logo - teraz wszystkie obrazy (PNG, JPG, SVG, również mniejsze i kwadratowe) są zawsze przeskalowywane do preferowanego rozmiaru używając naturalWidth/naturalHeight',
       },
       {
         type: 'added',

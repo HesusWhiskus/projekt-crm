@@ -63,17 +63,77 @@ export function AdminBranding({
 
   const convertAndResizeLogo = async (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
+      // For SVG files, we need special handling
+      if (file.type === "image/svg+xml" || file.type === "image/svg" || file.name.toLowerCase().endsWith(".svg")) {
+        // SVG files are not easily resizable with canvas, so we'll just convert to data URL
+        // The browser will handle the display scaling
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          // For SVG, we'll create a canvas with fixed size and render it
+          const img = document.createElement("img")
+          img.onload = () => {
+            const maxWidth = 224
+            const maxHeight = 64
+            
+            const originalWidth = img.width || 224
+            const originalHeight = img.height || 64
+            
+            const ratio = Math.min(maxWidth / originalWidth, maxHeight / originalHeight)
+            const width = Math.round(originalWidth * ratio)
+            const height = Math.round(originalHeight * ratio)
+
+            const canvas = document.createElement("canvas")
+            canvas.width = width
+            canvas.height = height
+            const ctx = canvas.getContext("2d")
+            
+            if (!ctx) {
+              reject(new Error("Nie można utworzyć kontekstu canvas"))
+              return
+            }
+
+            ctx.drawImage(img, 0, 0, width, height)
+
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) {
+                  reject(new Error("Błąd podczas konwersji obrazu SVG"))
+                  return
+                }
+                const convertedFile = new File([blob], "logo.png", { type: "image/png" })
+                resolve(convertedFile)
+              },
+              "image/png",
+              0.9
+            )
+          }
+          img.onerror = () => {
+            reject(new Error("Błąd podczas ładowania obrazu SVG"))
+          }
+          img.src = e.target?.result as string
+        }
+        reader.onerror = () => {
+          reject(new Error("Błąd podczas odczytu pliku SVG"))
+        }
+        reader.readAsDataURL(file)
+        return
+      }
+
+      // For PNG, JPG, JPEG - standard processing
       const reader = new FileReader()
       reader.onload = (e) => {
         const img = document.createElement("img")
+        img.crossOrigin = "anonymous" // Important for CORS
+        
         img.onload = () => {
           // Preferred size: 224x64px (w-56 h-16) with max height 64px
           // Always resize to fit within 224x64, maintaining aspect ratio
           const maxWidth = 224
           const maxHeight = 64
           
-          const originalWidth = img.width
-          const originalHeight = img.height
+          // Get actual image dimensions
+          const originalWidth = img.naturalWidth || img.width || 224
+          const originalHeight = img.naturalHeight || img.height || 64
           
           // Calculate new dimensions maintaining aspect ratio
           // Always resize, even if image is smaller
@@ -81,19 +141,27 @@ export function AdminBranding({
           const width = Math.round(originalWidth * ratio)
           const height = Math.round(originalHeight * ratio)
 
+          // Ensure minimum dimensions
+          const finalWidth = Math.max(width, 1)
+          const finalHeight = Math.max(height, 1)
+
           // Create canvas for resizing
           const canvas = document.createElement("canvas")
-          canvas.width = width
-          canvas.height = height
-          const ctx = canvas.getContext("2d")
+          canvas.width = finalWidth
+          canvas.height = finalHeight
+          const ctx = canvas.getContext("2d", { willReadFrequently: false })
           
           if (!ctx) {
             reject(new Error("Nie można utworzyć kontekstu canvas"))
             return
           }
 
+          // Set white background for transparency
+          ctx.fillStyle = "#FFFFFF"
+          ctx.fillRect(0, 0, finalWidth, finalHeight)
+
           // Draw image on canvas
-          ctx.drawImage(img, 0, 0, width, height)
+          ctx.drawImage(img, 0, 0, finalWidth, finalHeight)
 
           // Convert to blob (PNG format for best quality)
           canvas.toBlob(
@@ -106,17 +174,18 @@ export function AdminBranding({
               // Create File from blob
               const convertedFile = new File(
                 [blob],
-                file.name.replace(/\.[^/.]+$/, ".png"),
+                "logo.png",
                 { type: "image/png" }
               )
               resolve(convertedFile)
             },
             "image/png",
-            0.9 // Quality
+            0.95 // Higher quality
           )
         }
-        img.onerror = () => {
-          reject(new Error("Błąd podczas ładowania obrazu"))
+        img.onerror = (error) => {
+          console.error("Image load error:", error)
+          reject(new Error("Błąd podczas ładowania obrazu. Sprawdź czy plik jest poprawnym obrazem."))
         }
         img.src = e.target?.result as string
       }
