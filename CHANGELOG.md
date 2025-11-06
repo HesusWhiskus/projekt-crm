@@ -5,6 +5,14 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.1.2-beta] - 2025-11-06
+
+### Naprawiono
+- Naprawiono walidację UUID dla wszystkich opcjonalnych pól (klienci, kontakty, zadania) - pusty string jest teraz poprawnie konwertowany na null/undefined przed walidacją
+- Naprawiono problem z zapisywaniem i edytowaniem zadań, klientów i kontaktów spowodowany zbyt restrykcyjną walidacją UUID
+
+---
+
 ## [0.1.1-beta] - 2025-11-06
 
 ### Naprawiono
