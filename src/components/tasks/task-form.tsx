@@ -87,7 +87,7 @@ export function TaskForm({ users, clients, groups, currentUser, task, onClose, o
           dueDate: formData.dueDate || undefined,
           assignedTo: formData.assignedTo || undefined,
           clientId: formData.clientId || undefined,
-          sharedGroupIds: formData.sharedGroupIds,
+          sharedGroupIds: formData.sharedGroupIds.length > 0 ? formData.sharedGroupIds : undefined,
         }),
       })
 

@@ -84,7 +84,8 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          sharedGroupIds: formData.sharedGroupIds,
+          assignedTo: formData.assignedTo || undefined,
+          sharedGroupIds: formData.sharedGroupIds.length > 0 ? formData.sharedGroupIds : undefined,
         }),
       })
 
