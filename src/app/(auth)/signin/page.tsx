@@ -3,12 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AuthHeader } from "@/components/auth-header"
 import SignInForm from "./signin-form"
 
-export default function SignInPage() {
+export default async function SignInPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <AuthHeader />
+          <Suspense fallback={<div className="h-20" />}>
+            <AuthHeader />
+          </Suspense>
           <CardTitle className="text-2xl text-center">Logowanie</CardTitle>
           <CardDescription className="text-center">
             Zaloguj się do systemu
