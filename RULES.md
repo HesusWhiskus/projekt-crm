@@ -21,7 +21,9 @@ npm run git -- <cmd>    # Dowolna komenda git
 ### Workflow po zmianach:
 1. **ZAWSZE** sprawdź status: `npm run git:status`
 2. **ZAWSZE** dodaj zmiany: `npm run git:add:all`
-3. **ZAWSZE** zrób commit z opisową wiadomością: `npm run git:commit -m "opis zmian"`
+3. **ZAWSZE** zrób commit z opisową wiadomością:
+   - Jeśli commit z -m: użyj bezpośrednio `git commit -m "message"` w katalogu projektu
+   - Skrypt git-wrapper.js ma problem z przekazywaniem argumentów -m przez npm
 4. **ZAWSZE** zrób push: `npm run git:push`
 
 ## 🚀 Zasady Deployment
