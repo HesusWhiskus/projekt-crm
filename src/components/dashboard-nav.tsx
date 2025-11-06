@@ -16,6 +16,7 @@ import {
   LogOut,
   Settings,
 } from "lucide-react"
+import { WhatsNewButton } from "@/components/whats-new-button"
 
 interface DashboardNavProps {
   user: {
@@ -129,6 +130,7 @@ export function DashboardNav({
             </div>
           </div>
           <div className="flex items-center space-x-4">
+            <WhatsNewButton />
             <div className="text-sm text-gray-700">
               <div className="font-medium">{user.name || user.email}</div>
               {user.position && (
