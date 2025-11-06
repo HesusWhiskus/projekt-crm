@@ -57,8 +57,10 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo '  npx prisma db push --accept-data-loss 2>&1 || echo "Migrations failed, continuing..."' >> /app/start.sh && \
     echo '  echo "Migrations completed"' >> /app/start.sh && \
     echo 'fi' >> /app/start.sh && \
-    echo 'echo "Starting application on port ${PORT:-3000}..."' >> /app/start.sh && \
-    echo 'export PORT=${PORT:-3000}' >> /app/start.sh && \
+    echo 'echo "Starting application..."' >> /app/start.sh && \
+    echo 'echo "PORT from env: $PORT"' >> /app/start.sh && \
+    echo 'if [ -z "$PORT" ]; then export PORT=3000; fi' >> /app/start.sh && \
+    echo 'echo "Using PORT: $PORT"' >> /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh && \
     chown nextjs:nodejs /app/start.sh
