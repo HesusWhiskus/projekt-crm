@@ -52,8 +52,22 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
         body: JSON.stringify({ taskId: task.id }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error("Błąd podczas synchronizacji")
+        // Show specific error message from API
+        alert(data.error || "Błąd podczas synchronizacji")
+        
+        // If requires Google auth, suggest redirecting to sign in
+        if (data.requiresGoogleAuth || data.requiresReauth) {
+          const shouldRedirect = confirm(
+            "Aby synchronizować z Google Calendar, musisz zalogować się przez Google. Przekierować do logowania?"
+          )
+          if (shouldRedirect) {
+            window.location.href = "/signin"
+          }
+        }
+        return
       }
 
       alert("Zadanie zostało zsynchronizowane z kalendarzem Google")

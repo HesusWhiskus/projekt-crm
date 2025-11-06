@@ -134,6 +134,7 @@ export const authOptions: NextAuthOptions = {
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
+          scope: "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
         },
       },
     }),
@@ -257,16 +258,28 @@ export const authOptions: NextAuthOptions = {
                  name: token.name,
                  role: token.role
                })
-             } else {
-               logAuth("[AUTH] No user object - using existing token")
-               logAuth("[AUTH] Current token:", {
-                 id: token.id,
-                 email: token.email,
-                 role: token.role
-               })
-             }
+            } else {
+              logAuth("[AUTH] No user object - using existing token")
+              logAuth("[AUTH] Current token:", {
+                id: token.id,
+                email: token.email,
+                role: token.role,
+                hasAccessToken: !!token.accessToken,
+                hasRefreshToken: !!token.refreshToken
+              })
+              
+              // Preserve OAuth tokens when refreshing session
+              // Tokens are only set on initial login, so we keep them from existing token
+              if (account?.provider === "google" && account.access_token) {
+                // Update tokens if new ones are provided (e.g., after refresh)
+                token.accessToken = account.access_token
+                token.refreshToken = account.refresh_token || token.refreshToken
+                token.expiresAt = account.expires_at || token.expiresAt
+                logAuth("[AUTH] Google OAuth tokens updated in JWT")
+              }
+            }
 
-             logAuth("=".repeat(50))
+            logAuth("=".repeat(50))
       
       // For OAuth, ensure we have role from database if missing
       if (account?.provider === "google" && token.email && !token.role) {

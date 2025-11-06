@@ -27,28 +27,37 @@ export async function getGoogleCalendarClient(userId: string) {
   )
 
   // Try to get tokens from session (NextAuth stores them in JWT for Google provider)
-  // Note: In NextAuth v4 with JWT strategy, tokens are stored in the JWT token
-  // For full OAuth token access, you might need to use PrismaAdapter or store tokens separately
-  // This is a simplified implementation - for production, consider storing tokens in database
-  
-  // For now, we'll require users to re-authenticate with Google to get fresh tokens
-  // This is a limitation of using JWT strategy without adapter
-  // In production, you should:
-  // 1. Use PrismaAdapter with Account model, OR
-  // 2. Store tokens separately in database after initial OAuth flow
-  
-  // Check if we have access token in session (if using Google OAuth)
   const accessToken = (session as any).accessToken
   const refreshToken = (session as any).refreshToken
+  const expiresAt = (session as any).expiresAt
 
-  if (accessToken) {
+  if (!accessToken) {
+    throw new Error("Google Calendar access token not found. Please sign in with Google to enable calendar sync.")
+  }
+
+  // Check if token is expired and refresh if needed
+  const now = Math.floor(Date.now() / 1000)
+  const isExpired = expiresAt && expiresAt < now
+
+  if (isExpired && refreshToken) {
+    try {
+      console.log("[Calendar] Access token expired, refreshing...")
+      oauth2Client.setCredentials({
+        refresh_token: refreshToken,
+      })
+      const { credentials } = await oauth2Client.refreshAccessToken()
+      oauth2Client.setCredentials(credentials)
+      console.log("[Calendar] Token refreshed successfully")
+    } catch (error: any) {
+      console.error("[Calendar] Token refresh failed:", error)
+      throw new Error("Failed to refresh Google Calendar access token. Please sign in with Google again.")
+    }
+  } else {
     oauth2Client.setCredentials({
       access_token: accessToken,
       refresh_token: refreshToken,
+      expiry_date: expiresAt ? expiresAt * 1000 : undefined,
     })
-  } else {
-    // If no token in session, user needs to re-authenticate with Google
-    throw new Error("Google Calendar access token not found. Please sign in with Google again.")
   }
 
   return google.calendar({ version: "v3", auth: oauth2Client })
@@ -124,4 +133,3 @@ export async function syncTaskToCalendar(userId: string, taskId: string) {
     throw error
   }
 }
-
