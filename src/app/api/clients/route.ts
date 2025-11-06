@@ -28,7 +28,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+    console.log("[DEBUG CLIENTS POST] Received body:", JSON.stringify(body, null, 2))
+    console.log("[DEBUG CLIENTS POST] assignedTo:", body.assignedTo, "type:", typeof body.assignedTo)
     const validatedData = createClientSchema.parse(body)
+    console.log("[DEBUG CLIENTS POST] Validated data:", JSON.stringify(validatedData, null, 2))
 
     const client = await db.client.create({
       data: {

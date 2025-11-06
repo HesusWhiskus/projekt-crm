@@ -117,7 +117,10 @@ export async function PATCH(
     }
 
     const body = await request.json()
+    console.log("[DEBUG CLIENTS PATCH] Received body:", JSON.stringify(body, null, 2))
+    console.log("[DEBUG CLIENTS PATCH] assignedTo:", body.assignedTo, "type:", typeof body.assignedTo)
     const validatedData = updateClientSchema.parse(body)
+    console.log("[DEBUG CLIENTS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
 
     // Check if client exists and user has access
     const existingClient = await db.client.findUnique({

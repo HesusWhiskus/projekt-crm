@@ -98,7 +98,11 @@ export async function PATCH(
     }
 
     const body = await request.json()
+    console.log("[DEBUG TASKS PATCH] Received body:", JSON.stringify(body, null, 2))
+    console.log("[DEBUG TASKS PATCH] assignedTo:", body.assignedTo, "type:", typeof body.assignedTo)
+    console.log("[DEBUG TASKS PATCH] clientId:", body.clientId, "type:", typeof body.clientId)
     const validatedData = updateTaskSchema.parse(body)
+    console.log("[DEBUG TASKS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
 
     // Check if task exists and user has access
     const existingTask = await db.task.findUnique({

@@ -31,7 +31,11 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+    console.log("[DEBUG TASKS POST] Received body:", JSON.stringify(body, null, 2))
+    console.log("[DEBUG TASKS POST] assignedTo:", body.assignedTo, "type:", typeof body.assignedTo)
+    console.log("[DEBUG TASKS POST] clientId:", body.clientId, "type:", typeof body.clientId)
     const validatedData = createTaskSchema.parse(body)
+    console.log("[DEBUG TASKS POST] Validated data:", JSON.stringify(validatedData, null, 2))
 
     // If clientId is provided, check access
     if (validatedData.clientId) {

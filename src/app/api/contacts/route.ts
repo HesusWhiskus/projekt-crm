@@ -47,14 +47,19 @@ export async function POST(request: Request) {
       }
     }
     
-    const validatedData = createContactSchema.parse({
+    const parsedData = {
       type: formData.get("type"),
       date: formData.get("date"),
       notes: formData.get("notes"),
       userId: formData.get("userId"),
       clientId: formData.get("clientId"),
       sharedGroupIds,
-    })
+    }
+    console.log("[DEBUG CONTACTS POST] Parsed formData:", JSON.stringify(parsedData, null, 2))
+    console.log("[DEBUG CONTACTS POST] userId:", parsedData.userId, "type:", typeof parsedData.userId)
+    console.log("[DEBUG CONTACTS POST] clientId:", parsedData.clientId, "type:", typeof parsedData.clientId)
+    const validatedData = createContactSchema.parse(parsedData)
+    console.log("[DEBUG CONTACTS POST] Validated data:", JSON.stringify(validatedData, null, 2))
 
     // Check if client exists and user has access
     const client = await db.client.findUnique({
