@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { TaskStatus } from "@prisma/client"
 import { z } from "zod"
-import { validateQueryParams, taskQuerySchema, uuidSchema } from "@/lib/query-validator"
+import { validateQueryParams, taskQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 
 const createTaskSchema = z.object({
@@ -136,19 +136,9 @@ export async function GET(request: Request) {
       throw error
     }
     
-    // Validate clientId separately if provided
+    // Validate clientId separately if provided (CUID format)
     const clientId = searchParams.get("clientId")
-    let validatedClientId: string | undefined
-    if (clientId) {
-      try {
-        validatedClientId = uuidSchema.parse(clientId)
-      } catch {
-        return NextResponse.json(
-          { error: "Nieprawidłowy format ID klienta" },
-          { status: 400 }
-        )
-      }
-    }
+    const validatedClientId = clientId && clientId.trim().length > 0 ? clientId.trim() : undefined
 
     const where: any = {}
 

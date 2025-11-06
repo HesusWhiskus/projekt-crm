@@ -3,7 +3,6 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { ClientStatus } from "@prisma/client"
 import { z } from "zod"
-import { uuidSchema } from "@/lib/query-validator"
 import { phoneSchema, websiteSchema, emailSchema, textFieldSchema, nameSchema, agencyNameSchema } from "@/lib/field-validators"
 
 const updateClientSchema = z.object({
