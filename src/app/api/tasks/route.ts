@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { TaskStatus } from "@prisma/client"
 import { z } from "zod"
+import { validateQueryParams, taskQuerySchema, uuidSchema } from "@/lib/query-validator"
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany"),
@@ -97,9 +98,34 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get("status")
-    const assignedTo = searchParams.get("assignedTo")
+    
+    // Validate query parameters
+    let validatedParams
+    try {
+      validatedParams = validateQueryParams(taskQuerySchema, searchParams)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: error.errors[0].message },
+          { status: 400 }
+        )
+      }
+      throw error
+    }
+    
+    // Validate clientId separately if provided
     const clientId = searchParams.get("clientId")
+    let validatedClientId: string | undefined
+    if (clientId) {
+      try {
+        validatedClientId = uuidSchema.parse(clientId)
+      } catch {
+        return NextResponse.json(
+          { error: "Nieprawidłowy format ID klienta" },
+          { status: 400 }
+        )
+      }
+    }
 
     const where: any = {}
 
@@ -110,16 +136,16 @@ export async function GET(request: Request) {
       ]
     }
 
-    if (status) {
-      where.status = status as TaskStatus
+    if (validatedParams.status) {
+      where.status = validatedParams.status as TaskStatus
     }
 
-    if (assignedTo) {
-      where.assignedTo = assignedTo
+    if (validatedParams.assignedTo) {
+      where.assignedTo = validatedParams.assignedTo
     }
 
-    if (clientId) {
-      where.clientId = clientId
+    if (validatedClientId) {
+      where.clientId = validatedClientId
     }
 
     const tasks = await db.task.findMany({

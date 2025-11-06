@@ -5,6 +5,8 @@ import { ContactType } from "@prisma/client"
 import { z } from "zod"
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
+import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib/file-upload"
+import { validateQueryParams, contactQuerySchema } from "@/lib/query-validator"
 
 const createContactSchema = z.object({
   type: z.nativeEnum(ContactType),
@@ -82,24 +84,43 @@ export async function POST(request: Request) {
     // Handle file uploads
     const files = formData.getAll("files") as File[]
     if (files.length > 0 && files[0].size > 0) {
+      // Validate files
+      const filesValidation = validateFiles(files)
+      if (!filesValidation.valid) {
+        return NextResponse.json(
+          { error: filesValidation.error },
+          { status: 400 }
+        )
+      }
+
       const uploadsDir = join(process.cwd(), "public", "uploads", "contacts", contact.id)
       await mkdir(uploadsDir, { recursive: true })
 
       for (const file of files) {
         if (file.size === 0) continue
 
+        // Generate safe filename to prevent path traversal
+        const safeFilename = generateSafeFilename(file.name)
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
-        const filename = `${Date.now()}-${file.name}`
-        const filepath = join(uploadsDir, filename)
+        const filepath = join(uploadsDir, safeFilename)
+
+        // Additional safety check: ensure filepath is within uploadsDir
+        const resolvedPath = join(uploadsDir, safeFilename)
+        if (!resolvedPath.startsWith(uploadsDir)) {
+          return NextResponse.json(
+            { error: "Nieprawidłowa ścieżka pliku" },
+            { status: 400 }
+          )
+        }
 
         await writeFile(filepath, buffer)
 
         await db.attachment.create({
           data: {
             contactId: contact.id,
-            filename: file.name,
-            path: `/uploads/contacts/${contact.id}/${filename}`,
+            filename: file.name, // Store original filename
+            path: `/uploads/contacts/${contact.id}/${safeFilename}`, // Use safe filename in path
             size: file.size,
             mimeType: file.type || null,
           },
@@ -146,9 +167,20 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const clientId = searchParams.get("clientId")
-    const type = searchParams.get("type")
-    const userId = searchParams.get("userId")
+    
+    // Validate query parameters
+    let validatedParams
+    try {
+      validatedParams = validateQueryParams(contactQuerySchema, searchParams)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: error.errors[0].message },
+          { status: 400 }
+        )
+      }
+      throw error
+    }
 
     const where: any = {}
 
@@ -176,16 +208,16 @@ export async function GET(request: Request) {
       ]
     }
 
-    if (clientId) {
-      where.clientId = clientId
+    if (validatedParams.clientId) {
+      where.clientId = validatedParams.clientId
     }
 
-    if (type) {
-      where.type = type as ContactType
+    if (validatedParams.type) {
+      where.type = validatedParams.type as ContactType
     }
 
-    if (userId) {
-      where.userId = userId
+    if (validatedParams.userId) {
+      where.userId = validatedParams.userId
     }
 
     const contacts = await db.contact.findMany({

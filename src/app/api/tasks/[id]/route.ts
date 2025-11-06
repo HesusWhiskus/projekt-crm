@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { TaskStatus } from "@prisma/client"
 import { z } from "zod"
+import { uuidSchema } from "@/lib/query-validator"
 
 const updateTaskSchema = z.object({
   title: z.string().min(1).optional(),
@@ -19,13 +20,21 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
     const task = await db.task.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
       include: {
         assignee: true,
         client: true,
@@ -67,6 +76,14 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
@@ -77,7 +94,7 @@ export async function PATCH(
 
     // Check if task exists and user has access
     const existingTask = await db.task.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
     })
 
     if (!existingTask) {
@@ -108,7 +125,7 @@ export async function PATCH(
     }
 
     const updatedTask = await db.task.update({
-      where: { id: params.id },
+      where: { id: validatedId },
       data: updateData,
       include: {
         assignee: true,
@@ -122,7 +139,7 @@ export async function PATCH(
         userId: user.id,
         action: "TASK_UPDATED",
         entityType: "Task",
-        entityId: params.id,
+        entityId: validatedId,
         details: {
           updatedFields: Object.keys(updateData),
         },
@@ -151,6 +168,14 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
@@ -161,7 +186,7 @@ export async function DELETE(
     }
 
     const task = await db.task.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
     })
 
     if (!task) {
@@ -169,7 +194,7 @@ export async function DELETE(
     }
 
     await db.task.delete({
-      where: { id: params.id },
+      where: { id: validatedId },
     })
 
     // Log activity
@@ -178,7 +203,7 @@ export async function DELETE(
         userId: user.id,
         action: "TASK_DELETED",
         entityType: "Task",
-        entityId: params.id,
+        entityId: validatedId,
         details: {
           title: task.title,
         },

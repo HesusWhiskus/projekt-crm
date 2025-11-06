@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { ClientStatus } from "@prisma/client"
 import { z } from "zod"
+import { uuidSchema } from "@/lib/query-validator"
 
 const updateClientSchema = z.object({
   firstName: z.string().min(1).optional(),
@@ -23,13 +24,21 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
     const client = await db.client.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
       include: {
         assignee: true,
         sharedGroups: {
@@ -93,6 +102,14 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
@@ -103,7 +120,7 @@ export async function PATCH(
 
     // Check if client exists and user has access
     const existingClient = await db.client.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
     })
 
     if (!existingClient) {
@@ -142,7 +159,7 @@ export async function PATCH(
       // Create status history entry
       await db.clientStatusHistory.create({
         data: {
-          clientId: params.id,
+          clientId: validatedId,
           status: validatedData.status,
           changedBy: user.id,
           notes: `Zmiana statusu z ${existingClient.status} na ${validatedData.status}`,
@@ -169,7 +186,7 @@ export async function PATCH(
         userId: user.id,
         action: "CLIENT_UPDATED",
         entityType: "Client",
-        entityId: params.id,
+        entityId: validatedId,
         details: {
           updatedFields: Object.keys(updateData),
         },
@@ -198,6 +215,14 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
@@ -208,7 +233,7 @@ export async function DELETE(
     }
 
     const client = await db.client.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
     })
 
     if (!client) {
@@ -225,7 +250,7 @@ export async function DELETE(
         userId: user.id,
         action: "CLIENT_DELETED",
         entityType: "Client",
-        entityId: params.id,
+        entityId: validatedId,
         details: {
           agencyName: client.agencyName,
         },

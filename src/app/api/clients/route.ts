@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { ClientStatus } from "@prisma/client"
 import { z } from "zod"
+import { validateQueryParams, clientQuerySchema } from "@/lib/query-validator"
 
 const createClientSchema = z.object({
   firstName: z.string().min(1, "Imię jest wymagane"),
@@ -97,9 +98,20 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get("status")
-    const search = searchParams.get("search")
-    const assignedTo = searchParams.get("assignedTo")
+    
+    // Validate query parameters
+    let validatedParams
+    try {
+      validatedParams = validateQueryParams(clientQuerySchema, searchParams)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: error.errors[0].message },
+          { status: 400 }
+        )
+      }
+      throw error
+    }
 
     const where: any = {}
 
@@ -110,22 +122,22 @@ export async function GET(request: Request) {
       ]
     }
 
-    if (status) {
-      where.status = status as ClientStatus
+    if (validatedParams.status) {
+      where.status = validatedParams.status as ClientStatus
     }
 
-    if (search) {
+    if (validatedParams.search) {
       where.OR = [
         ...(where.OR || []),
-        { agencyName: { contains: search, mode: "insensitive" } },
-        { firstName: { contains: search, mode: "insensitive" } },
-        { lastName: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
+        { agencyName: { contains: validatedParams.search, mode: "insensitive" } },
+        { firstName: { contains: validatedParams.search, mode: "insensitive" } },
+        { lastName: { contains: validatedParams.search, mode: "insensitive" } },
+        { email: { contains: validatedParams.search, mode: "insensitive" } },
       ]
     }
 
-    if (assignedTo) {
-      where.assignedTo = assignedTo
+    if (validatedParams.assignedTo) {
+      where.assignedTo = validatedParams.assignedTo
     }
 
     const clients = await db.client.findMany({

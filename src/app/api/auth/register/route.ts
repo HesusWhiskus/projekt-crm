@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { hash } from "bcryptjs"
 import { z } from "zod"
+import { rateLimiters } from "@/lib/rate-limit"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Imię musi mieć co najmniej 2 znaki"),
@@ -12,6 +13,25 @@ const registerSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting: 5 requests per 15 minutes per IP
+    const rateLimitResult = await rateLimiters.auth(request)
+    
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { 
+          error: "Zbyt wiele prób rejestracji. Spróbuj ponownie później." 
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+          }
+        }
+      )
+    }
     const body = await request.json()
     const validatedData = registerSchema.parse(body)
 
