@@ -12,7 +12,15 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:clear": "npx --yes tsx scripts/clear-db.ts",
-    "admin:create": "npx --yes tsx scripts/create-admin.ts"
+    "admin:create": "npx --yes tsx scripts/create-admin.ts",
+    "git:status": "node scripts/git-wrapper.js status",
+    "git:add": "node scripts/git-wrapper.js add",
+    "git:add:all": "node scripts/git-wrapper.js add .",
+    "git:commit": "node scripts/git-wrapper.js commit",
+    "git:push": "node scripts/git-wrapper.js push",
+    "git:pull": "node scripts/git-wrapper.js pull",
+    "git:log": "node scripts/git-wrapper.js log",
+    "git": "node scripts/git-wrapper.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.6.0",

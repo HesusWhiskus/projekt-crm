@@ -1,5 +1,23 @@
 # 🚂 Szybki start - Deploy na Railway
 
+## 📋 Wybór metody wdrożenia
+
+**Masz dwie opcje:**
+
+1. **Interfejs webowy Railway (Rekomendowane - Najprostsze)** ✅
+   - Wszystkie kroki poniżej używają interfejsu webowego
+   - Nie wymaga instalacji dodatkowych narzędzi
+   - Wystarczy przeglądarka
+
+2. **Railway CLI (Opcjonalnie - dla zaawansowanych)**
+   - Jeśli chcesz używać komend w terminalu
+   - Railway CLI jest już zainstalowane w tym projekcie
+   - Zobacz sekcję "Alternatywa: Railway CLI" na końcu
+
+**💡 Dla większości użytkowników wystarczy interfejs webowy!**
+
+---
+
 ## Krok 1: Przygotowanie repozytorium GitHub
 
 ### Jeśli masz Git zainstalowany:
@@ -48,10 +66,36 @@ git push -u origin main
 
 ## Krok 3: Deploy projektu
 
-1. **W Railway, kliknij "New Project"**
-2. **Wybierz "Deploy from GitHub repo"**
-3. **Wybierz swoje repozytorium** (internal-crm)
+Po kliknięciu "New Project" zobaczysz ekran z pytaniem **"What would you like to deploy today?"** i listą opcji:
+
+1. **GitHub Repository** (z ikoną GitHub Octocat) ← **Ta opcja!**
+2. Database
+3. Template
+4. Docker Image
+5. Function
+6. Empty Project
+
+### Kroki wdrożenia:
+
+1. **Kliknij "GitHub Repository"** (pierwsza opcja na liście, z ikoną GitHub)
+2. **Jeśli nie widzisz repozytoriów lub jesteś proszony o autoryzację:**
+   - Railway poprosi Cię o połączenie konta GitHub
+   - Kliknij "Connect GitHub" lub "Authorize"
+   - Zaloguj się do GitHub i autoryzuj dostęp do repozytoriów
+3. **Wybierz swoje repozytorium** z listy (szukaj `internal-crm` lub nazwy Twojego repozytorium)
 4. Railway automatycznie zacznie budować aplikację
+
+### ⚠️ Jeśli nie widzisz opcji "GitHub Repository":
+
+**Możliwe przyczyny:**
+- Twoje konto GitHub nie jest jeszcze połączone z Railway
+
+**Rozwiązanie:**
+1. Kliknij na swój profil (ikonka w prawym górnym rogu Railway)
+2. Przejdź do **"Settings"** → **"GitHub"** (lub **"Connections"**)
+3. Kliknij **"Connect GitHub"** i autoryzuj dostęp
+4. Wróć do głównego ekranu i kliknij **"New Project"** ponownie
+5. Teraz powinieneś zobaczyć opcję **"GitHub Repository"**
 
 ---
 
@@ -233,4 +277,65 @@ Po udanym deploy:
 ---
 
 **Potrzebujesz pomocy?** Sprawdź logi w Railway lub dokumentację w DEPLOY.md
+
+---
+
+## 🔧 Alternatywa: Railway CLI (Opcjonalnie)
+
+Jeśli wolisz używać komend w terminalu zamiast interfejsu webowego:
+
+### Instalacja Railway CLI (jeśli nie jest zainstalowane):
+
+```bash
+npm install -g @railway/cli
+```
+
+### Podstawowe komendy CLI:
+
+```bash
+# Zaloguj się do Railway
+railway login
+
+# Połącz projekt z Railway (w folderze projektu)
+railway link
+
+# Dodaj zmienne środowiskowe
+railway variables set NODE_ENV=production
+railway variables set NEXTAUTH_SECRET=<twój-secret>
+railway variables set NEXTAUTH_URL=https://twoja-domena.railway.app
+
+# Uruchom migracje bazy danych
+railway run npx prisma migrate deploy
+
+# Utwórz konto administratora
+railway run npm run admin:create
+
+# Otwórz logi
+railway logs
+
+# Otwórz terminal w Railway
+railway shell
+```
+
+### Deploy przez CLI:
+
+```bash
+# Railway automatycznie wykryje zmiany w Git
+# Po push do GitHub, Railway zbuduje i wdroży aplikację
+git add .
+git commit -m "Ready for deployment"
+git push
+```
+
+**Uwaga:** Nawet z CLI, Railway wymaga repozytorium GitHub do automatycznego deploy.
+
+---
+
+## ✅ Status instalacji
+
+- ✅ **Railway CLI:** Zainstalowane (wersja 4.11.0)
+- ✅ **npm:** Dostępne (wersja 11.4.1)
+- ✅ **Konfiguracja Railway:** `railway.json` gotowe
+
+**Możesz teraz używać zarówno interfejsu webowego, jak i CLI!**
 

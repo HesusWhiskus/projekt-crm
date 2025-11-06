@@ -35,3 +35,5 @@ git status
 
 **Gotowe!** Teraz projekt jest na GitHub i możesz przejść do wdrożenia demo.
 
+
+

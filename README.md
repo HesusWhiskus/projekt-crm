@@ -68,6 +68,38 @@ internal-crm/
 - `npm run db:studio` - Otwórz Prisma Studio (GUI dla bazy danych)
 - `npm run admin:create` - Utwórz konto administratora
 
+### Skrypty Git
+
+Projekt zawiera wrapper skryptu Git, który automatycznie ustawia właściwy katalog roboczy:
+
+- `npm run git:status` - Sprawdź status repozytorium
+- `npm run git:add` - Dodaj pliki (użyj: `npm run git -- add .`)
+- `npm run git:add:all` - Dodaj wszystkie pliki
+- `npm run git:commit` - Wykonaj commit (użyj: `npm run git -- commit -m "wiadomość"`)
+- `npm run git:push` - Wyślij zmiany do repozytorium
+- `npm run git:pull` - Pobierz zmiany z repozytorium
+- `npm run git:log` - Pokaż historię commitów
+- `npm run git -- <dowolna-komenda-git>` - Wykonaj dowolną komendę Git
+
+**Przykłady użycia:**
+```bash
+# Sprawdź status
+npm run git:status
+
+# Dodaj wszystkie pliki
+npm run git:add:all
+
+# Commit z wiadomością
+npm run git -- commit -m "Dodano nową funkcjonalność"
+
+# Push do repozytorium
+npm run git:push
+
+# Inne komendy Git
+npm run git -- branch -a
+npm run git -- remote -v
+```
+
 ## Bezpieczeństwo
 
 Aplikacja wymaga:
