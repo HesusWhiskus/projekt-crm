@@ -211,6 +211,7 @@ export async function PATCH(
     return NextResponse.json({ client: updatedClient })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("[DEBUG CLIENTS PATCH] ZodError details:", JSON.stringify(error.errors, null, 2))
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }
