@@ -3,6 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   // output: 'standalone' - używane tylko dla Docker, wyłączone dla Railway
   ...(process.env.DOCKER_BUILD === 'true' && { output: 'standalone' }),
+  // Disable telemetry for faster builds
+  telemetry: false,
+  // Optimize build
+  swcMinify: true,
   images: {
     domains: ['lh3.googleusercontent.com'],
     remotePatterns: [

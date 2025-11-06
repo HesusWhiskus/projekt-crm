@@ -5,20 +5,30 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
+# Cache this layer - only rebuilds when package files change
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm ci --ignore-scripts && \
+    npm cache clean --force
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
 
-# Generate Prisma Client
+# Copy dependencies (cached layer)
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy Prisma schema first (for better caching)
+COPY prisma ./prisma
+
+# Generate Prisma Client (cached if schema doesn't change)
 RUN npx prisma generate
+
+# Copy source code (this layer will be invalidated when code changes)
+COPY . .
 
 # Build Next.js with standalone output for Docker
 ENV DOCKER_BUILD=true
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 # Note: Migrations will be run after deployment via Railway CLI or startup script
@@ -28,10 +38,11 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN groupadd --system --gid 1001 nodejs
-RUN useradd --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./

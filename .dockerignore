@@ -1,0 +1,61 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next
+out
+dist
+build
+
+# Environment
+.env
+.env*.local
+.env.production
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs
+
+# Testing
+coverage
+.nyc_output
+
+# Documentation
+*.md
+!README.md
+
+# Railway
+.railway
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Scripts (not needed in production)
+scripts
+
+# Other
+.cache
+.temp
+tmp
+
