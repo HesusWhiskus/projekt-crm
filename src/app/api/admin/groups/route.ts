@@ -2,10 +2,11 @@ import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { textFieldSchema } from "@/lib/field-validators"
 
 const createGroupSchema = z.object({
-  name: z.string().min(2, "Nazwa grupy musi mieć co najmniej 2 znaki"),
-  description: z.string().optional(),
+  name: z.string().min(2, "Nazwa grupy musi mieć co najmniej 2 znaki").max(100, "Nazwa grupy jest zbyt długa (max 100 znaków)").trim(),
+  description: textFieldSchema(500, "Opis"),
 })
 
 export async function POST(request: Request) {

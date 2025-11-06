@@ -4,15 +4,23 @@ import { db } from "@/lib/db"
 import { TaskStatus } from "@prisma/client"
 import { z } from "zod"
 import { uuidSchema } from "@/lib/query-validator"
+import { textFieldSchema } from "@/lib/field-validators"
 
 const updateTaskSchema = z.object({
-  title: z.string().min(1).optional(),
-  description: z.string().optional(),
-  dueDate: z.string().optional(),
+  title: z.string().min(1, "Tytuł jest wymagany").max(200, "Tytuł jest zbyt długi (max 200 znaków)").trim().optional(),
+  description: textFieldSchema(2000, "Opis").optional(),
+  dueDate: z.string().refine(
+    (val) => {
+      if (!val || val === "") return true // Optional
+      const date = new Date(val)
+      return !isNaN(date.getTime())
+    },
+    { message: "Nieprawidłowy format daty" }
+  ).optional().or(z.literal("")),
   status: z.nativeEnum(TaskStatus).optional(),
-  assignedTo: z.string().optional(),
-  clientId: z.string().optional(),
-  sharedGroupIds: z.array(z.string()).optional(),
+  assignedTo: z.string().uuid("Nieprawidłowy format ID użytkownika").optional().nullable(),
+  clientId: z.string().uuid("Nieprawidłowy format ID klienta").optional().nullable(),
+  sharedGroupIds: z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional(),
 })
 
 export async function GET(

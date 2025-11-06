@@ -6,15 +6,23 @@ import { z } from "zod"
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
 import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib/file-upload"
-import { validateQueryParams, contactQuerySchema } from "@/lib/query-validator"
+import { validateQueryParams, contactQuerySchema, uuidSchema } from "@/lib/query-validator"
+import { textFieldSchema } from "@/lib/field-validators"
 
 const createContactSchema = z.object({
   type: z.nativeEnum(ContactType),
-  date: z.string(),
-  notes: z.string().min(1, "Notatka jest wymagana"),
-  userId: z.string().min(1, "Użytkownik jest wymagany"),
-  clientId: z.string().min(1, "Klient jest wymagany"),
-  sharedGroupIds: z.array(z.string()).optional(),
+  date: z.string().refine(
+    (val) => {
+      if (!val) return false
+      const date = new Date(val)
+      return !isNaN(date.getTime())
+    },
+    { message: "Nieprawidłowy format daty" }
+  ),
+  notes: z.string().min(1, "Notatka jest wymagana").max(5000, "Notatka jest zbyt długa (max 5000 znaków)").trim(),
+  userId: uuidSchema,
+  clientId: uuidSchema,
+  sharedGroupIds: z.array(uuidSchema).optional(),
 })
 
 export async function POST(request: Request) {

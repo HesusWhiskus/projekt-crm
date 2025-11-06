@@ -4,19 +4,20 @@ import { db } from "@/lib/db"
 import { ClientStatus } from "@prisma/client"
 import { z } from "zod"
 import { uuidSchema } from "@/lib/query-validator"
+import { phoneSchema, websiteSchema, emailSchema, textFieldSchema, nameSchema, agencyNameSchema } from "@/lib/field-validators"
 
 const updateClientSchema = z.object({
-  firstName: z.string().min(1).optional(),
-  lastName: z.string().min(1).optional(),
-  agencyName: z.string().optional().or(z.literal("")),
-  email: z.string().email().optional().or(z.literal("")),
-  phone: z.string().optional(),
-  website: z.string().url().optional().or(z.literal("")),
-  address: z.string().optional(),
-  source: z.string().optional(),
+  firstName: nameSchema("Imię", 1, 100).optional(),
+  lastName: nameSchema("Nazwisko", 1, 100).optional(),
+  agencyName: agencyNameSchema.optional(),
+  email: emailSchema.optional(),
+  phone: phoneSchema.optional(),
+  website: websiteSchema.optional(),
+  address: textFieldSchema(500, "Adres").optional(),
+  source: textFieldSchema(200, "Źródło").optional(),
   status: z.nativeEnum(ClientStatus).optional(),
-  assignedTo: z.string().optional(),
-  sharedGroupIds: z.array(z.string()).optional(),
+  assignedTo: z.string().uuid("Nieprawidłowy format ID użytkownika").optional().nullable(),
+  sharedGroupIds: z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional(),
 })
 
 export async function GET(

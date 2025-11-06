@@ -3,12 +3,14 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { hash, compare } from "bcryptjs"
 import { z } from "zod"
+import { nameSchema, textFieldSchema } from "@/lib/field-validators"
+import { validatePassword } from "@/lib/password-validator"
 
 const updateProfileSchema = z.object({
-  name: z.string().min(2).optional(),
-  position: z.string().optional(),
+  name: nameSchema("Imię", 2, 100).optional(),
+  position: textFieldSchema(100, "Stanowisko").optional(),
   currentPassword: z.string().optional(),
-  newPassword: z.string().min(8).optional(),
+  newPassword: z.string().min(8, "Hasło musi mieć co najmniej 8 znaków").optional(),
 })
 
 export async function PATCH(request: Request) {
@@ -50,6 +52,15 @@ export async function PATCH(request: Request) {
       if (!isPasswordValid) {
         return NextResponse.json(
           { error: "Nieprawidłowe obecne hasło" },
+          { status: 400 }
+        )
+      }
+
+      // Validate new password strength
+      const passwordValidation = validatePassword(validatedData.newPassword)
+      if (!passwordValidation.valid) {
+        return NextResponse.json(
+          { error: passwordValidation.error },
           { status: 400 }
         )
       }

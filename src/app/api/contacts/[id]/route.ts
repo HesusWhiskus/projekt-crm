@@ -3,14 +3,23 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { ContactType } from "@prisma/client"
 import { z } from "zod"
+import { uuidSchema } from "@/lib/query-validator"
+import { textFieldSchema } from "@/lib/field-validators"
 
 const updateContactSchema = z.object({
   type: z.nativeEnum(ContactType).optional(),
-  date: z.string().optional(),
-  notes: z.string().min(1).optional(),
-  userId: z.string().optional(),
-  clientId: z.string().optional(),
-  sharedGroupIds: z.array(z.string()).optional(),
+  date: z.string().refine(
+    (val) => {
+      if (!val || val === "") return true // Optional
+      const date = new Date(val)
+      return !isNaN(date.getTime())
+    },
+    { message: "Nieprawidłowy format daty" }
+  ).optional(),
+  notes: z.string().min(1, "Notatka jest wymagana").max(5000, "Notatka jest zbyt długa (max 5000 znaków)").trim().optional(),
+  userId: uuidSchema.optional(),
+  clientId: uuidSchema.optional(),
+  sharedGroupIds: z.array(uuidSchema).optional(),
 })
 
 export async function PATCH(
