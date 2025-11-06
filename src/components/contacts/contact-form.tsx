@@ -138,23 +138,48 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="type">Typ kontaktu *</Label>
-              <Select
-                id="type"
-                value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as ContactType })}
-                required
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.isNote}
+                onChange={(e) => {
+                  setFormData({
+                    ...formData,
+                    isNote: e.target.checked,
+                    type: e.target.checked ? null : (formData.type || "PHONE_CALL" as ContactType),
+                  })
+                }}
                 disabled={isLoading}
-              >
-                {Object.entries(contactTypeOptions).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </Select>
-            </div>
+                className="rounded"
+              />
+              <span className="text-sm font-medium">To jest notatka</span>
+            </label>
+            <p className="text-xs text-muted-foreground">
+              Notatki nie wymagają typu kontaktu i nie aktualizują daty ostatniego kontaktu
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {!formData.isNote && (
+              <div className="space-y-2">
+                <Label htmlFor="type">Typ kontaktu *</Label>
+                <Select
+                  id="type"
+                  value={formData.type || "PHONE_CALL"}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value as ContactType })}
+                  required
+                  disabled={isLoading}
+                >
+                  {Object.entries(contactTypeOptions).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            )}
+            {formData.isNote && <div></div>}
             <div className="space-y-2">
               <Label htmlFor="date">Data i godzina *</Label>
               <Input
