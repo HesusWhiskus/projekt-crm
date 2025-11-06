@@ -146,7 +146,6 @@ export default async function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>Zarządzanie leadami</CardTitle>
-          <CardDescription>Szybkie filtry dla prospecting</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">

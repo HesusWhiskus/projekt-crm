@@ -54,6 +54,7 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [isAddingContact, setIsAddingContact] = useState(false)
+  const [addingNote, setAddingNote] = useState(false)
   const [editingContactId, setEditingContactId] = useState<string | null>(null)
   const [contactFilter, setContactFilter] = useState<"all" | "contacts" | "notes">("all")
   
@@ -81,9 +82,19 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
             <Edit className="h-4 w-4 mr-2" />
             Edytuj
           </Button>
-          <Button onClick={() => setIsAddingContact(true)}>
+          <Button variant="outline" onClick={() => {
+            setIsAddingContact(true)
+            setAddingNote(false)
+          }}>
             <Plus className="h-4 w-4 mr-2" />
             Dodaj kontakt
+          </Button>
+          <Button variant="outline" onClick={() => {
+            setIsAddingContact(true)
+            setAddingNote(true)
+          }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Dodaj notatkę
           </Button>
         </div>
       </div>
@@ -108,9 +119,14 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
           users={users}
           groups={groups}
           currentUser={currentUser}
-          onClose={() => setIsAddingContact(false)}
+          contact={addingNote ? { isNote: true } : undefined}
+          onClose={() => {
+            setIsAddingContact(false)
+            setAddingNote(false)
+          }}
           onSuccess={() => {
             setIsAddingContact(false)
+            setAddingNote(false)
             router.refresh()
           }}
         />

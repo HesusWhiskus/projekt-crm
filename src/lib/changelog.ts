@@ -14,6 +14,32 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.2.0-beta',
+    date: '2025-11-06',
+    changes: [
+      {
+        type: 'added',
+        description: 'Funkcje prospecting: priorytety klientów (LOW/MEDIUM/HIGH), ostatni kontakt, następny follow-up',
+      },
+      {
+        type: 'added',
+        description: 'Rozróżnienie notatek od kontaktów - możliwość tworzenia notatek bez typu kontaktu',
+      },
+      {
+        type: 'added',
+        description: 'Sekcja "Zarządzanie leadami" na Dashboard z szybkimi filtrami (bez kontaktu 7+/30+ dni, follow-up dzisiaj)',
+      },
+      {
+        type: 'added',
+        description: 'Filtrowanie kontaktów w ClientDetail - możliwość przeglądania kontaktów i notatek osobno',
+      },
+      {
+        type: 'changed',
+        description: 'Automatyczna aktualizacja daty ostatniego kontaktu przy dodawaniu kontaktu (nie notatki)',
+      },
+    ],
+  },
+  {
     version: '0.1.4-beta',
     date: '2025-11-06',
     changes: [

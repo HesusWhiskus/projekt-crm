@@ -30,12 +30,12 @@ interface ContactFormProps {
     id: string
   }
   contact?: {
-    id: string
-    type: ContactType | null
-    date: Date
-    notes: string
-    isNote: boolean
-    userId: string
+    id?: string
+    type?: ContactType | null
+    date?: Date
+    notes?: string
+    isNote?: boolean
+    userId?: string
     clientId?: string
     sharedGroups?: Array<{
       id: string
@@ -56,15 +56,16 @@ const contactTypeOptions: Record<ContactType, string> = {
 }
 
 export function ContactForm({ clientId, clients, users, groups, currentUser, contact, onClose, onSuccess, onAddClient }: ContactFormProps) {
+  const isNoteMode = contact?.isNote || (contact && Object.keys(contact).length === 1 && contact.isNote)
   const [formData, setFormData] = useState({
-    type: (contact?.type || "PHONE_CALL") as ContactType | null,
-    date: contact
+    type: isNoteMode ? null : (contact?.type || "PHONE_CALL") as ContactType | null,
+    date: contact && contact.date
       ? new Date(contact.date).toISOString().slice(0, 16)
       : new Date().toISOString().slice(0, 16),
     notes: contact?.notes || "",
-    isNote: contact?.isNote || false,
+    isNote: isNoteMode || false,
     userId: contact?.userId || currentUser?.id || "",
-    clientId: contact ? (contact.clientId || clientId || "") : (clientId || ""),
+    clientId: contact && contact.clientId ? contact.clientId : (clientId || ""),
     sharedGroupIds: contact?.sharedGroups?.map((g) => g.id) || [] as string[],
   })
   const [files, setFiles] = useState<File[]>([])

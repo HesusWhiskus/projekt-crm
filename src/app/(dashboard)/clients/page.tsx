@@ -6,7 +6,7 @@ import { ClientsList } from "@/components/clients/clients-list"
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: { status?: string; search?: string; assignedTo?: string }
+  searchParams: { status?: string; search?: string; assignedTo?: string; noContactDays?: string; followUpToday?: string }
 }) {
   const user = await getCurrentUser()
   if (!user) {
@@ -14,13 +14,16 @@ export default async function ClientsPage({
   }
 
   const where: any = {}
+  const andConditions: any[] = []
 
   // Apply access control
   if (user.role !== "ADMIN") {
-    where.OR = [
-      { assignedTo: user.id },
-      { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
-    ]
+    andConditions.push({
+      OR: [
+        { assignedTo: user.id },
+        { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
+      ]
+    })
   }
 
   // Apply filters
@@ -29,17 +32,53 @@ export default async function ClientsPage({
   }
 
   if (searchParams.search) {
-    where.OR = [
-      ...(where.OR || []),
-      { agencyName: { contains: searchParams.search, mode: "insensitive" } },
-      { firstName: { contains: searchParams.search, mode: "insensitive" } },
-      { lastName: { contains: searchParams.search, mode: "insensitive" } },
-      { email: { contains: searchParams.search, mode: "insensitive" } },
-    ]
+    andConditions.push({
+      OR: [
+        { agencyName: { contains: searchParams.search, mode: "insensitive" } },
+        { firstName: { contains: searchParams.search, mode: "insensitive" } },
+        { lastName: { contains: searchParams.search, mode: "insensitive" } },
+        { email: { contains: searchParams.search, mode: "insensitive" } },
+      ]
+    })
   }
 
   if (searchParams.assignedTo) {
     where.assignedTo = searchParams.assignedTo
+  }
+
+  // Filter by noContactDays (clients without contact for X days)
+  if (searchParams.noContactDays) {
+    const days = parseInt(searchParams.noContactDays)
+    if (!isNaN(days) && days > 0) {
+      const cutoffDate = new Date()
+      cutoffDate.setDate(cutoffDate.getDate() - days)
+      cutoffDate.setHours(0, 0, 0, 0)
+      
+      andConditions.push({
+        OR: [
+          { lastContactAt: { lt: cutoffDate } },
+          { lastContactAt: null }
+        ]
+      })
+    }
+  }
+
+  // Filter by followUpToday (clients with follow-up today)
+  if (searchParams.followUpToday === "true") {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    
+    where.nextFollowUpAt = {
+      gte: today,
+      lt: tomorrow
+    }
+  }
+
+  // Combine all AND conditions
+  if (andConditions.length > 0) {
+    where.AND = andConditions
   }
 
   const clients = await db.client.findMany({
@@ -52,6 +91,9 @@ export default async function ClientsPage({
       email: true,
       phone: true,
       status: true,
+      priority: true,
+      lastContactAt: true,
+      nextFollowUpAt: true,
       source: true,
       assignee: {
         select: {
