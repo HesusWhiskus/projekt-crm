@@ -107,24 +107,20 @@ const validateAuthConfig = () => {
 
 validateAuthConfig()
 
-// Build providers array conditionally
-const providers: NextAuthOptions["providers"] = [
-  CredentialsProvider({
-    name: "Credentials",
-    credentials: {
-      email: { label: "Email", type: "email" },
-      password: { label: "Hasło", type: "password" },
-    },
-    authorize: authorizeCredentials,
-  }),
-]
-
-// Only add Google Provider if credentials are configured
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  providers.push(
+export const authOptions: NextAuthOptions = {
+  // Using JWT strategy, so we handle OAuth user creation manually in signIn callback
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Hasło", type: "password" },
+      },
+      authorize: authorizeCredentials,
+    }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       authorization: {
         params: {
           prompt: "consent",
@@ -132,15 +128,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           response_type: "code",
         },
       },
-    })
-  )
-} else {
-  console.warn("[AUTH] ⚠️ Google OAuth not configured - GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET missing")
-}
-
-export const authOptions: NextAuthOptions = {
-  // Using JWT strategy, so we handle OAuth user creation manually in signIn callback
-  providers,
+    }),
+  ],
   session: {
     strategy: "jwt",
     maxAge: 8 * 60 * 60, // 8 hours

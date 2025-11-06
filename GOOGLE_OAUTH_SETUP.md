@@ -1,0 +1,135 @@
+# 🔐 Konfiguracja Google OAuth - Krok po kroku
+
+Google OAuth jest **wymagane** dla integracji z Google Calendar. Poniżej znajdziesz szczegółową instrukcję konfiguracji.
+
+## 📋 Wymagania
+
+- Konto Google
+- Dostęp do Google Cloud Console
+- Aplikacja wdrożona na Railway (lub innej platformie)
+
+## 🚀 Krok 1: Utwórz projekt w Google Cloud Console
+
+1. **Wejdź na:** https://console.cloud.google.com/
+2. **Zaloguj się** swoim kontem Google
+3. **Kliknij** na wybór projektu (góra ekranu) → **"New Project"**
+4. **Nazwa projektu:** np. `Projekt CRM` lub `Internal CRM`
+5. **Kliknij** "Create"
+
+## 🔑 Krok 2: Włącz Google+ API
+
+1. W menu po lewej stronie wybierz **"APIs & Services"** → **"Library"**
+2. Wyszukaj **"Google+ API"** (lub "Google Calendar API" jeśli potrzebujesz tylko kalendarza)
+3. **Kliknij** na wynik
+4. **Kliknij** "Enable" (Włącz)
+
+**Uwaga:** Dla integracji z kalendarzem potrzebujesz również:
+- **Google Calendar API** - włącz również tę API
+
+## 🔐 Krok 3: Utwórz OAuth 2.0 Client ID
+
+1. W menu po lewej wybierz **"APIs & Services"** → **"Credentials"**
+2. **Kliknij** "Create Credentials" → **"OAuth client ID"**
+3. Jeśli widzisz komunikat o konfiguracji ekranu zgody:
+   - **Wybierz** "External" (dla testów) lub "Internal" (jeśli masz Google Workspace)
+   - **Wypełnij** wymagane pola:
+     - **App name:** `Projekt CRM` (lub dowolna nazwa)
+     - **User support email:** Twój email
+     - **Developer contact information:** Twój email
+   - **Kliknij** "Save and Continue"
+   - **Pomiń** następne kroki (Scopes, Test users) - kliknij "Save and Continue" aż do końca
+
+4. **Wybierz** typ aplikacji: **"Web application"**
+5. **Nazwa:** np. `Projekt CRM Web Client`
+6. **Authorized JavaScript origins:**
+   - Dodaj: `https://projekt-crm-production.up.railway.app`
+   - (Zastąp na swoją domenę z Railway)
+
+7. **Authorized redirect URIs:**
+   - Dodaj: `https://projekt-crm-production.up.railway.app/api/auth/callback/google`
+   - (Zastąp na swoją domenę z Railway)
+
+8. **Kliknij** "Create"
+
+## 📝 Krok 4: Skopiuj Client ID i Client Secret
+
+Po utworzeniu OAuth Client zobaczysz:
+- **Client ID** - długi ciąg znaków
+- **Client Secret** - kliknij "Show" aby zobaczyć
+
+**Zapisz oba wartości!**
+
+## ⚙️ Krok 5: Dodaj zmienne do Railway
+
+1. **Wejdź** do swojego projektu na Railway
+2. **Kliknij** na aplikację (nie bazę danych)
+3. **Otwórz** zakładkę **"Variables"**
+4. **Dodaj** następujące zmienne:
+
+```
+GOOGLE_CLIENT_ID=<wklej-tutaj-client-id>
+GOOGLE_CLIENT_SECRET=<wklej-tutaj-client-secret>
+```
+
+5. **Zapisz** zmienne
+
+## 🔄 Krok 6: Restart aplikacji
+
+Railway automatycznie zrestartuje aplikację po dodaniu zmiennych. Jeśli nie:
+1. **Kliknij** na aplikację
+2. **Menu** (trzy kropki) → **"Restart"**
+
+## ✅ Krok 7: Sprawdź czy działa
+
+1. **Wejdź** na stronę logowania aplikacji
+2. **Kliknij** "Zaloguj się przez Google"
+3. **Zaloguj się** kontem Google
+4. **Zezwól** na dostęp do aplikacji
+5. Powinieneś zostać przekierowany z powrotem do aplikacji
+
+## 🐛 Rozwiązywanie problemów
+
+### Problem: Błąd "OAuthSignin"
+
+**Przyczyny:**
+- Callback URL w Google Cloud Console nie pasuje do `NEXTAUTH_URL`
+- `GOOGLE_CLIENT_ID` lub `GOOGLE_CLIENT_SECRET` są nieprawidłowe
+- `NEXTAUTH_URL` jest nieprawidłowy
+
+**Rozwiązanie:**
+1. Sprawdź czy `NEXTAUTH_URL` w Railway to dokładnie: `https://projekt-crm-production.up.railway.app` (bez końcowego slasha)
+2. Sprawdź czy callback URL w Google Cloud Console to dokładnie: `https://projekt-crm-production.up.railway.app/api/auth/callback/google`
+3. Sprawdź czy `GOOGLE_CLIENT_ID` i `GOOGLE_CLIENT_SECRET` są poprawnie skopiowane (bez spacji na początku/końcu)
+
+### Problem: "redirect_uri_mismatch"
+
+**Przyczyna:** Callback URL w Google Cloud Console nie pasuje do tego co używa aplikacja
+
+**Rozwiązanie:**
+1. W Google Cloud Console → Credentials → OAuth 2.0 Client ID
+2. Sprawdź czy w "Authorized redirect URIs" jest dokładnie:
+   `https://projekt-crm-production.up.railway.app/api/auth/callback/google`
+3. Jeśli nie ma, dodaj i zapisz
+
+### Problem: "invalid_client"
+
+**Przyczyna:** `GOOGLE_CLIENT_ID` lub `GOOGLE_CLIENT_SECRET` są nieprawidłowe
+
+**Rozwiązanie:**
+1. Sprawdź czy wartości w Railway Variables są poprawne
+2. Upewnij się, że nie ma spacji na początku/końcu
+3. Skopiuj ponownie z Google Cloud Console
+
+## 📚 Dodatkowe informacje
+
+- **Google Calendar API** jest automatycznie dostępna po włączeniu Google+ API
+- Tokeny OAuth są przechowywane w sesji JWT
+- Użytkownicy mogą logować się zarówno przez email/hasło jak i przez Google
+- Integracja z Google Calendar wymaga zalogowania przez Google (aby uzyskać tokeny dostępu)
+
+## 🔒 Bezpieczeństwo
+
+- **Nigdy nie commituj** `GOOGLE_CLIENT_SECRET` do Git
+- **Używaj** zmiennych środowiskowych w Railway
+- **Regularnie sprawdzaj** kto ma dostęp do projektu w Google Cloud Console
+
