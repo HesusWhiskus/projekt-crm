@@ -43,15 +43,18 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy Prisma binaries for migrations
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
 
 # Fix permissions for Prisma engines directory
-RUN chown -R nextjs:nodejs /app/node_modules/@prisma
+RUN chown -R nextjs:nodejs /app/node_modules/@prisma && \
+    chown -R nextjs:nodejs /app/node_modules/.bin
 
 # Create startup script that runs migrations then starts the app
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
     echo 'echo "Starting database migrations..."' >> /app/start.sh && \
-    echo 'node node_modules/prisma/build/index.js migrate deploy 2>&1 || (echo "migrate deploy failed, trying db push..." && node node_modules/prisma/build/index.js db push 2>&1 || echo "db push also failed, continuing...")' >> /app/start.sh && \
+    echo 'export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
+    echo 'prisma migrate deploy 2>&1 || (echo "migrate deploy failed, trying db push..." && prisma db push 2>&1 || echo "db push also failed, continuing...")' >> /app/start.sh && \
     echo 'echo "Migrations completed, starting application..."' >> /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh && \
