@@ -28,10 +28,13 @@ export async function PATCH(
 ) {
   try {
     // Validate UUID
+    console.log("[DEBUG CONTACTS PATCH] params.id:", params.id, "type:", typeof params.id)
     let validatedId: string
     try {
       validatedId = uuidSchema.parse(params.id)
-    } catch {
+      console.log("[DEBUG CONTACTS PATCH] Validated ID:", validatedId)
+    } catch (error: any) {
+      console.error("[DEBUG CONTACTS PATCH] UUID validation error:", error?.message || error)
       return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
     }
     

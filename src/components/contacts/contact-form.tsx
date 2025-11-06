@@ -35,6 +35,7 @@ interface ContactFormProps {
     date: Date
     notes: string
     userId: string
+    clientId?: string
     sharedGroups?: Array<{
       id: string
       name: string
@@ -61,7 +62,7 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
       : new Date().toISOString().slice(0, 16),
     notes: contact?.notes || "",
     userId: contact?.userId || currentUser?.id || "",
-    clientId: contact ? undefined : (clientId || ""),
+    clientId: contact ? (contact.clientId || clientId || "") : (clientId || ""),
     sharedGroupIds: contact?.sharedGroups?.map((g) => g.id) || [] as string[],
   })
   const [files, setFiles] = useState<File[]>([])

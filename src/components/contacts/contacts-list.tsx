@@ -267,6 +267,7 @@ export function ContactsList({
                           date: contact.date,
                           notes: contact.notes,
                           userId: contact.user.id,
+                          clientId: contact.client?.id,
                           sharedGroups: contact.sharedGroups || [],
                         }}
                         clients={clients}
