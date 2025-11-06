@@ -44,6 +44,7 @@ interface TaskFormProps {
   onClose: () => void
   onSuccess: () => void
   onAddClient?: () => void
+  initialDueDate?: Date
 }
 
 const statusOptions: Record<TaskStatus, string> = {
@@ -52,12 +53,14 @@ const statusOptions: Record<TaskStatus, string> = {
   COMPLETED: "Zakończone",
 }
 
-export function TaskForm({ users, clients, groups, currentUser, task, onClose, onSuccess, onAddClient }: TaskFormProps) {
+export function TaskForm({ users, clients, groups, currentUser, task, onClose, onSuccess, onAddClient, initialDueDate }: TaskFormProps) {
   const [formData, setFormData] = useState({
     title: task?.title || "",
     description: task?.description || "",
     dueDate: task?.dueDate
       ? new Date(task.dueDate).toISOString().slice(0, 16)
+      : initialDueDate
+      ? new Date(initialDueDate).toISOString().slice(0, 16)
       : "",
     status: (task?.status || "TODO") as TaskStatus,
     assignedTo: task?.assignedTo || currentUser?.id || "",

@@ -61,6 +61,37 @@ export default async function CalendarPage() {
     },
   })
 
+  const clients = await db.client.findMany({
+    where:
+      user.role === "ADMIN"
+        ? {}
+        : {
+            OR: [
+              { assignedTo: user.id },
+              { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
+            ],
+          },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      agencyName: true,
+    },
+    orderBy: {
+      lastName: "asc",
+    },
+  })
+
+  const groups = await db.group.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+    orderBy: {
+      name: "asc",
+    },
+  })
+
   return (
     <div>
       <div className="mb-6">
@@ -69,7 +100,7 @@ export default async function CalendarPage() {
           Przeglądaj zadania w widoku kalendarza
         </p>
       </div>
-      <TasksCalendar tasks={tasks} users={users} currentUser={user} />
+      <TasksCalendar tasks={tasks} users={users} clients={clients} groups={groups} currentUser={user} />
     </div>
   )
 }
