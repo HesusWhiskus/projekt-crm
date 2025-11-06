@@ -1,4 +1,8 @@
-# Instrukcja uruchomienia aplikacji Internal CRM
+# Konfiguracja Internal CRM
+
+> **💡 Szybki start:** Zobacz [QUICK_START.md](QUICK_START.md) dla najszybszego uruchomienia lub [INSTALACJA.md](INSTALACJA.md) dla szczegółowej instrukcji instalacji.
+
+## Instrukcja uruchomienia aplikacji Internal CRM
 
 ## Wymagania wstępne
 

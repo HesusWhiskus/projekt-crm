@@ -37,7 +37,13 @@ Google OAuth jest **wymagane** dla integracji z Google Calendar. Poniżej znajdz
      - **User support email:** Twój email
      - **Developer contact information:** Twój email
    - **Kliknij** "Save and Continue"
-   - **Pomiń** następne kroki (Scopes, Test users) - kliknij "Save and Continue" aż do końca
+   - **W kroku "Scopes"** - kliknij "Save and Continue" (scopes są już skonfigurowane w kodzie)
+   - **W kroku "Test users"** - **DODAJ EMAILE UŻYTKOWNIKÓW TESTOWYCH:**
+     - **Kliknij** "Add Users"
+     - **Wpisz** email każdego użytkownika, który będzie mógł się zalogować (np. `twoj@email.com`)
+     - **Kliknij** "Add" dla każdego użytkownika
+     - **Kliknij** "Save and Continue"
+   - **Kliknij** "Back to Dashboard"
 
 4. **Wybierz** typ aplikacji: **"Web application"**
 5. **Nazwa:** np. `Projekt CRM Web Client`
@@ -79,15 +85,64 @@ Railway automatycznie zrestartuje aplikację po dodaniu zmiennych. Jeśli nie:
 1. **Kliknij** na aplikację
 2. **Menu** (trzy kropki) → **"Restart"**
 
-## ✅ Krok 7: Sprawdź czy działa
+## ✅ Krok 7: Dodaj użytkowników testowych (WAŻNE dla trybu testowego!)
+
+Jeśli aplikacja jest w trybie testowym, **tylko użytkownicy z listy testowych mogą się zalogować**:
+
+### Opcja A: Podczas konfiguracji ekranu zgody (jeśli jeszcze nie skończyłeś)
+
+1. W Google Cloud Console → **"APIs & Services"** → **"OAuth consent screen"**
+2. Jeśli widzisz kroki konfiguracji (App information, Scopes, Test users, Summary):
+   - Przejdź do kroku **"Test users"**
+   - **Kliknij** "Add Users"
+   - **Wpisz** email użytkownika (np. `uzytkownik@example.com`)
+   - **Kliknij** "Add"
+   - **Powtórz** dla każdego użytkownika
+   - **Kliknij** "Save and Continue"
+
+### Opcja B: Jeśli ekran zgody jest już skonfigurowany
+
+1. W Google Cloud Console → **"APIs & Services"** → **"OAuth consent screen"**
+2. **Kliknij** na zakładkę **"EDIT APP"** (Edytuj aplikację) na górze strony
+3. Przewiń w dół do sekcji **"Test users"** (lub kliknij na krok "Test users" w menu po lewej)
+4. **Kliknij** przycisk **"+ ADD USERS"** (lub "Add Users")
+5. **Wpisz** email użytkownika w polu tekstowym (np. `uzytkownik@example.com`)
+6. **Kliknij** "Add" (lub naciśnij Enter)
+7. **Powtórz** kroki 5-6 dla każdego użytkownika
+8. **Kliknij** "SAVE AND CONTINUE" (lub "Save") na dole strony
+
+**Uwaga:** 
+- Możesz dodać maksymalnie 100 użytkowników testowych
+- Jeśli nie widzisz sekcji "Test users", upewnij się że wybrałeś "External" jako typ aplikacji (nie "Internal")
+- Zmiany są natychmiastowe - nie trzeba restartować aplikacji
+
+## ✅ Krok 8: Sprawdź czy działa
 
 1. **Wejdź** na stronę logowania aplikacji
 2. **Kliknij** "Zaloguj się przez Google"
-3. **Zaloguj się** kontem Google
-4. **Zezwól** na dostęp do aplikacji
+3. **Zaloguj się** kontem Google (które jest na liście testowych użytkowników)
+4. **Zezwól** na dostęp do aplikacji i uprawnienia do Calendar API
 5. Powinieneś zostać przekierowany z powrotem do aplikacji
 
+**✅ Po pomyślnej konfiguracji:**
+- Logowanie przez Google działa poprawnie
+- Użytkownicy testowi mogą się logować
+- Integracja z Google Calendar jest aktywna
+- Zadania można synchronizować z kalendarzem Google
+
 ## 🐛 Rozwiązywanie problemów
+
+### Problem: "Access blocked: This app's request is invalid" lub "Error 400: access_denied"
+
+**Przyczyna:** Aplikacja jest w trybie testowym i email użytkownika nie jest na liście testowych użytkowników
+
+**Rozwiązanie:**
+1. W Google Cloud Console → "APIs & Services" → "OAuth consent screen"
+2. Przewiń do sekcji "Test users"
+3. Kliknij "Add Users"
+4. Dodaj email użytkownika, który próbuje się zalogować
+5. Zapisz zmiany
+6. Spróbuj zalogować się ponownie
 
 ### Problem: Błąd "OAuthSignin"
 

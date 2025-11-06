@@ -1,6 +1,8 @@
 # Przewodnik wdrożenia Internal CRM
 
-Ten przewodnik opisuje różne opcje wdrożenia aplikacji Internal CRM do środowiska produkcyjnego dla testów.
+Ten przewodnik opisuje różne opcje wdrożenia aplikacji Internal CRM do środowiska produkcyjnego.
+
+> **💡 Szybki start:** Jeśli chcesz szybko wdrożyć na Railway, zobacz [RAILWAY_QUICK_START.md](RAILWAY_QUICK_START.md) lub [DEPLOY_INSTRUKCJA.md](DEPLOY_INSTRUKCJA.md) dla szczegółowej instrukcji krok po kroku.
 
 ## 🚀 Opcje wdrożenia
 

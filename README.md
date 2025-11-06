@@ -1,174 +1,214 @@
 # Internal CRM
 
-Wewnętrzny system CRM do zarządzania relacjami z agencjami ubezpieczeniowymi.
+> Wewnętrzny system CRM do zarządzania relacjami z agencjami ubezpieczeniowymi
 
-## Technologie
+[![Next.js](https://img.shields.io/badge/Next.js-14+-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-blue)](https://www.postgresql.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-5.19-2D3748)](https://www.prisma.io/)
+
+## 📋 Opis
+
+Internal CRM to nowoczesny system zarządzania relacjami z klientami (CRM) przeznaczony do wewnętrznego użytku w organizacjach współpracujących z agencjami ubezpieczeniowymi. System umożliwia kompleksowe zarządzanie klientami, kontaktami, zadaniami oraz integrację z Google Calendar.
+
+## ✨ Funkcjonalności
+
+### 🔐 Autoryzacja i uwierzytelnianie
+- Logowanie przez email/hasło (Credentials)
+- Logowanie przez Google OAuth
+- System ról: ADMIN i USER
+- Ochrona tras przez middleware
+
+### 👥 Zarządzanie klientami
+- Pełny CRUD klientów
+- Statusy klientów (NEW_LEAD, IN_CONTACT, DEMO_SENT, NEGOTIATION, ACTIVE_CLIENT, LOST)
+- Historia zmian statusu
+- Przypisanie do użytkownika
+- Udostępnianie przez grupy
+
+### 📞 Zarządzanie kontaktami
+- CRUD kontaktów
+- Typy kontaktów (PHONE_CALL, MEETING, EMAIL, LINKEDIN_MESSAGE, OTHER)
+- Załączniki plików
+- Filtrowanie i wyszukiwanie
+
+### ✅ Zarządzanie zadaniami
+- CRUD zadań
+- Statusy zadań (TODO, IN_PROGRESS, COMPLETED)
+- Przypisanie do użytkownika i klienta
+- Kalendarz zadań z możliwością kliknięcia
+- Udostępnianie przez grupy
+- **Synchronizacja z Google Calendar** 📅
+
+### 👨‍💼 Panel administracyjny
+- Dashboard administracyjny z przeglądem systemu
+- Zarządzanie użytkownikami i rolami
+- Zarządzanie grupami
+- Import danych z plików Excel
+
+### 📊 Dashboard
+- Statystyki (klienci, kontakty, zadania)
+- Nadchodzące zadania z linkami do szczegółów
+
+## 🛠️ Technologie
 
 - **Framework:** Next.js 14+ (App Router) z TypeScript
 - **Baza danych:** PostgreSQL 16+
 - **ORM:** Prisma 5+
-- **Autoryzacja:** NextAuth.js v5
+- **Autoryzacja:** NextAuth.js v4
 - **Stylowanie:** Tailwind CSS + shadcn/ui
+- **Integracje:** Google Calendar API
 
-## Wymagania
+## 📦 Wymagania
 
-- Node.js 18+ 
+- Node.js 20+
 - PostgreSQL 16+
+- npm 10+
 - Docker i Docker Compose (opcjonalnie, dla łatwego uruchomienia)
 
-## Instalacja
+## 🚀 Szybki start
 
-1. Sklonuj repozytorium
-2. Zainstaluj zależności:
-```bash
-npm install
-```
+### Instalacja
 
-3. Skonfiguruj zmienne środowiskowe:
-```bash
-cp .env.example .env
-# Edytuj .env i uzupełnij wymagane wartości
-```
+1. **Sklonuj repozytorium:**
+   ```bash
+   git clone <repository-url>
+   cd "Projekt CRM"
+   ```
 
-4. Skonfiguruj bazę danych:
-```bash
-# Wygeneruj Prisma Client
-npm run db:generate
+2. **Zainstaluj zależności:**
+   ```bash
+   npm install
+   ```
 
-# Uruchom migracje
-npm run db:migrate
-```
+3. **Skonfiguruj zmienne środowiskowe:**
+   ```bash
+   cp .env.example .env
+   # Edytuj .env i uzupełnij wymagane wartości
+   ```
 
-5. Uruchom serwer deweloperski:
-```bash
-npm run dev
-```
+4. **Skonfiguruj bazę danych:**
+   ```bash
+   # Wygeneruj Prisma Client
+   npm run db:generate
+   
+   # Uruchom migracje
+   npm run db:migrate
+   ```
+
+5. **Uruchom serwer deweloperski:**
+   ```bash
+   npm run dev
+   ```
 
 Aplikacja będzie dostępna pod adresem [http://localhost:3000](http://localhost:3000)
 
-## Struktura projektu
+### Utworzenie konta administratora
+
+```bash
+npm run admin:create
+```
+
+## 📚 Dokumentacja
+
+- **[Instrukcja instalacji](INSTALACJA.md)** - Szczegółowa instrukcja instalacji i konfiguracji
+- **[Szybki start](QUICK_START.md)** - Szybki przewodnik uruchomienia
+- **[Wdrożenie](DEPLOY.md)** - Przewodnik wdrożenia na Railway/Vercel
+- **[Konfiguracja Google OAuth](GOOGLE_OAUTH_SETUP.md)** - Instrukcja konfiguracji Google OAuth i Calendar API
+- **[Dokumentacja API](API_DOCUMENTATION.md)** - Pełna dokumentacja endpointów API
+
+## 🏗️ Struktura projektu
 
 ```
 internal-crm/
 ├── prisma/              # Schema i migracje Prisma
 ├── src/
 │   ├── app/            # Next.js App Router (routes)
+│   │   ├── (auth)/     # Trasy autoryzacji
+│   │   ├── (dashboard)/ # Trasy dashboardu
+│   │   └── api/        # API endpoints
 │   ├── components/     # Komponenty React
 │   ├── lib/           # Utilities i konfiguracje
-│   ├── types/         # Definicje TypeScript
-│   └── hooks/         # Custom React hooks
-└── public/            # Statyczne pliki
+│   └── types/         # Definicje TypeScript
+├── public/            # Statyczne pliki
+└── scripts/          # Skrypty pomocnicze
 ```
 
-## Rozwój
+## 🔧 Dostępne skrypty
 
+### Rozwój
 - `npm run dev` - Uruchom serwer deweloperski
 - `npm run build` - Zbuduj aplikację produkcyjną
 - `npm run start` - Uruchom aplikację produkcyjną
+- `npm run lint` - Sprawdź kod linterem
+
+### Baza danych
+- `npm run db:generate` - Wygeneruj Prisma Client
+- `npm run db:push` - Wypchnij zmiany do bazy (dev)
+- `npm run db:migrate` - Uruchom migracje
 - `npm run db:studio` - Otwórz Prisma Studio (GUI dla bazy danych)
+- `npm run db:clear` - Wyczyść bazę danych (ostrożnie!)
+
+### Administracja
 - `npm run admin:create` - Utwórz konto administratora
 
-### Skrypty Git
-
-Projekt zawiera wrapper skryptu Git, który automatycznie ustawia właściwy katalog roboczy:
-
+### Git (wrapper)
 - `npm run git:status` - Sprawdź status repozytorium
-- `npm run git:add` - Dodaj pliki (użyj: `npm run git -- add .`)
 - `npm run git:add:all` - Dodaj wszystkie pliki
-- `npm run git:commit` - Wykonaj commit (użyj: `npm run git -- commit -m "wiadomość"`)
 - `npm run git:push` - Wyślij zmiany do repozytorium
-- `npm run git:pull` - Pobierz zmiany z repozytorium
-- `npm run git:log` - Pokaż historię commitów
-- `npm run git -- <dowolna-komenda-git>` - Wykonaj dowolną komendę Git
+- `npm run git -- <komenda>` - Wykonaj dowolną komendę Git
 
-**Przykłady użycia:**
-```bash
-# Sprawdź status
-npm run git:status
-
-# Dodaj wszystkie pliki
-npm run git:add:all
-
-# Commit z wiadomością
-npm run git -- commit -m "Dodano nową funkcjonalność"
-
-# Push do repozytorium
-npm run git:push
-
-# Inne komendy Git
-npm run git -- branch -a
-npm run git -- remote -v
-```
-
-## Bezpieczeństwo
+## 🔐 Bezpieczeństwo
 
 Aplikacja wymaga:
 - HTTPS w środowisku produkcyjnym
 - Dostęp przez VPN (konfiguracja na poziomie infrastruktury)
 - Silne hasła i regularne aktualizacje
+- **Nigdy nie commituj** `.env` do Git
 
-## Dokumentacja
+## 📝 Zmienne środowiskowe
 
-- [Instrukcja instalacji](INSTALACJA.md)
-- [Szybki start](QUICK_START.md)
-- [Konfiguracja](SETUP.md)
-- [Dokumentacja API](API_DOCUMENTATION.md)
+Wymagane zmienne środowiskowe (zobacz `.env.example`):
 
-## Funkcjonalności
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/internal_crm?schema=public"
 
-### ✅ Zaimplementowane
+# NextAuth (WYMAGANE)
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="wygeneruj-sekret-klucz"
 
-- **Autoryzacja i uwierzytelnianie**
-  - Logowanie przez email/hasło (Credentials)
-  - Logowanie przez Google OAuth
-  - Role: ADMIN i USER
-  - Ochrona tras przez middleware
+# Google OAuth (opcjonalnie, wymagane dla integracji z Calendar)
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
 
-- **Zarządzanie klientami**
-  - CRUD klientów
-  - Statusy klientów (NEW_LEAD, IN_CONTACT, DEMO_SENT, NEGOTIATION, ACTIVE_CLIENT, LOST)
-  - Historia zmian statusu
-  - Przypisanie do użytkownika
-  - Udostępnianie przez grupy
+# Email (opcjonalnie, dla powiadomień)
+SMTP_HOST=""
+SMTP_PORT=587
+SMTP_USER=""
+SMTP_PASSWORD=""
+SMTP_FROM=""
+```
 
-- **Zarządzanie kontaktami**
-  - CRUD kontaktów
-  - Typy kontaktów (PHONE_CALL, MEETING, EMAIL, LINKEDIN_MESSAGE, OTHER)
-  - Załączniki plików
-  - Filtrowanie i wyszukiwanie
+## 🚢 Wdrożenie
 
-- **Zarządzanie zadaniami**
-  - CRUD zadań
-  - Statusy zadań (TODO, IN_PROGRESS, COMPLETED)
-  - Przypisanie do użytkownika i klienta
-  - Kalendarz zadań
-  - Udostępnianie przez grupy
-  - Synchronizacja z Google Calendar
+System można wdrożyć na:
+- **Railway** (rekomendowane) - zobacz [DEPLOY.md](DEPLOY.md)
+- **Vercel + Supabase** - zobacz [DEPLOY.md](DEPLOY.md)
+- **Render** - zobacz [DEPLOY.md](DEPLOY.md)
 
-- **Zarządzanie grupami**
-  - Tworzenie i zarządzanie grupami (tylko ADMIN)
-  - Dodawanie/usuwa użytkowników do/z grup
-  - Udostępnianie klientów i zadań grupom
-
-- **Panel administracyjny** (`/admin`)
-  - Dashboard administracyjny z przeglądem systemu
-  - Zarządzanie użytkownikami (`/admin/users`)
-    - Przeglądanie listy użytkowników
-    - Zmiana ról (USER/ADMIN)
-    - Przeglądanie grup użytkowników
-  - Zarządzanie grupami (`/admin/groups`)
-    - Tworzenie i edycja grup
-    - Dodawanie/usuwa użytkowników do/z grup
-    - Przeglądanie członków grup
-
-- **Dashboard**
-  - Statystyki (klienci, kontakty, zadania)
-  - Nadchodzące zadania (z linkami do szczegółów)
-
-- **Activity Log**
-  - Automatyczne logowanie wszystkich akcji (CREATE, UPDATE, DELETE)
-
-## Licencja
+## 📄 Licencja
 
 Własność firmy - użycie wewnętrzne.
 
+## 🤝 Wsparcie
+
+W przypadku pytań lub problemów:
+1. Sprawdź dokumentację w folderze projektu
+2. Sprawdź logi aplikacji
+3. Skontaktuj się z administratorem systemu
+
+---
+
+**Wersja:** 1.0.0  
+**Ostatnia aktualizacja:** 2024

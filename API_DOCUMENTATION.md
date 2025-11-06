@@ -403,7 +403,13 @@ Usuwa użytkownika z grupy. (Tylko ADMIN)
 
 ### POST /api/calendar/sync
 
-Synchronizuje zadanie z Google Calendar.
+Synchronizuje zadanie z Google Calendar. Tworzy wydarzenie w kalendarzu Google użytkownika na podstawie danych zadania.
+
+**Wymagania:**
+- Użytkownik musi być zalogowany (sesja NextAuth)
+- Użytkownik musi być zalogowany **przez Google OAuth** (nie przez email/hasło)
+- Aplikacja musi mieć skonfigurowane Google OAuth (zobacz `GOOGLE_OAUTH_SETUP.md`)
+- Wymagane uprawnienia: `https://www.googleapis.com/auth/calendar` i `https://www.googleapis.com/auth/calendar.events`
 
 **Request Body:**
 ```json
@@ -412,7 +418,7 @@ Synchronizuje zadanie z Google Calendar.
 }
 ```
 
-**Response:**
+**Response (200 OK):**
 ```json
 {
   "message": "Zadanie zostało zsynchronizowane z kalendarzem Google",
@@ -420,7 +426,84 @@ Synchronizuje zadanie z Google Calendar.
 }
 ```
 
-**Uwaga:** Wymaga zalogowania przez Google OAuth.
+**Błędy:**
+
+**401 Unauthorized - Brak autoryzacji Google:**
+```json
+{
+  "error": "Brak dostępu do Google Calendar. Zaloguj się przez Google, aby włączyć synchronizację kalendarza.",
+  "requiresGoogleAuth": true
+}
+```
+**Rozwiązanie:** Użytkownik musi zalogować się przez Google OAuth (nie przez email/hasło).
+
+**401 Unauthorized - Sesja wygasła:**
+```json
+{
+  "error": "Sesja Google wygasła. Zaloguj się ponownie przez Google.",
+  "requiresReauth": true
+}
+```
+**Rozwiązanie:** Użytkownik musi ponownie zalogować się przez Google, aby odświeżyć tokeny.
+
+**403 Forbidden - Brak uprawnień:**
+```json
+{
+  "error": "Brak uprawnień do Google Calendar. Sprawdź ustawienia aplikacji w Google Cloud Console.",
+  "requiresScope": true
+}
+```
+**Rozwiązanie:** Sprawdź czy w Google Cloud Console aplikacja ma włączone odpowiednie zakresy (scopes) dla Google Calendar API.
+
+**400 Bad Request - Błąd walidacji:**
+```json
+{
+  "error": "taskId is required"
+}
+```
+
+**500 Internal Server Error:**
+```json
+{
+  "error": "Wystąpił błąd podczas synchronizacji z kalendarzem",
+  "details": "Szczegóły błędu (tylko w trybie development)"
+}
+```
+
+**Przykład użycia:**
+
+```javascript
+// Synchronizuj zadanie z Google Calendar
+const response = await fetch('/api/calendar/sync', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include',
+  body: JSON.stringify({
+    taskId: 'task-id-123'
+  })
+});
+
+const data = await response.json();
+
+if (!response.ok) {
+  if (data.requiresGoogleAuth || data.requiresReauth) {
+    // Przekieruj użytkownika do logowania przez Google
+    alert('Musisz zalogować się przez Google, aby synchronizować z kalendarzem');
+    window.location.href = '/signin';
+  } else {
+    alert(data.error);
+  }
+} else {
+  console.log('Zadanie zsynchronizowane:', data.eventId);
+}
+```
+
+**Uwagi:**
+- Tokeny OAuth są automatycznie odświeżane, jeśli są dostępne
+- Wydarzenie w Google Calendar zawiera tytuł zadania, opis i datę wykonania
+- Każde zadanie może być zsynchronizowane tylko raz (nie tworzy duplikatów)
 
 ---
 
