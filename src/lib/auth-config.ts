@@ -134,6 +134,7 @@ export const authOptions: NextAuthOptions = {
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
+          // Add Calendar API scopes - NextAuth automatically adds openid, email, profile
           scope: "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
         },
       },
