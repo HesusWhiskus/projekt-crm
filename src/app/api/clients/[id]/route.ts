@@ -16,15 +16,8 @@ const updateClientSchema = z.object({
   address: textFieldSchema(500, "Adres").optional(),
   source: textFieldSchema(100, "Źródło").optional(),
   status: z.nativeEnum(ClientStatus).optional(),
-  assignedTo: z.union([
-    z.string().uuid("Nieprawidłowy format ID użytkownika"),
-    z.literal(""),
-    z.null(),
-  ]).optional().transform(val => val === "" ? null : val),
-  sharedGroupIds: z.preprocess(
-    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
-    z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional()
-  ),
+  assignedTo: z.string().optional(),
+  sharedGroupIds: z.array(z.string()).optional(),
 })
 
 export async function GET(
@@ -152,6 +145,7 @@ export async function PATCH(
     if (validatedData.website !== undefined) updateData.website = validatedData.website || null
     if (validatedData.address !== undefined) updateData.address = validatedData.address || null
     if (validatedData.source !== undefined) updateData.source = validatedData.source || null
+    if (validatedData.status !== undefined) updateData.status = validatedData.status
     if (validatedData.assignedTo !== undefined) updateData.assignedTo = validatedData.assignedTo || null
 
     // Handle shared groups
@@ -176,7 +170,7 @@ export async function PATCH(
     }
 
     const updatedClient = await db.client.update({
-      where: { id: params.id },
+      where: { id: validatedId },
       data: updateData,
       include: {
         assignee: true,
@@ -249,7 +243,7 @@ export async function DELETE(
     }
 
     await db.client.delete({
-      where: { id: params.id },
+      where: { id: validatedId },
     })
 
     // Log activity
@@ -274,4 +268,3 @@ export async function DELETE(
     )
   }
 }
-

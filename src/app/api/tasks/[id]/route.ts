@@ -18,20 +18,9 @@ const updateTaskSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ).optional().or(z.literal("")),
   status: z.nativeEnum(TaskStatus).optional(),
-  assignedTo: z.union([
-    z.string().uuid("Nieprawidłowy format ID użytkownika"),
-    z.literal(""),
-    z.null(),
-  ]).optional().transform(val => val === "" ? null : val),
-  clientId: z.union([
-    z.string().uuid("Nieprawidłowy format ID klienta"),
-    z.literal(""),
-    z.null(),
-  ]).optional().transform(val => val === "" ? null : val),
-  sharedGroupIds: z.preprocess(
-    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
-    z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional()
-  ),
+  assignedTo: z.string().optional(),
+  clientId: z.string().optional(),
+  sharedGroupIds: z.array(z.string()).optional(),
 })
 
 export async function GET(
@@ -238,4 +227,3 @@ export async function DELETE(
     )
   }
 }
-

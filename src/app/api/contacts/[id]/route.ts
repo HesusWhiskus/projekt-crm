@@ -17,20 +17,9 @@ const updateContactSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ).optional(),
   notes: z.string().min(1, "Notatka jest wymagana").max(10000, "Notatka jest zbyt długa (max 10000 znaków)").trim().optional(),
-  userId: z.union([
-    uuidSchema,
-    z.literal(""),
-    z.null(),
-  ]).optional().transform(val => val === "" ? undefined : val),
-  clientId: z.union([
-    uuidSchema,
-    z.literal(""),
-    z.null(),
-  ]).optional().transform(val => val === "" ? undefined : val),
-  sharedGroupIds: z.preprocess(
-    (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
-    z.array(uuidSchema).optional()
-  ),
+  userId: z.string().optional(),
+  clientId: z.string().optional(),
+  sharedGroupIds: z.array(z.string()).optional(),
 })
 
 export async function PATCH(
@@ -38,6 +27,14 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
@@ -52,6 +49,7 @@ export async function PATCH(
       try {
         sharedGroupIds = JSON.parse(sharedGroupIdsStr as string)
       } catch {
+        // If not JSON, try as comma-separated string
         const ids = (sharedGroupIdsStr as string).split(",").filter(Boolean)
         if (ids.length > 0) sharedGroupIds = ids
       }
@@ -68,7 +66,7 @@ export async function PATCH(
 
     // Check if contact exists
     const existingContact = await db.contact.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
       include: {
         client: true,
         sharedGroups: {
@@ -116,7 +114,7 @@ export async function PATCH(
     }
 
     const contact = await db.contact.update({
-      where: { id: params.id },
+      where: { id: validatedId },
       data: updateData,
       include: {
         client: {
@@ -149,7 +147,7 @@ export async function PATCH(
         userId: user.id,
         action: "CONTACT_UPDATED",
         entityType: "Contact",
-        entityId: contact.id,
+        entityId: validatedId,
         details: {
           updatedFields: Object.keys(validatedData),
         },
@@ -178,13 +176,21 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Validate UUID
+    let validatedId: string
+    try {
+      validatedId = uuidSchema.parse(params.id)
+    } catch {
+      return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
+    }
+    
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
     const contact = await db.contact.findUnique({
-      where: { id: params.id },
+      where: { id: validatedId },
       include: {
         client: true,
       },
@@ -205,7 +211,7 @@ export async function DELETE(
     }
 
     await db.contact.delete({
-      where: { id: params.id },
+      where: { id: validatedId },
     })
 
     // Log activity
@@ -214,7 +220,7 @@ export async function DELETE(
         userId: user.id,
         action: "CONTACT_DELETED",
         entityType: "Contact",
-        entityId: params.id,
+        entityId: validatedId,
       },
     })
 
@@ -227,4 +233,3 @@ export async function DELETE(
     )
   }
 }
-
