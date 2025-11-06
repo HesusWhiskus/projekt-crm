@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.1-beta',
+    date: '2025-11-07',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Równość priorytetów w kolumnie - wszystkie priorytety mają jednakową szerokość (min-w-[100px])',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawiono widoczność wszystkich pól w ustawieniach w trybie ciemnym - zastąpiono hardcoded kolory zmiennymi CSS',
+      },
+      {
+        type: 'added',
+        description: 'Automatyczna konwersja i skalowanie logo - preferowany rozmiar 224x64px, automatyczna konwersja do PNG',
+      },
+      {
+        type: 'changed',
+        description: 'Dodano informację o preferowanym rozmiarze logo (224x64px, proporcje 3.5:1) w formularzu',
+      },
+    ],
+  },
+  {
     version: '0.3.0-beta',
     date: '2025-11-07',
     changes: [

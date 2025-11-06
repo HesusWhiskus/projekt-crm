@@ -38,7 +38,7 @@ export function WhatsNewButton() {
       fixed: { text: "Naprawiono", color: "bg-yellow-100 text-yellow-800" },
       security: { text: "Bezpieczeństwo", color: "bg-red-100 text-red-800" },
     }
-    return labels[type] || { text: type, color: "bg-gray-100 text-gray-800" }
+    return labels[type] || { text: type, color: "bg-muted text-muted-foreground" }
   }
 
   return (
@@ -67,7 +67,7 @@ export function WhatsNewButton() {
                   <Sparkles className="h-6 w-6" />
                   Co nowego
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Wersja {latestVersion}
                 </p>
               </div>
@@ -87,7 +87,7 @@ export function WhatsNewButton() {
                 <div key={entry.version} className="mb-8 last:mb-0">
                   <div className="flex items-center gap-3 mb-4">
                     <h3 className="text-lg font-semibold">v{entry.version}</h3>
-                    <span className="text-sm text-gray-500">{entry.date}</span>
+                    <span className="text-sm text-muted-foreground">{entry.date}</span>
                   </div>
                   <div className="space-y-3">
                     {entry.changes.map((change, index) => {
@@ -95,14 +95,14 @@ export function WhatsNewButton() {
                       return (
                         <div
                           key={index}
-                          className="flex items-start gap-3 p-3 rounded-lg border border-gray-200"
+                          className="flex items-start gap-3 p-3 rounded-lg border border-border"
                         >
                           <span
                             className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${typeInfo.color}`}
                           >
                             {typeInfo.text}
                           </span>
-                          <p className="text-sm text-gray-700 flex-1">
+                          <p className="text-sm text-foreground flex-1">
                             {change.description}
                           </p>
                         </div>
@@ -114,7 +114,7 @@ export function WhatsNewButton() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t bg-gray-50">
+            <div className="p-6 border-t bg-muted">
               <Button onClick={handleClose} className="w-full">
                 Zamknij
               </Button>

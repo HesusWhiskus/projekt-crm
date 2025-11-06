@@ -472,7 +472,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </td>
                       <td className="px-2 py-3 whitespace-nowrap">
                         {client.priority ? (
-                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${priorityColors[client.priority]}`}>
+                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full min-w-[100px] justify-center ${priorityColors[client.priority]}`}>
                             {priorityLabels[client.priority]}
                           </span>
                         ) : (

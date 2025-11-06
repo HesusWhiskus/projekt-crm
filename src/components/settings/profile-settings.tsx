@@ -103,7 +103,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
               type="email"
               value={user.email}
               disabled
-              className="bg-gray-100"
+              className="bg-muted"
             />
             <p className="text-xs text-muted-foreground">
               Email nie może być zmieniony

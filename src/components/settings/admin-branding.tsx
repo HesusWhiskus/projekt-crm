@@ -27,7 +27,7 @@ export function AdminBranding({
   const [success, setSuccess] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -37,21 +37,95 @@ export function AdminBranding({
       return
     }
 
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      setError("Plik jest zbyt duży. Maksymalny rozmiar: 2MB")
+    // Validate file size (max 5MB - before conversion)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Plik jest zbyt duży. Maksymalny rozmiar: 5MB")
       return
     }
 
-    setLogoFile(file)
     setError(null)
 
-    // Create preview
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setLogoPreview(reader.result as string)
+    try {
+      // Convert and resize image
+      const convertedFile = await convertAndResizeLogo(file)
+      setLogoFile(convertedFile)
+
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string)
+      }
+      reader.readAsDataURL(convertedFile)
+    } catch (err: any) {
+      setError(err.message || "Błąd podczas przetwarzania logo")
     }
-    reader.readAsDataURL(file)
+  }
+
+  const convertAndResizeLogo = async (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const img = document.createElement("img")
+        img.onload = () => {
+          // Preferred size: 224x64px (w-56 h-16) with max height 64px
+          // Maintain aspect ratio, but ensure it fits within 224x64
+          const maxWidth = 224
+          const maxHeight = 64
+          
+          let width = img.width
+          let height = img.height
+          
+          // Calculate new dimensions maintaining aspect ratio
+          if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height)
+            width = Math.round(width * ratio)
+            height = Math.round(height * ratio)
+          }
+
+          // Create canvas for resizing
+          const canvas = document.createElement("canvas")
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext("2d")
+          
+          if (!ctx) {
+            reject(new Error("Nie można utworzyć kontekstu canvas"))
+            return
+          }
+
+          // Draw image on canvas
+          ctx.drawImage(img, 0, 0, width, height)
+
+          // Convert to blob (PNG format for best quality)
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error("Błąd podczas konwersji obrazu"))
+                return
+              }
+              
+              // Create File from blob
+              const convertedFile = new File(
+                [blob],
+                file.name.replace(/\.[^/.]+$/, ".png"),
+                { type: "image/png" }
+              )
+              resolve(convertedFile)
+            },
+            "image/png",
+            0.9 // Quality
+          )
+        }
+        img.onerror = () => {
+          reject(new Error("Błąd podczas ładowania obrazu"))
+        }
+        img.src = e.target?.result as string
+      }
+      reader.onerror = () => {
+        reject(new Error("Błąd podczas odczytu pliku"))
+      }
+      reader.readAsDataURL(file)
+    })
   }
 
   const handleRemoveLogo = () => {
@@ -121,7 +195,7 @@ export function AdminBranding({
             <Label>Logo systemu</Label>
             {logoPreview && (
               <div className="relative inline-block mb-3">
-                <div className="relative w-32 h-32 border rounded-lg overflow-hidden bg-gray-50">
+                <div className="relative w-32 h-32 border rounded-lg overflow-hidden bg-muted">
                   {logoPreview.startsWith("data:") || logoPreview.startsWith("http") ? (
                     <Image
                       src={logoPreview}
@@ -172,13 +246,14 @@ export function AdminBranding({
               </label>
             </div>
             <p className="text-xs text-muted-foreground">
-              Format: PNG, JPG, SVG (max 2MB)
+              Preferowany rozmiar: 224x64px (proporcje 3.5:1). Format: PNG, JPG, SVG (max 5MB). 
+              Obraz zostanie automatycznie przeskalowany i skonwertowany do PNG.
             </p>
           </div>
 
           <div className="pt-4 border-t">
             <h3 className="text-sm font-semibold mb-3">Podgląd nagłówka</h3>
-            <div className="p-4 border rounded-lg bg-gray-50">
+            <div className="p-4 border rounded-lg bg-muted">
               <div className="flex items-center space-x-3">
                 {logoPreview && (
                   <div className="relative w-8 h-8">

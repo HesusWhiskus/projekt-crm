@@ -125,7 +125,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               type="email"
               value={formData.email}
               disabled
-              className="bg-gray-100"
+              className="bg-muted"
             />
             <p className="text-xs text-muted-foreground">
               Email nie może być zmieniony

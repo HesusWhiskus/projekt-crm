@@ -5,6 +5,26 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.3.1-beta] - 2025-11-07
+
+### Naprawiono
+- Równość priorytetów w kolumnie - wszystkie priorytety mają jednakową szerokość (min-w-[100px])
+- Widoczność wszystkich pól w ustawieniach w trybie ciemnym - zastąpiono wszystkie hardcoded kolory (`bg-gray-*`, `text-gray-*`) zmiennymi CSS (`bg-muted`, `text-foreground`, `text-muted-foreground`)
+- Czytelność formularzy w trybie ciemnym - wszystkie pola input są teraz widoczne
+
+### Dodano
+- Automatyczna konwersja i skalowanie logo:
+  - Preferowany rozmiar: 224x64px (proporcje 3.5:1)
+  - Automatyczne przeskalowanie do maksymalnych wymiarów z zachowaniem proporcji
+  - Automatyczna konwersja do formatu PNG dla najlepszej jakości
+  - Informacja o preferowanym rozmiarze w formularzu
+
+### Zmieniono
+- Zwiększono limit rozmiaru pliku logo z 2MB do 5MB (przed konwersją)
+- Wszystkie komponenty używają teraz zmiennych CSS zamiast hardcoded kolorów dla lepszej obsługi dark mode
+
+---
+
 ## [0.3.0-beta] - 2025-11-07
 
 ### Dodano

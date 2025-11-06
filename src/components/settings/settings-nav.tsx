@@ -35,7 +35,7 @@ export function SettingsNav({ user }: SettingsNavProps) {
   return (
     <nav className="space-y-1">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">Ustawienia</h2>
+        <h2 className="text-lg font-semibold text-foreground">Ustawienia</h2>
       </div>
 
       <div className="space-y-1">
@@ -50,7 +50,7 @@ export function SettingsNav({ user }: SettingsNavProps) {
               className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive
                   ? "bg-primary text-primary-foreground"
-                  : "text-gray-700 hover:bg-gray-100"
+                  : "text-foreground hover:bg-muted"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -64,7 +64,7 @@ export function SettingsNav({ user }: SettingsNavProps) {
         <>
           <div className="my-4 border-t border-gray-200"></div>
           <div className="mb-2">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Administrator
             </p>
           </div>
@@ -80,7 +80,7 @@ export function SettingsNav({ user }: SettingsNavProps) {
                   className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-primary text-primary-foreground"
-                      : "text-gray-700 hover:bg-gray-100"
+                      : "text-foreground hover:bg-muted"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
