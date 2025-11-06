@@ -16,7 +16,7 @@ const updateContactSchema = z.object({
     },
     { message: "Nieprawidłowy format daty" }
   ).optional(),
-  notes: z.string().min(1, "Notatka jest wymagana").max(5000, "Notatka jest zbyt długa (max 5000 znaków)").trim().optional(),
+  notes: z.string().min(1, "Notatka jest wymagana").max(10000, "Notatka jest zbyt długa (max 10000 znaków)").trim().optional(),
   userId: uuidSchema.optional(),
   clientId: uuidSchema.optional(),
   sharedGroupIds: z.array(uuidSchema).optional(),

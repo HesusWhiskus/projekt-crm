@@ -7,8 +7,8 @@ import { uuidSchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 
 const updateTaskSchema = z.object({
-  title: z.string().min(1, "Tytuł jest wymagany").max(200, "Tytuł jest zbyt długi (max 200 znaków)").trim().optional(),
-  description: textFieldSchema(2000, "Opis").optional(),
+  title: z.string().min(1, "Tytuł jest wymagany").max(150, "Tytuł jest zbyt długi (max 150 znaków)").trim().optional(),
+  description: textFieldSchema(5000, "Opis").optional(),
   dueDate: z.string().refine(
     (val) => {
       if (!val || val === "") return true // Optional

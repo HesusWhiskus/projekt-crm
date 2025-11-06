@@ -7,7 +7,7 @@ import { nameSchema, textFieldSchema } from "@/lib/field-validators"
 import { validatePassword } from "@/lib/password-validator"
 
 const updateProfileSchema = z.object({
-  name: nameSchema("Imię", 2, 100).optional(),
+  name: nameSchema("Imię", 2, 50).optional(),
   position: textFieldSchema(100, "Stanowisko").optional(),
   currentPassword: z.string().optional(),
   newPassword: z.string().min(8, "Hasło musi mieć co najmniej 8 znaków").optional(),

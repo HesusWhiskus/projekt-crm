@@ -7,8 +7,8 @@ import { validateQueryParams, taskQuerySchema, uuidSchema } from "@/lib/query-va
 import { textFieldSchema } from "@/lib/field-validators"
 
 const createTaskSchema = z.object({
-  title: z.string().min(1, "Tytuł jest wymagany").max(200, "Tytuł jest zbyt długi (max 200 znaków)").trim(),
-  description: textFieldSchema(2000, "Opis"),
+  title: z.string().min(1, "Tytuł jest wymagany").max(150, "Tytuł jest zbyt długi (max 150 znaków)").trim(),
+  description: textFieldSchema(5000, "Opis"),
   dueDate: z.string().refine(
     (val) => {
       if (!val || val === "") return true // Optional

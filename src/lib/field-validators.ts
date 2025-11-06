@@ -7,7 +7,7 @@ import { z } from 'zod'
  */
 export const phoneSchema = z
   .string()
-  .max(50, 'Numer telefonu jest zbyt długi (max 50 znaków)')
+  .max(30, 'Numer telefonu jest zbyt długi (max 30 znaków)')
   .refine(
     (val) => {
       if (!val || val.trim() === '') return true // Optional field
@@ -30,7 +30,7 @@ export const phoneSchema = z
  */
 export const websiteSchema = z
   .string()
-  .max(500, 'URL jest zbyt długi (max 500 znaków)')
+  .max(2048, 'URL jest zbyt długi (max 2048 znaków)')
   .refine(
     (val) => {
       if (!val || val.trim() === '') return true // Optional field
@@ -81,7 +81,7 @@ export const textFieldSchema = (maxLength: number = 500, fieldName: string = 'Po
 /**
  * Validates name fields (first name, last name, etc.)
  */
-export const nameSchema = (fieldName: string = 'Imię', minLength: number = 1, maxLength: number = 100) =>
+export const nameSchema = (fieldName: string = 'Imię', minLength: number = 1, maxLength: number = 50) =>
   z
     .string()
     .min(minLength, `${fieldName} jest wymagane`)
@@ -97,7 +97,7 @@ export const nameSchema = (fieldName: string = 'Imię', minLength: number = 1, m
  */
 export const agencyNameSchema = z
   .string()
-  .max(200, 'Nazwa agencji jest zbyt długa (max 200 znaków)')
+  .max(150, 'Nazwa agencji jest zbyt długa (max 150 znaków)')
   .transform((val) => val?.trim() || null)
   .nullable()
   .optional()

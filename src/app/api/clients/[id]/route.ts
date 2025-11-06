@@ -7,14 +7,14 @@ import { uuidSchema } from "@/lib/query-validator"
 import { phoneSchema, websiteSchema, emailSchema, textFieldSchema, nameSchema, agencyNameSchema } from "@/lib/field-validators"
 
 const updateClientSchema = z.object({
-  firstName: nameSchema("Imię", 1, 100).optional(),
-  lastName: nameSchema("Nazwisko", 1, 100).optional(),
+  firstName: nameSchema("Imię", 1, 50).optional(),
+  lastName: nameSchema("Nazwisko", 1, 50).optional(),
   agencyName: agencyNameSchema.optional(),
   email: emailSchema.optional(),
   phone: phoneSchema.optional(),
   website: websiteSchema.optional(),
   address: textFieldSchema(500, "Adres").optional(),
-  source: textFieldSchema(200, "Źródło").optional(),
+  source: textFieldSchema(100, "Źródło").optional(),
   status: z.nativeEnum(ClientStatus).optional(),
   assignedTo: z.string().uuid("Nieprawidłowy format ID użytkownika").optional().nullable(),
   sharedGroupIds: z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional(),
