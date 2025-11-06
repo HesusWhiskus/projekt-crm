@@ -20,8 +20,8 @@ const createContactSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ),
   notes: z.string().min(1, "Notatka jest wymagana").max(10000, "Notatka jest zbyt długa (max 10000 znaków)").trim(),
-  userId: z.string().min(1, "Użytkownik jest wymagany"),
-  clientId: z.string().min(1, "Klient jest wymagany"),
+  userId: z.string().refine((val) => val && val.length > 0, { message: "Użytkownik jest wymagany" }),
+  clientId: z.string().refine((val) => val && val.length > 0, { message: "Klient jest wymagany" }),
   sharedGroupIds: z.array(z.string()).optional(),
 })
 
@@ -47,12 +47,16 @@ export async function POST(request: Request) {
       }
     }
     
+    // Convert empty strings to empty string (schema will validate with refine)
+    const userIdValue = formData.get("userId")
+    const clientIdValue = formData.get("clientId")
+    
     const parsedData = {
       type: formData.get("type"),
       date: formData.get("date"),
       notes: formData.get("notes"),
-      userId: formData.get("userId"),
-      clientId: formData.get("clientId"),
+      userId: userIdValue ? String(userIdValue) : "",
+      clientId: clientIdValue ? String(clientIdValue) : "",
       sharedGroupIds,
     }
     console.log("[DEBUG CONTACTS POST] Parsed formData:", JSON.stringify(parsedData, null, 2))

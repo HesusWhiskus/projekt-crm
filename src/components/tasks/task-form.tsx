@@ -82,13 +82,22 @@ export function TaskForm({ users, clients, groups, currentUser, task, onClose, o
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          dueDate: formData.dueDate || undefined,
-          assignedTo: formData.assignedTo || undefined,
-          clientId: formData.clientId || undefined,
-          sharedGroupIds: formData.sharedGroupIds.length > 0 ? formData.sharedGroupIds : undefined,
-        }),
+        const bodyData: any = {
+          title: formData.title,
+          description: formData.description || undefined,
+          status: formData.status,
+        }
+        
+        if (formData.dueDate) bodyData.dueDate = formData.dueDate
+        if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
+        if (formData.clientId) bodyData.clientId = formData.clientId
+        if (formData.sharedGroupIds.length > 0) bodyData.sharedGroupIds = formData.sharedGroupIds
+        
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bodyData),
+        })
       })
 
       if (!response.ok) {

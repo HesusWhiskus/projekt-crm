@@ -79,14 +79,25 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
       const url = client ? `/api/clients/${client.id}` : "/api/clients"
       const method = client ? "PATCH" : "POST"
 
+      const bodyData: any = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        agencyName: formData.agencyName || undefined,
+        email: formData.email || undefined,
+        phone: formData.phone || undefined,
+        website: formData.website || undefined,
+        address: formData.address || undefined,
+        source: formData.source || undefined,
+        status: formData.status,
+      }
+      
+      if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
+      if (formData.sharedGroupIds.length > 0) bodyData.sharedGroupIds = formData.sharedGroupIds
+      
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          assignedTo: formData.assignedTo || undefined,
-          sharedGroupIds: formData.sharedGroupIds.length > 0 ? formData.sharedGroupIds : undefined,
-        }),
+        body: JSON.stringify(bodyData),
       })
 
       if (!response.ok) {
