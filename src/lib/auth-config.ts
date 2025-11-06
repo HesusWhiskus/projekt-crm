@@ -76,14 +76,21 @@ const authorizeCredentials = async (credentials: any) => {
   }
 }
 
-// Validate required environment variables
+// Validate required environment variables (only once, cached)
+let configValidated = false
 const validateAuthConfig = () => {
+  if (configValidated) return // Only validate once
+  configValidated = true
+  
   const errors: string[] = []
   
   if (!process.env.NEXTAUTH_URL) {
     errors.push("NEXTAUTH_URL is not set")
   } else if (process.env.NEXTAUTH_URL.includes("0.0.0.0") || process.env.NEXTAUTH_URL.includes("localhost")) {
-    console.warn("[AUTH] ⚠️ NEXTAUTH_URL contains localhost or 0.0.0.0 - this may cause OAuth issues in production")
+    // Only warn in production builds, not during development
+    if (process.env.NODE_ENV === "production") {
+      console.warn("[AUTH] ⚠️ NEXTAUTH_URL contains localhost or 0.0.0.0 - this may cause OAuth issues in production")
+    }
   }
   
   if (!process.env.NEXTAUTH_SECRET) {
@@ -105,6 +112,7 @@ const validateAuthConfig = () => {
   return errors
 }
 
+// Validate only once when module is first loaded
 validateAuthConfig()
 
 export const authOptions: NextAuthOptions = {
