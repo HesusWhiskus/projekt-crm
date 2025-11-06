@@ -1,48 +1,35 @@
-import { db } from "@/lib/db"
 import Image from "next/image"
 
-export async function AuthHeader() {
-  // Get system settings for branding
-  let systemName = "Internal CRM"
-  let systemLogo: string | null = null
+interface AuthHeaderProps {
+  systemName: string
+  systemLogo: string | null
+}
 
-  try {
-    const [nameResult, logoResult] = await Promise.all([
-      db.systemSettings.findUnique({ where: { key: "system_name" } }).catch(() => null),
-      db.systemSettings.findUnique({ where: { key: "system_logo" } }).catch(() => null),
-    ])
-
-    if (nameResult?.value) {
-      systemName = nameResult.value
-    }
-    if (logoResult?.value && logoResult.value.trim() !== "") {
-      systemLogo = logoResult.value
-    }
-  } catch (error) {
-    console.error("Error fetching system settings for auth page:", error)
-    // Use defaults if error
-  }
-
+export function AuthHeader({ systemName, systemLogo }: AuthHeaderProps) {
   return (
-    <div className="flex flex-col items-center space-y-3 mb-6">
+    <div className="flex flex-col items-center space-y-3 mb-4">
       {systemLogo ? (
-        <div className="relative w-24 h-16">
-          {systemLogo.startsWith("http") ? (
-            <Image
-              src={systemLogo}
-              alt="Logo"
-              fill
-              className="object-contain"
-              unoptimized
-            />
-          ) : (
-            <img
-              src={systemLogo}
-              alt="Logo"
-              className="w-full h-full object-contain"
-            />
-          )}
-        </div>
+        <>
+          <div className="relative w-64 h-20 flex items-center justify-center overflow-hidden">
+            {systemLogo.startsWith("http") ? (
+              <Image
+                src={systemLogo}
+                alt={systemName}
+                width={256}
+                height={80}
+                className="w-full h-full object-contain"
+                unoptimized
+              />
+            ) : (
+              <img
+                src={systemLogo}
+                alt={systemName}
+                className="w-full h-full object-contain"
+              />
+            )}
+          </div>
+          <h1 className="text-2xl font-bold">{systemName}</h1>
+        </>
       ) : (
         <h1 className="text-2xl font-bold">{systemName}</h1>
       )}

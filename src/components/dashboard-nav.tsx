@@ -84,20 +84,21 @@ export function DashboardNav({
               style={{ color: "var(--color-primary, #3b82f6)" }}
             >
               {systemLogo && systemLogo.trim() !== "" ? (
-                <div className="relative w-16 h-12">
+                <div className="relative w-56 h-16 flex items-center justify-start overflow-hidden">
                   {systemLogo.startsWith("http") ? (
                     <Image
                       src={systemLogo}
                       alt="Logo"
-                      fill
-                      className="object-contain"
+                      width={224}
+                      height={64}
+                      className="w-full h-full object-contain object-left"
                       unoptimized
                     />
                   ) : (
                     <img
                       src={systemLogo}
                       alt="Logo"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain object-left"
                     />
                   )}
                 </div>
