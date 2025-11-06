@@ -18,7 +18,8 @@ COPY . .
 # Generate Prisma Client
 RUN npx prisma generate
 
-# Build Next.js
+# Build Next.js with standalone output for Docker
+ENV DOCKER_BUILD=true
 RUN npm run build
 
 # Production image, copy all the files and run next

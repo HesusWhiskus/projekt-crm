@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone', // Wymagane dla Docker deployment
+  // output: 'standalone' - używane tylko dla Docker, wyłączone dla Railway
+  ...(process.env.DOCKER_BUILD === 'true' && { output: 'standalone' }),
   images: {
     domains: ['lh3.googleusercontent.com'],
   },
