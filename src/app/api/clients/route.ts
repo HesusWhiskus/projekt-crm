@@ -16,10 +16,11 @@ const createClientSchema = z.object({
   address: textFieldSchema(500, "Adres"),
   source: textFieldSchema(100, "Źródło"),
   status: z.nativeEnum(ClientStatus).default(ClientStatus.NEW_LEAD),
-  assignedTo: z.preprocess(
-    (val) => (val === "" || val === null || val === undefined ? null : val),
-    z.string().uuid("Nieprawidłowy format ID użytkownika").nullable().optional()
-  ),
+  assignedTo: z.union([
+    z.string().uuid("Nieprawidłowy format ID użytkownika"),
+    z.literal(""),
+    z.null(),
+  ]).optional().transform(val => val === "" ? null : val),
   sharedGroupIds: z.preprocess(
     (val) => (Array.isArray(val) && val.length === 0 ? undefined : val),
     z.array(z.string().uuid("Nieprawidłowy format ID grupy")).optional()
