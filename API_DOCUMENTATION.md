@@ -46,7 +46,9 @@ Pobiera listę klientów.
 **Query Parameters:**
 - `status` (opcjonalne) - Filtr statusu (NEW_LEAD, IN_CONTACT, DEMO_SENT, NEGOTIATION, ACTIVE_CLIENT, LOST)
 - `search` (opcjonalne) - Wyszukiwanie po nazwie, emailu
-- `assignedTo` (opcjonalne) - ID użytkownika przypisanego
+- `assignedTo` (opcjonalne) - ID użytkownika przypisanego (CUID format)
+- `noContactDays` (opcjonalne) - Liczba dni jako string. Filtruje klientów bez kontaktu przez X dni lub nigdy (lastContactAt < today - X dni lub lastContactAt IS NULL)
+- `followUpToday` (opcjonalne) - "true" jako string. Filtruje klientów z follow-up dzisiaj (nextFollowUpAt = today)
 
 **Response:**
 ```json
@@ -63,6 +65,9 @@ Pobiera listę klientów.
       "address": "string | null",
       "source": "string | null",
       "status": "NEW_LEAD | IN_CONTACT | DEMO_SENT | NEGOTIATION | ACTIVE_CLIENT | LOST",
+      "priority": "LOW | MEDIUM | HIGH | null",
+      "lastContactAt": "2024-01-01T00:00:00.000Z | null",
+      "nextFollowUpAt": "2024-01-01T00:00:00.000Z | null",
       "assignedTo": "string | null",
       "assignee": {
         "id": "string",
@@ -98,6 +103,8 @@ Tworzy nowego klienta.
   "address": "string (optional)",
   "source": "string (optional)",
   "status": "NEW_LEAD | IN_CONTACT | DEMO_SENT | NEGOTIATION | ACTIVE_CLIENT | LOST (default: NEW_LEAD)",
+  "priority": "LOW | MEDIUM | HIGH (optional)",
+  "nextFollowUpAt": "string (optional)" - Data w formacie ISO string (np. "2024-01-01T10:00:00.000Z")
   "assignedTo": "string (optional)",
   "sharedGroupIds": ["string"] (optional) - Array ID grup do udostępnienia
 }
@@ -187,9 +194,10 @@ Pobiera listę kontaktów.
   "contacts": [
     {
       "id": "string",
-      "type": "PHONE_CALL | MEETING | EMAIL | LINKEDIN_MESSAGE | OTHER",
+      "type": "PHONE_CALL | MEETING | EMAIL | LINKEDIN_MESSAGE | OTHER | null",
       "date": "2024-01-01T00:00:00.000Z",
       "notes": "string",
+      "isNote": "boolean",
       "userId": "string",
       "clientId": "string",
       "client": {
@@ -219,15 +227,21 @@ Pobiera listę kontaktów.
 
 ### POST /api/contacts
 
-Tworzy nowy kontakt.
+Tworzy nowy kontakt lub notatkę.
 
-**Request:** FormData (multipart/form-data)
-- `type` (required) - Typ kontaktu
+**Request:** FormData (multipart/form-data) lub JSON
+- `type` (opcjonalne) - Typ kontaktu (PHONE_CALL, MEETING, EMAIL, LINKEDIN_MESSAGE, OTHER). **Opcjonalne dla notatek** (isNote=true)
 - `date` (required) - Data i godzina (ISO string)
-- `notes` (required) - Notatka
+- `notes` (required) - Notatka/treść kontaktu
+- `isNote` (opcjonalne, default: false) - Flaga rozróżniająca notatki od kontaktów
+  - `false` - Kontakt (faktyczna interakcja) - wymaga typu, aktualizuje `lastContactAt` klienta
+  - `true` - Notatka (wewnętrzna notatka) - typ opcjonalny, nie aktualizuje `lastContactAt`
 - `userId` (required) - ID użytkownika
 - `clientId` (required) - ID klienta
 - `files` (optional) - Pliki do załączenia (multiple)
+- `sharedGroupIds` (optional) - Array ID grup do udostępnienia
+
+**Uwaga:** Przy tworzeniu kontaktu (isNote=false), system automatycznie aktualizuje pole `lastContactAt` klienta na datę kontaktu.
 
 **Response:** `201 Created`
 

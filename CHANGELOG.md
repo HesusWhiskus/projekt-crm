@@ -5,6 +5,48 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.2.0-beta] - 2025-11-06
+
+### Dodano
+- **Funkcje prospecting dla zarządzania leadami:**
+  - Pole `priority` (LOW, MEDIUM, HIGH) dla klientów - priorytetyzacja leadów
+  - Pole `lastContactAt` - automatycznie aktualizowana data ostatniego kontaktu
+  - Pole `nextFollowUpAt` - data następnego follow-up (ustawiana ręcznie)
+  - Flaga `isNote` w Contact - rozróżnienie notatek od kontaktów
+  - Automatyczna aktualizacja `lastContactAt` przy tworzeniu kontaktu (nie notatki)
+- **Nowe filtry prospecting:**
+  - `noContactDays` - filtry klientów bez kontaktu przez X dni
+  - `followUpToday` - filtry klientów z follow-up dzisiaj
+- **Sekcja "Zarządzanie leadami" na Dashboard:**
+  - Szybkie filtry: Bez kontaktu 7+ dni, Bez kontaktu 30+ dni, Follow-up dzisiaj
+  - Linki do przefiltrowanych widoków klientów
+- **Rozszerzenie ClientDetail:**
+  - Wyświetlanie nowych pól: priority, lastContactAt, nextFollowUpAt
+  - Filtrowanie kontaktów na "Kontakty" i "Notatki"
+  - Wizualne rozróżnienie notatek od kontaktów
+- **Rozszerzenie ContactForm:**
+  - Checkbox `isNote` - możliwość tworzenia notatek zamiast kontaktów
+  - Ukrywanie pola "Typ kontaktu" dla notatek (pole opcjonalne)
+- **Dokumentacja:**
+  - Utworzono `FEATURES.md` - szczegółowa dokumentacja funkcjonalności
+  - Zaktualizowano `API_DOCUMENTATION.md` - nowe pola i filtry
+  - Zaktualizowano `CHANGELOG.md`
+
+### Zmieniono
+- Pole `type` w Contact jest teraz opcjonalne (dla notatek)
+- Migracja bazy danych - dodano nowe pola do Client i Contact
+- ClientForm - dodano pola priority i nextFollowUpAt
+- Contact API - automatyczna aktualizacja lastContactAt w transakcji Prisma
+
+### Naprawiono
+- **KRYTYCZNA NAPRAWA:** Usunięto błędną walidację UUID dla path parameters - system używa CUID (Collision-resistant Unique Identifier), nie UUID
+- Naprawiono błąd "Nieprawidłowy format ID" przy edycji zadań, klientów i kontaktów
+- Naprawiono zapamiętywanie wybranego klienta przy edycji kontaktu
+- Naprawiono błędy builda na Railway (usunięto pustą migrację, poprawiono Dockerfile)
+- Usunięto nieprawidłową opcję `telemetry` z next.config.js
+
+---
+
 ## [0.1.4-beta] - 2025-11-06
 
 ### Naprawiono

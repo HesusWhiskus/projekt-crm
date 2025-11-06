@@ -1,12 +1,22 @@
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, FileText, CheckSquare, Calendar } from "lucide-react"
+import { Users, FileText, CheckSquare, Calendar, Clock, AlertCircle } from "lucide-react"
 import Link from "next/link"
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
   if (!user) return null
+
+  // Build where clause for client access
+  const clientWhere = user.role === "ADMIN"
+    ? {}
+    : {
+        OR: [
+          { assignedTo: user.id },
+          { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
+        ],
+      }
 
   // Get statistics
   const [
@@ -14,31 +24,25 @@ export default async function DashboardPage() {
     contactsCount,
     tasksCount,
     upcomingTasks,
+    noContact7Days,
+    noContact30Days,
+    followUpToday,
   ] = await Promise.all([
     db.client.count({
-      where:
-        user.role === "ADMIN"
-          ? {}
-          : {
-              OR: [
-                { assignedTo: user.id },
-                { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
-              ],
-            },
+      where: clientWhere,
     }),
     db.contact.count({
       where: { userId: user.id },
     }),
     db.task.count({
-      where:
-        user.role === "ADMIN"
-          ? {}
-          : {
-              OR: [
-                { assignedTo: user.id },
-                { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
-              ],
-            },
+      where: {
+        ...(user.role !== "ADMIN" && {
+          OR: [
+            { assignedTo: user.id },
+            { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
+          ],
+        }),
+      },
     }),
     db.task.findMany({
       where: {
@@ -57,6 +61,36 @@ export default async function DashboardPage() {
             agencyName: true 
           } 
         } 
+      },
+    }),
+    // Klienci bez kontaktu przez 7 dni
+    db.client.count({
+      where: {
+        ...clientWhere,
+        OR: [
+          { lastContactAt: { lt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+          { lastContactAt: null },
+        ],
+      },
+    }),
+    // Klienci bez kontaktu przez 30 dni
+    db.client.count({
+      where: {
+        ...clientWhere,
+        OR: [
+          { lastContactAt: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+          { lastContactAt: null },
+        ],
+      },
+    }),
+    // Klienci z follow-up dzisiaj
+    db.client.count({
+      where: {
+        ...clientWhere,
+        nextFollowUpAt: {
+          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          lt: new Date(new Date().setHours(23, 59, 59, 999)),
+        },
       },
     }),
   ])
@@ -108,6 +142,56 @@ export default async function DashboardPage() {
           )
         })}
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Zarządzanie leadami</CardTitle>
+          <CardDescription>Szybkie filtry dla prospecting</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Link href="/clients?noContactDays=7">
+              <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Bez kontaktu 7+ dni</p>
+                      <p className="text-2xl font-bold">{noContact7Days}</p>
+                    </div>
+                    <Clock className="h-8 w-8 text-orange-500" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/clients?noContactDays=30">
+              <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Bez kontaktu 30+ dni</p>
+                      <p className="text-2xl font-bold">{noContact30Days}</p>
+                    </div>
+                    <AlertCircle className="h-8 w-8 text-red-500" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/clients?followUpToday=true">
+              <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Follow-up dzisiaj</p>
+                      <p className="text-2xl font-bold">{followUpToday}</p>
+                    </div>
+                    <Calendar className="h-8 w-8 text-blue-500" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

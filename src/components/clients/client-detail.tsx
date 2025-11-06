@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ClientStatus, UserRole } from "@prisma/client"
+import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
 import { Edit, Plus } from "lucide-react"
 import { ContactForm } from "../contacts/contact-form"
 import { ClientForm } from "./client-form"
@@ -36,6 +36,12 @@ const statusLabels: Record<ClientStatus, string> = {
   LOST: "Utracony",
 }
 
+const priorityLabels: Record<ClientPriority, string> = {
+  LOW: "Niski",
+  MEDIUM: "Średni",
+  HIGH: "Wysoki",
+}
+
 const contactTypeLabels: Record<string, string> = {
   PHONE_CALL: "Rozmowa telefoniczna",
   MEETING: "Spotkanie",
@@ -49,6 +55,17 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
   const [isEditing, setIsEditing] = useState(false)
   const [isAddingContact, setIsAddingContact] = useState(false)
   const [editingContactId, setEditingContactId] = useState<string | null>(null)
+  const [contactFilter, setContactFilter] = useState<"all" | "contacts" | "notes">("all")
+  
+  // Filtruj kontakty
+  const filteredContacts = client.contacts.filter((contact: any) => {
+    if (contactFilter === "contacts") return !contact.isNote
+    if (contactFilter === "notes") return contact.isNote
+    return true
+  })
+  
+  const contactsCount = client.contacts.filter((c: any) => !c.isNote).length
+  const notesCount = client.contacts.filter((c: any) => c.isNote).length
 
   return (
     <div className="space-y-6">
@@ -142,12 +159,34 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
               </span>
             </div>
             <div>
+              <span className="text-sm font-medium">Priorytet:</span>{" "}
+              {client.priority ? (
+                <span className={`px-2 py-1 rounded text-xs ${
+                  client.priority === "HIGH" ? "bg-red-100 text-red-800" :
+                  client.priority === "MEDIUM" ? "bg-yellow-100 text-yellow-800" :
+                  "bg-blue-100 text-blue-800"
+                }`}>
+                  {priorityLabels[client.priority as ClientPriority]}
+                </span>
+              ) : (
+                "-"
+              )}
+            </div>
+            <div>
               <span className="text-sm font-medium">Odpowiedzialny:</span>{" "}
               {client.assignee?.name || client.assignee?.email || "-"}
             </div>
             <div>
               <span className="text-sm font-medium">Źródło:</span>{" "}
               {client.source || "-"}
+            </div>
+            <div>
+              <span className="text-sm font-medium">Ostatni kontakt:</span>{" "}
+              {client.lastContactAt ? new Date(client.lastContactAt).toLocaleDateString("pl-PL") : "Nigdy"}
+            </div>
+            <div>
+              <span className="text-sm font-medium">Następny follow-up:</span>{" "}
+              {client.nextFollowUpAt ? new Date(client.nextFollowUpAt).toLocaleDateString("pl-PL") : "-"}
             </div>
             <div>
               <span className="text-sm font-medium">Data utworzenia:</span>{" "}
@@ -190,19 +229,60 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
 
       <Card>
         <CardHeader>
-          <CardTitle>Kontakty ({client.contacts.length})</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>
+              Kontakty ({contactsCount}) / Notatki ({notesCount})
+            </CardTitle>
+            <div className="flex gap-2">
+              <Button
+                variant={contactFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setContactFilter("all")}
+              >
+                Wszystkie
+              </Button>
+              <Button
+                variant={contactFilter === "contacts" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setContactFilter("contacts")}
+              >
+                Kontakty
+              </Button>
+              <Button
+                variant={contactFilter === "notes" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setContactFilter("notes")}
+              >
+                Notatki
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          {client.contacts.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Brak kontaktów</p>
+          {filteredContacts.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {contactFilter === "all" ? "Brak kontaktów" : 
+               contactFilter === "contacts" ? "Brak kontaktów" : "Brak notatek"}
+            </p>
           ) : (
             <div className="space-y-4">
-              {client.contacts.map((contact: any) => (
+              {filteredContacts.map((contact: any) => (
                 <div key={contact.id} className="border rounded p-4">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <div className="font-medium">
-                        {contactTypeLabels[contact.type] || contact.type}
+                      <div className="flex items-center gap-2">
+                        <div className="font-medium">
+                          {contact.isNote ? (
+                            <span className="text-purple-600">📝 Notatka</span>
+                          ) : (
+                            contactTypeLabels[contact.type || "OTHER"] || contact.type || "Inne"
+                          )}
+                        </div>
+                        {contact.isNote && (
+                          <span className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-800">
+                            Notatka
+                          </span>
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {new Date(contact.date).toLocaleString("pl-PL")}
