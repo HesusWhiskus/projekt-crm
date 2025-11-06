@@ -16,6 +16,7 @@ const updateContactSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ).optional(),
   notes: z.string().min(1, "Notatka jest wymagana").max(10000, "Notatka jest zbyt długa (max 10000 znaków)").trim().optional(),
+  isNote: z.boolean().optional(), // Flag to distinguish notes from contacts
   userId: z.string().optional(),
   clientId: z.string().optional(),
   sharedGroupIds: z.array(z.string()).optional(),
@@ -52,10 +53,15 @@ export async function PATCH(
       }
     }
 
+    // Parse isNote (checkbox - "true" or null)
+    const isNoteValue = formData.get("isNote")
+    const isNote = isNoteValue === "true" || isNoteValue === true
+    
     const parsedData = {
       type: formData.get("type") || undefined,
       date: formData.get("date") || undefined,
       notes: formData.get("notes") || undefined,
+      isNote: isNoteValue !== null ? isNote : undefined, // Only include if provided
       userId: formData.get("userId") || undefined,
       clientId: formData.get("clientId") || undefined,
       sharedGroupIds,

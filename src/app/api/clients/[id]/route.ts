@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { ClientStatus } from "@prisma/client"
+import { ClientStatus, ClientPriority } from "@prisma/client"
 import { z } from "zod"
 import { phoneSchema, websiteSchema, emailSchema, textFieldSchema, nameSchema, agencyNameSchema } from "@/lib/field-validators"
 
@@ -15,6 +15,15 @@ const updateClientSchema = z.object({
   address: textFieldSchema(500, "Adres").optional(),
   source: textFieldSchema(100, "Źródło").optional(),
   status: z.nativeEnum(ClientStatus).optional(),
+  priority: z.nativeEnum(ClientPriority).optional(),
+  nextFollowUpAt: z.string().refine(
+    (val) => {
+      if (!val || val === "") return true // Optional
+      const date = new Date(val)
+      return !isNaN(date.getTime())
+    },
+    { message: "Nieprawidłowy format daty" }
+  ).optional().or(z.literal("")),
   assignedTo: z.string().optional(),
   sharedGroupIds: z.array(z.string()).optional(),
 })
@@ -154,6 +163,10 @@ export async function PATCH(
     if (validatedData.address !== undefined) updateData.address = validatedData.address || null
     if (validatedData.source !== undefined) updateData.source = validatedData.source || null
     if (validatedData.status !== undefined) updateData.status = validatedData.status
+    if (validatedData.priority !== undefined) updateData.priority = validatedData.priority || null
+    if (validatedData.nextFollowUpAt !== undefined) {
+      updateData.nextFollowUpAt = validatedData.nextFollowUpAt ? new Date(validatedData.nextFollowUpAt) : null
+    }
     if (validatedData.assignedTo !== undefined) updateData.assignedTo = validatedData.assignedTo || null
 
     // Handle shared groups

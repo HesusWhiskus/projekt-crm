@@ -10,7 +10,7 @@ import { validateQueryParams, contactQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 
 const createContactSchema = z.object({
-  type: z.nativeEnum(ContactType),
+  type: z.nativeEnum(ContactType).optional(), // Optional for notes (isNote=true)
   date: z.string().refine(
     (val) => {
       if (!val) return false
@@ -20,6 +20,7 @@ const createContactSchema = z.object({
     { message: "Nieprawidłowy format daty" }
   ),
   notes: z.string().min(1, "Notatka jest wymagana").max(10000, "Notatka jest zbyt długa (max 10000 znaków)").trim(),
+  isNote: z.boolean().default(false), // Flag to distinguish notes from contacts
   userId: z.string().refine((val) => val && val.length > 0, { message: "Użytkownik jest wymagany" }),
   clientId: z.string().refine((val) => val && val.length > 0, { message: "Klient jest wymagany" }),
   sharedGroupIds: z.array(z.string()).optional(),
@@ -51,10 +52,15 @@ export async function POST(request: Request) {
     const userIdValue = formData.get("userId")
     const clientIdValue = formData.get("clientId")
     
+    // Parse isNote (checkbox - "true" or null)
+    const isNoteValue = formData.get("isNote")
+    const isNote = isNoteValue === "true" || isNoteValue === true
+    
     const parsedData = {
-      type: formData.get("type"),
+      type: formData.get("type") || undefined, // Optional for notes
       date: formData.get("date"),
       notes: formData.get("notes"),
+      isNote: isNote,
       userId: userIdValue ? String(userIdValue) : "",
       clientId: clientIdValue ? String(clientIdValue) : "",
       sharedGroupIds,
@@ -92,20 +98,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Brak uprawnień" }, { status: 403 })
     }
 
-    // Create contact
-    const contact = await db.contact.create({
-      data: {
-        type: validatedData.type,
-        date: new Date(validatedData.date),
-        notes: validatedData.notes,
-        userId: validatedData.userId,
-        clientId: validatedData.clientId,
-        sharedGroups: validatedData.sharedGroupIds
-          ? {
-              connect: validatedData.sharedGroupIds.map((id) => ({ id })),
-            }
-          : undefined,
-      },
+    // Create contact and update lastContactAt in a transaction
+    const contact = await db.$transaction(async (tx) => {
+      // Create contact
+      const newContact = await tx.contact.create({
+        data: {
+          type: validatedData.type || null, // null for notes
+          date: new Date(validatedData.date),
+          notes: validatedData.notes,
+          isNote: validatedData.isNote,
+          userId: validatedData.userId,
+          clientId: validatedData.clientId,
+          sharedGroups: validatedData.sharedGroupIds
+            ? {
+                connect: validatedData.sharedGroupIds.map((id) => ({ id })),
+              }
+            : undefined,
+        },
+      })
+
+      // Update lastContactAt if this is a contact (not a note)
+      if (!validatedData.isNote) {
+        await tx.client.update({
+          where: { id: validatedData.clientId },
+          data: { lastContactAt: new Date(validatedData.date) },
+        })
+      }
+
+      return newContact
     })
 
     // Handle file uploads

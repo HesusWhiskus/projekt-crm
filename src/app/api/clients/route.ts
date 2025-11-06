@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
-import { ClientStatus } from "@prisma/client"
+import { ClientStatus, ClientPriority } from "@prisma/client"
 import { z } from "zod"
 import { validateQueryParams, clientQuerySchema } from "@/lib/query-validator"
 import { phoneSchema, websiteSchema, emailSchema, textFieldSchema, nameSchema, agencyNameSchema } from "@/lib/field-validators"
@@ -16,6 +16,15 @@ const createClientSchema = z.object({
   address: textFieldSchema(500, "Adres"),
   source: textFieldSchema(100, "Źródło"),
   status: z.nativeEnum(ClientStatus).default(ClientStatus.NEW_LEAD),
+  priority: z.nativeEnum(ClientPriority).optional(),
+  nextFollowUpAt: z.string().refine(
+    (val) => {
+      if (!val || val === "") return true // Optional
+      const date = new Date(val)
+      return !isNaN(date.getTime())
+    },
+    { message: "Nieprawidłowy format daty" }
+  ).optional().or(z.literal("")),
   assignedTo: z.string().optional(),
   sharedGroupIds: z.array(z.string()).optional(),
 })
@@ -54,6 +63,8 @@ export async function POST(request: Request) {
         address: validatedData.address || null,
         source: validatedData.source || null,
         status: validatedData.status,
+        priority: validatedData.priority || null,
+        nextFollowUpAt: validatedData.nextFollowUpAt ? new Date(validatedData.nextFollowUpAt) : null,
         assignedTo: validatedData.assignedTo || null,
         sharedGroups: validatedData.sharedGroupIds
           ? {
@@ -153,6 +164,35 @@ export async function GET(request: Request) {
 
     if (validatedParams.assignedTo) {
       where.assignedTo = validatedParams.assignedTo
+    }
+
+    // Filter by noContactDays (clients without contact for X days)
+    if (validatedParams.noContactDays) {
+      const days = parseInt(validatedParams.noContactDays)
+      if (!isNaN(days) && days > 0) {
+        const cutoffDate = new Date()
+        cutoffDate.setDate(cutoffDate.getDate() - days)
+        cutoffDate.setHours(0, 0, 0, 0)
+        
+        where.OR = [
+          ...(where.OR || []),
+          { lastContactAt: { lt: cutoffDate } },
+          { lastContactAt: null }
+        ]
+      }
+    }
+
+    // Filter by followUpToday (clients with follow-up today)
+    if (validatedParams.followUpToday === "true") {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      
+      where.nextFollowUpAt = {
+        gte: today,
+        lt: tomorrow
+      }
     }
 
     const clients = await db.client.findMany({
