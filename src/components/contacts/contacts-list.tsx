@@ -13,9 +13,10 @@ import Link from "next/link"
 
 interface Contact {
   id: string
-  type: ContactType
+  type: ContactType | null // Optional for notes
   date: Date
   notes: string
+  isNote: boolean
   client: {
     id: string
     firstName: string
@@ -212,7 +213,7 @@ export function ContactsList({
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <span className="font-medium">
-                          {contactTypeLabels[contact.type]}
+                          {contact.isNote ? "📝 Notatka" : (contact.type ? contactTypeLabels[contact.type] : "Inne")}
                         </span>
                         <span className="text-sm text-muted-foreground">
                           z{" "}
@@ -266,6 +267,7 @@ export function ContactsList({
                           type: contact.type,
                           date: contact.date,
                           notes: contact.notes,
+                          isNote: contact.isNote,
                           userId: contact.user.id,
                           clientId: contact.client?.id,
                           sharedGroups: contact.sharedGroups || [],

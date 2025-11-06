@@ -246,6 +246,7 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
                           type: contact.type,
                           date: contact.date,
                           notes: contact.notes,
+                          isNote: contact.isNote,
                           userId: contact.user.id,
                           sharedGroups: contact.sharedGroups || [],
                         }}

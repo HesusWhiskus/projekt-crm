@@ -59,13 +59,13 @@ COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
 RUN chown -R nextjs:nodejs /app/node_modules/@prisma && \
     chown -R nextjs:nodejs /app/node_modules/.bin
 
-# Create startup script that runs migrations (using db push like locally) then starts the app
+# Create startup script that runs migrations (using migrate deploy for production) then starts the app
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
     echo 'if [ -n "$DATABASE_URL" ]; then' >> /app/start.sh && \
     echo '  echo "Running database migrations..."' >> /app/start.sh && \
     echo '  export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
-    echo '  npx prisma db push --accept-data-loss 2>&1 || echo "Migrations failed, continuing..."' >> /app/start.sh && \
+    echo '  npx prisma migrate deploy 2>&1 || (echo "Migrations failed, trying db push..." && npx prisma db push --accept-data-loss 2>&1 || echo "All migration attempts failed, continuing...")' >> /app/start.sh && \
     echo '  echo "Migrations completed"' >> /app/start.sh && \
     echo 'fi' >> /app/start.sh && \
     echo 'echo "Starting application..."' >> /app/start.sh && \

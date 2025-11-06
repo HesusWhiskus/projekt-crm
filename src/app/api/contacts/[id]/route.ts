@@ -55,7 +55,7 @@ export async function PATCH(
 
     // Parse isNote (checkbox - "true" or null)
     const isNoteValue = formData.get("isNote")
-    const isNote = isNoteValue === "true" || isNoteValue === true
+    const isNote = isNoteValue !== null && String(isNoteValue) === "true"
     
     const parsedData = {
       type: formData.get("type") || undefined,

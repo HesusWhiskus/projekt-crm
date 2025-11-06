@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     
     // Parse isNote (checkbox - "true" or null)
     const isNoteValue = formData.get("isNote")
-    const isNote = isNoteValue === "true" || isNoteValue === true
+    const isNote = isNoteValue === "true" || String(isNoteValue) === "true"
     
     const parsedData = {
       type: formData.get("type") || undefined, // Optional for notes
