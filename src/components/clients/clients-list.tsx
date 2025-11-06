@@ -64,12 +64,12 @@ const statusLabels: Record<ClientStatus, string> = {
 }
 
 const statusColors: Record<ClientStatus, string> = {
-  NEW_LEAD: "bg-blue-100 text-blue-800",
-  IN_CONTACT: "bg-yellow-100 text-yellow-800",
-  DEMO_SENT: "bg-purple-100 text-purple-800",
-  NEGOTIATION: "bg-orange-100 text-orange-800",
-  ACTIVE_CLIENT: "bg-green-100 text-green-800",
-  LOST: "bg-red-100 text-red-800",
+  NEW_LEAD: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
+  IN_CONTACT: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
+  DEMO_SENT: "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200",
+  NEGOTIATION: "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200",
+  ACTIVE_CLIENT: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200",
+  LOST: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
 }
 
 const priorityLabels: Record<ClientPriority, string> = {
@@ -79,9 +79,9 @@ const priorityLabels: Record<ClientPriority, string> = {
 }
 
 const priorityColors: Record<ClientPriority, string> = {
-  LOW: "bg-blue-100 text-blue-800",
-  MEDIUM: "bg-yellow-100 text-yellow-800",
-  HIGH: "bg-red-100 text-red-800",
+  LOW: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
+  MEDIUM: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
+  HIGH: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
 }
 
 type SortField = "firstName" | "lastName" | "agencyName" | "email" | "phone" | "status" | "priority" | "assignee" | null
@@ -373,11 +373,11 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
             </p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="w-full divide-y divide-border">
+                <thead className="bg-muted">
                   <tr>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
                       onClick={() => handleSort("firstName")}
                     >
                       <div className="flex items-center">
@@ -386,7 +386,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
                       onClick={() => handleSort("agencyName")}
                     >
                       <div className="flex items-center">
@@ -395,7 +395,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
                       onClick={() => handleSort("email")}
                     >
                       <div className="flex items-center">
@@ -404,7 +404,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap w-24"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap w-24"
                       onClick={() => handleSort("phone")}
                     >
                       <div className="flex items-center">
@@ -413,7 +413,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap w-28"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap w-28"
                       onClick={() => handleSort("status")}
                     >
                       <div className="flex items-center">
@@ -422,7 +422,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap w-24"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap w-24"
                       onClick={() => handleSort("priority")}
                     >
                       <div className="flex items-center">
@@ -431,7 +431,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
                       onClick={() => handleSort("assignee")}
                     >
                       <div className="flex items-center">
@@ -439,34 +439,34 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                         {getSortIcon("assignee")}
                       </div>
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       Akcje
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-card divide-y divide-border">
                   {filteredAndSortedClients.map((client) => (
-                    <tr key={client.id} className="hover:bg-gray-50">
+                    <tr key={client.id} className="hover:bg-muted/50">
                       <td className="px-3 py-3 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-foreground">
                           {client.firstName} {client.lastName}
                         </div>
                       </td>
                       <td className="px-3 py-3">
-                        <div className="text-sm text-gray-900 truncate max-w-[200px]" title={client.agencyName || undefined}>
+                        <div className="text-sm text-foreground truncate max-w-[200px]" title={client.agencyName || undefined}>
                           {client.agencyName || "-"}
                         </div>
                       </td>
                       <td className="px-3 py-3 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 truncate max-w-[200px]" title={client.email || undefined}>
+                        <div className="text-sm text-foreground truncate max-w-[200px]" title={client.email || undefined}>
                           {client.email || "-"}
                         </div>
                       </td>
-                      <td className="px-2 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-2 py-3 whitespace-nowrap text-sm text-foreground">
                         {client.phone || "-"}
                       </td>
                       <td className="px-2 py-3 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[client.status]}`}>
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full min-w-[120px] justify-center ${statusColors[client.status]}`}>
                           {statusLabels[client.status]}
                         </span>
                       </td>
@@ -476,10 +476,10 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                             {priorityLabels[client.priority]}
                           </span>
                         ) : (
-                          <span className="text-sm text-gray-400">-</span>
+                          <span className="text-sm text-muted-foreground">-</span>
                         )}
                       </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-3 py-3 whitespace-nowrap text-sm text-foreground">
                         <div className="truncate max-w-[150px]" title={client.assignee?.name || client.assignee?.email || undefined}>
                           {client.assignee?.name || client.assignee?.email || "-"}
                         </div>

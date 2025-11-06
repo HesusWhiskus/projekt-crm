@@ -162,7 +162,7 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
             )}
             <div>
               <span className="text-sm font-medium">Status:</span>{" "}
-              <span className="px-2 py-1 rounded text-xs bg-gray-100">
+              <span className="px-2 py-1 rounded text-xs bg-muted text-muted-foreground">
                 {statusLabels[task.status as TaskStatus]}
               </span>
             </div>

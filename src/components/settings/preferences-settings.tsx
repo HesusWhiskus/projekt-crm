@@ -116,15 +116,25 @@ export function PreferencesSettings({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="theme">Motyw</Label>
-            <Select
-              id="theme"
-              value={currentTheme}
-              onChange={(e) => setCurrentTheme(e.target.value)}
-            >
-              <option value="light">Jasny</option>
-              <option value="dark">Ciemny</option>
-            </Select>
+            <Label>Motyw</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={currentTheme === "light" ? "default" : "outline"}
+                onClick={() => setCurrentTheme("light")}
+                className="flex-1"
+              >
+                Jasny
+              </Button>
+              <Button
+                type="button"
+                variant={currentTheme === "dark" ? "default" : "outline"}
+                onClick={() => setCurrentTheme("dark")}
+                className="flex-1"
+              >
+                Ciemny
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

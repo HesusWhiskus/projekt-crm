@@ -218,12 +218,12 @@ export function TasksList({
               <div className="space-y-2">
                 {filteredTasks.map((task) => (
                   <Link key={task.id} href={`/tasks/${task.id}`}>
-                    <div className="border rounded p-4 hover:bg-gray-50 cursor-pointer">
+                    <div className="border border-border rounded p-4 hover:bg-muted/50 cursor-pointer">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
                             <h3 className="font-medium">{task.title}</h3>
-                            <span className="px-2 py-1 rounded text-xs bg-gray-100">
+                            <span className="px-2 py-1 rounded text-xs bg-muted text-muted-foreground">
                               {statusLabels[task.status]}
                             </span>
                           </div>

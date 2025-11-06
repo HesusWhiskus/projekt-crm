@@ -131,7 +131,7 @@ export function DashboardNav({
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive
                         ? "bg-primary text-primary-foreground"
-                        : "text-gray-700 hover:bg-gray-100"
+                        : "text-foreground hover:bg-muted"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -143,13 +143,13 @@ export function DashboardNav({
           </div>
           <div className="flex items-center space-x-4">
             <WhatsNewButton />
-            <div className="text-sm text-gray-700">
+            <div className="text-sm text-foreground">
               <div className="font-medium">{user.name || user.email}</div>
               {user.position && (
-                <div className="text-xs text-gray-500">{user.position}</div>
+                <div className="text-xs text-muted-foreground">{user.position}</div>
               )}
               {!user.position && user.role === "ADMIN" && (
-                <div className="text-xs text-gray-500">Administrator</div>
+                <div className="text-xs text-muted-foreground">Administrator</div>
               )}
             </div>
             <Link href="/settings">
