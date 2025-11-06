@@ -26,6 +26,10 @@ export const changelog: ChangelogEntry[] = [
         description: 'Poprawiono widoczność wszystkich pól w ustawieniach w trybie ciemnym - zastąpiono hardcoded kolory zmiennymi CSS',
       },
       {
+        type: 'fixed',
+        description: 'Naprawiono skalowanie logo - teraz wszystkie obrazy (również mniejsze i kwadratowe) są zawsze przeskalowywane do preferowanego rozmiaru',
+      },
+      {
         type: 'added',
         description: 'Automatyczna konwersja i skalowanie logo - preferowany rozmiar 224x64px, automatyczna konwersja do PNG',
       },

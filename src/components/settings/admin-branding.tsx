@@ -68,19 +68,18 @@ export function AdminBranding({
         const img = document.createElement("img")
         img.onload = () => {
           // Preferred size: 224x64px (w-56 h-16) with max height 64px
-          // Maintain aspect ratio, but ensure it fits within 224x64
+          // Always resize to fit within 224x64, maintaining aspect ratio
           const maxWidth = 224
           const maxHeight = 64
           
-          let width = img.width
-          let height = img.height
+          const originalWidth = img.width
+          const originalHeight = img.height
           
           // Calculate new dimensions maintaining aspect ratio
-          if (width > maxWidth || height > maxHeight) {
-            const ratio = Math.min(maxWidth / width, maxHeight / height)
-            width = Math.round(width * ratio)
-            height = Math.round(height * ratio)
-          }
+          // Always resize, even if image is smaller
+          const ratio = Math.min(maxWidth / originalWidth, maxHeight / originalHeight)
+          const width = Math.round(originalWidth * ratio)
+          const height = Math.round(originalHeight * ratio)
 
           // Create canvas for resizing
           const canvas = document.createElement("canvas")
