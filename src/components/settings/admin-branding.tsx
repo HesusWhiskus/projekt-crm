@@ -72,19 +72,28 @@ export function AdminBranding({
           // For SVG, we'll create a canvas with fixed size and render it
           const img = document.createElement("img")
           img.onload = () => {
-            const maxWidth = 224
-            const maxHeight = 64
+            // Fixed size: 224x64px - always format to this size
+            const targetWidth = 224
+            const targetHeight = 64
             
-            const originalWidth = img.width || 224
-            const originalHeight = img.height || 64
+            const originalWidth = img.naturalWidth || img.width || 224
+            const originalHeight = img.naturalHeight || img.height || 64
             
-            const ratio = Math.min(maxWidth / originalWidth, maxHeight / originalHeight)
-            const width = Math.round(originalWidth * ratio)
-            const height = Math.round(originalHeight * ratio)
+            // Calculate scaling to fill the entire 224x64 area (cover style)
+            const scaleX = targetWidth / originalWidth
+            const scaleY = targetHeight / originalHeight
+            const scale = Math.max(scaleX, scaleY)
+            
+            const scaledWidth = originalWidth * scale
+            const scaledHeight = originalHeight * scale
+            
+            // Center the image
+            const x = (targetWidth - scaledWidth) / 2
+            const y = (targetHeight - scaledHeight) / 2
 
             const canvas = document.createElement("canvas")
-            canvas.width = width
-            canvas.height = height
+            canvas.width = targetWidth
+            canvas.height = targetHeight
             const ctx = canvas.getContext("2d")
             
             if (!ctx) {
@@ -92,7 +101,12 @@ export function AdminBranding({
               return
             }
 
-            ctx.drawImage(img, 0, 0, width, height)
+            // Set white background
+            ctx.fillStyle = "#FFFFFF"
+            ctx.fillRect(0, 0, targetWidth, targetHeight)
+
+            // Draw image centered, scaled to fill
+            ctx.drawImage(img, x, y, scaledWidth, scaledHeight)
 
             canvas.toBlob(
               (blob) => {
@@ -126,29 +140,32 @@ export function AdminBranding({
         img.crossOrigin = "anonymous" // Important for CORS
         
         img.onload = () => {
-          // Preferred size: 224x64px (w-56 h-16) with max height 64px
-          // Always resize to fit within 224x64, maintaining aspect ratio
-          const maxWidth = 224
-          const maxHeight = 64
+          // Fixed size: 224x64px (w-56 h-16) - always format to this size
+          const targetWidth = 224
+          const targetHeight = 64
           
           // Get actual image dimensions
           const originalWidth = img.naturalWidth || img.width || 224
           const originalHeight = img.naturalHeight || img.height || 64
           
-          // Calculate new dimensions maintaining aspect ratio
-          // Always resize, even if image is smaller
-          const ratio = Math.min(maxWidth / originalWidth, maxHeight / originalHeight)
-          const width = Math.round(originalWidth * ratio)
-          const height = Math.round(originalHeight * ratio)
+          // Calculate scaling to fill the entire 224x64 area (cover style)
+          // Use the larger ratio to ensure the image covers the entire area
+          const scaleX = targetWidth / originalWidth
+          const scaleY = targetHeight / originalHeight
+          const scale = Math.max(scaleX, scaleY) // Use max to fill entire area
+          
+          // Calculate scaled dimensions
+          const scaledWidth = originalWidth * scale
+          const scaledHeight = originalHeight * scale
+          
+          // Calculate position to center the image
+          const x = (targetWidth - scaledWidth) / 2
+          const y = (targetHeight - scaledHeight) / 2
 
-          // Ensure minimum dimensions
-          const finalWidth = Math.max(width, 1)
-          const finalHeight = Math.max(height, 1)
-
-          // Create canvas for resizing
+          // Create canvas with fixed size 224x64
           const canvas = document.createElement("canvas")
-          canvas.width = finalWidth
-          canvas.height = finalHeight
+          canvas.width = targetWidth
+          canvas.height = targetHeight
           const ctx = canvas.getContext("2d", { willReadFrequently: false })
           
           if (!ctx) {
@@ -156,12 +173,12 @@ export function AdminBranding({
             return
           }
 
-          // Set white background for transparency
+          // Set white background
           ctx.fillStyle = "#FFFFFF"
-          ctx.fillRect(0, 0, finalWidth, finalHeight)
+          ctx.fillRect(0, 0, targetWidth, targetHeight)
 
-          // Draw image on canvas
-          ctx.drawImage(img, 0, 0, finalWidth, finalHeight)
+          // Draw image centered, scaled to fill the entire area
+          ctx.drawImage(img, x, y, scaledWidth, scaledHeight)
 
           // Convert to blob (PNG format for best quality)
           canvas.toBlob(

@@ -27,7 +27,7 @@ export const changelog: ChangelogEntry[] = [
       },
       {
         type: 'fixed',
-        description: 'Naprawiono skalowanie logo - teraz wszystkie obrazy (PNG, JPG, SVG, również mniejsze i kwadratowe) są zawsze przeskalowywane do preferowanego rozmiaru używając naturalWidth/naturalHeight',
+        description: 'Naprawiono formatowanie logo - teraz wszystkie obrazy (PNG, JPG, SVG, kwadratowe, prostokątne) są zawsze formatowane do prostokąta 224x64px z wypełnieniem całego pola (cover style)',
       },
       {
         type: 'added',
