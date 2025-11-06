@@ -5,6 +5,48 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.3.0-beta] - 2025-11-07
+
+### Dodano
+- **Tryb jasny/ciemny:**
+  - Pełna obsługa dark mode w całej aplikacji
+  - Przełącznik trybu w ustawieniach preferencji
+  - Automatyczne zapisywanie wyboru użytkownika
+  - Wsparcie dla wszystkich komponentów (tabele, karty, nawigacja, formularze)
+- **Kolumna priorytetu w liście klientów:**
+  - Wyświetlanie priorytetu obok statusu
+  - Kolorowe oznaczenia: Niski (niebieski), Średni (żółty), Wysoki (czerwony)
+  - Sortowanie po priorytecie
+- **Kolorowe oznaczenia statusów:**
+  - Nowy lead - niebieski
+  - W kontakcie - żółty
+  - Demo wysłane - fioletowy
+  - Negocjacje - pomarańczowy
+  - Klient aktywny - zielony
+  - Utracony - czerwony
+
+### Zmieniono
+- **Optymalizacja tabeli klientów:**
+  - Zmniejszona szerokość kolumny "Telefon" (w-24)
+  - Zmniejszona szerokość kolumny "Status" (w-28)
+  - Dodana kolumna "Priorytet" (w-24)
+  - Wszystkie statusy mają jednakową szerokość (min-w-[120px])
+- **Przełącznik trybu jasny/ciemny:**
+  - Zastąpiono listę rozwijaną przyciskami toggle
+  - Lepsze UX z natychmiastową wizualną informacją zwrotną
+- **Kolory statusów i priorytetów:**
+  - Dodano wsparcie dla dark mode (ciemniejsze tła w trybie ciemnym)
+
+### Naprawiono
+- Równość statusów w kolumnie - wszystkie statusy mają jednakową szerokość niezależnie od długości tekstu
+- Czytelność zakładek nawigacji w trybie ciemnym
+- Czytelność nazwy użytkownika i stanowiska w trybie ciemnym
+- Tabela klientów działa poprawnie w trybie ciemnym (wszystkie elementy są widoczne)
+- Status zadań jest widoczny w trybie ciemnym
+- Wszystkie komponenty używają zmiennych CSS zamiast hardcoded kolorów
+
+---
+
 ## [0.2.0-beta] - 2025-11-06
 
 ### Dodano

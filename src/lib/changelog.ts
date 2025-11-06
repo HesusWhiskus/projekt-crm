@@ -14,6 +14,48 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.3.0-beta',
+    date: '2025-11-07',
+    changes: [
+      {
+        type: 'added',
+        description: 'Tryb jasny/ciemny - pełna obsługa dark mode w całej aplikacji',
+      },
+      {
+        type: 'added',
+        description: 'Kolumna priorytetu w liście klientów z kolorowym oznaczeniem (Niski/Średni/Wysoki)',
+      },
+      {
+        type: 'added',
+        description: 'Kolorowe oznaczenia statusów klientów dla lepszej wizualizacji (Nowy lead, W kontakcie, Demo wysłane, itp.)',
+      },
+      {
+        type: 'changed',
+        description: 'Optymalizacja szerokości kolumn w tabeli klientów - telefon i status są węższe, dodano priorytet',
+      },
+      {
+        type: 'changed',
+        description: 'Płynny selector trybu jasny/ciemny - przyciski zamiast listy rozwijanej',
+      },
+      {
+        type: 'fixed',
+        description: 'Równość statusów w kolumnie - wszystkie statusy mają jednakową szerokość',
+      },
+      {
+        type: 'fixed',
+        description: 'Czytelność zakładek i nazwy użytkownika w trybie ciemnym',
+      },
+      {
+        type: 'fixed',
+        description: 'Tabela klientów działa poprawnie w trybie ciemnym',
+      },
+      {
+        type: 'fixed',
+        description: 'Status zadań jest widoczny w trybie ciemnym',
+      },
+    ],
+  },
+  {
     version: '0.2.0-beta',
     date: '2025-11-06',
     changes: [
