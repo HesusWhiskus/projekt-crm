@@ -1,8 +1,7 @@
-FROM node:18-alpine AS base
+FROM node:20 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -22,17 +21,17 @@ RUN npx prisma generate
 ENV DOCKER_BUILD=true
 RUN npm run build
 
+# Note: Migrations will be run after deployment via Railway CLI or startup script
+# Railway doesn't pass DATABASE_URL to build process, so we run migrations at runtime
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
 
-# Install OpenSSL for Prisma
-RUN apk add --no-cache openssl1.1-compat
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -41,7 +40,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Copy Prisma binaries for migrations
+# Copy Prisma binaries for migrations (as fallback if migrations weren't run in build)
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
 
@@ -49,13 +48,15 @@ COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
 RUN chown -R nextjs:nodejs /app/node_modules/@prisma && \
     chown -R nextjs:nodejs /app/node_modules/.bin
 
-# Create startup script that runs migrations then starts the app
+# Create startup script that runs migrations (fallback) then starts the app
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
-    echo 'echo "Starting database migrations..."' >> /app/start.sh && \
-    echo 'export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
-    echo 'prisma migrate deploy 2>&1 || (echo "migrate deploy failed, trying db push..." && prisma db push 2>&1 || echo "db push also failed, continuing...")' >> /app/start.sh && \
-    echo 'echo "Migrations completed, starting application..."' >> /app/start.sh && \
+    echo 'if [ -n "$DATABASE_URL" ]; then' >> /app/start.sh && \
+    echo '  echo "Running database migrations (fallback)..."' >> /app/start.sh && \
+    echo '  export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
+    echo '  npx prisma migrate deploy 2>&1 || npx prisma db push 2>&1 || echo "Migrations skipped"' >> /app/start.sh && \
+    echo 'fi' >> /app/start.sh && \
+    echo 'echo "Starting application..."' >> /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh && \
     chown nextjs:nodejs /app/start.sh
