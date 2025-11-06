@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from "date-fns"
 import { pl } from "date-fns/locale"
-import { TaskStatus } from "@prisma/client"
+import { TaskStatus, UserRole } from "@prisma/client"
 import { TaskForm } from "./task-form"
 import { ClientForm } from "@/components/clients/client-form"
 
@@ -45,7 +45,7 @@ interface TasksCalendarProps {
   }>
   currentUser?: {
     id: string
-    role: string
+    role: UserRole
   }
 }
 
