@@ -24,6 +24,34 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+    
+    /* Dynamic color scheme - default blue */
+    --color-primary: #3b82f6;
+  }
+
+  /* Predefined color themes */
+  [data-theme="blue"] {
+    --color-primary: #3b82f6;
+  }
+
+  [data-theme="green"] {
+    --color-primary: #10b981;
+  }
+
+  [data-theme="purple"] {
+    --color-primary: #8b5cf6;
+  }
+
+  [data-theme="red"] {
+    --color-primary: #ef4444;
+  }
+
+  [data-theme="custom"] {
+    --color-primary: var(--user-primary-color, #3b82f6);
+  }
+
+  [data-theme="system"] {
+    --color-primary: var(--system-primary-color, #3b82f6);
   }
 
   .dark {

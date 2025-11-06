@@ -1,10 +1,12 @@
 "use client"
 
+import { useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { UserRole } from "@prisma/client"
+import Image from "next/image"
 import {
   LayoutDashboard,
   Users,
@@ -23,6 +25,16 @@ interface DashboardNavProps {
     image?: string | null
     role: UserRole
   }
+  systemName: string
+  systemLogo: string | null
+  userColorScheme: {
+    primaryColor?: string | null
+    themeName?: string | null
+  } | null
+  defaultColorScheme: {
+    primaryColor?: string
+    themeName?: string
+  } | null
 }
 
 const navigation = [
@@ -33,16 +45,52 @@ const navigation = [
   { name: "Kalendarz", href: "/calendar", icon: Calendar },
 ]
 
-export function DashboardNav({ user }: DashboardNavProps) {
+export function DashboardNav({
+  user,
+  systemName,
+  systemLogo,
+  userColorScheme,
+  defaultColorScheme,
+}: DashboardNavProps) {
   const pathname = usePathname()
+
+  // Apply color scheme
+  useEffect(() => {
+    const themeName = userColorScheme?.themeName || defaultColorScheme?.themeName || "blue"
+    const primaryColor =
+      themeName === "system"
+        ? defaultColorScheme?.primaryColor || "#3b82f6"
+        : themeName === "custom"
+        ? userColorScheme?.primaryColor || "#3b82f6"
+        : null
+
+    if (primaryColor) {
+      document.documentElement.style.setProperty("--color-primary", primaryColor)
+    }
+    document.documentElement.setAttribute("data-theme", themeName)
+  }, [userColorScheme, defaultColorScheme])
 
   return (
     <nav className="bg-white border-b border-gray-200">
       <div className="max-w-[98%] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link href="/dashboard" className="text-xl font-bold text-primary">
-              Internal CRM
+            <Link
+              href="/dashboard"
+              className="flex items-center space-x-2 text-xl font-bold"
+              style={{ color: "var(--color-primary, #3b82f6)" }}
+            >
+              {systemLogo && (
+                <div className="relative w-8 h-8">
+                  <Image
+                    src={systemLogo}
+                    alt="Logo"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              <span>{systemName}</span>
             </Link>
             <div className="hidden md:flex space-x-1">
               {navigation.map((item) => {
@@ -73,6 +121,12 @@ export function DashboardNav({ user }: DashboardNavProps) {
                 <div className="text-xs text-gray-500">Administrator</div>
               )}
             </div>
+            <Link href="/settings">
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Ustawienia
+              </Button>
+            </Link>
             {user.role === "ADMIN" && (
               <Link href="/admin">
                 <Button variant="ghost" size="sm">

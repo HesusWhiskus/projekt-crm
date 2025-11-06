@@ -44,18 +44,19 @@ model User {
   emailVerified DateTime?
   name          String?
   image         String?
-  password      String?   // Nullable for OAuth users
+  password      String? // Nullable for OAuth users
   role          UserRole  @default(USER)
   position      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   // Relations
-  assignedClients Client[]      @relation("ClientAssignee")
-  assignedTasks   Task[]         @relation("TaskAssignee")
+  assignedClients Client[]         @relation("ClientAssignee")
+  assignedTasks   Task[]           @relation("TaskAssignee")
   contacts        Contact[]
   groups          UserGroup[]
   activities      ActivityLog[]
+  preferences     UserPreferences?
 
   @@map("users")
 }
@@ -68,10 +69,10 @@ model Group {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  users         UserGroup[]
-  sharedClients Client[]      @relation("GroupSharedClients")
-  sharedTasks   Task[]        @relation("GroupSharedTasks")
-  sharedContacts Contact[]     @relation("GroupSharedContacts")
+  users          UserGroup[]
+  sharedClients  Client[]    @relation("GroupSharedClients")
+  sharedTasks    Task[]      @relation("GroupSharedTasks")
+  sharedContacts Contact[]   @relation("GroupSharedContacts")
 
   @@map("groups")
 }
@@ -90,26 +91,26 @@ model UserGroup {
 }
 
 model Client {
-  id          String       @id @default(cuid())
-  firstName   String
-  lastName    String
-  agencyName  String?
-  email       String?
-  phone        String?
-  website     String?
-  address     String?
-  source      String?      // Lead source
-  status      ClientStatus @default(NEW_LEAD)
-  assignedTo  String?      // User ID
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id         String       @id @default(cuid())
+  firstName  String
+  lastName   String
+  agencyName String?
+  email      String?
+  phone      String?
+  website    String?
+  address    String?
+  source     String? // Lead source
+  status     ClientStatus @default(NEW_LEAD)
+  assignedTo String? // User ID
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   // Relations
-  assignee      User?               @relation("ClientAssignee", fields: [assignedTo], references: [id])
+  assignee      User?                 @relation("ClientAssignee", fields: [assignedTo], references: [id])
   contacts      Contact[]
   tasks         Task[]
   statusHistory ClientStatusHistory[]
-  sharedGroups  Group[]              @relation("GroupSharedClients")
+  sharedGroups  Group[]               @relation("GroupSharedClients")
 
   @@map("clients")
 }
@@ -119,7 +120,7 @@ model ClientStatusHistory {
   clientId  String
   status    ClientStatus
   changedAt DateTime     @default(now())
-  changedBy String?      // User ID
+  changedBy String? // User ID
   notes     String?
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
@@ -133,15 +134,15 @@ model Contact {
   type      ContactType
   date      DateTime    @default(now())
   notes     String
-  userId    String      // User who created the contact
+  userId    String // User who created the contact
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
   // Relations
-  client        Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  user          User         @relation(fields: [userId], references: [id])
-  attachments   Attachment[]
-  sharedGroups  Group[]      @relation("GroupSharedContacts")
+  client       Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+  attachments  Attachment[]
+  sharedGroups Group[]      @relation("GroupSharedContacts")
 
   @@map("contacts")
 }
@@ -150,8 +151,8 @@ model Attachment {
   id        String   @id @default(cuid())
   contactId String
   filename  String
-  path      String   // File path or URL
-  size      Int?     // File size in bytes
+  path      String // File path or URL
+  size      Int? // File size in bytes
   mimeType  String?
   createdAt DateTime @default(now())
 
@@ -166,8 +167,8 @@ model Task {
   description String?
   dueDate     DateTime?
   status      TaskStatus @default(TODO)
-  assignedTo  String?    // User ID
-  clientId    String?    // Optional client relation
+  assignedTo  String? // User ID
+  clientId    String? // Optional client relation
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
@@ -180,18 +181,50 @@ model Task {
 }
 
 model ActivityLog {
-  id        String   @id @default(cuid())
-  userId    String
-  action    String   // e.g., "CREATE_CLIENT", "UPDATE_CLIENT", "DELETE_CONTACT"
-  entityType String  // e.g., "Client", "Contact", "Task"
-  entityId  String?
-  details   Json?    // Additional details as JSON
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  action     String // e.g., "CREATE_CLIENT", "UPDATE_CLIENT", "DELETE_CONTACT"
+  entityType String // e.g., "Client", "Contact", "Task"
+  entityId   String?
+  details    Json? // Additional details as JSON
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 
   @@map("activity_logs")
 }
 
+model UserPreferences {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Theme and appearance
+  theme    String? @default("light") // "light" | "dark"
+  language String? @default("pl") // "pl" | "en"
+
+  // Color scheme
+  primaryColor String? // Hex color (e.g., #3b82f6)
+  themeName    String? // "blue" | "green" | "purple" | "red" | "custom" | "system"
+
+  // Notifications
+  emailTasks    Boolean @default(true)
+  emailContacts Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_preferences")
+}
+
+model SystemSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String // JSON string or plain string
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}

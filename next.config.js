@@ -5,6 +5,13 @@ const nextConfig = {
   ...(process.env.DOCKER_BUILD === 'true' && { output: 'standalone' }),
   images: {
     domains: ['lh3.googleusercontent.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+    unoptimized: process.env.NODE_ENV === 'production' ? false : false,
   },
   async headers() {
     return [
