@@ -50,6 +50,9 @@ export default async function SignInPage() {
 
   console.log("[SignInPage] Final values - systemName:", systemName, "systemLogo:", systemLogo ? "exists" : "null")
 
+  // Check if Google OAuth is configured
+  const googleOAuthEnabled = !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md">
@@ -67,7 +70,7 @@ export default async function SignInPage() {
             </CardContent>
           }
         >
-          <SignInForm />
+          <SignInForm googleOAuthEnabled={googleOAuthEnabled} />
         </Suspense>
       </Card>
     </div>
