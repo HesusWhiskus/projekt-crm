@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { hash } from "bcryptjs"
 import { z } from "zod"
 import { rateLimiters } from "@/lib/rate-limit"
+import { validatePassword } from "@/lib/password-validator"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Imię musi mieć co najmniej 2 znaki"),
@@ -34,6 +35,15 @@ export async function POST(request: Request) {
     }
     const body = await request.json()
     const validatedData = registerSchema.parse(body)
+
+    // Validate password strength
+    const passwordValidation = validatePassword(validatedData.password)
+    if (!passwordValidation.valid) {
+      return NextResponse.json(
+        { error: passwordValidation.error },
+        { status: 400 }
+      )
+    }
 
     // Check if user already exists
     const existingUser = await db.user.findUnique({
