@@ -6,6 +6,15 @@ API Internal CRM umożliwia zarządzanie klientami, kontaktami, zadaniami, użyt
 
 **Base URL:** `http://localhost:3000/api` (lub odpowiedni URL produkcyjny)
 
+## Format identyfikatorów (ID)
+
+**Ważne:** System używa formatu **CUID** (Collision-resistant Unique Identifier) dla wszystkich identyfikatorów w bazie danych, **NIE UUID**.
+
+- **CUID** to format używany domyślnie przez Prisma ORM
+- Przykład CUID: `cmhnww4wl0001sghcpfrzy507`
+- CUID jest walidowany jako niepusty string - nie ma dodatkowej walidacji formatu
+- Wszystkie ID w path parameters i query parameters są w formacie CUID
+
 ## Autoryzacja
 
 Wszystkie endpointy wymagają autoryzacji. Użyj sesji cookie z NextAuth.js lub tokenu autoryzacyjnego w nagłówku:

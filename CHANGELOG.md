@@ -5,26 +5,17 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
-## [0.1.3-beta] - 2025-11-06
+## [0.1.4-beta] - 2025-11-06
 
 ### Naprawiono
-- Przywrócono oryginalną walidację dla opcjonalnych pól UUID (assignedTo, clientId, userId) - usunięto zbyt restrykcyjną walidację UUID która powodowała błędy przy zapisywaniu/edytowaniu zadań, klientów i kontaktów
-- System działa teraz jak przed zmianami bezpieczeństwa - walidacja UUID pozostaje tylko dla path parameters i query parameters
+- **KRYTYCZNA NAPRAWA:** Usunięto błędną walidację UUID dla path parameters - system używa CUID (Collision-resistant Unique Identifier), nie UUID
+- Naprawiono błąd "Nieprawidłowy format ID" przy edycji zadań, klientów i kontaktów
+- Naprawiono zapamiętywanie wybranego klienta przy edycji kontaktu
+- Zaktualizowano dokumentację API - dodano informację o formacie CUID
 
----
-
-## [0.1.2-beta] - 2025-11-06
-
-### Naprawiono
-- Naprawiono walidację UUID dla wszystkich opcjonalnych pól (klienci, kontakty, zadania) - pusty string jest teraz poprawnie konwertowany na null/undefined przed walidacją
-- Naprawiono problem z zapisywaniem i edytowaniem zadań, klientów i kontaktów spowodowany zbyt restrykcyjną walidacją UUID
-
----
-
-## [0.1.1-beta] - 2025-11-06
-
-### Naprawiono
-- Naprawiono walidację UUID dla opcjonalnych pól w zadaniach (assignedTo, clientId) - pusty string jest teraz poprawnie konwertowany na null
+### Zmieniono
+- Walidacja ID w path parameters zmieniona z UUID na prostą walidację niepustego stringa (CUID format)
+- Zaktualizowano dokumentację techniczną - wszystkie ID są w formacie CUID
 
 ---
 
@@ -65,7 +56,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 - Rate limiting dla endpointów autoryzacji
 - Walidacja i sanityzacja uploadów plików
 - Walidacja parametrów zapytań (query parameters)
-- Walidacja UUID w ścieżkach API
+- Walidacja ID w ścieżkach API (CUID format)
 - Content Security Policy headers
 - Walidacja siły hasła (min. 8 znaków, wielkie/małe litery, cyfry)
 - Redukcja czasu życia sesji z 8h do 4h

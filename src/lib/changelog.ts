@@ -14,32 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
-    version: '0.1.3-beta',
+    version: '0.1.4-beta',
     date: '2025-11-06',
     changes: [
       {
         type: 'fixed',
-        description: 'Przywrócono oryginalną walidację dla opcjonalnych pól UUID - naprawiono błędy przy zapisywaniu/edytowaniu zadań, klientów i kontaktów',
+        description: 'KRYTYCZNA NAPRAWA: Usunięto błędną walidację UUID - system używa CUID, nie UUID. Naprawiono błąd "Nieprawidłowy format ID" przy edycji',
       },
-    ],
-  },
-  {
-    version: '0.1.2-beta',
-    date: '2025-11-06',
-    changes: [
       {
         type: 'fixed',
-        description: 'Naprawiono walidację UUID dla wszystkich opcjonalnych pól (klienci, kontakty, zadania) - problem z zapisywaniem i edytowaniem',
-      },
-    ],
-  },
-  {
-    version: '0.1.1-beta',
-    date: '2025-11-06',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Naprawiono walidację UUID dla opcjonalnych pól w zadaniach (assignedTo, clientId)',
+        description: 'Naprawiono zapamiętywanie wybranego klienta przy edycji kontaktu',
       },
     ],
   },
