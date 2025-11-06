@@ -45,7 +45,7 @@ COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
     echo 'echo "Starting database migrations..."' >> /app/start.sh && \
-    echo 'npx prisma migrate deploy 2>&1 || (echo "migrate deploy failed, trying db push..." && npx prisma db push 2>&1 || echo "db push also failed, continuing...")' >> /app/start.sh && \
+    echo 'node node_modules/prisma/build/index.js migrate deploy 2>&1 || (echo "migrate deploy failed, trying db push..." && node node_modules/prisma/build/index.js db push 2>&1 || echo "db push also failed, continuing...")' >> /app/start.sh && \
     echo 'echo "Migrations completed, starting application..."' >> /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh && \
