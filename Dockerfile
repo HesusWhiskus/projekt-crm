@@ -67,12 +67,12 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
 
 USER nextjs
 
-# Railway automatically sets PORT, but we expose 3000 as default
+# Railway automatically sets PORT - expose it dynamically
+# Next.js standalone uses PORT from environment automatically
 EXPOSE 3000
 
-# Use PORT from environment (Railway sets this automatically)
-# Default to 3000 if not set
-ENV PORT=${PORT:-3000}
+# Railway sets PORT automatically, but we need to ensure it's available
+# Next.js standalone server.js reads PORT from process.env
 ENV HOSTNAME "0.0.0.0"
 
 CMD ["/app/start.sh"]
