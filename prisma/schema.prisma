@@ -38,6 +38,12 @@ enum ContactType {
   OTHER
 }
 
+enum ClientPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -91,19 +97,22 @@ model UserGroup {
 }
 
 model Client {
-  id         String       @id @default(cuid())
-  firstName  String
-  lastName   String
-  agencyName String?
-  email      String?
-  phone      String?
-  website    String?
-  address    String?
-  source     String? // Lead source
-  status     ClientStatus @default(NEW_LEAD)
-  assignedTo String? // User ID
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id             String          @id @default(cuid())
+  firstName      String
+  lastName       String
+  agencyName     String?
+  email          String?
+  phone          String?
+  website        String?
+  address        String?
+  source         String? // Lead source
+  status         ClientStatus    @default(NEW_LEAD)
+  priority       ClientPriority? // Priority for prospecting
+  assignedTo     String? // User ID
+  lastContactAt  DateTime? // Last contact date (auto-updated)
+  nextFollowUpAt DateTime? // Next follow-up date
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   // Relations
   assignee      User?                 @relation("ClientAssignee", fields: [assignedTo], references: [id])
@@ -129,14 +138,15 @@ model ClientStatusHistory {
 }
 
 model Contact {
-  id        String      @id @default(cuid())
+  id        String       @id @default(cuid())
   clientId  String
-  type      ContactType
-  date      DateTime    @default(now())
+  type      ContactType? // Optional for notes (isNote=true)
+  date      DateTime     @default(now())
   notes     String
+  isNote    Boolean      @default(false) // Flag to distinguish notes from contacts
   userId    String // User who created the contact
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   // Relations
   client       Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
