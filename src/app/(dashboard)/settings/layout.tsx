@@ -13,10 +13,18 @@ export default async function SettingsLayout({
     redirect("/signin")
   }
 
+  // Serialize user data for client component
+  const userData = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role as "ADMIN" | "USER",
+  }
+
   return (
     <div className="flex gap-8">
       <aside className="w-64 flex-shrink-0">
-        <SettingsNav user={user} />
+        <SettingsNav user={userData} />
       </aside>
       <main className="flex-1">{children}</main>
     </div>

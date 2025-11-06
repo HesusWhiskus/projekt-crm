@@ -54,8 +54,10 @@ export function DashboardNav({
 }: DashboardNavProps) {
   const pathname = usePathname()
 
-  // Apply color scheme
+  // Apply color scheme (only on client)
   useEffect(() => {
+    if (typeof window === "undefined") return
+
     const themeName = userColorScheme?.themeName || defaultColorScheme?.themeName || "blue"
     const primaryColor =
       themeName === "system"
@@ -82,12 +84,21 @@ export function DashboardNav({
             >
               {systemLogo && (
                 <div className="relative w-8 h-8">
-                  <Image
-                    src={systemLogo}
-                    alt="Logo"
-                    fill
-                    className="object-contain"
-                  />
+                  {systemLogo.startsWith("http") ? (
+                    <Image
+                      src={systemLogo}
+                      alt="Logo"
+                      fill
+                      className="object-contain"
+                      unoptimized
+                    />
+                  ) : (
+                    <img
+                      src={systemLogo}
+                      alt="Logo"
+                      className="w-full h-full object-contain"
+                    />
+                  )}
                 </div>
               )}
               <span>{systemName}</span>

@@ -39,7 +39,9 @@ export function PreferencesSettings({
   const [success, setSuccess] = useState<string | null>(null)
 
   useEffect(() => {
-    // Apply color scheme to document
+    // Apply color scheme to document (only on client)
+    if (typeof window === "undefined") return
+
     if (colorScheme.themeName === "system" && defaultColorScheme) {
       document.documentElement.style.setProperty(
         "--color-primary",

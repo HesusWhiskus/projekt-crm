@@ -122,12 +122,21 @@ export function AdminBranding({
             {logoPreview && (
               <div className="relative inline-block mb-3">
                 <div className="relative w-32 h-32 border rounded-lg overflow-hidden bg-gray-50">
-                  <Image
-                    src={logoPreview}
-                    alt="Logo systemu"
-                    fill
-                    className="object-contain p-2"
-                  />
+                  {logoPreview.startsWith("data:") || logoPreview.startsWith("http") ? (
+                    <Image
+                      src={logoPreview}
+                      alt="Logo systemu"
+                      fill
+                      className="object-contain p-2"
+                      unoptimized
+                    />
+                  ) : (
+                    <img
+                      src={logoPreview}
+                      alt="Logo systemu"
+                      className="w-full h-full object-contain p-2"
+                    />
+                  )}
                 </div>
                 <button
                   type="button"
@@ -173,12 +182,21 @@ export function AdminBranding({
               <div className="flex items-center space-x-3">
                 {logoPreview && (
                   <div className="relative w-8 h-8">
-                    <Image
-                      src={logoPreview}
-                      alt="Logo"
-                      fill
-                      className="object-contain"
-                    />
+                    {logoPreview.startsWith("data:") || logoPreview.startsWith("http") ? (
+                      <Image
+                        src={logoPreview}
+                        alt="Logo"
+                        fill
+                        className="object-contain"
+                        unoptimized
+                      />
+                    ) : (
+                      <img
+                        src={logoPreview}
+                        alt="Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    )}
                   </div>
                 )}
                 <span className="text-lg font-bold">{systemName}</span>

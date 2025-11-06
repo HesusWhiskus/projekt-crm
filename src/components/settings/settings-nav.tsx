@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { UserRole } from "@prisma/client"
 import {
   User,
   Lock,
@@ -16,7 +15,7 @@ interface SettingsNavProps {
     id: string
     email: string
     name?: string | null
-    role: UserRole
+    role: "ADMIN" | "USER"
   }
 }
 
