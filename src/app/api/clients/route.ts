@@ -30,8 +30,18 @@ export async function POST(request: Request) {
     const body = await request.json()
     console.log("[DEBUG CLIENTS POST] Received body:", JSON.stringify(body, null, 2))
     console.log("[DEBUG CLIENTS POST] assignedTo:", body.assignedTo, "type:", typeof body.assignedTo)
-    const validatedData = createClientSchema.parse(body)
-    console.log("[DEBUG CLIENTS POST] Validated data:", JSON.stringify(validatedData, null, 2))
+    console.log("[DEBUG CLIENTS POST] sharedGroupIds:", body.sharedGroupIds, "type:", typeof body.sharedGroupIds, "isArray:", Array.isArray(body.sharedGroupIds))
+    let validatedData
+    try {
+      validatedData = createClientSchema.parse(body)
+      console.log("[DEBUG CLIENTS POST] Validated data:", JSON.stringify(validatedData, null, 2))
+    } catch (error: any) {
+      console.error("[DEBUG CLIENTS POST] Validation error:", error)
+      if (error instanceof z.ZodError) {
+        console.error("[DEBUG CLIENTS POST] Zod errors:", JSON.stringify(error.errors, null, 2))
+      }
+      throw error
+    }
 
     const client = await db.client.create({
       data: {
@@ -80,6 +90,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ client }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("[DEBUG CLIENTS POST] ZodError details:", JSON.stringify(error.errors, null, 2))
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }

@@ -101,8 +101,18 @@ export async function PATCH(
     console.log("[DEBUG TASKS PATCH] Received body:", JSON.stringify(body, null, 2))
     console.log("[DEBUG TASKS PATCH] assignedTo:", body.assignedTo, "type:", typeof body.assignedTo)
     console.log("[DEBUG TASKS PATCH] clientId:", body.clientId, "type:", typeof body.clientId)
-    const validatedData = updateTaskSchema.parse(body)
-    console.log("[DEBUG TASKS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
+    console.log("[DEBUG TASKS PATCH] sharedGroupIds:", body.sharedGroupIds, "type:", typeof body.sharedGroupIds, "isArray:", Array.isArray(body.sharedGroupIds))
+    let validatedData
+    try {
+      validatedData = updateTaskSchema.parse(body)
+      console.log("[DEBUG TASKS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
+    } catch (error: any) {
+      console.error("[DEBUG TASKS PATCH] Validation error:", error)
+      if (error instanceof z.ZodError) {
+        console.error("[DEBUG TASKS PATCH] Zod errors:", JSON.stringify(error.errors, null, 2))
+      }
+      throw error
+    }
 
     // Check if task exists and user has access
     const existingTask = await db.task.findUnique({
@@ -161,6 +171,7 @@ export async function PATCH(
     return NextResponse.json({ task: updatedTask })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("[DEBUG TASKS PATCH] ZodError details:", JSON.stringify(error.errors, null, 2))
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }

@@ -119,8 +119,18 @@ export async function PATCH(
     const body = await request.json()
     console.log("[DEBUG CLIENTS PATCH] Received body:", JSON.stringify(body, null, 2))
     console.log("[DEBUG CLIENTS PATCH] assignedTo:", body.assignedTo, "type:", typeof body.assignedTo)
-    const validatedData = updateClientSchema.parse(body)
-    console.log("[DEBUG CLIENTS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
+    console.log("[DEBUG CLIENTS PATCH] sharedGroupIds:", body.sharedGroupIds, "type:", typeof body.sharedGroupIds, "isArray:", Array.isArray(body.sharedGroupIds))
+    let validatedData
+    try {
+      validatedData = updateClientSchema.parse(body)
+      console.log("[DEBUG CLIENTS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
+    } catch (error: any) {
+      console.error("[DEBUG CLIENTS PATCH] Validation error:", error)
+      if (error instanceof z.ZodError) {
+        console.error("[DEBUG CLIENTS PATCH] Zod errors:", JSON.stringify(error.errors, null, 2))
+      }
+      throw error
+    }
 
     // Check if client exists and user has access
     const existingClient = await db.client.findUnique({

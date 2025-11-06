@@ -55,14 +55,29 @@ export async function PATCH(
       }
     }
 
-    const validatedData = updateContactSchema.parse({
+    const parsedData = {
       type: formData.get("type") || undefined,
       date: formData.get("date") || undefined,
       notes: formData.get("notes") || undefined,
       userId: formData.get("userId") || undefined,
       clientId: formData.get("clientId") || undefined,
       sharedGroupIds,
-    })
+    }
+    console.log("[DEBUG CONTACTS PATCH] Parsed formData:", JSON.stringify(parsedData, null, 2))
+    console.log("[DEBUG CONTACTS PATCH] userId:", parsedData.userId, "type:", typeof parsedData.userId)
+    console.log("[DEBUG CONTACTS PATCH] clientId:", parsedData.clientId, "type:", typeof parsedData.clientId)
+    console.log("[DEBUG CONTACTS PATCH] sharedGroupIds:", parsedData.sharedGroupIds, "type:", typeof parsedData.sharedGroupIds, "isArray:", Array.isArray(parsedData.sharedGroupIds))
+    let validatedData
+    try {
+      validatedData = updateContactSchema.parse(parsedData)
+      console.log("[DEBUG CONTACTS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
+    } catch (error: any) {
+      console.error("[DEBUG CONTACTS PATCH] Validation error:", error)
+      if (error instanceof z.ZodError) {
+        console.error("[DEBUG CONTACTS PATCH] Zod errors:", JSON.stringify(error.errors, null, 2))
+      }
+      throw error
+    }
 
     // Check if contact exists
     const existingContact = await db.contact.findUnique({

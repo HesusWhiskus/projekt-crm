@@ -58,8 +58,18 @@ export async function POST(request: Request) {
     console.log("[DEBUG CONTACTS POST] Parsed formData:", JSON.stringify(parsedData, null, 2))
     console.log("[DEBUG CONTACTS POST] userId:", parsedData.userId, "type:", typeof parsedData.userId)
     console.log("[DEBUG CONTACTS POST] clientId:", parsedData.clientId, "type:", typeof parsedData.clientId)
-    const validatedData = createContactSchema.parse(parsedData)
-    console.log("[DEBUG CONTACTS POST] Validated data:", JSON.stringify(validatedData, null, 2))
+    console.log("[DEBUG CONTACTS POST] sharedGroupIds:", parsedData.sharedGroupIds, "type:", typeof parsedData.sharedGroupIds, "isArray:", Array.isArray(parsedData.sharedGroupIds))
+    let validatedData
+    try {
+      validatedData = createContactSchema.parse(parsedData)
+      console.log("[DEBUG CONTACTS POST] Validated data:", JSON.stringify(validatedData, null, 2))
+    } catch (error: any) {
+      console.error("[DEBUG CONTACTS POST] Validation error:", error)
+      if (error instanceof z.ZodError) {
+        console.error("[DEBUG CONTACTS POST] Zod errors:", JSON.stringify(error.errors, null, 2))
+      }
+      throw error
+    }
 
     // Check if client exists and user has access
     const client = await db.client.findUnique({
@@ -158,6 +168,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ contact }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("[DEBUG CONTACTS POST] ZodError details:", JSON.stringify(error.errors, null, 2))
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }
