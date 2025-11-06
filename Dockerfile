@@ -57,16 +57,20 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo '  npx prisma db push --accept-data-loss 2>&1 || echo "Migrations failed, continuing..."' >> /app/start.sh && \
     echo '  echo "Migrations completed"' >> /app/start.sh && \
     echo 'fi' >> /app/start.sh && \
-    echo 'echo "Starting application..."' >> /app/start.sh && \
+    echo 'echo "Starting application on port ${PORT:-3000}..."' >> /app/start.sh && \
+    echo 'export PORT=${PORT:-3000}' >> /app/start.sh && \
     echo 'exec node server.js' >> /app/start.sh && \
     chmod +x /app/start.sh && \
     chown nextjs:nodejs /app/start.sh
 
 USER nextjs
 
+# Railway automatically sets PORT, but we expose 3000 as default
 EXPOSE 3000
 
-ENV PORT 3000
+# Use PORT from environment (Railway sets this automatically)
+# Default to 3000 if not set
+ENV PORT=${PORT:-3000}
 ENV HOSTNAME "0.0.0.0"
 
 CMD ["/app/start.sh"]
