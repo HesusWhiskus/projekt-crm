@@ -57,7 +57,9 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
       }
 
       setSuccess("Profil został zaktualizowany pomyślnie")
-      await update()
+      if (update) {
+        await update()
+      }
       router.refresh()
     } catch (error) {
       setError("Wystąpił błąd podczas aktualizacji profilu")

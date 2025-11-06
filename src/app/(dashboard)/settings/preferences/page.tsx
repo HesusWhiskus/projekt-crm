@@ -9,23 +9,34 @@ export default async function PreferencesSettingsPage() {
     redirect("/signin")
   }
 
-  // Get user preferences
-  const preferences = await db.userPreferences.findUnique({
-    where: { userId: sessionUser.id },
-  })
+  // Get user preferences (with error handling)
+  let preferences = null
+  try {
+    preferences = await db.userPreferences.findUnique({
+      where: { userId: sessionUser.id },
+    })
+  } catch (error) {
+    console.error("Error fetching user preferences:", error)
+    // Table might not exist yet, continue with null
+  }
 
-  // Get system default color scheme
-  const systemColorScheme = await db.systemSettings.findUnique({
-    where: { key: "default_color_scheme" },
-  })
-
+  // Get system default color scheme (with error handling)
   let defaultColorScheme = null
-  if (systemColorScheme) {
-    try {
-      defaultColorScheme = JSON.parse(systemColorScheme.value)
-    } catch {
-      // Invalid JSON, ignore
+  try {
+    const systemColorScheme = await db.systemSettings.findUnique({
+      where: { key: "default_color_scheme" },
+    })
+
+    if (systemColorScheme) {
+      try {
+        defaultColorScheme = JSON.parse(systemColorScheme.value)
+      } catch {
+        // Invalid JSON, ignore
+      }
     }
+  } catch (error) {
+    console.error("Error fetching system color scheme:", error)
+    // Table might not exist yet, continue with null
   }
 
   return (

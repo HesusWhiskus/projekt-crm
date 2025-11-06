@@ -29,9 +29,19 @@ export async function GET() {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
-    const preferences = await db.userPreferences.findUnique({
-      where: { userId: user.id },
-    })
+    let preferences = null
+    try {
+      preferences = await db.userPreferences.findUnique({
+        where: { userId: user.id },
+      })
+    } catch (dbError: any) {
+      // Table might not exist yet
+      if (dbError?.code === "P2021" || dbError?.message?.includes("does not exist")) {
+        console.log("UserPreferences table does not exist yet")
+        return NextResponse.json({ preferences: null })
+      }
+      throw dbError
+    }
 
     return NextResponse.json({ preferences })
   } catch (error) {
@@ -53,8 +63,10 @@ export async function PATCH(request: Request) {
     const body = await request.json()
     const validatedData = updatePreferencesSchema.parse(body)
 
-    // Upsert preferences
-    const preferences = await db.userPreferences.upsert({
+    // Upsert preferences (with error handling for missing table)
+    let preferences
+    try {
+      preferences = await db.userPreferences.upsert({
       where: { userId: user.id },
       create: {
         userId: user.id,
@@ -84,19 +96,34 @@ export async function PATCH(request: Request) {
         }),
       },
     })
+    } catch (dbError: any) {
+      // Table might not exist yet
+      if (dbError?.code === "P2021" || dbError?.message?.includes("does not exist")) {
+        return NextResponse.json(
+          { error: "Tabele ustawień nie zostały jeszcze utworzone. Proszę uruchomić migracje bazy danych." },
+          { status: 503 }
+        )
+      }
+      throw dbError
+    }
 
-    // Log activity
-    await db.activityLog.create({
-      data: {
-        userId: user.id,
-        action: "PREFERENCES_UPDATED",
-        entityType: "UserPreferences",
-        entityId: preferences.id,
-        details: {
-          updatedFields: Object.keys(validatedData),
+    // Log activity (optional - don't fail if it fails)
+    try {
+      await db.activityLog.create({
+        data: {
+          userId: user.id,
+          action: "PREFERENCES_UPDATED",
+          entityType: "UserPreferences",
+          entityId: preferences.id,
+          details: {
+            updatedFields: Object.keys(validatedData),
+          },
         },
-      },
-    })
+      })
+    } catch (logError) {
+      console.error("Failed to log activity:", logError)
+      // Don't fail the request if logging fails
+    }
 
     return NextResponse.json({
       message: "Preferencje zostały zaktualizowane",

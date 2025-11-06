@@ -14,29 +14,34 @@ export default async function DashboardLayout({
     redirect("/signin")
   }
 
-  // Get system settings for branding
-  const [systemName, systemLogo] = await Promise.all([
-    db.systemSettings.findUnique({ where: { key: "system_name" } }),
-    db.systemSettings.findUnique({ where: { key: "system_logo" } }),
-  ])
-
-  // Get user preferences for color scheme
-  const userPreferences = await db.userPreferences.findUnique({
-    where: { userId: user.id },
-  })
-
-  // Get default color scheme
-  const defaultColorScheme = await db.systemSettings.findUnique({
-    where: { key: "default_color_scheme" },
-  })
-
+  // Get system settings for branding (with error handling)
+  let systemName = null
+  let systemLogo = null
+  let userPreferences = null
   let parsedDefaultColorScheme = null
-  if (defaultColorScheme) {
-    try {
-      parsedDefaultColorScheme = JSON.parse(defaultColorScheme.value)
-    } catch {
-      // Invalid JSON, ignore
+
+  try {
+    const [nameResult, logoResult, preferencesResult, colorSchemeResult] = await Promise.all([
+      db.systemSettings.findUnique({ where: { key: "system_name" } }).catch(() => null),
+      db.systemSettings.findUnique({ where: { key: "system_logo" } }).catch(() => null),
+      db.userPreferences.findUnique({ where: { userId: user.id } }).catch(() => null),
+      db.systemSettings.findUnique({ where: { key: "default_color_scheme" } }).catch(() => null),
+    ])
+
+    systemName = nameResult
+    systemLogo = logoResult
+    userPreferences = preferencesResult
+
+    if (colorSchemeResult) {
+      try {
+        parsedDefaultColorScheme = JSON.parse(colorSchemeResult.value)
+      } catch {
+        // Invalid JSON, ignore
+      }
     }
+  } catch (error) {
+    console.error("Error fetching settings:", error)
+    // Tables might not exist yet, continue with defaults
   }
 
   return (

@@ -9,20 +9,31 @@ export default async function AdminSettingsPage() {
     redirect("/dashboard")
   }
 
-  // Get system settings
-  const [systemName, systemLogo, defaultColorScheme] = await Promise.all([
-    db.systemSettings.findUnique({ where: { key: "system_name" } }),
-    db.systemSettings.findUnique({ where: { key: "system_logo" } }),
-    db.systemSettings.findUnique({ where: { key: "default_color_scheme" } }),
-  ])
-
+  // Get system settings (with error handling)
+  let systemName = null
+  let systemLogo = null
   let parsedColorScheme = null
-  if (defaultColorScheme) {
-    try {
-      parsedColorScheme = JSON.parse(defaultColorScheme.value)
-    } catch {
-      // Invalid JSON, ignore
+
+  try {
+    const [nameResult, logoResult, colorSchemeResult] = await Promise.all([
+      db.systemSettings.findUnique({ where: { key: "system_name" } }).catch(() => null),
+      db.systemSettings.findUnique({ where: { key: "system_logo" } }).catch(() => null),
+      db.systemSettings.findUnique({ where: { key: "default_color_scheme" } }).catch(() => null),
+    ])
+
+    systemName = nameResult
+    systemLogo = logoResult
+
+    if (colorSchemeResult) {
+      try {
+        parsedColorScheme = JSON.parse(colorSchemeResult.value)
+      } catch {
+        // Invalid JSON, ignore
+      }
     }
+  } catch (error) {
+    console.error("Error fetching system settings:", error)
+    // Tables might not exist yet, continue with defaults
   }
 
   return (
