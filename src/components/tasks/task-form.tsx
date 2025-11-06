@@ -79,25 +79,21 @@ export function TaskForm({ users, clients, groups, currentUser, task, onClose, o
       const url = task ? `/api/tasks/${task.id}` : "/api/tasks"
       const method = task ? "PATCH" : "POST"
 
+      const bodyData: any = {
+        title: formData.title,
+        description: formData.description || undefined,
+        status: formData.status,
+      }
+      
+      if (formData.dueDate) bodyData.dueDate = formData.dueDate
+      if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
+      if (formData.clientId) bodyData.clientId = formData.clientId
+      if (formData.sharedGroupIds.length > 0) bodyData.sharedGroupIds = formData.sharedGroupIds
+      
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        const bodyData: any = {
-          title: formData.title,
-          description: formData.description || undefined,
-          status: formData.status,
-        }
-        
-        if (formData.dueDate) bodyData.dueDate = formData.dueDate
-        if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
-        if (formData.clientId) bodyData.clientId = formData.clientId
-        if (formData.sharedGroupIds.length > 0) bodyData.sharedGroupIds = formData.sharedGroupIds
-        
-        const response = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(bodyData),
-        })
+        body: JSON.stringify(bodyData),
       })
 
       if (!response.ok) {
