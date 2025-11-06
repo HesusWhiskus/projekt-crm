@@ -76,6 +76,37 @@ const authorizeCredentials = async (credentials: any) => {
   }
 }
 
+// Validate required environment variables
+const validateAuthConfig = () => {
+  const errors: string[] = []
+  
+  if (!process.env.NEXTAUTH_URL) {
+    errors.push("NEXTAUTH_URL is not set")
+  } else if (process.env.NEXTAUTH_URL.includes("0.0.0.0") || process.env.NEXTAUTH_URL.includes("localhost")) {
+    console.warn("[AUTH] ⚠️ NEXTAUTH_URL contains localhost or 0.0.0.0 - this may cause OAuth issues in production")
+  }
+  
+  if (!process.env.NEXTAUTH_SECRET) {
+    errors.push("NEXTAUTH_SECRET is not set")
+  }
+  
+  if (process.env.GOOGLE_CLIENT_ID && !process.env.GOOGLE_CLIENT_SECRET) {
+    errors.push("GOOGLE_CLIENT_SECRET is required when GOOGLE_CLIENT_ID is set")
+  }
+  
+  if (process.env.GOOGLE_CLIENT_SECRET && !process.env.GOOGLE_CLIENT_ID) {
+    errors.push("GOOGLE_CLIENT_ID is required when GOOGLE_CLIENT_SECRET is set")
+  }
+  
+  if (errors.length > 0 && process.env.NODE_ENV === "production") {
+    console.error("[AUTH] ❌ Configuration errors:", errors.join(", "))
+  }
+  
+  return errors
+}
+
+validateAuthConfig()
+
 export const authOptions: NextAuthOptions = {
   // Using JWT strategy, so we handle OAuth user creation manually in signIn callback
   providers: [
@@ -90,6 +121,13 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
   ],
   session: {
@@ -148,9 +186,22 @@ export const authOptions: NextAuthOptions = {
             ;(user as any).role = updatedUser.role
             console.log("[AUTH] OAuth user updated:", updatedUser.id)
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error("[AUTH] Error creating/updating OAuth user:", error)
-          return false
+          logAuth("[AUTH] ❌ OAuth error details:", {
+            message: error?.message,
+            code: error?.code,
+            stack: error?.stack
+          })
+          // Check if user exists before deciding whether to block sign in
+          const userExists = await db.user.findUnique({
+            where: { email: user.email },
+          })
+          // Don't block sign in for existing users, but log the error
+          // This allows users to sign in even if update fails
+          if (!userExists) {
+            return false
+          }
         }
       }
       
