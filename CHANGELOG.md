@@ -5,6 +5,39 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.0-beta] - 2025-01-XX
+
+### Dodano
+- **Zarządzanie ofertami/dealami (Deals):**
+  - Pełny CRUD dla deali (tworzenie, edycja, usuwanie, przeglądanie)
+  - Etapy pipeline: INITIAL_CONTACT, PROPOSAL, NEGOTIATION, CLOSING, WON, LOST
+  - Wartość deala z obsługą różnych walut (domyślnie PLN)
+  - Prawdopodobieństwo zamknięcia (0-100%)
+  - Oczekiwana data zamknięcia (expectedCloseDate)
+  - Notatki do deali
+  - Automatyczna aktualizacja statusu klienta na ACTIVE_CLIENT przy wygraniu deala (WON)
+  - Udostępnianie deali grupom użytkowników
+  - Walidacja przejść między etapami pipeline (DealPipelineService)
+  - Transakcje dla operacji atomowych (np. zamknięcie deala + aktualizacja statusu klienta)
+  - Logowanie aktywności (ActivityLogger) dla wszystkich operacji na dealach
+  - API endpoints: `/api/deals`, `/api/deals/[id]`, `/api/deals/[id]/close`
+
+### Zmieniono
+- **Architektura:**
+  - Rozszerzono architekturę DDD o nową domenę Deals
+  - Dodano Value Objects: DealValue, Probability, DealStage
+  - Dodano Domain Service: DealPipelineService (logika przejść między etapami)
+  - Dodano Entity: Deal z metodami biznesowymi
+  - Dodano Repository: IDealRepository i PrismaDealRepository z obsługą sharedGroups
+
+### Techniczne
+- Dodano model `Deal` w Prisma schema z relacjami do `Client` i `Group`
+- Dodano enum `DealStage` w Prisma schema
+- Utworzono migrację bazy danych dla tabeli `deals`
+- Zaimplementowano pełną warstwę Domain, Application, Infrastructure i Presentation dla domeny Deals
+
+---
+
 ## [0.4.2-beta] - 2025-01-XX
 
 ### Naprawiono

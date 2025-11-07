@@ -44,6 +44,15 @@ enum ClientPriority {
   HIGH
 }
 
+enum DealStage {
+  INITIAL_CONTACT
+  PROPOSAL
+  NEGOTIATION
+  CLOSING
+  WON
+  LOST
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -79,6 +88,7 @@ model Group {
   sharedClients  Client[]    @relation("GroupSharedClients")
   sharedTasks    Task[]      @relation("GroupSharedTasks")
   sharedContacts Contact[]   @relation("GroupSharedContacts")
+  sharedDeals    Deal[]      @relation("GroupSharedDeals")
 
   @@map("groups")
 }
@@ -118,6 +128,7 @@ model Client {
   assignee      User?                 @relation("ClientAssignee", fields: [assignedTo], references: [id])
   contacts      Contact[]
   tasks         Task[]
+  deals         Deal[]
   statusHistory ClientStatusHistory[]
   sharedGroups  Group[]               @relation("GroupSharedClients")
 
@@ -228,6 +239,25 @@ model UserPreferences {
   updatedAt DateTime @updatedAt
 
   @@map("user_preferences")
+}
+
+model Deal {
+  id                String    @id @default(cuid())
+  clientId          String
+  value             Decimal // Deal value (amount)
+  currency          String    @default("PLN") // Currency code (PLN, EUR, USD, etc.)
+  probability       Int       @default(0) // Probability 0-100%
+  stage             DealStage @default(INITIAL_CONTACT)
+  expectedCloseDate DateTime?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  client       Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  sharedGroups Group[] @relation("GroupSharedDeals")
+
+  @@map("deals")
 }
 
 model SystemSettings {

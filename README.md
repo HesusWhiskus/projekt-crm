@@ -40,6 +40,16 @@ Internal CRM to nowoczesny system zarządzania relacjami z klientami (CRM) przez
 - Udostępnianie przez grupy
 - **Synchronizacja z Google Calendar** 📅
 
+### 💼 Zarządzanie ofertami/dealami (Deals)
+- Pełny CRUD deali
+- Pipeline sprzedażowy (INITIAL_CONTACT, PROPOSAL, NEGOTIATION, CLOSING, WON, LOST)
+- Wartość deala z obsługą różnych walut
+- Prawdopodobieństwo zamknięcia (0-100%)
+- Oczekiwana data zamknięcia
+- Automatyczna aktualizacja statusu klienta na ACTIVE_CLIENT przy wygraniu deala
+- Udostępnianie deali grupom użytkowników
+- Walidacja przejść między etapami pipeline
+
 ### 👨‍💼 Panel administracyjny
 - Dashboard administracyjny z przeglądem systemu
 - Zarządzanie użytkownikami i rolami

@@ -14,6 +14,40 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.0-beta',
+    date: '2025-01-XX',
+    changes: [
+      {
+        type: 'added',
+        description: 'Zarządzanie ofertami/dealami (Deals) - pełny CRUD z pipeline sprzedażowym',
+      },
+      {
+        type: 'added',
+        description: 'Etapy pipeline: INITIAL_CONTACT, PROPOSAL, NEGOTIATION, CLOSING, WON, LOST',
+      },
+      {
+        type: 'added',
+        description: 'Wartość deala z obsługą różnych walut i prawdopodobieństwo zamknięcia',
+      },
+      {
+        type: 'added',
+        description: 'Automatyczna aktualizacja statusu klienta na ACTIVE_CLIENT przy wygraniu deala',
+      },
+      {
+        type: 'added',
+        description: 'Udostępnianie deali grupom użytkowników',
+      },
+      {
+        type: 'added',
+        description: 'Walidacja przejść między etapami pipeline',
+      },
+      {
+        type: 'added',
+        description: 'API endpoints dla deali: /api/deals, /api/deals/[id], /api/deals/[id]/close',
+      },
+    ],
+  },
+  {
     version: '0.4.2-beta',
     date: '2025-01-XX',
     changes: [
