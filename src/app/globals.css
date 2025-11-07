@@ -85,15 +85,15 @@
     @apply bg-background text-foreground;
   }
   
-  /* Logo theme adaptation - make logo black in light mode, white in dark mode */
+  /* Logo theme adaptation - ensure logo is visible in both themes */
   .logo-theme-adapt {
-    /* In light mode: make logo black (brightness 0 = black) */
-    filter: brightness(0);
+    /* In light mode: keep original logo (assumes it's dark/colored and visible) */
+    filter: none;
   }
   
   .dark .logo-theme-adapt {
-    /* In dark mode: make logo white (brightness 0 + invert = white) */
-    filter: brightness(0) invert(1);
+    /* In dark mode: invert logo to make it light/white */
+    filter: invert(1) brightness(1.1);
   }
 }
 
