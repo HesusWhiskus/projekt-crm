@@ -9,6 +9,7 @@ import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
+import { utcDateToLocalDateTime } from "@/lib/timezone"
 
 interface ClientFormProps {
   users: Array<{
@@ -74,7 +75,7 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
     source: client?.source || "",
     status: client?.status || ("NEW_LEAD" as ClientStatus),
     priority: client?.priority || null,
-    nextFollowUpAt: client?.nextFollowUpAt ? new Date(client.nextFollowUpAt).toISOString().slice(0, 16) : "",
+    nextFollowUpAt: client?.nextFollowUpAt ? utcDateToLocalDateTime(client.nextFollowUpAt) : "",
     assignedTo: client?.assignedTo || currentUser?.id || "",
     sharedGroupIds: client?.sharedGroups?.map(g => g.id) || [] as string[],
   })

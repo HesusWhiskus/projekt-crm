@@ -9,6 +9,7 @@ import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TaskStatus } from "@prisma/client"
+import { utcDateToLocalDateTime } from "@/lib/timezone"
 
 interface TaskFormProps {
   users: Array<{
@@ -59,9 +60,9 @@ export function TaskForm({ users, clients, groups, currentUser, task, onClose, o
     title: task?.title || "",
     description: task?.description || "",
     dueDate: task?.dueDate
-      ? new Date(task.dueDate).toISOString().slice(0, 16)
+      ? utcDateToLocalDateTime(task.dueDate)
       : initialDueDate
-      ? new Date(initialDueDate).toISOString().slice(0, 16)
+      ? utcDateToLocalDateTime(initialDueDate)
       : "",
     status: (task?.status || "TODO") as TaskStatus,
     assignedTo: task?.assignedTo || currentUser?.id || "",

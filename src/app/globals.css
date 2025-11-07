@@ -84,5 +84,16 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Logo theme adaptation - make logo black in light mode, white in dark mode */
+  .logo-theme-adapt {
+    /* In light mode: make logo black (brightness 0 = black) */
+    filter: brightness(0);
+  }
+  
+  .dark .logo-theme-adapt {
+    /* In dark mode: make logo white (brightness 0 + invert = white) */
+    filter: brightness(0) invert(1);
+  }
 }
 

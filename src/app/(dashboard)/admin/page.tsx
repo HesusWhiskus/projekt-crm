@@ -54,50 +54,6 @@ export default async function AdminPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Link href="/admin/users">
-          <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5" />
-                <span>Zarządzanie użytkownikami</span>
-              </CardTitle>
-              <CardDescription>
-                Zarządzaj użytkownikami systemu, zmieniaj role i uprawnienia
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Przeglądanie listy użytkowników</li>
-                <li>• Zmiana ról (USER/ADMIN)</li>
-                <li>• Przeglądanie grup użytkowników</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link href="/admin/groups">
-          <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Settings className="h-5 w-5" />
-                <span>Zarządzanie grupami</span>
-              </CardTitle>
-              <CardDescription>
-                Twórz grupy i zarządzaj członkami. Grupy pozwalają na udostępnianie klientów i zadań.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Tworzenie i edycja grup</li>
-                <li>• Dodawanie/usuwa użytkowników do/z grup</li>
-                <li>• Przeglądanie członków grup</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
         <Link href="/admin/import">
           <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
             <CardHeader>

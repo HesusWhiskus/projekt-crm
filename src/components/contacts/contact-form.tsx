@@ -9,6 +9,7 @@ import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ContactType } from "@prisma/client"
+import { utcDateToLocalDateTime } from "@/lib/timezone"
 
 interface ContactFormProps {
   clientId?: string
@@ -61,8 +62,8 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
   const [formData, setFormData] = useState({
     type: isNoteMode ? null : (contact?.type || "PHONE_CALL") as ContactType | null,
     date: contact && contact.date
-      ? new Date(contact.date).toISOString().slice(0, 16)
-      : new Date().toISOString().slice(0, 16),
+      ? utcDateToLocalDateTime(contact.date)
+      : utcDateToLocalDateTime(new Date()),
     notes: contact?.notes || "",
     isNote: isNoteMode || false,
     userId: contact?.userId || currentUser?.id || "",

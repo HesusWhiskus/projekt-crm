@@ -44,18 +44,21 @@ export default function SignInForm() {
       if (result?.error) {
         console.error("[CLIENT] Sign in error:", result.error)
         setErrorMessage("Nieprawidłowy email lub hasło")
+        setIsLoading(false)
       } else if (result?.ok) {
         console.log("[CLIENT] Sign in successful, redirecting...")
+        // Don't set isLoading to false - keep button disabled during redirect
         router.push(callbackUrl)
         router.refresh()
+        // Button will be disabled until page unloads
       } else {
         console.warn("[CLIENT] Sign in returned unexpected result:", result)
         setErrorMessage("Wystąpił błąd podczas logowania")
+        setIsLoading(false)
       }
     } catch (error: any) {
       console.error("[CLIENT] Sign in exception:", error)
       setErrorMessage(`Wystąpił błąd podczas logowania: ${error.message || error}`)
-    } finally {
       setIsLoading(false)
     }
   }

@@ -114,3 +114,40 @@ export function getTimezoneLabel(value: string): string {
   return tz ? tz.label : value
 }
 
+/**
+ * Convert datetime-local string to UTC Date
+ * datetime-local always returns date in browser's local timezone
+ * JavaScript's Date constructor handles this automatically
+ * This function is a wrapper that ensures proper conversion
+ */
+export function localDateTimeToUTC(dateTimeString: string, userTimezone?: string | null): Date {
+  if (!dateTimeString) {
+    return new Date()
+  }
+  
+  // datetime-local format: "YYYY-MM-DDTHH:mm"
+  // JavaScript's Date constructor interprets this as local time
+  // and automatically converts to UTC when stored
+  // This is correct behavior - we just need to create the Date object
+  return new Date(dateTimeString)
+}
+
+/**
+ * Convert UTC Date to datetime-local string (in browser's local timezone)
+ * datetime-local always uses browser's timezone, so we convert UTC to browser's local timezone
+ * This is the reverse of localDateTimeToUTC
+ */
+export function utcDateToLocalDateTime(date: Date | string, userTimezone?: string | null): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date
+  
+  // datetime-local uses browser's local timezone, not user preferences
+  // So we format in browser's local timezone (no timeZone option = local)
+  const year = dateObj.getFullYear()
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0")
+  const day = String(dateObj.getDate()).padStart(2, "0")
+  const hour = String(dateObj.getHours()).padStart(2, "0")
+  const minute = String(dateObj.getMinutes()).padStart(2, "0")
+  
+  return `${year}-${month}-${day}T${hour}:${minute}`
+}
+

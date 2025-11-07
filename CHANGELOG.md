@@ -5,6 +5,41 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.4.2-beta] - 2025-01-XX
+
+### Naprawiono
+- **Usunięcie duplikacji w panelu admina:**
+  - Usunięto zdublowane sekcje "Zarządzanie użytkownikami" i "Zarządzanie grupami"
+  - Pozostały tylko estetyczne karty statystyk na górze z bezpośrednimi linkami
+- **Logo adaptujące się do stylu:**
+  - Dodano filtry CSS dla poprawnej adaptacji logo w light/dark mode
+  - Light mode: logo czarne (brightness(0))
+  - Dark mode: logo białe (brightness(0) invert(1))
+  - Zastosowano klasę `.logo-theme-adapt` w komponentach nawigacji i autoryzacji
+- **Blokada przycisku logowania:**
+  - Przycisk pozostaje zablokowany aż do momentu przekierowania
+  - `setIsLoading(false)` wywoływane tylko przy błędzie, nie przy sukcesie
+  - Zapobiega wielokrotnym kliknięciom podczas logowania
+- **Poprawa selektora daty/czasu:**
+  - Wrócono do `datetime-local` z `step="60"` dla lepszej precyzji
+  - Uproszczono komponent `DateTimePicker`
+  - Lepsze UX niż poprzednie rozwiązanie z oddzielnymi selektorami
+- **Naprawa stref czasowych:**
+  - Dodano funkcję `utcDateToLocalDateTime()` do konwersji dat z bazy (UTC) na lokalną strefę czasową przeglądarki
+  - Zastosowano w `ContactForm`, `TaskForm`, `ClientForm`
+  - `datetime-local` używa strefy czasowej przeglądarki, więc konwersja jest spójna
+  - Naprawiono problem z wyświetlaniem czasu (różnica 1h między wybranym a zapisanym)
+
+### Zmieniono
+- **Komponent DateTimePicker:**
+  - Uproszczono do prostego wrappera dla `datetime-local`
+  - Dodano `step="60"` dla lepszej precyzji wyboru minut
+- **Konwersja dat:**
+  - Wszystkie formularze używają `utcDateToLocalDateTime()` do wyświetlania dat z bazy
+  - Zapewnia spójność między strefą czasową przeglądarki a wyświetlanymi datami
+
+---
+
 ## [0.4.1-beta] - 2025-01-XX
 
 ### Naprawiono

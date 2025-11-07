@@ -14,6 +14,32 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.2-beta',
+    date: '2025-01-XX',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Usunięcie duplikacji w panelu admina - pozostały tylko estetyczne karty statystyk',
+      },
+      {
+        type: 'fixed',
+        description: 'Logo adaptujące się do stylu - poprawne filtry CSS dla light/dark mode',
+      },
+      {
+        type: 'fixed',
+        description: 'Blokada przycisku logowania - przycisk pozostaje zablokowany aż do przekierowania',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawa selektora daty/czasu - wrócono do datetime-local z lepszą precyzją',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawa stref czasowych - poprawiona konwersja UTC na lokalną strefę czasową przeglądarki',
+      },
+    ],
+  },
+  {
     version: '0.4.1-beta',
     date: '2025-01-XX',
     changes: [
