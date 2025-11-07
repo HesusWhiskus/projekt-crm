@@ -6,6 +6,24 @@ API Internal CRM umożliwia zarządzanie klientami, kontaktami, zadaniami, użyt
 
 **Base URL:** `http://localhost:3000/api` (lub odpowiedni URL produkcyjny)
 
+## Architektura API
+
+Od wersji **0.4.0-beta** API używa architektury **Domain-Driven Design (DDD)** z podziałem na warstwy:
+
+- **Presentation Layer** (`src/presentation/api/`) - API routes z middleware autoryzacji
+- **Application Layer** (`src/application/`) - Use Cases orkiestrujące operacje biznesowe
+- **Domain Layer** (`src/domain/`) - Entities, Value Objects, Domain Services z logiką biznesową
+- **Infrastructure Layer** (`src/infrastructure/`) - Implementacje repozytoriów (Prisma)
+
+**Korzyści:**
+- ✅ Separacja odpowiedzialności (SRP)
+- ✅ Walidacja danych w Value Objects
+- ✅ Logika biznesowa enkapsulowana w Entities
+- ✅ Testowalność każdej warstwy osobno
+- ✅ Łatwość utrzymania i rozbudowy
+
+**Uwaga:** API interface pozostaje niezmieniony - wszystkie endpointy działają tak samo jak przed refaktoryzacją.
+
 ## Format identyfikatorów (ID)
 
 **Ważne:** System używa formatu **CUID** (Collision-resistant Unique Identifier) dla wszystkich identyfikatorów w bazie danych, **NIE UUID**.

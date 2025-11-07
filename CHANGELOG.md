@@ -5,6 +5,61 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.4.0-beta] - 2025-01-XX
+
+### Zmieniono
+- **REFACTORING: Wprowadzono architekturę Domain-Driven Design (DDD) i Single Responsibility Principle (SRP)**
+  - Projekt został zrefaktoryzowany zgodnie z zasadami DDD i SRP
+  - Wprowadzono warstwową architekturę z wyraźnym podziałem odpowiedzialności
+  - Każda klasa ma teraz jedną odpowiedzialność zgodnie z SRP
+
+### Dodano
+- **Warstwa domenowa (`src/domain/`):**
+  - Value Objects dla Client (Email, Phone, Website, ClientName, AgencyName) z walidacją
+  - Client Entity z metodami biznesowymi (changeStatus, updatePriority, assignTo)
+  - Contact Entity i Task Entity z logiką biznesową
+  - ClientStatusChangeService - Domain Service do obsługi zmian statusu z historią
+  - Interfejsy repozytoriów (IClientRepository, IContactRepository, ITaskRepository)
+- **Warstwa aplikacyjna (`src/application/`):**
+  - Use Cases dla Client (CreateClient, UpdateClient, DeleteClient, GetClient, ListClients)
+  - DTO (Data Transfer Objects) dla komunikacji między warstwami
+  - UserContext dla autoryzacji
+- **Warstwa infrastruktury (`src/infrastructure/`):**
+  - Implementacje repozytoriów Prisma (PrismaClientRepository, PrismaContactRepository, PrismaTaskRepository)
+  - ActivityLogger jako centralizowany serwis logowania
+- **Warstwa prezentacji (`src/presentation/api/`):**
+  - Refaktoryzowane API routes z middleware autoryzacji
+  - Uproszczone route handlers delegujące do Use Cases
+
+### Zmieniono
+- **API routes dla Client:**
+  - Teraz używają Use Cases zamiast bezpośredniego dostępu do bazy danych
+  - Walidacja danych przeniesiona do Value Objects
+  - Logika biznesowa enkapsulowana w Entities
+- **Walidacja danych:**
+  - Przeniesiona do Value Objects z pełną enkapsulacją logiki biznesowej
+  - Value Objects są immutable i zawierają walidację
+- **Separacja odpowiedzialności:**
+  - Każda klasa ma jedną odpowiedzialność zgodnie z SRP
+  - Route handlers tylko obsługują HTTP, nie zawierają logiki biznesowej
+- **Testowalność:**
+  - Logika biznesowa może być testowana niezależnie od infrastruktury
+  - Każda warstwa może być testowana osobno
+
+### Dokumentacja
+- Zaktualizowano `README.md` - dodano informację o architekturze DDD
+- Zaktualizowano `API_DOCUMENTATION.md` - dodano sekcję o architekturze API
+- Utworzono `ROLLBACK_PLAN.md` - plan rollbacku w przypadku problemów
+- Zaktualizowano `CHANGELOG.md` - dodano wpis o refaktoryzacji
+
+### Uwagi techniczne
+- **Kompatybilność wsteczna:** API interface pozostaje niezmieniony - wszystkie endpointy działają tak samo
+- **Baza danych:** Nie wymaga zmian - schemat Prisma nie został zmieniony
+- **Frontend:** Nie wymaga zmian - API interface się nie zmienił
+- **Rollback:** Możliwy poprzez przywrócenie starych plików API routes (zobacz `ROLLBACK_PLAN.md`)
+
+---
+
 ## [0.3.1-beta] - 2025-11-07
 
 ### Naprawiono

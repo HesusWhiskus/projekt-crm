@@ -119,20 +119,53 @@ npm run admin:create
 
 ## 🏗️ Struktura projektu
 
+Projekt używa architektury **Domain-Driven Design (DDD)** z podziałem na warstwy:
+
 ```
 internal-crm/
 ├── prisma/              # Schema i migracje Prisma
 ├── src/
+│   ├── domain/         # Warstwa domenowa (DDD)
+│   │   ├── clients/    # Bounded Context: Klienci
+│   │   │   ├── entities/      # Client Entity
+│   │   │   ├── value-objects/ # Email, Phone, Website, etc.
+│   │   │   ├── repositories/  # IClientRepository (interface)
+│   │   │   └── services/      # ClientStatusChangeService
+│   │   ├── contacts/   # Bounded Context: Kontakty
+│   │   └── tasks/      # Bounded Context: Zadania
+│   ├── application/    # Warstwa aplikacyjna
+│   │   ├── clients/    # Use Cases i DTO
+│   │   └── shared/     # Wspólne typy (UserContext)
+│   ├── infrastructure/ # Warstwa infrastruktury
+│   │   ├── persistence/ # Implementacje repozytoriów Prisma
+│   │   └── logging/    # ActivityLogger
+│   ├── presentation/   # Warstwa prezentacji
+│   │   └── api/        # API routes (delegacja do Use Cases)
 │   ├── app/            # Next.js App Router (routes)
 │   │   ├── (auth)/     # Trasy autoryzacji
 │   │   ├── (dashboard)/ # Trasy dashboardu
-│   │   └── api/        # API endpoints
+│   │   └── api/        # API endpoints (delegacja do presentation/)
 │   ├── components/     # Komponenty React
 │   ├── lib/           # Utilities i konfiguracje
 │   └── types/         # Definicje TypeScript
 ├── public/            # Statyczne pliki
-└── scripts/          # Skrypty pomocnicze
+└── scripts/             # Skrypty pomocnicze
 ```
+
+### Architektura DDD
+
+Projekt implementuje **Domain-Driven Design** z następującymi warstwami:
+
+- **Domain Layer** (`src/domain/`) - Logika biznesowa, Entities, Value Objects, Domain Services
+- **Application Layer** (`src/application/`) - Use Cases, DTO, orkiestracja operacji biznesowych
+- **Infrastructure Layer** (`src/infrastructure/`) - Implementacje repozytoriów, integracje zewnętrzne
+- **Presentation Layer** (`src/presentation/`) - API routes, middleware, obsługa HTTP
+
+**Korzyści:**
+- ✅ Separacja odpowiedzialności (SRP)
+- ✅ Testowalność każdej warstwy osobno
+- ✅ Łatwość utrzymania i rozbudowy
+- ✅ Enkapsulacja logiki biznesowej
 
 ## 🔧 Dostępne skrypty
 

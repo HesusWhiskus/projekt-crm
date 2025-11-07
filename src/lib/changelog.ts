@@ -14,6 +14,56 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.0-beta',
+    date: '2025-01-XX',
+    changes: [
+      {
+        type: 'changed',
+        description: 'REFACTORING: Wprowadzono architekturę Domain-Driven Design (DDD) i Single Responsibility Principle (SRP)',
+      },
+      {
+        type: 'added',
+        description: 'Warstwa domenowa (domain/) - Value Objects, Entities, Domain Services dla Client, Contact i Task',
+      },
+      {
+        type: 'added',
+        description: 'Warstwa aplikacyjna (application/) - Use Cases i DTO dla operacji biznesowych',
+      },
+      {
+        type: 'added',
+        description: 'Warstwa infrastruktury (infrastructure/) - Implementacje repozytoriów Prisma i ActivityLogger',
+      },
+      {
+        type: 'added',
+        description: 'Warstwa prezentacji (presentation/) - Refaktoryzowane API routes z middleware autoryzacji',
+      },
+      {
+        type: 'changed',
+        description: 'API routes dla Client - teraz używają Use Cases zamiast bezpośredniego dostępu do bazy danych',
+      },
+      {
+        type: 'changed',
+        description: 'Walidacja danych - przeniesiona do Value Objects z pełną enkapsulacją logiki biznesowej',
+      },
+      {
+        type: 'changed',
+        description: 'Logika biznesowa - enkapsulowana w Entities z metodami changeStatus, updatePriority, assignTo',
+      },
+      {
+        type: 'added',
+        description: 'ClientStatusChangeService - Domain Service do obsługi zmian statusu z historią',
+      },
+      {
+        type: 'changed',
+        description: 'Separacja odpowiedzialności - każda klasa ma jedną odpowiedzialność zgodnie z SRP',
+      },
+      {
+        type: 'changed',
+        description: 'Testowalność - logika biznesowa może być testowana niezależnie od infrastruktury',
+      },
+    ],
+  },
+  {
     version: '0.3.1-beta',
     date: '2025-11-07',
     changes: [
