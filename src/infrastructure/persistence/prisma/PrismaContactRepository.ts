@@ -20,7 +20,17 @@ export class PrismaContactRepository implements IContactRepository {
       return null
     }
 
-    return this.toDomain(contactData)
+    return Contact.fromPersistence({
+      id: contactData.id,
+      clientId: contactData.clientId,
+      type: contactData.type,
+      date: contactData.date,
+      notes: contactData.notes,
+      isNote: contactData.isNote,
+      userId: contactData.userId,
+      createdAt: contactData.createdAt,
+      updatedAt: contactData.updatedAt,
+    })
   }
 
   async findMany(filter: ContactFilter, options?: FindContactsOptions): Promise<Contact[]> {

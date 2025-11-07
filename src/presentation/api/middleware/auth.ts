@@ -9,16 +9,16 @@ import { UserContext } from '@/application/shared/types/UserContext'
 export async function requireAuth(): Promise<{ user: UserContext; response?: never } | { user?: never; response: NextResponse }> {
   const session = await getCurrentUser()
   
-  if (!session?.user) {
+  if (!session) {
     return {
       response: NextResponse.json({ error: 'Nieautoryzowany' }, { status: 401 }),
     }
   }
 
   const user: UserContext = {
-    id: session.user.id,
-    role: session.user.role as 'ADMIN' | 'USER',
-    email: session.user.email || '',
+    id: session.id,
+    role: session.role as 'ADMIN' | 'USER',
+    email: session.email || '',
   }
 
   return { user }

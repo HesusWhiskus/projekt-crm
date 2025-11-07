@@ -20,7 +20,17 @@ export class PrismaTaskRepository implements ITaskRepository {
       return null
     }
 
-    return this.toDomain(taskData)
+    return Task.fromPersistence({
+      id: taskData.id,
+      title: taskData.title,
+      description: taskData.description,
+      dueDate: taskData.dueDate,
+      status: taskData.status,
+      assignedTo: taskData.assignedTo,
+      clientId: taskData.clientId,
+      createdAt: taskData.createdAt,
+      updatedAt: taskData.updatedAt,
+    })
   }
 
   async findMany(filter: TaskFilter, options?: FindTasksOptions): Promise<Task[]> {

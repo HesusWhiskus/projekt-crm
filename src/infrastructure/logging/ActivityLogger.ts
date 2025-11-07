@@ -29,7 +29,7 @@ export class ActivityLogger {
           action: entry.action,
           entityType: entry.entityType,
           entityId: entry.entityId || null,
-          details: entry.details || null,
+          details: entry.details ? (entry.details as any) : null,
           ipAddress: entry.ipAddress || null,
           userAgent: entry.userAgent || null,
         },

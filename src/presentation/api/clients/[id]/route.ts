@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { requireAuth, requireRole } from '../middleware/auth'
+import { requireAuth, requireRole } from '../../middleware/auth'
 import { GetClientUseCase, UpdateClientUseCase, DeleteClientUseCase } from '@/application/clients/use-cases'
 import { PrismaClientRepository } from '@/infrastructure/persistence/prisma'
 import { ClientStatusChangeService } from '@/domain/clients/services'
