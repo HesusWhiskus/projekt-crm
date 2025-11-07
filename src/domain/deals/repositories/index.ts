@@ -1,2 +1,2 @@
-export { IDealRepository, DealFilter, FindDealsOptions } from './IDealRepository'
+export type { IDealRepository, DealFilter, FindDealsOptions } from './IDealRepository'
 
