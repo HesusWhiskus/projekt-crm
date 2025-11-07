@@ -50,6 +50,12 @@ Internal CRM to nowoczesny system zarządzania relacjami z klientami (CRM) przez
 - Statystyki (klienci, kontakty, zadania)
 - Nadchodzące zadania z linkami do szczegółów
 
+### ⚙️ Ustawienia użytkownika
+- Preferencje wyświetlania (jasny/ciemny motyw)
+- Wybór strefy czasowej dla formatowania dat i godzin
+- Kolorystyka interfejsu
+- Powiadomienia email
+
 ## 🛠️ Technologie
 
 - **Framework:** Next.js 14+ (App Router) z TypeScript

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
+import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ContactType } from "@prisma/client"
@@ -181,17 +182,14 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
               </div>
             )}
             {formData.isNote && <div></div>}
-            <div className="space-y-2">
-              <Label htmlFor="date">Data i godzina *</Label>
-              <Input
-                id="date"
-                type="datetime-local"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                required
-                disabled={isLoading}
-              />
-            </div>
+            <DateTimePicker
+              id="date"
+              label="Data i godzina"
+              value={formData.date}
+              onChange={(value) => setFormData({ ...formData, date: value })}
+              required
+              disabled={isLoading}
+            />
           </div>
 
           {clients && (

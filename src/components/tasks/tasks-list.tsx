@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Select } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { TaskStatus, UserRole } from "@prisma/client"
-import { Plus, List, Calendar } from "lucide-react"
+import { Plus, List, Calendar, AlertCircle } from "lucide-react"
 import { TaskForm } from "./task-form"
 import { TasksCalendar } from "./tasks-calendar"
 import { ClientForm } from "@/components/clients/client-form"
@@ -103,6 +103,13 @@ export function TasksList({
     if (filters.assignedTo && task.assignee?.id !== filters.assignedTo) return false
     return true
   })
+
+  const isOverdue = (task: Task): boolean => {
+    if (!task.dueDate || task.status === "COMPLETED") {
+      return false
+    }
+    return new Date(task.dueDate) < new Date()
+  }
 
   return (
     <div className="space-y-6">
@@ -216,13 +223,25 @@ export function TasksList({
               </p>
             ) : (
               <div className="space-y-2">
-                {filteredTasks.map((task) => (
+                {filteredTasks.map((task) => {
+                  const overdue = isOverdue(task)
+                  return (
                   <Link key={task.id} href={`/tasks/${task.id}`}>
-                    <div className="border border-border rounded p-4 hover:bg-muted/50 cursor-pointer">
+                    <div className={`border rounded p-4 hover:bg-muted/50 cursor-pointer ${
+                      overdue ? "border-red-500 bg-red-50 dark:bg-red-950/20" : "border-border"
+                    }`}>
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
-                            <h3 className="font-medium">{task.title}</h3>
+                            <h3 className={`font-medium ${overdue ? "text-red-700 dark:text-red-400" : ""}`}>
+                              {task.title}
+                            </h3>
+                            {overdue && (
+                              <span className="px-2 py-1 rounded text-xs bg-red-500 text-white flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                Przeterminowane
+                              </span>
+                            )}
                             <span className="px-2 py-1 rounded text-xs bg-muted text-muted-foreground">
                               {statusLabels[task.status]}
                             </span>
@@ -234,7 +253,7 @@ export function TasksList({
                           )}
                           <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
                             {task.dueDate && (
-                              <span>
+                              <span className={overdue ? "text-red-600 dark:text-red-400 font-medium" : ""}>
                                 Termin: {new Date(task.dueDate).toLocaleDateString("pl-PL")}
                               </span>
                             )}
@@ -253,7 +272,8 @@ export function TasksList({
                       </div>
                     </div>
                   </Link>
-                ))}
+                  )
+                })}
               </div>
             )}
           </CardContent>

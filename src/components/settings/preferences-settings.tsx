@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
 import { ColorSchemePicker } from "./color-scheme-picker"
+import { COMMON_TIMEZONES, getUserTimezone } from "@/lib/timezone"
 
 interface PreferencesSettingsProps {
   preferences: {
@@ -16,6 +17,7 @@ interface PreferencesSettingsProps {
     themeName?: string | null
     theme?: string | null
     language?: string | null
+    timezone?: string | null
     emailTasks?: boolean
     emailContacts?: boolean
   } | null
@@ -39,6 +41,9 @@ export function PreferencesSettings({
     themeName: preferences?.themeName || defaultColorScheme?.themeName || "blue",
   })
   const [currentTheme, setCurrentTheme] = useState<string>(preferences?.theme || theme || "light")
+  const [timezone, setTimezone] = useState<string>(
+    preferences?.timezone || getUserTimezone()
+  )
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -81,6 +86,7 @@ export function PreferencesSettings({
         },
         body: JSON.stringify({
           theme: currentTheme,
+          timezone: timezone,
           colorScheme: {
             primaryColor: colorScheme.primaryColor,
             themeName: colorScheme.themeName,
@@ -135,6 +141,34 @@ export function PreferencesSettings({
                 Ciemny
               </Button>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Strefa czasowa</CardTitle>
+          <CardDescription>
+            Wybierz strefę czasową dla wyświetlania dat i godzin
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="timezone">Strefa czasowa</Label>
+            <Select
+              id="timezone"
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
+            >
+              {COMMON_TIMEZONES.map((tz) => (
+                <option key={tz.value} value={tz.value}>
+                  {tz.label}
+                </option>
+              ))}
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Wszystkie daty i godziny będą wyświetlane zgodnie z wybraną strefą czasową
+            </p>
           </div>
         </CardContent>
       </Card>

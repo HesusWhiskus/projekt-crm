@@ -6,6 +6,7 @@ import { z } from "zod"
 const updatePreferencesSchema = z.object({
   theme: z.enum(["light", "dark"]).optional(),
   language: z.enum(["pl", "en"]).optional(),
+  timezone: z.string().optional(),
   colorScheme: z
     .object({
       primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
@@ -72,6 +73,7 @@ export async function PATCH(request: Request) {
         userId: user.id,
         theme: validatedData.theme,
         language: validatedData.language,
+        timezone: validatedData.timezone,
         primaryColor: validatedData.colorScheme?.primaryColor,
         themeName: validatedData.colorScheme?.themeName,
         emailTasks: validatedData.notifications?.emailTasks ?? true,
@@ -81,6 +83,9 @@ export async function PATCH(request: Request) {
         ...(validatedData.theme !== undefined && { theme: validatedData.theme }),
         ...(validatedData.language !== undefined && {
           language: validatedData.language,
+        }),
+        ...(validatedData.timezone !== undefined && {
+          timezone: validatedData.timezone,
         }),
         ...(validatedData.colorScheme?.primaryColor !== undefined && {
           primaryColor: validatedData.colorScheme.primaryColor,

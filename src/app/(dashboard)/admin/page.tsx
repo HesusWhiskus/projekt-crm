@@ -26,37 +26,31 @@ export default async function AdminPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Użytkownicy</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{usersCount}</div>
-            <p className="text-xs text-muted-foreground">Zarejestrowanych użytkowników</p>
-            <Link href="/admin/users">
-              <button className="mt-4 text-sm text-primary hover:underline">
-                Zarządzaj użytkownikami →
-              </button>
-            </Link>
-          </CardContent>
-        </Card>
+        <Link href="/admin/users">
+          <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Użytkownicy</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{usersCount}</div>
+              <p className="text-xs text-muted-foreground">Zarejestrowanych użytkowników</p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Grupy</CardTitle>
-            <Settings className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{groupsCount}</div>
-            <p className="text-xs text-muted-foreground">Utworzonych grup</p>
-            <Link href="/admin/groups">
-              <button className="mt-4 text-sm text-primary hover:underline">
-                Zarządzaj grupami →
-              </button>
-            </Link>
-          </CardContent>
-        </Card>
+        <Link href="/admin/groups">
+          <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Grupy</CardTitle>
+              <Settings className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{groupsCount}</div>
+              <p className="text-xs text-muted-foreground">Utworzonych grup</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

@@ -17,14 +17,14 @@ export function AuthHeader({ systemName, systemLogo }: AuthHeaderProps) {
                 alt={systemName}
                 width={256}
                 height={80}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain dark:brightness-0 dark:invert"
                 unoptimized
               />
             ) : (
               <img
                 src={systemLogo}
                 alt={systemName}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain dark:brightness-0 dark:invert"
               />
             )}
           </div>

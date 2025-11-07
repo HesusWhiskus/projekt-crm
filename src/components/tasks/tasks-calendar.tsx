@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from "date-fns"
 import { pl } from "date-fns/locale"
+import { AlertCircle } from "lucide-react"
 import { TaskStatus, UserRole } from "@prisma/client"
 import { TaskForm } from "./task-form"
 import { ClientForm } from "@/components/clients/client-form"
@@ -65,6 +66,13 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
     return tasks.filter(
       (task) => task.dueDate && isSameDay(new Date(task.dueDate), day)
     )
+  }
+
+  const isOverdue = (task: Task): boolean => {
+    if (!task.dueDate || task.status === "COMPLETED") {
+      return false
+    }
+    return new Date(task.dueDate) < new Date()
   }
 
   const prevMonth = () => {
@@ -130,16 +138,24 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
                     {format(day, "d")}
                   </div>
                   <div className="space-y-1">
-                    {dayTasks.slice(0, 3).map((task) => (
+                    {dayTasks.slice(0, 3).map((task) => {
+                      const overdue = isOverdue(task)
+                      return (
                       <div
                         key={task.id}
                         onClick={(e) => handleTaskClick(task.id, e)}
-                        className="text-xs bg-primary/10 text-primary p-1 rounded truncate cursor-pointer hover:bg-primary/20 transition-colors"
+                        className={`text-xs p-1 rounded truncate cursor-pointer transition-colors ${
+                          overdue
+                            ? "bg-red-500 text-white hover:bg-red-600"
+                            : "bg-primary/10 text-primary hover:bg-primary/20"
+                        }`}
                         title={task.title}
                       >
+                        {overdue && <AlertCircle className="inline h-3 w-3 mr-1" />}
                         {task.title}
                       </div>
-                    ))}
+                      )
+                    })}
                     {dayTasks.length > 3 && (
                       <div className="text-xs text-muted-foreground">
                         +{dayTasks.length - 3} więcej

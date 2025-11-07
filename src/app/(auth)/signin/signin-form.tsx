@@ -21,6 +21,12 @@ export default function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Prevent multiple submissions
+    if (isLoading) {
+      return
+    }
+    
     setIsLoading(true)
     setErrorMessage(null)
 
@@ -55,6 +61,11 @@ export default function SignInForm() {
   }
 
   const handleGoogleSignIn = async () => {
+    // Prevent multiple submissions
+    if (isLoading) {
+      return
+    }
+    
     setIsLoading(true)
     await signIn("google", { callbackUrl })
   }

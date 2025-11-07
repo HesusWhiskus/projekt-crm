@@ -5,6 +5,55 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.4.1-beta] - 2025-01-XX
+
+### Naprawiono
+- **Zablokowanie wielokrotnego kliknięcia przycisku logowania:**
+  - Dodano sprawdzenie `isLoading` przed rozpoczęciem logowania
+  - Przycisk jest wyłączony podczas procesu logowania
+  - Zablokowano wielokrotne requesty podczas logowania
+- **Usunięcie duplikacji w panelu admina:**
+  - Usunięto zdublowane karty "Zarządzanie użytkownikami" i "Zarządzanie grupami"
+  - Karty statystyk są teraz klikalne i prowadzą bezpośrednio do odpowiednich sekcji
+- **Wyróżnik dla zadań niewykonanych w terminie:**
+  - Dodano wizualne oznaczenie w liście zadań (czerwony border, tło, badge "Przeterminowane")
+  - Dodano wyróżnik w kalendarzu (czerwone tło, ikona AlertCircle)
+  - Zadania przeterminowane są wyraźnie widoczne w interfejsie
+- **Logo adaptujące się do stylu:**
+  - Dodano filtry CSS `dark:brightness-0 dark:invert` dla logo
+  - Logo automatycznie dostosowuje się do dark/light mode
+  - Zastosowano w `dashboard-nav.tsx` i `auth-header.tsx`
+- **Poprawa selektora daty/czasu:**
+  - Utworzono komponent `DateTimePicker` z precyzyjnym wyborem godzin i minut
+  - Zastąpiono `datetime-local` w formularzach kontaktów, zadań i klientów
+  - Minuty wybierane co 5 minut dla łatwiejszego wyboru
+  - Lepsza precyzja wyboru czasu niż w standardowym `datetime-local`
+
+### Dodano
+- **Obsługa strefy czasowej:**
+  - Dodano pole `timezone` do `UserPreferences` w bazie danych
+  - Utworzono helper `src/lib/timezone.ts` z funkcjami formatowania dat
+  - Dodano selektor strefy czasowej w ustawieniach preferencji
+  - Wykrywanie domyślnej strefy czasowej przeglądarki
+  - Lista 30 najpopularniejszych stref czasowych
+  - Funkcje `formatDateInTimezone` i `formatDateTimeInTimezone` do formatowania dat
+
+### Zmieniono
+- **Komponenty formularzy:**
+  - `ContactForm` - używa `DateTimePicker` zamiast `datetime-local`
+  - `TaskForm` - używa `DateTimePicker` zamiast `datetime-local`
+  - `ClientForm` - używa `DateTimePicker` zamiast `datetime-local`
+- **API preferences:**
+  - Dodano obsługę pola `timezone` w endpoint `/api/users/preferences`
+  - Walidacja strefy czasowej w schemacie Zod
+
+### Uwagi techniczne
+- **Migracja bazy danych:** Wymagana migracja Prisma dla dodania pola `timezone` do `UserPreferences`
+- **Formatowanie dat:** Funkcje formatowania dat z uwzględnieniem strefy czasowej są dostępne w `src/lib/timezone.ts`
+- **Kompatybilność wsteczna:** Wszystkie zmiany są kompatybilne wstecz - istniejące funkcjonalności działają tak samo
+
+---
+
 ## [0.4.0-beta] - 2025-01-XX
 
 ### Zmieniono

@@ -104,14 +104,14 @@ export function DashboardNav({
                       alt="Logo"
                       width={224}
                       height={64}
-                      className="w-full h-full object-contain object-left"
+                      className="w-full h-full object-contain object-left dark:brightness-0 dark:invert"
                       unoptimized
                     />
                   ) : (
                     <img
                       src={systemLogo}
                       alt="Logo"
-                      className="w-full h-full object-contain object-left"
+                      className="w-full h-full object-contain object-left dark:brightness-0 dark:invert"
                     />
                   )}
                 </div>

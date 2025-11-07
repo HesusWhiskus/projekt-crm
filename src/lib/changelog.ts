@@ -14,6 +14,36 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.1-beta',
+    date: '2025-01-XX',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Zablokowanie wielokrotnego kliknięcia przycisku logowania - zapobieganie wielokrotnym requestom',
+      },
+      {
+        type: 'fixed',
+        description: 'Usunięcie duplikacji w panelu admina - usunięto zdublowane karty zarządzania',
+      },
+      {
+        type: 'fixed',
+        description: 'Wyróżnik dla zadań niewykonanych w terminie - wizualne oznaczenie w liście i kalendarzu',
+      },
+      {
+        type: 'fixed',
+        description: 'Logo adaptujące się do stylu - automatyczne dostosowanie do dark/light mode',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawa selektora daty/czasu - precyzyjny wybór godzin i minut (co 5 minut)',
+      },
+      {
+        type: 'added',
+        description: 'Obsługa strefy czasowej - wybór strefy czasowej w ustawieniach, formatowanie dat z uwzględnieniem strefy',
+      },
+    ],
+  },
+  {
     version: '0.4.0-beta',
     date: '2025-01-XX',
     changes: [

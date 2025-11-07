@@ -214,6 +214,7 @@ model UserPreferences {
   // Theme and appearance
   theme    String? @default("light") // "light" | "dark"
   language String? @default("pl") // "pl" | "en"
+  timezone String? // IANA timezone (e.g., "Europe/Warsaw", "America/New_York")
 
   // Color scheme
   primaryColor String? // Hex color (e.g., #3b82f6)

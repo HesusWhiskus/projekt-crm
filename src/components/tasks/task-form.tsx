@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
+import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { TaskStatus } from "@prisma/client"
@@ -147,16 +148,13 @@ export function TaskForm({ users, clients, groups, currentUser, task, onClose, o
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="dueDate">Termin</Label>
-              <Input
-                id="dueDate"
-                type="datetime-local"
-                value={formData.dueDate}
-                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                disabled={isLoading}
-              />
-            </div>
+            <DateTimePicker
+              id="dueDate"
+              label="Termin"
+              value={formData.dueDate || ""}
+              onChange={(value) => setFormData({ ...formData, dueDate: value })}
+              disabled={isLoading}
+            />
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select

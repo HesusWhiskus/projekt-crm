@@ -28,6 +28,18 @@ Od wersji **0.4.0-beta** API używa architektury **Domain-Driven Design (DDD)** 
 
 **Ważne:** System używa formatu **CUID** (Collision-resistant Unique Identifier) dla wszystkich identyfikatorów w bazie danych, **NIE UUID**.
 
+## Strefa czasowa
+
+Od wersji **0.4.1-beta** system obsługuje strefy czasowe użytkowników:
+
+- Użytkownicy mogą wybrać swoją strefę czasową w ustawieniach preferencji
+- Domyślnie używana jest strefa czasowa przeglądarki
+- Wszystkie daty i godziny powinny być formatowane z uwzględnieniem strefy czasowej użytkownika
+- Funkcje pomocnicze dostępne w `src/lib/timezone.ts`:
+  - `getUserTimezone(timezone?)` - pobiera strefę czasową użytkownika lub domyślną
+  - `formatDateInTimezone(date, timezone?, options?)` - formatuje datę z uwzględnieniem strefy
+  - `formatDateTimeInTimezone(date, timezone?, options?)` - formatuje datę i godzinę z uwzględnieniem strefy
+
 - **CUID** to format używany domyślnie przez Prisma ORM
 - Przykład CUID: `cmhnww4wl0001sghcpfrzy507`
 - CUID jest walidowany jako niepusty string - nie ma dodatkowej walidacji formatu
@@ -565,6 +577,79 @@ Aktualizuje profil użytkownika.
   "position": "string (optional)"
 }
 ```
+
+---
+
+## Preferencje użytkownika
+
+### GET /api/users/preferences
+
+Pobiera preferencje zalogowanego użytkownika.
+
+**Response:**
+```json
+{
+  "preferences": {
+    "id": "string",
+    "userId": "string",
+    "theme": "light | dark | null",
+    "language": "pl | en | null",
+    "timezone": "string | null",
+    "primaryColor": "string | null",
+    "themeName": "blue | green | purple | red | custom | system | null",
+    "emailTasks": true,
+    "emailContacts": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### PATCH /api/users/preferences
+
+Aktualizuje preferencje użytkownika.
+
+**Request Body:**
+```json
+{
+  "theme": "light | dark (optional)",
+  "language": "pl | en (optional)",
+  "timezone": "string (optional, IANA timezone, e.g., 'Europe/Warsaw')",
+  "colorScheme": {
+    "primaryColor": "string (optional, hex color, e.g., '#3b82f6')",
+    "themeName": "blue | green | purple | red | custom | system (optional)"
+  },
+  "notifications": {
+    "emailTasks": "boolean (optional)",
+    "emailContacts": "boolean (optional)"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Preferencje zostały zaktualizowane",
+  "preferences": {
+    "id": "string",
+    "userId": "string",
+    "theme": "light | dark | null",
+    "language": "pl | en | null",
+    "timezone": "string | null",
+    "primaryColor": "string | null",
+    "themeName": "blue | green | purple | red | custom | system | null",
+    "emailTasks": true,
+    "emailContacts": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Uwagi:**
+- Pole `timezone` przyjmuje wartości IANA timezone (np. "Europe/Warsaw", "America/New_York")
+- Jeśli `timezone` nie jest podane, system używa domyślnej strefy czasowej przeglądarki
+- Wszystkie pola są opcjonalne - można aktualizować tylko wybrane preferencje
 
 ---
 

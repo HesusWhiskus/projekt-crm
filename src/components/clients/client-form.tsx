@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
+import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
@@ -242,16 +243,13 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
                 ))}
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="nextFollowUpAt">Następny follow-up</Label>
-              <Input
-                id="nextFollowUpAt"
-                type="datetime-local"
-                value={formData.nextFollowUpAt}
-                onChange={(e) => setFormData({ ...formData, nextFollowUpAt: e.target.value })}
-                disabled={isLoading}
-              />
-            </div>
+            <DateTimePicker
+              id="nextFollowUpAt"
+              label="Następny follow-up"
+              value={formData.nextFollowUpAt || ""}
+              onChange={(value) => setFormData({ ...formData, nextFollowUpAt: value })}
+              disabled={isLoading}
+            />
           </div>
 
           <div className="space-y-2">
