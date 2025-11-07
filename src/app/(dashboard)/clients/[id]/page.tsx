@@ -65,6 +65,17 @@ export default async function ClientDetailPage({
           },
         },
       },
+      deals: {
+        orderBy: { updatedAt: "desc" },
+        include: {
+          sharedGroups: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
       statusHistory: {
         orderBy: { changedAt: "desc" },
         include: {
