@@ -34,11 +34,15 @@ Od wersji **0.4.1-beta** system obsługuje strefy czasowe użytkowników:
 
 - Użytkownicy mogą wybrać swoją strefę czasową w ustawieniach preferencji
 - Domyślnie używana jest strefa czasowa przeglądarki
-- Wszystkie daty i godziny powinny być formatowane z uwzględnieniem strefy czasowej użytkownika
+- Wszystkie daty i godziny są formatowane z uwzględnieniem strefy czasowej przeglądarki
 - Funkcje pomocnicze dostępne w `src/lib/timezone.ts`:
   - `getUserTimezone(timezone?)` - pobiera strefę czasową użytkownika lub domyślną
   - `formatDateInTimezone(date, timezone?, options?)` - formatuje datę z uwzględnieniem strefy
   - `formatDateTimeInTimezone(date, timezone?, options?)` - formatuje datę i godzinę z uwzględnieniem strefy
+  - `utcDateToLocalDateTime(date, timezone?)` - konwertuje datę UTC na format datetime-local w lokalnej strefie czasowej przeglądarki
+  - `localDateTimeToUTC(dateTimeString, timezone?)` - konwertuje datetime-local na UTC Date
+
+**Uwaga:** W formularzach używany jest `datetime-local`, który automatycznie używa strefy czasowej przeglądarki. Daty z bazy danych (zapisane w UTC) są konwertowane na lokalną strefę czasową przeglądarki przy wyświetlaniu w formularzach.
 
 - **CUID** to format używany domyślnie przez Prisma ORM
 - Przykład CUID: `cmhnww4wl0001sghcpfrzy507`
