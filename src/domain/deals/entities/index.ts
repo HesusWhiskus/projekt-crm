@@ -1,2 +1,0 @@
-export { Deal } from './Deal'
-
