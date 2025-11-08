@@ -16,7 +16,6 @@ import {
   CheckSquare,
   LogOut,
   Settings,
-  TrendingUp,
 } from "lucide-react"
 import { WhatsNewButton } from "@/components/whats-new-button"
 
@@ -46,7 +45,6 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Klienci", href: "/clients", icon: Users },
   { name: "Kontakty", href: "/contacts", icon: FileText },
-  { name: "Deale", href: "/deals", icon: TrendingUp },
   { name: "Zadania", href: "/tasks", icon: CheckSquare },
   { name: "Kalendarz", href: "/calendar", icon: Calendar },
 ]
