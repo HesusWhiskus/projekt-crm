@@ -22,6 +22,64 @@ const updateTaskSchema = z.object({
   sharedGroupIds: z.array(z.string()).optional(),
 })
 
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   get:
+ *     summary: Pobiera szczegóły zadania
+ *     description: Pobiera szczegóły zadania. Wymaga autoryzacji i dostępu do zadania (przypisany, udostępniony przez grupę lub ADMIN).
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator zadania
+ *     responses:
+ *       200:
+ *         description: Szczegóły zadania
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Nieprawidłowy format ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Zadanie nie znalezione
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -76,6 +134,97 @@ export async function GET(
   }
 }
 
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   patch:
+ *     summary: Aktualizuje zadanie
+ *     description: Aktualizuje dane zadania. Wszystkie pola są opcjonalne. Wymaga autoryzacji i dostępu do zadania (przypisany lub ADMIN).
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator zadania
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 150
+ *               description:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 5000
+ *               dueDate:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *               status:
+ *                 type: string
+ *                 enum: [TODO, IN_PROGRESS, COMPLETED]
+ *               assignedTo:
+ *                 type: string
+ *                 nullable: true
+ *               clientId:
+ *                 type: string
+ *                 nullable: true
+ *               sharedGroupIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array ID grup (zastępuje istniejące)
+ *     responses:
+ *       200:
+ *         description: Zadanie zostało zaktualizowane
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Zadanie nie znalezione
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
@@ -181,6 +330,65 @@ export async function PATCH(
   }
 }
 
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   delete:
+ *     summary: Usuwa zadanie
+ *     description: Usuwa zadanie z systemu. Tylko ADMIN może usuwać zadania. Wymaga autoryzacji.
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator zadania
+ *     responses:
+ *       200:
+ *         description: Zadanie zostało usunięte
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Zadanie zostało usunięte"
+ *       400:
+ *         description: Nieprawidłowy format ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień (tylko ADMIN)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Zadanie nie znalezione
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }

@@ -1,0 +1,79 @@
+// Propozycja schema Prisma dla modelu ról i permissions
+// UWAGA: To jest tylko propozycja - NIE uruchamiać migracji bez zatwierdzenia
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+  VIEWER
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique // ADMIN, MANAGER, USER, VIEWER
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users            User[]            @relation("UserRole")
+  rolePermissions  RolePermission[]
+  
+  @@map("roles")
+}
+
+model Permission {
+  id       String   @id @default(cuid())
+  name     String   @unique // np. "clients:read", "clients:write"
+  resource String   // np. "clients", "contacts", "tasks"
+  action   String   // np. "read", "write", "delete"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  rolePermissions RolePermission[]
+  userPermissions UserPermission[]
+  
+  @@index([resource, action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String   @id @default(cuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserPermission {
+  id           String   @id @default(cuid())
+  userId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@map("user_permissions")
+}
+
+// Rozszerzenie modelu User
+model User {
+  // ... istniejące pola ...
+  
+  // Zmiana z enum na relację
+  // role          UserRole  @default(USER)  // USUNĄĆ
+  roleId        String?   // Dodać
+  role          Role?     @relation("UserRole", fields: [roleId], references: [id]) // Dodać
+  
+  // Relations
+  userPermissions UserPermission[] // Dodać
+}
+

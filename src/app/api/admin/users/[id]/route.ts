@@ -10,6 +10,77 @@ const updateUserSchema = z.object({
   position: z.string().optional().nullable(),
 })
 
+/**
+ * @swagger
+ * /api/admin/users/{id}:
+ *   patch:
+ *     summary: Aktualizuje użytkownika
+ *     description: Aktualizuje dane użytkownika. Tylko ADMIN może aktualizować użytkowników. Wymaga autoryzacji.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator użytkownika
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [ADMIN, USER]
+ *               name:
+ *                 type: string
+ *                 minLength: 1
+ *               position:
+ *                 type: string
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Użytkownik został zaktualizowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Użytkownik został zaktualizowany"
+ *                 user:
+ *                   type: object
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień (tylko ADMIN)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }

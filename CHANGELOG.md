@@ -7,6 +7,27 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
 ## [0.4.2-beta] - 2025-01-XX
 
+### Dodano
+- **Dokumentacja Swagger/OpenAPI:**
+  - Interaktywna dokumentacja API dostępna pod `/api-docs` (wymaga zalogowania)
+  - Automatyczne generowanie specyfikacji OpenAPI z JSDoc komentarzy
+  - Endpoint `/api/swagger.json` zwracający pełną specyfikację OpenAPI 3.0
+  - Dokumentacja wszystkich endpointów z opisami, parametrami, schematami request/response
+  - Skrypt weryfikacji dokumentacji: `npm run swagger:verify`
+  - Schematy dla Client, Contact, Task, Error
+  - Zabezpieczenie Swagger UI autoryzacją (tylko zalogowani użytkownicy)
+- **Model ról i permissions:**
+  - Zaprojektowano model z 4 rolami: ADMIN, MANAGER, USER, VIEWER
+  - Zdefiniowano listę permissions dla każdej roli
+  - Utworzono dokumentację `ROLES_PERMISSIONS_MODEL.md` z pełnym opisem modelu
+  - Propozycja schema Prisma dla przyszłej implementacji (`prisma/schema-roles-permissions.prisma`)
+  - Model wspiera many-to-many relacje między rolami a permissions
+  - Możliwość przypisania override permissions bezpośrednio do użytkownika
+- **Analiza integracji Auth0:**
+  - Utworzono dokument `AUTH0_ANALYSIS.md` z analizą możliwości integracji
+  - Przeanalizowano współistnienie Auth0 i NextAuth
+  - Rekomendacja: NIE wdrażać Auth0 na obecnym etapie (fokus na rozbudowę obecnego systemu)
+
 ### Naprawiono
 - **Usunięcie duplikacji w panelu admina:**
   - Usunięto zdublowane sekcje "Zarządzanie użytkownikami" i "Zarządzanie grupami"

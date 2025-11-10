@@ -13,6 +13,113 @@ const statusChangeService = new ClientStatusChangeService()
 const createClientUseCase = new CreateClientUseCase(clientRepository)
 const listClientsUseCase = new ListClientsUseCase(clientRepository)
 
+/**
+ * @swagger
+ * /api/clients:
+ *   post:
+ *     summary: Tworzy nowego klienta
+ *     description: Tworzy nowego klienta w systemie. Wymaga autoryzacji.
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - lastName
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 50
+ *                 description: Imię klienta
+ *               lastName:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 50
+ *                 description: Nazwisko klienta
+ *               agencyName:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 150
+ *                 description: Nazwa agencji
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 nullable: true
+ *                 maxLength: 255
+ *               phone:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 30
+ *               website:
+ *                 type: string
+ *                 format: uri
+ *                 nullable: true
+ *                 maxLength: 2048
+ *               address:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 500
+ *               source:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 100
+ *               status:
+ *                 type: string
+ *                 enum: [NEW_LEAD, IN_CONTACT, DEMO_SENT, NEGOTIATION, ACTIVE_CLIENT, LOST]
+ *                 default: NEW_LEAD
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, MEDIUM, HIGH]
+ *                 nullable: true
+ *               nextFollowUpAt:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *               assignedTo:
+ *                 type: string
+ *                 nullable: true
+ *                 description: CUID użytkownika przypisanego
+ *               sharedGroupIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array ID grup do udostępnienia
+ *     responses:
+ *       201:
+ *         description: Klient został utworzony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 client:
+ *                   $ref: '#/components/schemas/Client'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(request: Request) {
   try {
     // Authentication
@@ -77,6 +184,75 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * @swagger
+ * /api/clients:
+ *   get:
+ *     summary: Pobiera listę klientów
+ *     description: Pobiera listę klientów z możliwością filtrowania. Wymaga autoryzacji. Użytkownicy widzą tylko swoich klientów lub udostępnionych przez grupy.
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [NEW_LEAD, IN_CONTACT, DEMO_SENT, NEGOTIATION, ACTIVE_CLIENT, LOST]
+ *         description: Filtr statusu klienta
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Wyszukiwanie po nazwie, emailu
+ *       - in: query
+ *         name: assignedTo
+ *         schema:
+ *           type: string
+ *         description: ID użytkownika przypisanego (CUID format)
+ *       - in: query
+ *         name: noContactDays
+ *         schema:
+ *           type: string
+ *         description: Liczba dni jako string. Filtruje klientów bez kontaktu przez X dni
+ *       - in: query
+ *         name: followUpToday
+ *         schema:
+ *           type: string
+ *           enum: ["true"]
+ *         description: "true" jako string. Filtruje klientów z follow-up dzisiaj
+ *     responses:
+ *       200:
+ *         description: Lista klientów
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 clients:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Client'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(request: Request) {
   try {
     // Authentication

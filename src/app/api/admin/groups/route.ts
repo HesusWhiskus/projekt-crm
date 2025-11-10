@@ -9,6 +9,72 @@ const createGroupSchema = z.object({
   description: textFieldSchema(500, "Opis"),
 })
 
+/**
+ * @swagger
+ * /api/admin/groups:
+ *   post:
+ *     summary: Tworzy nową grupę
+ *     description: Tworzy nową grupę użytkowników. Tylko ADMIN może tworzyć grupy. Wymaga autoryzacji.
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 maxLength: 100
+ *                 description: Nazwa grupy (unikalna)
+ *               description:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 500
+ *     responses:
+ *       201:
+ *         description: Grupa została utworzona
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Grupa została utworzona"
+ *                 group:
+ *                   type: object
+ *       400:
+ *         description: Błąd walidacji lub grupa o tej nazwie już istnieje
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień (tylko ADMIN)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser()

@@ -22,6 +22,90 @@ const updateContactSchema = z.object({
   sharedGroupIds: z.array(z.string()).optional(),
 })
 
+/**
+ * @swagger
+ * /api/contacts/{id}:
+ *   patch:
+ *     summary: Aktualizuje kontakt
+ *     description: Aktualizuje dane kontaktu. Wszystkie pola są opcjonalne. Wymaga autoryzacji i dostępu do kontaktu.
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator kontaktu
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [PHONE_CALL, MEETING, EMAIL, LINKEDIN_MESSAGE, OTHER]
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               notes:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 10000
+ *               isNote:
+ *                 type: boolean
+ *               userId:
+ *                 type: string
+ *               clientId:
+ *                 type: string
+ *               sharedGroupIds:
+ *                 type: string
+ *                 description: JSON array string lub comma-separated string z ID grup (zastępuje istniejące)
+ *     responses:
+ *       200:
+ *         description: Kontakt został zaktualizowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 contact:
+ *                   $ref: '#/components/schemas/Contact'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Kontakt nie znaleziony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
@@ -191,6 +275,65 @@ export async function PATCH(
   }
 }
 
+/**
+ * @swagger
+ * /api/contacts/{id}:
+ *   delete:
+ *     summary: Usuwa kontakt
+ *     description: Usuwa kontakt z systemu. Wymaga autoryzacji i dostępu do kontaktu (ADMIN, właściciel kontaktu lub właściciel klienta).
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator kontaktu
+ *     responses:
+ *       200:
+ *         description: Kontakt został usunięty
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Kontakt został usunięty"
+ *       400:
+ *         description: Nieprawidłowy format ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Kontakt nie znaleziony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }

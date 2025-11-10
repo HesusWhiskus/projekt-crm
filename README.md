@@ -56,6 +56,12 @@ Internal CRM to nowoczesny system zarządzania relacjami z klientami (CRM) przez
 - Kolorystyka interfejsu
 - Powiadomienia email
 
+### 📚 Dokumentacja API
+- Interaktywna dokumentacja Swagger/OpenAPI dostępna pod `/api-docs`
+- Automatyczne generowanie specyfikacji z JSDoc komentarzy
+- Endpoint `/api/swagger.json` zwracający pełną specyfikację OpenAPI 3.0
+- Weryfikacja dokumentacji: `npm run swagger:verify`
+
 ## 🛠️ Technologie
 
 - **Framework:** Next.js 14+ (App Router) z TypeScript

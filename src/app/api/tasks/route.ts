@@ -23,6 +23,98 @@ const createTaskSchema = z.object({
   sharedGroupIds: z.array(z.string()).optional(),
 })
 
+/**
+ * @swagger
+ * /api/tasks:
+ *   post:
+ *     summary: Tworzy nowe zadanie
+ *     description: Tworzy nowe zadanie w systemie. Wymaga autoryzacji. Jeśli clientId jest podany, wymaga dostępu do klienta.
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 150
+ *                 description: Tytuł zadania
+ *               description:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 5000
+ *                 description: Opis zadania
+ *               dueDate:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *                 description: Termin wykonania (ISO datetime)
+ *               status:
+ *                 type: string
+ *                 enum: [TODO, IN_PROGRESS, COMPLETED]
+ *                 default: TODO
+ *               assignedTo:
+ *                 type: string
+ *                 nullable: true
+ *                 description: CUID użytkownika przypisanego
+ *               clientId:
+ *                 type: string
+ *                 nullable: true
+ *                 description: CUID klienta (opcjonalne)
+ *               sharedGroupIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array ID grup do udostępnienia
+ *     responses:
+ *       201:
+ *         description: Zadanie zostało utworzone
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 task:
+ *                   $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień do klienta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Klient nie znaleziony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser()
@@ -113,6 +205,64 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * @swagger
+ * /api/tasks:
+ *   get:
+ *     summary: Pobiera listę zadań
+ *     description: Pobiera listę zadań z możliwością filtrowania. Wymaga autoryzacji. Użytkownicy widzą tylko swoje zadania lub udostępnione przez grupy.
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [TODO, IN_PROGRESS, COMPLETED]
+ *         description: Filtr statusu zadania
+ *       - in: query
+ *         name: assignedTo
+ *         schema:
+ *           type: string
+ *         description: CUID użytkownika przypisanego
+ *       - in: query
+ *         name: clientId
+ *         schema:
+ *           type: string
+ *         description: CUID klienta
+ *     responses:
+ *       200:
+ *         description: Lista zadań
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tasks:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(request: Request) {
   try {
     const user = await getCurrentUser()

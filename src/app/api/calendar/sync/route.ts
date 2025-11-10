@@ -7,6 +7,83 @@ const syncSchema = z.object({
   taskId: z.string().min(1),
 })
 
+/**
+ * @swagger
+ * /api/calendar/sync:
+ *   post:
+ *     summary: Synchronizuje zadanie z Google Calendar
+ *     description: Synchronizuje zadanie z kalendarzem Google. Wymaga autoryzacji i połączenia z Google Calendar (OAuth). Użytkownik musi być zalogowany przez Google.
+ *     tags: [Calendar]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - taskId
+ *             properties:
+ *               taskId:
+ *                 type: string
+ *                 minLength: 1
+ *                 description: CUID identyfikator zadania do synchronizacji
+ *     responses:
+ *       200:
+ *         description: Zadanie zostało zsynchronizowane
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Zadanie zostało zsynchronizowane z kalendarzem Google"
+ *                 eventId:
+ *                   type: string
+ *                   description: ID wydarzenia w Google Calendar
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany lub brak dostępu do Google Calendar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                 requiresGoogleAuth:
+ *                   type: boolean
+ *                   description: Wymaga logowania przez Google
+ *                 requiresReauth:
+ *                   type: boolean
+ *                   description: Wymaga ponownego logowania przez Google
+ *       403:
+ *         description: Brak uprawnień do Google Calendar
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                 requiresScope:
+ *                   type: boolean
+ *                   description: Wymaga dodatkowych uprawnień
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser()

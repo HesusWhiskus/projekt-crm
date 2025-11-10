@@ -26,6 +26,101 @@ const createContactSchema = z.object({
   sharedGroupIds: z.array(z.string()).optional(),
 })
 
+/**
+ * @swagger
+ * /api/contacts:
+ *   post:
+ *     summary: Tworzy nowy kontakt lub notatkę
+ *     description: Tworzy nowy kontakt lub notatkę dla klienta. Wymaga autoryzacji. Przy tworzeniu kontaktu (isNote=false) automatycznie aktualizuje lastContactAt klienta.
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - date
+ *               - notes
+ *               - userId
+ *               - clientId
+ *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [PHONE_CALL, MEETING, EMAIL, LINKEDIN_MESSAGE, OTHER]
+ *                 description: Typ kontaktu (opcjonalne dla notatek - isNote=true)
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Data i godzina kontaktu (ISO string)
+ *               notes:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 10000
+ *                 description: Notatka/treść kontaktu
+ *               isNote:
+ *                 type: boolean
+ *                 default: false
+ *                 description: Flaga rozróżniająca notatki od kontaktów. false = kontakt (aktualizuje lastContactAt), true = notatka
+ *               userId:
+ *                 type: string
+ *                 description: CUID użytkownika tworzącego kontakt
+ *               clientId:
+ *                 type: string
+ *                 description: CUID klienta
+ *               sharedGroupIds:
+ *                 type: string
+ *                 description: JSON array string lub comma-separated string z ID grup
+ *               files:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Pliki do załączenia (opcjonalne, max 5 plików)
+ *     responses:
+ *       201:
+ *         description: Kontakt został utworzony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 contact:
+ *                   $ref: '#/components/schemas/Contact'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień do klienta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Klient nie znaleziony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser()
@@ -207,6 +302,64 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * @swagger
+ * /api/contacts:
+ *   get:
+ *     summary: Pobiera listę kontaktów
+ *     description: Pobiera listę kontaktów z możliwością filtrowania. Wymaga autoryzacji. Użytkownicy widzą tylko kontakty do swoich klientów lub udostępnionych przez grupy.
+ *     tags: [Contacts]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [PHONE_CALL, MEETING, EMAIL, LINKEDIN_MESSAGE, OTHER]
+ *         description: Filtr typu kontaktu
+ *       - in: query
+ *         name: clientId
+ *         schema:
+ *           type: string
+ *         description: CUID klienta
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         description: CUID użytkownika
+ *     responses:
+ *       200:
+ *         description: Lista kontaktów
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 contacts:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Contact'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(request: Request) {
   try {
     const user = await getCurrentUser()

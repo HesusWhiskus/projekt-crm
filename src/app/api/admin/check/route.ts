@@ -6,7 +6,42 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 /**
- * Endpoint do sprawdzenia czy istnieje administrator
+ * @swagger
+ * /api/admin/check:
+ *   get:
+ *     summary: Sprawdza czy istnieje administrator
+ *     description: Sprawdza czy w systemie istnieje co najmniej jeden użytkownik z rolą ADMIN. Endpoint publiczny (nie wymaga autoryzacji).
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: Status administratora
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 exists:
+ *                   type: boolean
+ *                   description: Czy administrator istnieje
+ *                 admin:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                   description: Dane administratora (jeśli istnieje)
+ *                 message:
+ *                   type: string
+ *                   nullable: true
+ *                   description: Komunikat (jeśli administrator nie istnieje)
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 export async function GET() {
   try {

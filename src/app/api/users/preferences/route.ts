@@ -23,6 +23,65 @@ const updatePreferencesSchema = z.object({
     .optional(),
 })
 
+/**
+ * @swagger
+ * /api/users/preferences:
+ *   get:
+ *     summary: Pobiera preferencje użytkownika
+ *     description: Pobiera preferencje zalogowanego użytkownika (motyw, język, strefa czasowa, kolory, powiadomienia). Wymaga autoryzacji.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Preferencje użytkownika
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 preferences:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     userId:
+ *                       type: string
+ *                     theme:
+ *                       type: string
+ *                       enum: [light, dark]
+ *                     language:
+ *                       type: string
+ *                       enum: [pl, en]
+ *                     timezone:
+ *                       type: string
+ *                       nullable: true
+ *                     primaryColor:
+ *                       type: string
+ *                       nullable: true
+ *                     themeName:
+ *                       type: string
+ *                       enum: [blue, green, purple, red, custom, system]
+ *                       nullable: true
+ *                     emailTasks:
+ *                       type: boolean
+ *                     emailContacts:
+ *                       type: boolean
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET() {
   try {
     const user = await getCurrentUser()
@@ -54,6 +113,87 @@ export async function GET() {
   }
 }
 
+/**
+ * @swagger
+ * /api/users/preferences:
+ *   patch:
+ *     summary: Aktualizuje preferencje użytkownika
+ *     description: Aktualizuje preferencje zalogowanego użytkownika. Wszystkie pola są opcjonalne. Wymaga autoryzacji.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               theme:
+ *                 type: string
+ *                 enum: [light, dark]
+ *               language:
+ *                 type: string
+ *                 enum: [pl, en]
+ *               timezone:
+ *                 type: string
+ *                 description: IANA timezone (np. "Europe/Warsaw")
+ *               colorScheme:
+ *                 type: object
+ *                 properties:
+ *                   primaryColor:
+ *                     type: string
+ *                     pattern: '^#[0-9A-F]{6}$'
+ *                     description: Hex color (np. "#3b82f6")
+ *                   themeName:
+ *                     type: string
+ *                     enum: [blue, green, purple, red, custom, system]
+ *               notifications:
+ *                 type: object
+ *                 properties:
+ *                   emailTasks:
+ *                     type: boolean
+ *                   emailContacts:
+ *                     type: boolean
+ *     responses:
+ *       200:
+ *         description: Preferencje zostały zaktualizowane
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Preferencje zostały zaktualizowane"
+ *                 preferences:
+ *                   type: object
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       503:
+ *         description: Tabele ustawień nie zostały jeszcze utworzone
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function PATCH(request: Request) {
   try {
     const user = await getCurrentUser()

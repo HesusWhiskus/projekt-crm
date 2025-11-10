@@ -13,6 +13,64 @@ const getClientUseCase = new GetClientUseCase(clientRepository)
 const updateClientUseCase = new UpdateClientUseCase(clientRepository, statusChangeService)
 const deleteClientUseCase = new DeleteClientUseCase(clientRepository)
 
+/**
+ * @swagger
+ * /api/clients/{id}:
+ *   get:
+ *     summary: Pobiera szczegóły klienta
+ *     description: Pobiera szczegóły klienta wraz z kontaktami, zadaniami i historią statusu. Wymaga autoryzacji i dostępu do klienta.
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator klienta
+ *     responses:
+ *       200:
+ *         description: Szczegóły klienta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 client:
+ *                   $ref: '#/components/schemas/Client'
+ *       400:
+ *         description: Nieprawidłowy format ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Klient nie znaleziony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -53,6 +111,124 @@ export async function GET(
   }
 }
 
+/**
+ * @swagger
+ * /api/clients/{id}:
+ *   patch:
+ *     summary: Aktualizuje klienta
+ *     description: Aktualizuje dane klienta. Wszystkie pola są opcjonalne. Wymaga autoryzacji i dostępu do klienta.
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator klienta
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 50
+ *               lastName:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 50
+ *               agencyName:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 150
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 nullable: true
+ *                 maxLength: 255
+ *               phone:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 30
+ *               website:
+ *                 type: string
+ *                 format: uri
+ *                 nullable: true
+ *                 maxLength: 2048
+ *               address:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 500
+ *               source:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 100
+ *               status:
+ *                 type: string
+ *                 enum: [NEW_LEAD, IN_CONTACT, DEMO_SENT, NEGOTIATION, ACTIVE_CLIENT, LOST]
+ *               priority:
+ *                 type: string
+ *                 enum: [LOW, MEDIUM, HIGH]
+ *                 nullable: true
+ *               nextFollowUpAt:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *               assignedTo:
+ *                 type: string
+ *                 nullable: true
+ *               sharedGroupIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array ID grup (zastępuje istniejące)
+ *     responses:
+ *       200:
+ *         description: Klient został zaktualizowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 client:
+ *                   $ref: '#/components/schemas/Client'
+ *       400:
+ *         description: Błąd walidacji
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Klient nie znaleziony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
@@ -131,6 +307,65 @@ export async function PATCH(
   }
 }
 
+/**
+ * @swagger
+ * /api/clients/{id}:
+ *   delete:
+ *     summary: Usuwa klienta
+ *     description: Usuwa klienta z systemu. Tylko ADMIN może usuwać klientów. Wymaga autoryzacji.
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: CUID identyfikator klienta
+ *     responses:
+ *       200:
+ *         description: Klient został usunięty
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Klient został usunięty"
+ *       400:
+ *         description: Nieprawidłowy format ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Nieautoryzowany
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Brak uprawnień (tylko ADMIN)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Klient nie znaleziony
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }

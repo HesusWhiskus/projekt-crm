@@ -6,6 +6,22 @@ API Internal CRM umożliwia zarządzanie klientami, kontaktami, zadaniami, użyt
 
 **Base URL:** `http://localhost:3000/api` (lub odpowiedni URL produkcyjny)
 
+## Dokumentacja Swagger/OpenAPI
+
+Od wersji **0.4.2-beta** API posiada interaktywną dokumentację Swagger/OpenAPI:
+
+- **Swagger UI:** `/api-docs` (wymaga zalogowania)
+- **OpenAPI Spec:** `/api/swagger.json`
+
+Dokumentacja Swagger jest generowana automatycznie z JSDoc komentarzy w kodzie źródłowym. Wszystkie endpointy są udokumentowane z opisami, parametrami, schematami request/response i kodami odpowiedzi.
+
+**Weryfikacja dokumentacji:**
+```bash
+npm run swagger:verify
+```
+
+Skrypt weryfikuje, czy wszystkie endpointy są poprawnie udokumentowane i porównuje z tą dokumentacją markdown.
+
 ## Architektura API
 
 Od wersji **0.4.0-beta** API używa architektury **Domain-Driven Design (DDD)** z podziałem na warstwy:

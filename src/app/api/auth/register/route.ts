@@ -12,6 +12,86 @@ const registerSchema = z.object({
   position: z.string().optional(),
 })
 
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Rejestruje nowego użytkownika
+ *     description: Tworzy nowe konto użytkownika. Endpoint publiczny, ale podlega rate limiting (5 prób na 15 minut na IP). Hasło musi spełniać wymagania bezpieczeństwa.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 minLength: 2
+ *                 description: Imię i nazwisko użytkownika
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Adres email (unikalny)
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *                 description: Hasło (min. 8 znaków, wielkie/małe litery, cyfry)
+ *               position:
+ *                 type: string
+ *                 nullable: true
+ *                 description: Stanowisko użytkownika
+ *     responses:
+ *       201:
+ *         description: Konto zostało utworzone
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Konto zostało utworzone pomyślnie"
+ *                 userId:
+ *                   type: string
+ *                   description: CUID nowo utworzonego użytkownika
+ *       400:
+ *         description: Błąd walidacji lub użytkownik już istnieje
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       429:
+ *         description: Zbyt wiele prób rejestracji (rate limit)
+ *         headers:
+ *           X-RateLimit-Limit:
+ *             schema:
+ *               type: integer
+ *           X-RateLimit-Remaining:
+ *             schema:
+ *               type: integer
+ *           X-RateLimit-Reset:
+ *             schema:
+ *               type: integer
+ *           Retry-After:
+ *             schema:
+ *               type: integer
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Błąd serwera
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(request: Request) {
   try {
     // Rate limiting: 5 requests per 15 minutes per IP
