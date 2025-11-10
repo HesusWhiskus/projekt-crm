@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
+import { revalidateTag } from "next/cache"
 
 export async function DELETE(
   request: Request,
@@ -54,6 +55,9 @@ export async function DELETE(
         },
       },
     })
+
+    // Invalidate groups cache (group membership changed)
+    revalidateTag('groups')
 
     return NextResponse.json({ message: "Użytkownik został usunięty z grupy" })
   } catch (error) {

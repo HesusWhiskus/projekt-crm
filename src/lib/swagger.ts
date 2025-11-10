@@ -5,7 +5,7 @@ const options: Options = {
     openapi: '3.0.0',
     info: {
       title: 'Internal CRM API',
-      version: '0.4.2-beta',
+      version: '0.4.3-beta',
       description: 'API dla systemu CRM do zarządzania relacjami z agencjami ubezpieczeniowymi. Wszystkie endpointy wymagają autoryzacji poprzez NextAuth.js.',
       contact: {
         name: 'Internal CRM Team',

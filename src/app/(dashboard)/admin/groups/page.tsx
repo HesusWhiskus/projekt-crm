@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { GroupsList } from "@/components/admin/groups-list"
+import { getCachedUsers } from "@/lib/cache"
 
 export default async function AdminGroupsPage() {
   const user = await getCurrentUser()
@@ -28,16 +29,7 @@ export default async function AdminGroupsPage() {
     },
   })
 
-  const users = await db.user.findMany({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  })
+  const users = await getCachedUsers()
 
   return (
     <div className="space-y-8">

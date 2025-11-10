@@ -4,6 +4,7 @@ import { hash } from "bcryptjs"
 import { z } from "zod"
 import { rateLimiters } from "@/lib/rate-limit"
 import { validatePassword } from "@/lib/password-validator"
+import { revalidateTag } from "next/cache"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Imię musi mieć co najmniej 2 znaki"),
@@ -169,6 +170,9 @@ export async function POST(request: Request) {
       // Log error but don't fail registration
       console.error("Failed to create activity log:", logError)
     }
+
+    // Invalidate users cache (new user created)
+    revalidateTag('users')
 
     return NextResponse.json(
       { message: "Konto zostało utworzone pomyślnie", userId: user.id },

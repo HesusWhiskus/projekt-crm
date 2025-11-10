@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.3-beta',
+    date: '2025-11-10',
+    changes: [
+      {
+        type: 'added',
+        description: 'Optymalizacje wydajności - naprawiono N+1 queries, dodano indeksy do bazy, cache dla users/groups',
+      },
+      {
+        type: 'changed',
+        description: 'ListClientsUseCase i GetClientUseCase używają teraz zoptymalizowanych metod pobierania relacji',
+      },
+      {
+        type: 'fixed',
+        description: 'Eliminacja N+1 queries - wszystkie relacje pobierane w jednym zapytaniu zamiast osobnych zapytań dla każdego rekordu',
+      },
+    ],
+  },
+  {
     version: '0.4.2-beta',
     date: '2025-11-10',
     changes: [

@@ -5,6 +5,44 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.4.3-beta] - 2025-11-10
+
+### Dodano
+- **Optymalizacje wydajności:**
+  - Naprawiono problem N+1 queries w `ListClientsUseCase` - relacje pobierane w jednym zapytaniu
+  - Dodano indeksy do bazy danych dla modeli Client, Task, Contact (assignedTo, status, dates, composite indexes)
+  - Implementacja cache dla users i groups z automatyczną invalidation
+  - Optymalizacja `GetClientUseCase` - usunięto niepotrzebne include (contacts/tasks/statusHistory nie używane w DTO)
+  - Cache revalidates co 60 sekund w dev, 300 sekund w produkcji
+
+### Zmieniono
+- **PrismaClientRepository:**
+  - Dodano metodę `findManyWithRelations()` dla optymalnego pobierania klientów z relacjami
+  - Dodano metodę `findByIdWithRelations()` dla optymalnego pobierania klienta z relacjami
+  - `findMany()` i `findById()` teraz obsługują include z options
+- **ListClientsUseCase:**
+  - Używa `findManyWithRelations()` zamiast wykonywać dodatkowe zapytania dla każdego klienta
+  - Eliminacja N+1 queries - wszystkie relacje pobierane w jednym zapytaniu
+- **GetClientUseCase:**
+  - Używa `findByIdWithRelations()` zamiast wykonywać dodatkowe zapytania
+  - Usunięto niepotrzebne include (contacts, tasks, statusHistory) - nie są zwracane w DTO
+- **Server Components (page.tsx):**
+  - Wszystkie page.tsx używają `getCachedUsers()` i `getCachedGroups()` zamiast bezpośrednich zapytań
+  - Cache automatycznie invalidowany przy modyfikacji users/groups przez API routes
+
+### Naprawiono
+- **N+1 queries:**
+  - ListClientsUseCase wykonywał dodatkowe zapytania dla każdego klienta mimo że dane były już w include
+  - GetClientUseCase wykonywał dodatkowe zapytania dla assignee i sharedGroups mimo że były w include
+  - Wszystkie relacje teraz pobierane w jednym zapytaniu
+
+### Uwagi techniczne
+- **Migracja bazy danych:** Wymagana migracja Prisma dla dodania indeksów (`npx prisma migrate dev --name add_performance_indexes`)
+- **Cache:** Next.js `unstable_cache` z tagami dla invalidation. Cache invalidowany automatycznie przy modyfikacji users/groups
+- **Backward compatibility:** Wszystkie zmiany są backward compatible - format odpowiedzi API pozostaje bez zmian
+
+---
+
 ## [0.4.2-beta] - 2025-11-10
 
 ### Dodano

@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { textFieldSchema } from "@/lib/field-validators"
+import { revalidateTag } from "next/cache"
 
 const createGroupSchema = z.object({
   name: z.string().min(2, "Nazwa grupy musi mieć co najmniej 2 znaki").max(100, "Nazwa grupy jest zbyt długa (max 100 znaków)").trim(),
@@ -116,6 +117,9 @@ export async function POST(request: Request) {
         },
       },
     })
+
+    // Invalidate groups cache
+    revalidateTag('groups')
 
     return NextResponse.json(
       { message: "Grupa została utworzona", group },

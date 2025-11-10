@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { ClientDetail } from "@/components/clients/client-detail"
+import { getCachedUsers, getCachedGroups } from "@/lib/cache"
 
 export default async function ClientDetailPage({
   params,
@@ -93,26 +94,10 @@ export default async function ClientDetailPage({
     redirect("/clients")
   }
 
-  const users = await db.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  })
-
-  const groups = await db.group.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  })
+  const [users, groups] = await Promise.all([
+    getCachedUsers(),
+    getCachedGroups(),
+  ])
 
   return <ClientDetail client={client} users={users} groups={groups} currentUser={user} />
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { revalidateTag } from "next/cache"
 
 /**
  * Endpoint do promocji użytkownika na ADMIN
@@ -46,6 +47,9 @@ export async function POST(request: Request) {
       where: { id: user.id },
       data: { role: "ADMIN" },
     })
+
+    // Invalidate users cache (user role changed)
+    revalidateTag('users')
 
     return NextResponse.json({
       message: "Użytkownik został awansowany na administratora",

@@ -5,6 +5,7 @@ import { hash, compare } from "bcryptjs"
 import { z } from "zod"
 import { nameSchema, textFieldSchema } from "@/lib/field-validators"
 import { validatePassword } from "@/lib/password-validator"
+import { revalidateTag } from "next/cache"
 
 const updateProfileSchema = z.object({
   name: nameSchema("Imię", 2, 50).optional(),
@@ -91,6 +92,9 @@ export async function PATCH(request: Request) {
         },
       },
     })
+
+    // Invalidate users cache (profile updated)
+    revalidateTag('users')
 
     return NextResponse.json({
       message: "Profil został zaktualizowany",

@@ -122,6 +122,11 @@ model Client {
   statusHistory ClientStatusHistory[]
   sharedGroups  Group[]               @relation("GroupSharedClients")
 
+  @@index([assignedTo])
+  @@index([status])
+  @@index([lastContactAt])
+  @@index([nextFollowUpAt])
+  @@index([assignedTo, status])
   @@map("clients")
 }
 
@@ -155,6 +160,9 @@ model Contact {
   attachments  Attachment[]
   sharedGroups Group[]      @relation("GroupSharedContacts")
 
+  @@index([clientId])
+  @@index([userId])
+  @@index([date])
   @@map("contacts")
 }
 
@@ -188,6 +196,10 @@ model Task {
   client       Client? @relation(fields: [clientId], references: [id])
   sharedGroups Group[] @relation("GroupSharedTasks")
 
+  @@index([assignedTo])
+  @@index([status])
+  @@index([dueDate])
+  @@index([assignedTo, status])
   @@map("tasks")
 }
 

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { revalidateTag } from "next/cache"
 
 const addUserSchema = z.object({
   userId: z.string().min(1, "ID użytkownika jest wymagane"),
@@ -77,6 +78,9 @@ export async function POST(
         },
       },
     })
+
+    // Invalidate groups cache (group membership changed)
+    revalidateTag('groups')
 
     return NextResponse.json(
       { message: "Użytkownik został dodany do grupy" },

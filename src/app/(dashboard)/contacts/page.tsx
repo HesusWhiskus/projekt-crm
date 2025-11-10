@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { ContactsList } from "@/components/contacts/contacts-list"
+import { getCachedUsers, getCachedGroups } from "@/lib/cache"
 
 export default async function ContactsPage({
   searchParams,
@@ -82,47 +83,30 @@ export default async function ContactsPage({
     },
   })
 
-  const clients = await db.client.findMany({
-    where:
-      user.role === "ADMIN"
-        ? {}
-        : {
-            OR: [
-              { assignedTo: user.id },
-              { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
-            ],
-          },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      agencyName: true,
-    },
-    orderBy: {
-      lastName: "asc",
-    },
-  })
-
-  const users = await db.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  })
-
-  const groups = await db.group.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  })
+  const [clients, users, groups] = await Promise.all([
+    db.client.findMany({
+      where:
+        user.role === "ADMIN"
+          ? {}
+          : {
+              OR: [
+                { assignedTo: user.id },
+                { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
+              ],
+            },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        agencyName: true,
+      },
+      orderBy: {
+        lastName: "asc",
+      },
+    }),
+    getCachedUsers(),
+    getCachedGroups(),
+  ])
 
   return <ContactsList contacts={contacts} clients={clients} users={users} groups={groups} currentUser={user} />
 }

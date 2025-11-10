@@ -12,8 +12,29 @@ import { ClientStatus } from '@prisma/client'
  */
 export class PrismaClientRepository implements IClientRepository {
   async findById(id: string, options?: FindClientsOptions): Promise<Client | null> {
+    // Build include based on options
+    const include: any = {}
+    if (options?.include?.assignee) {
+      include.assignee = {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      }
+    }
+    if (options?.include?.sharedGroups) {
+      include.sharedGroups = {
+        select: {
+          id: true,
+          name: true,
+        },
+      }
+    }
+
     const clientData = await db.client.findUnique({
       where: { id },
+      include: Object.keys(include).length > 0 ? include : undefined,
     })
 
     if (!clientData) {
@@ -38,6 +59,74 @@ export class PrismaClientRepository implements IClientRepository {
       createdAt: clientData.createdAt,
       updatedAt: clientData.updatedAt,
     })
+  }
+
+  /**
+   * Helper method to find client by ID with relations in a single query
+   * Returns both Client entity and relation data
+   */
+  async findByIdWithRelations(
+    id: string,
+    options?: FindClientsOptions
+  ): Promise<{
+    client: Client | null
+    relations: { assignee: any; sharedGroups: any[] }
+  }> {
+    // Build include based on options
+    const include: any = {}
+    if (options?.include?.assignee) {
+      include.assignee = {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      }
+    }
+    if (options?.include?.sharedGroups) {
+      include.sharedGroups = {
+        select: {
+          id: true,
+          name: true,
+        },
+      }
+    }
+
+    const clientData = await db.client.findUnique({
+      where: { id },
+      include: Object.keys(include).length > 0 ? include : undefined,
+    })
+
+    if (!clientData) {
+      return { client: null, relations: { assignee: null, sharedGroups: [] } }
+    }
+
+    const client = Client.fromPersistence({
+      id: clientData.id,
+      firstName: clientData.firstName,
+      lastName: clientData.lastName,
+      agencyName: clientData.agencyName,
+      email: clientData.email,
+      phone: clientData.phone,
+      website: clientData.website,
+      address: clientData.address,
+      source: clientData.source,
+      status: clientData.status,
+      priority: clientData.priority,
+      assignedTo: clientData.assignedTo,
+      lastContactAt: clientData.lastContactAt,
+      nextFollowUpAt: clientData.nextFollowUpAt,
+      createdAt: clientData.createdAt,
+      updatedAt: clientData.updatedAt,
+    })
+
+    return {
+      client,
+      relations: {
+        assignee: (clientData as any).assignee || null,
+        sharedGroups: (clientData as any).sharedGroups || [],
+      },
+    }
   }
 
   async findMany(filter: ClientFilter, options?: FindClientsOptions): Promise<Client[]> {
@@ -112,9 +201,30 @@ export class PrismaClientRepository implements IClientRepository {
       orderBy.updatedAt = 'desc'
     }
 
+    // Build include based on options
+    const include: any = {}
+    if (options?.include?.assignee) {
+      include.assignee = {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      }
+    }
+    if (options?.include?.sharedGroups) {
+      include.sharedGroups = {
+        select: {
+          id: true,
+          name: true,
+        },
+      }
+    }
+
     const clientsData = await db.client.findMany({
       where,
       orderBy,
+      include: Object.keys(include).length > 0 ? include : undefined,
     })
 
     return clientsData.map((data) =>
@@ -254,6 +364,147 @@ export class PrismaClientRepository implements IClientRepository {
       where: { id: clientId },
       data: { lastContactAt: contactDate },
     })
+  }
+
+  /**
+   * Helper method to find clients with relations in a single query
+   * Returns both Client entities and relation data
+   */
+  async findManyWithRelations(
+    filter: ClientFilter,
+    options?: FindClientsOptions
+  ): Promise<{
+    clients: Client[]
+    relations: Map<string, { assignee: any; sharedGroups: any[] }>
+  }> {
+    const where: any = {}
+
+    // Access control
+    if (filter.userRole !== 'ADMIN') {
+      where.OR = [
+        { assignedTo: filter.userId },
+        { sharedGroups: { some: { users: { some: { userId: filter.userId } } } } },
+      ]
+    }
+
+    // Status filter
+    if (filter.status) {
+      where.status = filter.status
+    }
+
+    // Search filter
+    if (filter.search) {
+      where.OR = [
+        ...(where.OR || []),
+        { agencyName: { contains: filter.search, mode: 'insensitive' } },
+        { firstName: { contains: filter.search, mode: 'insensitive' } },
+        { lastName: { contains: filter.search, mode: 'insensitive' } },
+        { email: { contains: filter.search, mode: 'insensitive' } },
+      ]
+    }
+
+    // AssignedTo filter
+    if (filter.assignedTo) {
+      where.assignedTo = filter.assignedTo
+    }
+
+    // No contact days filter
+    if (filter.noContactDays) {
+      const cutoffDate = new Date()
+      cutoffDate.setDate(cutoffDate.getDate() - filter.noContactDays)
+      cutoffDate.setHours(0, 0, 0, 0)
+
+      where.OR = [
+        ...(where.OR || []),
+        { lastContactAt: { lt: cutoffDate } },
+        { lastContactAt: null },
+      ]
+    }
+
+    // Follow-up today filter
+    if (filter.followUpToday) {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const tomorrow = new Date(today)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+
+      where.nextFollowUpAt = {
+        gte: today,
+        lt: tomorrow,
+      }
+    }
+
+    // Order by
+    const orderBy: any = {}
+    if (options?.orderBy) {
+      const fieldMap: Record<string, string> = {
+        updatedAt: 'updatedAt',
+        createdAt: 'createdAt',
+        lastContactAt: 'lastContactAt',
+        nextFollowUpAt: 'nextFollowUpAt',
+      }
+      orderBy[fieldMap[options.orderBy.field] || 'updatedAt'] = options.orderBy.direction
+    } else {
+      orderBy.updatedAt = 'desc'
+    }
+
+    // Build include based on options
+    const include: any = {}
+    if (options?.include?.assignee) {
+      include.assignee = {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      }
+    }
+    if (options?.include?.sharedGroups) {
+      include.sharedGroups = {
+        select: {
+          id: true,
+          name: true,
+        },
+      }
+    }
+
+    const clientsData = await db.client.findMany({
+      where,
+      orderBy,
+      include: Object.keys(include).length > 0 ? include : undefined,
+    })
+
+    const clients = clientsData.map((data) =>
+      Client.fromPersistence({
+        id: data.id,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        agencyName: data.agencyName,
+        email: data.email,
+        phone: data.phone,
+        website: data.website,
+        address: data.address,
+        source: data.source,
+        status: data.status,
+        priority: data.priority,
+        assignedTo: data.assignedTo,
+        lastContactAt: data.lastContactAt,
+        nextFollowUpAt: data.nextFollowUpAt,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+      })
+    )
+
+    // Extract relations
+    const relations = new Map<string, { assignee: any; sharedGroups: any[] }>()
+    clientsData.forEach((data) => {
+      relations.set(data.id, {
+        assignee: (data as any).assignee || null,
+        sharedGroups: (data as any).sharedGroups || [],
+      })
+    })
+
+    return { clients, relations }
   }
 }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { hash } from "bcryptjs"
+import { revalidateTag } from "next/cache"
 
 /**
  * Endpoint do utworzenia konta administratora
@@ -60,6 +61,9 @@ export async function POST(request: Request) {
         },
       })
     }
+
+    // Invalidate users cache (admin created/updated)
+    revalidateTag('users')
 
     return NextResponse.json({
       success: true,

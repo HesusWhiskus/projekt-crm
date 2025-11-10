@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { UserRole } from "@prisma/client"
 import { z } from "zod"
+import { revalidateTag } from "next/cache"
 
 const updateUserSchema = z.object({
   role: z.enum(["ADMIN", "USER"]).optional(),
@@ -112,6 +113,9 @@ export async function PATCH(
         },
       },
     })
+
+    // Invalidate users cache
+    revalidateTag('users')
 
     return NextResponse.json({
       message: "Użytkownik został zaktualizowany",
