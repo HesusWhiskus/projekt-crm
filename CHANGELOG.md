@@ -5,7 +5,7 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
-## [0.4.2-beta] - 2025-01-15
+## [0.4.2-beta] - 2025-11-10
 
 ### Dodano
 - **Dokumentacja Swagger/OpenAPI:**
@@ -61,7 +61,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
 ---
 
-## [0.4.1-beta] - 2025-01-XX
+## [0.4.1-beta] - 2025-11-07
 
 ### Naprawiono
 - **Zablokowanie wielokrotnego kliknięcia przycisku logowania:**
@@ -110,7 +110,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
 ---
 
-## [0.4.0-beta] - 2025-01-XX
+## [0.4.0-beta] - 2025-11-07
 
 ### Zmieniono
 - **REFACTORING: Wprowadzono architekturę Domain-Driven Design (DDD) i Single Responsibility Principle (SRP)**

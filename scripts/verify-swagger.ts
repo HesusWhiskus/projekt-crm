@@ -36,14 +36,15 @@ function extractEndpointsFromSwagger(spec: any): Map<string, EndpointInfo> {
     for (const [method, definition] of Object.entries(methods as any)) {
       if (['get', 'post', 'patch', 'put', 'delete'].includes(method.toLowerCase())) {
         const key = `${method.toUpperCase()} ${path}`
+        const def = definition as any
         endpoints.set(key, {
           path,
           method: method.toUpperCase(),
-          summary: definition.summary,
-          description: definition.description,
-          parameters: definition.parameters,
-          requestBody: definition.requestBody,
-          responses: definition.responses,
+          summary: def.summary,
+          description: def.description,
+          parameters: def.parameters,
+          requestBody: def.requestBody,
+          responses: def.responses,
         })
       }
     }

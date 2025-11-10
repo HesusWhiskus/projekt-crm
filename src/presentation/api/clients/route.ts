@@ -221,7 +221,7 @@ export async function POST(request: Request) {
  *         schema:
  *           type: string
  *           enum: ["true"]
- *         description: "true" jako string. Filtruje klientów z follow-up dzisiaj
+ *         description: 'true jako string. Filtruje klientów z follow-up dzisiaj'
  *     responses:
  *       200:
  *         description: Lista klientów
