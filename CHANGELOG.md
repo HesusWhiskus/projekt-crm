@@ -5,7 +5,7 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
-## [0.4.2-beta] - 2025-01-XX
+## [0.4.2-beta] - 2025-01-15
 
 ### Dodano
 - **Dokumentacja Swagger/OpenAPI:**
