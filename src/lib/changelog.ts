@@ -15,7 +15,7 @@ export interface ChangelogEntry {
 export const changelog: ChangelogEntry[] = [
   {
     version: '0.4.2-beta',
-    date: '2025-01-XX',
+    date: '2025-11-10',
     changes: [
       {
         type: 'fixed',
@@ -41,7 +41,7 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     version: '0.4.1-beta',
-    date: '2025-01-XX',
+    date: '2025-11-07',
     changes: [
       {
         type: 'fixed',
@@ -71,7 +71,7 @@ export const changelog: ChangelogEntry[] = [
   },
   {
     version: '0.4.0-beta',
-    date: '2025-01-XX',
+    date: '2025-11-07',
     changes: [
       {
         type: 'changed',
