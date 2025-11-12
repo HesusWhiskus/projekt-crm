@@ -15,9 +15,10 @@ interface ContactFormProps {
   clientId?: string
   clients?: Array<{
     id: string
-    firstName: string
-    lastName: string
-    agencyName: string | null
+    firstName: string | null
+    lastName: string | null
+    companyName: string | null
+    type: string
   }>
   users: Array<{
     id: string
@@ -226,7 +227,7 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
                   <option value="">Wybierz klienta</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.firstName} {client.lastName} {client.agencyName ? `(${client.agencyName})` : ""}
+                      {client.type === "COMPANY" ? client.companyName : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
                     </option>
                   ))}
                 </Select>

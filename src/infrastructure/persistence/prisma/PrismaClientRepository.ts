@@ -43,9 +43,9 @@ export class PrismaClientRepository implements IClientRepository {
 
     return Client.fromPersistence({
       id: clientData.id,
-      firstName: clientData.firstName,
-      lastName: clientData.lastName,
-      agencyName: clientData.agencyName,
+      firstName: clientData.firstName ?? "",
+      lastName: clientData.lastName ?? "",
+      agencyName: clientData.type === "COMPANY" ? clientData.companyName : null,
       email: clientData.email,
       phone: clientData.phone,
       website: clientData.website,
@@ -103,9 +103,9 @@ export class PrismaClientRepository implements IClientRepository {
 
     const client = Client.fromPersistence({
       id: clientData.id,
-      firstName: clientData.firstName,
-      lastName: clientData.lastName,
-      agencyName: clientData.agencyName,
+      firstName: clientData.firstName ?? "",
+      lastName: clientData.lastName ?? "",
+      agencyName: clientData.type === "COMPANY" ? clientData.companyName : null,
       email: clientData.email,
       phone: clientData.phone,
       website: clientData.website,
@@ -149,7 +149,7 @@ export class PrismaClientRepository implements IClientRepository {
     if (filter.search) {
       where.OR = [
         ...(where.OR || []),
-        { agencyName: { contains: filter.search, mode: 'insensitive' } },
+        { companyName: { contains: filter.search, mode: 'insensitive' } },
         { firstName: { contains: filter.search, mode: 'insensitive' } },
         { lastName: { contains: filter.search, mode: 'insensitive' } },
         { email: { contains: filter.search, mode: 'insensitive' } },
@@ -227,12 +227,12 @@ export class PrismaClientRepository implements IClientRepository {
       include: Object.keys(include).length > 0 ? include : undefined,
     })
 
-    return clientsData.map((data) =>
+      return clientsData.map((data) =>
       Client.fromPersistence({
         id: data.id,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        agencyName: data.agencyName,
+        firstName: data.firstName ?? "",
+        lastName: data.lastName ?? "",
+        agencyName: data.type === "COMPANY" ? data.companyName : null,
         email: data.email,
         phone: data.phone,
         website: data.website,
@@ -266,7 +266,8 @@ export class PrismaClientRepository implements IClientRepository {
     const createData: any = {
       firstName: data.firstName,
       lastName: data.lastName,
-      agencyName: data.agencyName,
+      companyName: data.agencyName || null,
+      type: data.agencyName ? "COMPANY" : "PERSON",
       email: data.email,
       phone: data.phone,
       website: data.website,
@@ -285,9 +286,9 @@ export class PrismaClientRepository implements IClientRepository {
 
     return Client.fromPersistence({
       id: created.id,
-      firstName: created.firstName,
-      lastName: created.lastName,
-      agencyName: created.agencyName,
+      firstName: created.firstName ?? "",
+      lastName: created.lastName ?? "",
+      agencyName: created.type === "COMPANY" ? created.companyName : null,
       email: created.email,
       phone: created.phone,
       website: created.website,
@@ -311,7 +312,8 @@ export class PrismaClientRepository implements IClientRepository {
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
-        agencyName: data.agencyName,
+        companyName: data.agencyName || null,
+        type: (data.agencyName ? "COMPANY" : "PERSON") as any,
         email: data.email,
         phone: data.phone,
         website: data.website,
@@ -328,9 +330,9 @@ export class PrismaClientRepository implements IClientRepository {
 
     return Client.fromPersistence({
       id: updated.id,
-      firstName: updated.firstName,
-      lastName: updated.lastName,
-      agencyName: updated.agencyName,
+      firstName: updated.firstName ?? "",
+      lastName: updated.lastName ?? "",
+      agencyName: updated.type === "COMPANY" ? updated.companyName : null,
       email: updated.email,
       phone: updated.phone,
       website: updated.website,
@@ -396,7 +398,7 @@ export class PrismaClientRepository implements IClientRepository {
     if (filter.search) {
       where.OR = [
         ...(where.OR || []),
-        { agencyName: { contains: filter.search, mode: 'insensitive' } },
+        { companyName: { contains: filter.search, mode: 'insensitive' } },
         { firstName: { contains: filter.search, mode: 'insensitive' } },
         { lastName: { contains: filter.search, mode: 'insensitive' } },
         { email: { contains: filter.search, mode: 'insensitive' } },
@@ -477,9 +479,9 @@ export class PrismaClientRepository implements IClientRepository {
     const clients = clientsData.map((data) =>
       Client.fromPersistence({
         id: data.id,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        agencyName: data.agencyName,
+        firstName: data.firstName ?? "",
+        lastName: data.lastName ?? "",
+        agencyName: data.type === "COMPANY" ? data.companyName : null,
         email: data.email,
         phone: data.phone,
         website: data.website,

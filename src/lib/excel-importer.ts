@@ -17,7 +17,8 @@ interface ImportResult {
 interface ParsedClient {
   firstName: string
   lastName: string
-  agencyName?: string
+  companyName?: string
+  type?: "COMPANY" | "PERSON"
   email?: string
   phone?: string
   website?: string
@@ -27,7 +28,7 @@ interface ParsedClient {
 }
 
 interface ParsedContact {
-  clientIdentifier: string // email, agencyName, or firstName+lastName
+  clientIdentifier: string // email, companyName, or firstName+lastName
   type: ContactType
   date: Date
   notes: string
@@ -260,7 +261,7 @@ function parseClientRow(row: ExcelRow): ParsedClient | null {
       ]) || ""
   }
 
-  const agencyName =
+  const companyName =
     findValue(row, [
       "Nazwa agencji",
       "nazwa agencji",
@@ -340,14 +341,14 @@ function parseClientRow(row: ExcelRow): ParsedClient | null {
 
   // Jeśli brakuje podstawowych danych, pomijamy
   // Ale sprawdzamy czy wiersz nie jest pusty (może zawierać tylko puste wartości)
-  const hasAnyData = firstName || lastName || agencyName || email || phone
+  const hasAnyData = firstName || lastName || companyName || email || phone
 
   if (!hasAnyData) {
     return null
   }
 
   // Jeśli brakuje imienia i nazwiska, ale jest nazwa firmy, używamy nazwy firmy jako firstName
-  const finalFirstName = firstName || agencyName || "Nieznane"
+  const finalFirstName = firstName || companyName || "Nieznane"
   const finalLastName = lastName || ""
 
   let status: ClientStatus | undefined = undefined
@@ -382,7 +383,8 @@ function parseClientRow(row: ExcelRow): ParsedClient | null {
   return {
     firstName: finalFirstName,
     lastName: finalLastName,
-    agencyName: agencyName || undefined,
+    companyName: companyName || undefined,
+    type: companyName ? "COMPANY" : "PERSON",
     email: email || undefined,
     phone: phone || undefined,
     website: website || undefined,
@@ -408,7 +410,8 @@ function parseContactRow(row: ExcelRow): ParsedContact | null {
     row["Nazwa firmy"] ||
     row["nazwa firmy"] ||
     row["Agency Name"] ||
-    row["agencyName"] ||
+    row["companyName"] ||
+    row["agencyName"] || // backward compatibility
     row["Firma"] ||
     row["firma"] ||
     row[""] ||
@@ -548,10 +551,10 @@ export async function importExcelData(
           })
         }
 
-        if (!existingClient && clientData.agencyName) {
+        if (!existingClient && clientData.companyName) {
           existingClient = await db.client.findFirst({
             where: {
-              agencyName: clientData.agencyName,
+              companyName: clientData.companyName,
               firstName: clientData.firstName,
               lastName: clientData.lastName,
             },
@@ -565,7 +568,8 @@ export async function importExcelData(
             data: {
               firstName: clientData.firstName || existingClient.firstName,
               lastName: clientData.lastName || existingClient.lastName,
-              agencyName: clientData.agencyName || existingClient.agencyName,
+              companyName: clientData.companyName || existingClient.companyName,
+              type: (clientData.companyName || existingClient.companyName) ? "COMPANY" : "PERSON",
               email: clientData.email || existingClient.email,
               phone: clientData.phone || existingClient.phone,
               website: clientData.website || existingClient.website,
@@ -577,7 +581,7 @@ export async function importExcelData(
 
           const identifier =
             clientData.email ||
-            clientData.agencyName ||
+            clientData.companyName ||
             `${clientData.firstName} ${clientData.lastName}`
           clientMap.set(identifier, existingClient.id)
           result.warnings.push(
@@ -589,7 +593,8 @@ export async function importExcelData(
             data: {
               firstName: clientData.firstName,
               lastName: clientData.lastName,
-              agencyName: clientData.agencyName,
+              companyName: clientData.companyName,
+              type: clientData.companyName ? "COMPANY" : "PERSON",
               email: clientData.email,
               phone: clientData.phone,
               website: clientData.website,
@@ -602,7 +607,7 @@ export async function importExcelData(
 
           const identifier =
             clientData.email ||
-            clientData.agencyName ||
+            clientData.companyName ||
             `${clientData.firstName} ${clientData.lastName}`
           clientMap.set(identifier, newClient.id)
           result.clientsImported++
@@ -629,7 +634,7 @@ export async function importExcelData(
             where: {
               OR: [
                 { email: contactData.clientIdentifier },
-                { agencyName: contactData.clientIdentifier },
+                { companyName: contactData.clientIdentifier },
               ],
             },
           })

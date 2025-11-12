@@ -75,7 +75,7 @@ export function ClientDetail({ client, users, groups, currentUser, integrationTa
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">{client.agencyName}</h1>
+          <h1 className="text-3xl font-bold">{client.type === "COMPANY" ? client.companyName : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}</h1>
           <p className="text-muted-foreground mt-2">
             {client.firstName} {client.lastName}
           </p>

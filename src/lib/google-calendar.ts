@@ -112,13 +112,17 @@ export async function syncTaskToCalendar(userId: string, taskId: string) {
       throw new Error("Task not found or has no due date")
     }
 
-    const title = task.client
-      ? `${task.title} - ${task.client.agencyName}`
+    const clientName = task.client 
+      ? (task.client.type === "COMPANY" ? task.client.companyName : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy")
+      : null
+    
+    const title = clientName
+      ? `${task.title} - ${clientName}`
       : task.title
 
     const description = [
       task.description,
-      task.client ? `Klient: ${task.client.agencyName}` : "",
+      clientName ? `Klient: ${clientName}` : "",
       task.assignee ? `Przypisane do: ${task.assignee.name || task.assignee.email}` : "",
     ]
       .filter(Boolean)

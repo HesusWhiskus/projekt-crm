@@ -31,7 +31,7 @@ export async function POST(request: Request) {
             task.assignee.email,
             task.title,
             task.dueDate!,
-            task.client?.type === "COMPANY" ? task.client.companyName : task.client ? `${task.client.firstName} ${task.client.lastName}`.trim() : undefined
+            task.client?.type === "COMPANY" ? (task.client.companyName ?? undefined) : task.client ? (`${task.client.firstName} ${task.client.lastName}`.trim() || undefined) : undefined
           )
         } catch (error) {
           console.error(`Failed to send reminder for task ${task.id}:`, error)
