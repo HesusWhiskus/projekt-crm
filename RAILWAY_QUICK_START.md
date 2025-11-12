@@ -163,13 +163,24 @@ GOOGLE_CLIENT_SECRET=<twój-google-client-secret>
 
 ## Krok 7: Migracja bazy danych
 
-Po pierwszym udanym deploy:
+**⚠️ WAŻNE:** Migracje są teraz uruchamiane automatycznie!
+
+### Automatyczne migracje:
+
+1. **Podczas build:** Jeśli Railway przekazuje `DATABASE_URL` podczas build, migracje są uruchamiane automatycznie przed zbudowaniem aplikacji
+2. **Przy starcie:** Jeśli `DATABASE_URL` nie była dostępna podczas build, migracje są uruchamiane automatycznie przy starcie aplikacji (przed uruchomieniem serwera)
+
+### Sprawdź logi:
 
 1. **W Railway, otwórz swoją aplikację**
 2. **Kliknij zakładkę "Deployments"**
 3. **Kliknij na najnowszy deployment**
-4. **Kliknij "View Logs"** lub **"Open Terminal"**
-5. **W terminalu uruchom:**
+4. **Kliknij "View Logs"**
+5. **Szukaj sekcji:** `=== Running database migrations (REQUIRED before app start) ===`
+
+### Jeśli migracje się nie powiodły:
+
+**W terminalu Railway uruchom ręcznie:**
 
 ```bash
 npx prisma migrate deploy
@@ -178,8 +189,10 @@ npx prisma migrate deploy
 Lub jeśli migracje nie działają:
 
 ```bash
-npx prisma db push
+npx prisma db push --accept-data-loss
 ```
+
+**Uwaga:** Aplikacja NIE uruchomi się, jeśli migracje się nie powiodą - to jest zamierzone zachowanie dla bezpieczeństwa.
 
 ---
 
@@ -219,6 +232,13 @@ Twoja aplikacja powinna być dostępna pod adresem:
 - Logi w Railway (Deployments → View Logs)
 - Czy wszystkie zmienne środowiskowe są ustawione
 - Czy `NEXTAUTH_URL` ma poprawny URL (z https://)
+- **Czy `DATABASE_URL` jest dostępna** - Railway automatycznie dodaje ją, ale sprawdź czy baza PostgreSQL jest uruchomiona
+- **Czy migracje się powiodły** - w logach szukaj `=== DATABASE_URL is available, running migrations before build ===`
+
+**Jeśli build się nie powodzi z powodu bazy danych:**
+1. Upewnij się, że baza PostgreSQL jest uruchomiona (zielony status)
+2. Sprawdź czy `DATABASE_URL` jest dostępna w zmiennych środowiskowych
+3. Jeśli problem nadal występuje, migracje będą uruchomione przy starcie aplikacji
 
 ### Problem: Błąd połączenia z bazą danych
 
@@ -226,6 +246,8 @@ Twoja aplikacja powinna być dostępna pod adresem:
 - Czy baza PostgreSQL jest uruchomiona (powinna być zielona)
 - Czy `DATABASE_URL` jest automatycznie dodana przez Railway
 - W logach aplikacji szukaj błędów połączenia
+- **Czy migracje się powiodły** - aplikacja nie uruchomi się, jeśli migracje się nie powiodły
+- W logach szukaj: `ERROR: Database migration failed! App cannot start.`
 
 ### Problem: NextAuth nie działa
 

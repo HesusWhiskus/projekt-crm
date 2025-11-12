@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.1-beta',
+    date: '2025-01-16',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Krytyczny problem z migracjami bazy danych w Railway - migracje uruchamiane automatycznie przed buildem i przy starcie aplikacji',
+      },
+      {
+        type: 'fixed',
+        description: 'Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - zapewnia to spójność bazy danych',
+      },
+      {
+        type: 'changed',
+        description: 'Usunięto preDeployCommand z railway.json (nie działał poprawnie), migracje obsługiwane przez Dockerfile i start.sh',
+      },
+    ],
+  },
+  {
     version: '0.5.0-beta',
     date: '2025-01-15',
     changes: [

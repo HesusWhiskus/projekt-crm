@@ -20,20 +20,32 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy Prisma schema first (for better caching)
 COPY prisma ./prisma
 
-# Generate Prisma Client (cached if schema doesn't change)
-RUN npx prisma generate
-
 # Copy source code (this layer will be invalidated when code changes)
 COPY . .
 
+# Generate Prisma Client (cached if schema doesn't change)
+RUN npx prisma generate
+
 # Run migrations if DATABASE_URL is available (Railway provides it during build)
 # This ensures schema is synced before Next.js build tries to use Prisma
+# CRITICAL: Migrations MUST run before build, otherwise Prisma Client will fail
+# Railway should provide DATABASE_URL during build, but if not, migrations will run at startup
 RUN if [ -n "$DATABASE_URL" ]; then \
-      echo "DATABASE_URL is available, running migrations before build..." && \
-      npx prisma db push --accept-data-loss --skip-generate || \
-      echo "Migration failed, but continuing build (migrations will run at startup)"; \
+      echo "=== DATABASE_URL is available, running migrations before build ===" && \
+      echo "This is CRITICAL - migrations must succeed before Next.js build" && \
+      echo "Step 1: Deploying migrations with prisma migrate deploy..." && \
+      (npx prisma migrate deploy && echo "✓ Migrations deployed successfully") || \
+      (echo "⚠ migrate deploy failed, trying db push as fallback..." && \
+       npx prisma db push --accept-data-loss --skip-generate && \
+       echo "✓ Database schema synchronized with db push") || \
+      (echo "❌ ERROR: Both migrate deploy and db push failed!" && \
+       echo "Build will continue, but migrations MUST run at startup or app will fail" && \
+       exit 0); \
     else \
-      echo "DATABASE_URL not available during build, skipping migrations (will run at startup)"; \
+      echo "=== WARNING: DATABASE_URL not available during build ===" && \
+      echo "This is expected if Railway doesn't pass DATABASE_URL to build context" && \
+      echo "Migrations will be run at startup via start.sh script" && \
+      echo "If build fails due to Prisma Client, ensure DATABASE_URL is available during build"; \
     fi
 
 # Build Next.js with standalone output for Docker
@@ -73,35 +85,36 @@ RUN chown -R nextjs:nodejs /app/node_modules/@prisma && \
     chown -R nextjs:nodejs /app/node_modules/.bin
 
 # Create startup script that runs migrations (using migrate deploy for production) then starts the app
+# CRITICAL: Migrations MUST succeed before app starts, otherwise app will fail
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
-    echo 'if [ -n "$DATABASE_URL" ]; then' >> /app/start.sh && \
-    echo '  echo "=== Running database migrations ==="' >> /app/start.sh && \
-    echo '  export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
-    echo '  cd /app' >> /app/start.sh && \
-    echo '  echo "Current directory: $(pwd)"' >> /app/start.sh && \
-    echo '  echo "Prisma schema location: $(ls -la prisma/schema.prisma 2>&1 || echo \"NOT FOUND\")"' >> /app/start.sh && \
-    echo '  echo "Step 1: Generating Prisma Client..."' >> /app/start.sh && \
-    echo '  npx prisma generate 2>&1 || echo "Prisma generate failed, continuing..."' >> /app/start.sh && \
-    echo '  echo "Step 2: Running SQL fix for missing companyName column..."' >> /app/start.sh && \
-    echo '  if [ -f /app/scripts/fix-company-name-column.sql ]; then' >> /app/start.sh && \
-    echo '    echo "Found SQL fix script, executing..."' >> /app/start.sh && \
-    echo '    npx prisma db execute --file /app/scripts/fix-company-name-column.sql --schema /app/prisma/schema.prisma 2>&1 && echo "SQL fix executed successfully" || echo "SQL fix failed (error above), trying db push..."' >> /app/start.sh && \
-    echo '  else' >> /app/start.sh && \
-    echo '    echo "SQL fix script not found at /app/scripts/fix-company-name-column.sql, skipping..."' >> /app/start.sh && \
-    echo '  fi' >> /app/start.sh && \
-    echo '  echo "Step 2b: Synchronizing database schema with db push..."' >> /app/start.sh && \
-    echo '  npx prisma db push --accept-data-loss --skip-generate 2>&1 && echo "Database push succeeded" || echo "Database push failed, but continuing..."' >> /app/start.sh && \
-    echo '  echo "Step 3: Applying pending migrations (if any)..."' >> /app/start.sh && \
-    echo '  npx prisma migrate deploy 2>&1 && echo "Migrations deploy succeeded" || echo "No pending migrations or migrate deploy failed, but continuing..."' >> /app/start.sh && \
-    echo '  echo "Step 4: Running user organization migration..."' >> /app/start.sh && \
-    echo '  if command -v tsx >/dev/null 2>&1; then' >> /app/start.sh && \
-    echo '    npx tsx scripts/migrate-users-to-organization.ts 2>&1 || echo "User migration failed, continuing..."' >> /app/start.sh && \
-    echo '  else' >> /app/start.sh && \
-    echo '    echo "tsx not available, skipping user migration script (users will be assigned on first registration)"' >> /app/start.sh && \
-    echo '  fi' >> /app/start.sh && \
-    echo '  echo "=== Migrations completed ==="' >> /app/start.sh && \
+    echo 'if [ -z "$DATABASE_URL" ]; then' >> /app/start.sh && \
+    echo '  echo "ERROR: DATABASE_URL is not set! Cannot run migrations."' >> /app/start.sh && \
+    echo '  exit 1' >> /app/start.sh && \
     echo 'fi' >> /app/start.sh && \
+    echo 'echo "=== Running database migrations (REQUIRED before app start) ==="' >> /app/start.sh && \
+    echo 'export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
+    echo 'cd /app' >> /app/start.sh && \
+    echo 'echo "Current directory: $(pwd)"' >> /app/start.sh && \
+    echo 'echo "Prisma schema location: $(ls -la prisma/schema.prisma 2>&1 || echo \"NOT FOUND\")"' >> /app/start.sh && \
+    echo 'echo "Step 1: Generating Prisma Client..."' >> /app/start.sh && \
+    echo 'npx prisma generate || (echo "ERROR: Prisma generate failed!" && exit 1)' >> /app/start.sh && \
+    echo 'echo "Step 2: Deploying migrations (prisma migrate deploy)..."' >> /app/start.sh && \
+    echo 'npx prisma migrate deploy || (echo "WARNING: migrate deploy failed, trying db push..." && npx prisma db push --accept-data-loss --skip-generate || (echo "ERROR: Database migration failed! App cannot start." && exit 1))' >> /app/start.sh && \
+    echo 'echo "Step 3: Running SQL fix for missing companyName column (if exists)..."' >> /app/start.sh && \
+    echo 'if [ -f /app/scripts/fix-company-name-column.sql ]; then' >> /app/start.sh && \
+    echo '  echo "Found SQL fix script, executing..."' >> /app/start.sh && \
+    echo '  npx prisma db execute --file /app/scripts/fix-company-name-column.sql --schema /app/prisma/schema.prisma 2>&1 || echo "SQL fix failed (non-critical), continuing..."' >> /app/start.sh && \
+    echo 'else' >> /app/start.sh && \
+    echo '  echo "SQL fix script not found, skipping..."' >> /app/start.sh && \
+    echo 'fi' >> /app/start.sh && \
+    echo 'echo "Step 4: Running user organization migration (if tsx available)..."' >> /app/start.sh && \
+    echo 'if command -v tsx >/dev/null 2>&1; then' >> /app/start.sh && \
+    echo '  npx tsx scripts/migrate-users-to-organization.ts 2>&1 || echo "User migration failed (non-critical), continuing..."' >> /app/start.sh && \
+    echo 'else' >> /app/start.sh && \
+    echo '  echo "tsx not available, skipping user migration script (users will be assigned on first registration)"' >> /app/start.sh && \
+    echo 'fi' >> /app/start.sh && \
+    echo 'echo "=== Migrations completed successfully ==="' >> /app/start.sh && \
     echo 'echo "Starting application..."' >> /app/start.sh && \
     echo 'echo "PORT from env: $PORT"' >> /app/start.sh && \
     echo 'if [ -z "$PORT" ]; then export PORT=3000; fi' >> /app/start.sh && \

@@ -5,6 +5,24 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.1-beta] - 2025-01-16
+
+### Naprawiono
+- **Krytyczny problem z migracjami bazy danych w Railway:**
+  - Migracje są teraz uruchamiane automatycznie przed buildem (jeśli DATABASE_URL jest dostępna)
+  - Migracje są uruchamiane obowiązkowo przy starcie aplikacji przed uruchomieniem serwera
+  - Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - zapewnia to spójność bazy danych
+  - Usunięto `preDeployCommand` z `railway.json` (nie działał poprawnie)
+  - Zaktualizowano Dockerfile z lepszymi komunikatami o statusie migracji
+  - Zaktualizowano dokumentację w RAILWAY_QUICK_START.md z informacjami o automatycznych migracjach
+
+### Uwagi techniczne
+- **Migracje:** Migracje są teraz uruchamiane automatycznie - nie wymagają ręcznego uruchomienia w terminalu Railway
+- **Build:** Jeśli DATABASE_URL nie jest dostępna podczas build, migracje będą uruchomione przy starcie aplikacji
+- **Bezpieczeństwo:** Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - to zapobiega problemom z niezsynchronizowaną bazą danych
+
+---
+
 ## [0.5.0-beta] - 2025-01-15
 
 ### Dodano
