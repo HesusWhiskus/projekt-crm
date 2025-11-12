@@ -9,10 +9,11 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
 ### Naprawiono
 - **Krytyczny błąd builda - brak kolumny companyName w bazie danych:**
-  - Usunięto wszystkie odwołania do `companyName` z select/include w zapytaniach Prisma
+  - Usunięto wszystkie odwołania do `companyName` z select/include w zapytaniach Prisma (wszystkie strony dashboard)
   - Usunięto `companyName` z typów TypeScript w komponentach (tasks, contacts, clients)
   - Zaktualizowano kod wyświetlania - używa teraz tylko `firstName` i `lastName` dla wszystkich typów klientów
   - Usunięto kolumnę "Agencja" z tabeli klientów (sortowanie po companyName)
+  - Naprawiono pozostałe odwołania w `calendar/page.tsx` i `tasks/[id]/page.tsx`
   - Aplikacja może teraz działać bez kolumny `companyName` w bazie danych
 
 ### Uwagi techniczne
