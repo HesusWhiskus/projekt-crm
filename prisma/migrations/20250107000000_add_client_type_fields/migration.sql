@@ -3,11 +3,17 @@ CREATE TYPE "ClientType" AS ENUM ('PERSON', 'COMPANY');
 
 -- AlterTable: Add new columns for Client type system
 ALTER TABLE "clients" 
-  ADD COLUMN IF NOT EXISTS "type" "ClientType" NOT NULL DEFAULT 'PERSON',
+  ADD COLUMN IF NOT EXISTS "type" "ClientType" DEFAULT 'PERSON',
   ADD COLUMN IF NOT EXISTS "firstName" TEXT,
   ADD COLUMN IF NOT EXISTS "lastName" TEXT,
   ADD COLUMN IF NOT EXISTS "companyName" TEXT,
   ADD COLUMN IF NOT EXISTS "taxId" TEXT;
+
+-- Set default value for existing rows
+UPDATE "clients" SET "type" = 'PERSON' WHERE "type" IS NULL;
+
+-- Make type NOT NULL after setting defaults
+ALTER TABLE "clients" ALTER COLUMN "type" SET NOT NULL;
 
 -- Migrate existing data: If agencyName exists, move it to companyName and set type to COMPANY
 DO $$
