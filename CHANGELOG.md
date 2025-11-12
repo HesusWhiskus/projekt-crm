@@ -5,6 +5,39 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.4.5-beta] - 2025-01-15
+
+### Zmieniono
+- **REFACTOR: Rozdzielenie notatek od kontaktów:**
+  - Utworzono osobny endpoint `/api/notes` dla notatek (zamiast `/api/contacts` z flagą `isNote`)
+  - Utworzono osobny komponent `NoteForm` dla notatek (zamiast `ContactForm` z checkboxem)
+  - Notatki mają teraz własną, dedykowaną funkcjonalność bez mieszania z kontaktami
+  - Uproszczony interfejs - brak pola "Typ kontaktu" i checkboxa "To jest notatka"
+
+### Dodano
+- **Nowy endpoint `/api/notes`:**
+  - POST `/api/notes` - tworzy nową notatkę
+  - Zawsze ustawia `isNote: true` i `type: null`
+  - Nie aktualizuje `lastContactAt` klienta
+  - Prostszy schemat walidacji (bez pola `type`)
+- **Nowy komponent `NoteForm`:**
+  - Dedykowany formularz dla notatek
+  - Wymaga `clientId` (zawsze przypisane do klienta)
+  - Uproszczony interfejs użytkownika
+
+### Naprawiono
+- **Krytyczny bug z dodawaniem notatek:**
+  - Problem z zapisywaniem notatek został rozwiązany poprzez refaktor
+  - Notatki mają teraz własny endpoint i komponent, co eliminuje problemy z `clientId`
+  - Lepsze rozdzielenie odpowiedzialności - notatki i kontakty to osobne funkcjonalności
+
+### Uwagi techniczne
+- **Backward compatibility:** Endpoint `/api/contacts` nadal działa dla kontaktów, ale dla notatek zalecane jest użycie `/api/notes`
+- **Migracja:** Nie wymagana - notatki nadal są przechowywane w tabeli `Contact` z flagą `isNote=true`
+- **API:** Nowy endpoint `/api/notes` jest dostępny i w pełni funkcjonalny
+
+---
+
 ## [0.4.4-beta] - 2025-01-15
 
 ### Naprawiono

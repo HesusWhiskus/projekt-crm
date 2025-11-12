@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.5-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'changed',
+        description: 'REFACTOR: Rozdzielenie notatek od kontaktów - utworzono osobny endpoint /api/notes i komponent NoteForm',
+      },
+      {
+        type: 'added',
+        description: 'Nowy endpoint /api/notes dla notatek - zawsze ustawia isNote=true, nie aktualizuje lastContactAt',
+      },
+      {
+        type: 'added',
+        description: 'Nowy komponent NoteForm - dedykowany formularz dla notatek z uproszczonym interfejsem',
+      },
+      {
+        type: 'fixed',
+        description: 'Krytyczny bug z dodawaniem notatek - rozwiązany poprzez refaktor i rozdzielenie funkcjonalności',
+      },
+    ],
+  },
+  {
     version: '0.4.4-beta',
     date: '2025-01-15',
     changes: [

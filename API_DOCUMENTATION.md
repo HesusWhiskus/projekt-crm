@@ -297,6 +297,56 @@ Tworzy nowy kontakt lub notatkę.
 
 ---
 
+## Notatki
+
+### POST /api/notes
+
+Tworzy nową notatkę dla klienta.
+
+**Request:** FormData (multipart/form-data) lub JSON
+- `date` (required) - Data i godzina (ISO string)
+- `notes` (required) - Treść notatki
+- `userId` (required) - ID użytkownika
+- `clientId` (required) - ID klienta
+- `files` (optional) - Pliki do załączenia (multiple)
+- `sharedGroupIds` (optional) - Array ID grup do udostępnienia
+
+**Uwaga:** 
+- Notatki **nie aktualizują** pola `lastContactAt` klienta
+- Notatki są automatycznie tworzone z `isNote=true` i `type=null`
+- Zalecane jest używanie tego endpointu zamiast `/api/contacts` z flagą `isNote=true`
+
+**Response:** `201 Created`
+
+```json
+{
+  "contact": {
+    "id": "string",
+    "type": null,
+    "date": "2024-01-01T00:00:00.000Z",
+    "notes": "string",
+    "isNote": true,
+    "userId": "string",
+    "clientId": "string",
+    "client": {
+      "id": "string",
+      "firstName": "string",
+      "lastName": "string",
+      "agencyName": "string | null"
+    },
+    "user": {
+      "id": "string",
+      "name": "string | null",
+      "email": "string"
+    },
+    "attachments": [...],
+    "sharedGroups": [...]
+  }
+}
+```
+
+---
+
 ## Zadania
 
 ### GET /api/tasks

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
 import { Edit, Plus } from "lucide-react"
 import { ContactForm } from "../contacts/contact-form"
+import { NoteForm } from "../notes/note-form"
 import { ClientForm } from "./client-form"
 import Link from "next/link"
 
@@ -113,13 +114,29 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
         />
       )}
 
-      {isAddingContact && (
+      {isAddingContact && !addingNote && (
         <ContactForm
           clientId={client.id}
           users={users}
           groups={groups}
           currentUser={currentUser}
-          contact={addingNote ? { isNote: true } : undefined}
+          onClose={() => {
+            setIsAddingContact(false)
+            setAddingNote(false)
+          }}
+          onSuccess={() => {
+            setIsAddingContact(false)
+            setAddingNote(false)
+            router.refresh()
+          }}
+        />
+      )}
+      {isAddingContact && addingNote && (
+        <NoteForm
+          clientId={client.id}
+          users={users}
+          groups={groups}
+          currentUser={currentUser}
           onClose={() => {
             setIsAddingContact(false)
             setAddingNote(false)
