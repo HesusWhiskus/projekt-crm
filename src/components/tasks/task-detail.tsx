@@ -18,9 +18,10 @@ interface TaskDetailProps {
   }>
   clients: Array<{
     id: string
-    firstName: string
-    lastName: string
-    agencyName: string | null
+    firstName: string | null
+    lastName: string | null
+    companyName: string | null
+    type: string
   }>
   groups?: Array<{
     id: string
@@ -177,7 +178,7 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
                   href={`/clients/${task.client.id}`}
                   className="text-primary hover:underline"
                 >
-                  {task.client.firstName} {task.client.lastName} {task.client.agencyName ? `(${task.client.agencyName})` : ""}
+                  {task.client.type === "COMPANY" ? task.client.companyName : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
                 </Link>
               </div>
             )}
