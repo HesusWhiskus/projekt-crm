@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.2-beta',
+    date: '2025-01-16',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Krytyczny problem z buildem w Railway - usunięto migracje z procesu build, build nie wymaga już połączenia z bazą danych',
+      },
+      {
+        type: 'fixed',
+        description: 'Migracje są teraz uruchamiane wyłącznie przy starcie aplikacji - build jest szybszy i bardziej niezawodny',
+      },
+      {
+        type: 'changed',
+        description: 'Prisma Client jest generowany bez połączenia z bazą - build nie wymaga DATABASE_URL',
+      },
+    ],
+  },
+  {
     version: '0.5.1-beta',
     date: '2025-01-16',
     changes: [

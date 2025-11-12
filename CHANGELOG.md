@@ -5,6 +5,24 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.2-beta] - 2025-01-16
+
+### Naprawiono
+- **Krytyczny problem z buildem w Railway:**
+  - Usunięto migracje z procesu build - build nie wymaga już połączenia z bazą danych
+  - Migracje są teraz uruchamiane wyłącznie przy starcie aplikacji (przed uruchomieniem serwera)
+  - Prisma Client jest generowany bez połączenia z bazą - build jest szybszy i bardziej niezawodny
+  - Zaktualizowano `src/lib/db.ts` z komentarzami wyjaśniającymi, że Prisma Client nie łączy się podczas inicjalizacji
+  - Zaktualizowano dokumentację w RAILWAY_QUICK_START.md z nowym podejściem
+
+### Uwagi techniczne
+- **Build:** Build nie wymaga połączenia z bazą danych - Prisma Client jest generowany bez DATABASE_URL
+- **Migracje:** Migracje są uruchamiane automatycznie przy starcie aplikacji, nie podczas build
+- **Bezpieczeństwo:** Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - zapewnia to spójność bazy danych
+- **Wydajność:** Build jest szybszy, ponieważ nie czeka na połączenie z bazą danych
+
+---
+
 ## [0.5.1-beta] - 2025-01-16
 
 ### Naprawiono

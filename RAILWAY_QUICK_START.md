@@ -163,12 +163,14 @@ GOOGLE_CLIENT_SECRET=<twój-google-client-secret>
 
 ## Krok 7: Migracja bazy danych
 
-**⚠️ WAŻNE:** Migracje są teraz uruchamiane automatycznie!
+**⚠️ WAŻNE:** Migracje są uruchamiane automatycznie przy starcie aplikacji!
 
 ### Automatyczne migracje:
 
-1. **Podczas build:** Jeśli Railway przekazuje `DATABASE_URL` podczas build, migracje są uruchamiane automatycznie przed zbudowaniem aplikacji
-2. **Przy starcie:** Jeśli `DATABASE_URL` nie była dostępna podczas build, migracje są uruchamiane automatycznie przy starcie aplikacji (przed uruchomieniem serwera)
+**Migracje są uruchamiane automatycznie przy starcie aplikacji** (przed uruchomieniem serwera Next.js). To zapewnia:
+- Build nie wymaga połączenia z bazą danych (szybszy i bardziej niezawodny)
+- Migracje są zawsze uruchamiane w środowisku produkcyjnym z dostępem do bazy
+- Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - zapewnia to spójność bazy danych
 
 ### Sprawdź logi:
 
@@ -180,7 +182,12 @@ GOOGLE_CLIENT_SECRET=<twój-google-client-secret>
 
 ### Jeśli migracje się nie powiodły:
 
-**W terminalu Railway uruchom ręcznie:**
+**Aplikacja automatycznie się nie uruchomi** - to jest zamierzone zachowanie dla bezpieczeństwa.
+
+**Aby naprawić problem:**
+
+1. **Sprawdź logi** - znajdź dokładny błąd migracji
+2. **W terminalu Railway uruchom ręcznie:**
 
 ```bash
 npx prisma migrate deploy
@@ -192,7 +199,7 @@ Lub jeśli migracje nie działają:
 npx prisma db push --accept-data-loss
 ```
 
-**Uwaga:** Aplikacja NIE uruchomi się, jeśli migracje się nie powiodą - to jest zamierzone zachowanie dla bezpieczeństwa.
+3. **Po naprawieniu migracji**, aplikacja automatycznie się zrestartuje
 
 ---
 
@@ -232,13 +239,12 @@ Twoja aplikacja powinna być dostępna pod adresem:
 - Logi w Railway (Deployments → View Logs)
 - Czy wszystkie zmienne środowiskowe są ustawione
 - Czy `NEXTAUTH_URL` ma poprawny URL (z https://)
-- **Czy `DATABASE_URL` jest dostępna** - Railway automatycznie dodaje ją, ale sprawdź czy baza PostgreSQL jest uruchomiona
-- **Czy migracje się powiodły** - w logach szukaj `=== DATABASE_URL is available, running migrations before build ===`
+- Sprawdź logi build w Railway - szukaj błędów kompilacji, brakujących zależności
 
-**Jeśli build się nie powodzi z powodu bazy danych:**
-1. Upewnij się, że baza PostgreSQL jest uruchomiona (zielony status)
-2. Sprawdź czy `DATABASE_URL` jest dostępna w zmiennych środowiskowych
-3. Jeśli problem nadal występuje, migracje będą uruchomione przy starcie aplikacji
+**Jeśli build się nie powodzi:**
+1. **Build NIE wymaga bazy danych** - Prisma Client jest generowany bez połączenia z bazą
+2. Sprawdź logi build w Railway - szukaj błędów kompilacji TypeScript, brakujących zależności, itp.
+3. Jeśli build się powiódł, ale aplikacja nie startuje - sprawdź logi startu aplikacji (migracje)
 
 ### Problem: Błąd połączenia z bazą danych
 

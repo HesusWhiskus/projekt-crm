@@ -24,31 +24,13 @@ COPY prisma ./prisma
 COPY . .
 
 # Generate Prisma Client (cached if schema doesn't change)
+# NOTE: Prisma Client generation does NOT require database connection
+# Migrations will be run at startup, not during build
 RUN npx prisma generate
 
-# Run migrations if DATABASE_URL is available (Railway provides it during build)
-# This ensures schema is synced before Next.js build tries to use Prisma
-# CRITICAL: Migrations MUST run before build, otherwise Prisma Client will fail
-# Railway should provide DATABASE_URL during build, but if not, migrations will run at startup
-RUN if [ -n "$DATABASE_URL" ]; then \
-      echo "=== DATABASE_URL is available, running migrations before build ===" && \
-      echo "This is CRITICAL - migrations must succeed before Next.js build" && \
-      echo "Step 1: Deploying migrations with prisma migrate deploy..." && \
-      (npx prisma migrate deploy && echo "✓ Migrations deployed successfully") || \
-      (echo "⚠ migrate deploy failed, trying db push as fallback..." && \
-       npx prisma db push --accept-data-loss --skip-generate && \
-       echo "✓ Database schema synchronized with db push") || \
-      (echo "❌ ERROR: Both migrate deploy and db push failed!" && \
-       echo "Build will continue, but migrations MUST run at startup or app will fail" && \
-       exit 0); \
-    else \
-      echo "=== WARNING: DATABASE_URL not available during build ===" && \
-      echo "This is expected if Railway doesn't pass DATABASE_URL to build context" && \
-      echo "Migrations will be run at startup via start.sh script" && \
-      echo "If build fails due to Prisma Client, ensure DATABASE_URL is available during build"; \
-    fi
-
 # Build Next.js with standalone output for Docker
+# NOTE: Next.js build should NOT require database connection
+# All database queries are runtime-only (no static generation)
 ENV DOCKER_BUILD=true
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
