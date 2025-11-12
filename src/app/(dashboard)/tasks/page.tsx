@@ -46,7 +46,6 @@ export default async function TasksPage({
           id: true,
           firstName: true,
           lastName: true,
-          companyName: true,
           type: true,
         },
       },
@@ -73,7 +72,6 @@ export default async function TasksPage({
         id: true,
         firstName: true,
         lastName: true,
-        companyName: true,
         type: true,
       },
       orderBy: {

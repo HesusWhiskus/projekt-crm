@@ -25,7 +25,6 @@ interface Task {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
     type: string
   } | null
 }
@@ -41,7 +40,6 @@ interface TasksCalendarProps {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
     type: string
   }>
   groups?: Array<{

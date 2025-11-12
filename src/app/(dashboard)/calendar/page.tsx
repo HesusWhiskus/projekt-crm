@@ -44,7 +44,6 @@ export default async function CalendarPage() {
           id: true,
           firstName: true,
           lastName: true,
-          companyName: true,
           type: true,
         },
       },

@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.3-beta',
+    date: '2025-01-16',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Krytyczny błąd builda - usunięto odwołania do nieistniejącej kolumny companyName w bazie danych',
+      },
+      {
+        type: 'fixed',
+        description: 'Aplikacja może teraz działać bez kolumny companyName - wszystkie klienci wyświetlani używając firstName i lastName',
+      },
+    ],
+  },
+  {
     version: '0.5.2-beta',
     date: '2025-01-16',
     changes: [

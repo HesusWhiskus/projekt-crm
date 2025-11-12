@@ -17,7 +17,6 @@ interface Client {
   id: string
   firstName: string | null
   lastName: string | null
-  companyName: string | null
   type: string
   email: string | null
   phone: string | null
@@ -86,13 +85,10 @@ const priorityColors: Record<ClientPriority, string> = {
   HIGH: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
 }
 
-type SortField = "firstName" | "lastName" | "companyName" | "email" | "phone" | "status" | "priority" | "assignee" | null
+type SortField = "firstName" | "lastName" | "email" | "phone" | "status" | "priority" | "assignee" | null
 
 // Helper function to get client display name
 function getClientDisplayName(client: Client): string {
-  if (client.type === "COMPANY") {
-    return client.companyName || "Brak nazwy firmy"
-  }
   const name = [client.firstName, client.lastName].filter(Boolean).join(" ")
   return name || "Brak imienia i nazwiska"
 }
@@ -126,7 +122,6 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
         return (
           (client.firstName?.toLowerCase().includes(searchLower) ||
             client.lastName?.toLowerCase().includes(searchLower) ||
-            client.companyName?.toLowerCase().includes(searchLower) ||
             client.email?.toLowerCase().includes(searchLower) ||
             client.phone?.toLowerCase().includes(searchLower) ||
             getClientDisplayName(client).toLowerCase().includes(searchLower)) ||
@@ -161,10 +156,6 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
           case "lastName":
             aValue = a.lastName || ""
             bValue = b.lastName || ""
-            break
-          case "companyName":
-            aValue = getClientDisplayName(a)
-            bValue = getClientDisplayName(b)
             break
           case "email":
             aValue = a.email || ""
@@ -396,12 +387,6 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                           <h3 className="font-semibold text-lg">
                             {client.firstName} {client.lastName}
                           </h3>
-                          {client.type === "COMPANY" && client.companyName && (
-                            <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-                              <Building2 className="h-4 w-4" />
-                              <span className="truncate">{client.companyName}</span>
-                            </div>
-                          )}
                         </div>
                         <Link href={`/clients/${client.id}`}>
                           <Button variant="ghost" size="sm" className="min-w-[80px]">
@@ -463,15 +448,6 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       <div className="flex items-center">
                         Kontakt
                         {getSortIcon("firstName")}
-                      </div>
-                    </th>
-                    <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      onClick={() => handleSort("companyName")}
-                    >
-                      <div className="flex items-center">
-                        Agencja
-                        {getSortIcon("companyName")}
                       </div>
                     </th>
                     <th

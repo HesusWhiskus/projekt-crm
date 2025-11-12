@@ -88,7 +88,6 @@ export default async function ClientsPage({
       id: true,
       firstName: true,
       lastName: true,
-      companyName: true,
       type: true,
       email: true,
       phone: true,

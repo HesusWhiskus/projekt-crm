@@ -5,6 +5,23 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.3-beta] - 2025-01-16
+
+### Naprawiono
+- **Krytyczny błąd builda - brak kolumny companyName w bazie danych:**
+  - Usunięto wszystkie odwołania do `companyName` z select/include w zapytaniach Prisma
+  - Usunięto `companyName` z typów TypeScript w komponentach (tasks, contacts, clients)
+  - Zaktualizowano kod wyświetlania - używa teraz tylko `firstName` i `lastName` dla wszystkich typów klientów
+  - Usunięto kolumnę "Agencja" z tabeli klientów (sortowanie po companyName)
+  - Aplikacja może teraz działać bez kolumny `companyName` w bazie danych
+
+### Uwagi techniczne
+- **Backward compatibility:** Kod działa z bazą danych bez kolumny `companyName`
+- **Wyświetlanie:** Wszystkie klienci (PERSON i COMPANY) wyświetlani są używając `firstName` i `lastName`
+- **Migracja:** Po uruchomieniu migracji kolumna `companyName` zostanie dodana, ale nie jest wymagana do działania aplikacji
+
+---
+
 ## [0.5.2-beta] - 2025-01-16
 
 ### Naprawiono

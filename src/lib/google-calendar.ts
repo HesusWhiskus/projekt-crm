@@ -113,7 +113,7 @@ export async function syncTaskToCalendar(userId: string, taskId: string) {
     }
 
     const clientName = task.client 
-      ? (task.client.type === "COMPANY" ? task.client.companyName : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy")
+      ? (`${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy")
       : null
     
     const title = clientName

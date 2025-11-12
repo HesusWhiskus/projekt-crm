@@ -21,7 +21,6 @@ interface TaskFormProps {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
     type: string
   }>
   groups?: Array<{
@@ -205,7 +204,7 @@ export function TaskForm({ users, clients, groups, currentUser, task, onClose, o
                     <option value="">Brak klienta</option>
                     {clients.map((client) => (
                       <option key={client.id} value={client.id}>
-                        {client.type === "COMPANY" ? client.companyName : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
+                        {`${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
                       </option>
                     ))}
                   </Select>

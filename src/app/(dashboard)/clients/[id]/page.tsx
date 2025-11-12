@@ -74,7 +74,6 @@ export default async function ClientDetailPage({
             select: {
               firstName: true,
               lastName: true,
-              companyName: true,
               type: true,
             },
           },

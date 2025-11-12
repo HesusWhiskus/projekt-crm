@@ -446,7 +446,6 @@ export async function GET(request: Request) {
             id: true,
             firstName: true,
             lastName: true,
-            companyName: true,
             type: true,
           },
         },

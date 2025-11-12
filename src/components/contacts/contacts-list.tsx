@@ -21,7 +21,6 @@ interface Contact {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
     type: string
   }
   user: {
@@ -46,7 +45,6 @@ interface ContactsListProps {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
     type: string
   }>
   users: Array<{
@@ -174,7 +172,7 @@ export function ContactsList({
                 <option value="">Wszyscy</option>
                 {clients.map((client) => (
                   <option key={client.id} value={client.id}>
-                    {client.type === "COMPANY" ? client.companyName : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
+                     {`${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
                   </option>
                 ))}
               </Select>
@@ -223,7 +221,7 @@ export function ContactsList({
                             href={`/clients/${contact.client.id}`}
                             className="text-primary hover:underline"
                           >
-                            {contact.client.type === "COMPANY" ? contact.client.companyName : `${contact.client.firstName} ${contact.client.lastName}`.trim() || "Brak nazwy"}
+                            {`${contact.client.firstName} ${contact.client.lastName}`.trim() || "Brak nazwy"}
                           </Link>
                         </span>
                       </div>

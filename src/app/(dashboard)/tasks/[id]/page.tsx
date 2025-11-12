@@ -29,7 +29,6 @@ export default async function TaskDetailPage({
           id: true,
           firstName: true,
           lastName: true,
-          companyName: true,
           type: true,
         },
       },
