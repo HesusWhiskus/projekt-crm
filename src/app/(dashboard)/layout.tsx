@@ -3,6 +3,10 @@ import { getCurrentUser } from "@/lib/auth"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { db } from "@/lib/db"
 
+// Force dynamic rendering - all dashboard pages need database access
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function DashboardLayout({
   children,
 }: {
