@@ -24,6 +24,7 @@ export default async function DashboardLayout({
       image: true,
       role: true,
       position: true,
+      // organizationId: true, // Skip organization relation to avoid migration issues
     },
   })
 

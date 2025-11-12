@@ -21,6 +21,16 @@ const authorizeCredentials = async (credentials: any) => {
     logAuth("[AUTH] Looking up user in database...")
     const user = await db.user.findUnique({
       where: { email: credentials.email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        image: true,
+        password: true,
+        role: true,
+        position: true,
+        // organizationId: true, // Skip organization relation to avoid migration issues
+      },
     })
 
     if (!user) {
@@ -164,6 +174,15 @@ export const authOptions: NextAuthOptions = {
         try {
           const existingUser = await db.user.findUnique({
             where: { email: user.email },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              image: true,
+              role: true,
+              emailVerified: true,
+              // organizationId: true, // Skip organization relation to avoid migration issues
+            },
           })
 
           if (!existingUser) {
@@ -175,6 +194,7 @@ export const authOptions: NextAuthOptions = {
                 image: user.image || null,
                 emailVerified: new Date(),
                 role: "USER",
+                // organizationId: null, // Will be set later after migration
               },
             })
             // Update user object with database ID and role
