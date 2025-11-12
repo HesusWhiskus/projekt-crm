@@ -141,6 +141,7 @@ model Client {
   tasks         Task[]
   statusHistory ClientStatusHistory[]
   sharedGroups  Group[]               @relation("GroupSharedClients")
+  integrationTabs IntegrationTab[]
 
   @@index([assignedTo])
   @@index([status])
