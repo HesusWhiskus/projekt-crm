@@ -54,7 +54,7 @@ export async function POST(request: Request) {
                 data: {
                   ...(change.data || {}),
                   assignedTo: change.data?.assignedTo || user.id,
-                },
+                } as any,
               })
               results.synced.push({ id: change.id, serverId: client.id, action: "create" })
             } else if (validatedData.entityType === "contacts") {
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
                 data: {
                   ...(change.data || {}),
                   userId: user.id,
-                },
+                } as any,
               })
               results.synced.push({ id: change.id, serverId: contact.id, action: "create" })
             } else if (validatedData.entityType === "tasks") {
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
                 data: {
                   ...(change.data || {}),
                   assignedTo: change.data?.assignedTo || user.id,
-                },
+                } as any,
               })
               results.synced.push({ id: change.id, serverId: task.id, action: "create" })
             }
