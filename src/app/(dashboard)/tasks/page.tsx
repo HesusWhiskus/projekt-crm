@@ -73,7 +73,8 @@ export default async function TasksPage({
         id: true,
         firstName: true,
         lastName: true,
-        agencyName: true,
+        companyName: true,
+        type: true,
       },
       orderBy: {
         lastName: "asc",
