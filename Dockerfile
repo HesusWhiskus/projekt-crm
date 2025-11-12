@@ -85,7 +85,10 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo '  npx prisma generate 2>&1 || echo "Prisma generate failed, continuing..."' >> /app/start.sh && \
     echo '  echo "Step 2: Running SQL fix for missing companyName column..."' >> /app/start.sh && \
     echo '  if [ -f /app/scripts/fix-company-name-column.sql ]; then' >> /app/start.sh && \
-    echo '    cat /app/scripts/fix-company-name-column.sql | npx prisma db execute --stdin --schema /app/prisma/schema.prisma 2>&1 && echo "SQL fix executed successfully" || echo "SQL fix failed, trying db push..."' >> /app/start.sh && \
+    echo '    echo "Found SQL fix script, executing..."' >> /app/start.sh && \
+    echo '    npx prisma db execute --file /app/scripts/fix-company-name-column.sql --schema /app/prisma/schema.prisma 2>&1 && echo "SQL fix executed successfully" || echo "SQL fix failed (error above), trying db push..."' >> /app/start.sh && \
+    echo '  else' >> /app/start.sh && \
+    echo '    echo "SQL fix script not found at /app/scripts/fix-company-name-column.sql, skipping..."' >> /app/start.sh && \
     echo '  fi' >> /app/start.sh && \
     echo '  echo "Step 2b: Synchronizing database schema with db push..."' >> /app/start.sh && \
     echo '  npx prisma db push --accept-data-loss --skip-generate 2>&1 && echo "Database push succeeded" || echo "Database push failed, but continuing..."' >> /app/start.sh && \
