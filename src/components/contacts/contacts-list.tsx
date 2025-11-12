@@ -19,9 +19,10 @@ interface Contact {
   isNote: boolean
   client: {
     id: string
-    firstName: string
-    lastName: string
-    agencyName: string | null
+    firstName: string | null
+    lastName: string | null
+    companyName: string | null
+    type: string
   }
   user: {
     id: string
@@ -43,9 +44,10 @@ interface ContactsListProps {
   contacts: Contact[]
   clients: Array<{
     id: string
-    firstName: string
-    lastName: string
-    agencyName: string | null
+    firstName: string | null
+    lastName: string | null
+    companyName: string | null
+    type: string
   }>
   users: Array<{
     id: string
@@ -172,7 +174,7 @@ export function ContactsList({
                 <option value="">Wszyscy</option>
                 {clients.map((client) => (
                   <option key={client.id} value={client.id}>
-                    {client.firstName} {client.lastName} {client.agencyName ? `(${client.agencyName})` : ""}
+                    {client.type === "COMPANY" ? client.companyName : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
                   </option>
                 ))}
               </Select>
@@ -221,7 +223,7 @@ export function ContactsList({
                             href={`/clients/${contact.client.id}`}
                             className="text-primary hover:underline"
                           >
-                            {contact.client.firstName} {contact.client.lastName} {contact.client.agencyName ? `(${contact.client.agencyName})` : ""}
+                            {contact.client.type === "COMPANY" ? contact.client.companyName : `${contact.client.firstName} ${contact.client.lastName}`.trim() || "Brak nazwy"}
                           </Link>
                         </span>
                       </div>
