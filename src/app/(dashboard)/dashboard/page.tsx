@@ -58,7 +58,8 @@ export default async function DashboardPage() {
             id: true,
             firstName: true,
             lastName: true,
-            agencyName: true 
+            companyName: true,
+            type: true 
           } 
         } 
       },

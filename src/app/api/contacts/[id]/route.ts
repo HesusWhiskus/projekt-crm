@@ -231,7 +231,8 @@ export async function PATCH(
             id: true,
             firstName: true,
             lastName: true,
-            agencyName: true,
+            companyName: true,
+            type: true,
           },
         },
         user: {

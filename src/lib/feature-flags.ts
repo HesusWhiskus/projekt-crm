@@ -125,3 +125,22 @@ export async function isProPlan(organizationId: string | null): Promise<boolean>
   return organization?.plan === PlanType.PRO
 }
 
+/**
+ * Helper function to check if a feature is enabled for a user
+ * @param userId - User ID
+ * @param featureKey - Feature key to check
+ * @returns Promise<boolean> - true if feature is enabled
+ */
+export async function checkFeature(
+  userId: string,
+  featureKey: FeatureKey
+): Promise<boolean> {
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { organizationId: true },
+  })
+
+  const organizationId = user?.organizationId || null
+  return await isFeatureEnabled(organizationId, featureKey)
+}
+

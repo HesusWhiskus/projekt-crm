@@ -15,9 +15,10 @@ import { useIsMobile } from "@/hooks/use-media-query"
 
 interface Client {
   id: string
-  firstName: string
-  lastName: string
-  agencyName: string | null
+  firstName: string | null
+  lastName: string | null
+  companyName: string | null
+  type: string
   email: string | null
   phone: string | null
   status: ClientStatus
@@ -85,7 +86,16 @@ const priorityColors: Record<ClientPriority, string> = {
   HIGH: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
 }
 
-type SortField = "firstName" | "lastName" | "agencyName" | "email" | "phone" | "status" | "priority" | "assignee" | null
+type SortField = "firstName" | "lastName" | "companyName" | "email" | "phone" | "status" | "priority" | "assignee" | null
+
+// Helper function to get client display name
+function getClientDisplayName(client: Client): string {
+  if (client.type === "COMPANY") {
+    return client.companyName || "Brak nazwy firmy"
+  }
+  const name = [client.firstName, client.lastName].filter(Boolean).join(" ")
+  return name || "Brak imienia i nazwiska"
+}
 type SortDirection = "asc" | "desc" | null
 
 export function ClientsList({ clients, users, groups, currentUser }: ClientsListProps) {
@@ -116,9 +126,10 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
         return (
           (client.firstName?.toLowerCase().includes(searchLower) ||
             client.lastName?.toLowerCase().includes(searchLower) ||
-            client.agencyName?.toLowerCase().includes(searchLower) ||
+            client.companyName?.toLowerCase().includes(searchLower) ||
             client.email?.toLowerCase().includes(searchLower) ||
-            client.phone?.toLowerCase().includes(searchLower)) ||
+            client.phone?.toLowerCase().includes(searchLower) ||
+            getClientDisplayName(client).toLowerCase().includes(searchLower)) ||
           false
         )
       })
@@ -151,9 +162,9 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
             aValue = a.lastName || ""
             bValue = b.lastName || ""
             break
-          case "agencyName":
-            aValue = a.agencyName || ""
-            bValue = b.agencyName || ""
+          case "companyName":
+            aValue = getClientDisplayName(a)
+            bValue = getClientDisplayName(b)
             break
           case "email":
             aValue = a.email || ""
@@ -229,7 +240,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
       ["Nazwa agencji", "Imię", "Nazwisko", "Email", "Telefon", "Status", "Odpowiedzialny"].join(","),
       ...clients.map((c) =>
         [
-          c.agencyName,
+          getClientDisplayName(c),
           c.firstName,
           c.lastName,
           c.email || "",
@@ -385,10 +396,10 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                           <h3 className="font-semibold text-lg">
                             {client.firstName} {client.lastName}
                           </h3>
-                          {client.agencyName && (
+                          {client.type === "COMPANY" && client.companyName && (
                             <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
                               <Building2 className="h-4 w-4" />
-                              <span className="truncate">{client.agencyName}</span>
+                              <span className="truncate">{client.companyName}</span>
                             </div>
                           )}
                         </div>
@@ -456,11 +467,11 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                     </th>
                     <th
                       className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      onClick={() => handleSort("agencyName")}
+                      onClick={() => handleSort("companyName")}
                     >
                       <div className="flex items-center">
                         Agencja
-                        {getSortIcon("agencyName")}
+                        {getSortIcon("companyName")}
                       </div>
                     </th>
                     <th
@@ -522,8 +533,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                         </div>
                       </td>
                       <td className="px-3 py-3">
-                        <div className="text-sm text-foreground truncate max-w-[200px]" title={client.agencyName || undefined}>
-                          {client.agencyName || "-"}
+                        <div className="text-sm text-foreground truncate max-w-[200px]" title={getClientDisplayName(client)}>
+                          {getClientDisplayName(client)}
                         </div>
                       </td>
                       <td className="px-3 py-3 whitespace-nowrap">

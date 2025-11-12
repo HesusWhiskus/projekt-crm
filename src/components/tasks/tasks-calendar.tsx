@@ -23,7 +23,10 @@ interface Task {
   } | null
   client: {
     id: string
-    agencyName: string | null
+    firstName: string | null
+    lastName: string | null
+    companyName: string | null
+    type: string
   } | null
 }
 
@@ -36,9 +39,10 @@ interface TasksCalendarProps {
   }>
   clients?: Array<{
     id: string
-    firstName: string
-    lastName: string
-    agencyName: string | null
+    firstName: string | null
+    lastName: string | null
+    companyName: string | null
+    type: string
   }>
   groups?: Array<{
     id: string

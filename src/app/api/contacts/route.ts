@@ -444,9 +444,10 @@ export async function GET(request: Request) {
         client: {
           select: {
             id: true,
-            agencyName: true,
             firstName: true,
             lastName: true,
+            companyName: true,
+            type: true,
           },
         },
         user: {

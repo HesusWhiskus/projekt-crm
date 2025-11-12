@@ -84,11 +84,12 @@ export default async function ClientsPage({
 
   const clients = await db.client.findMany({
     where,
-    select: {
+      select: {
       id: true,
       firstName: true,
       lastName: true,
-      agencyName: true,
+      companyName: true,
+      type: true,
       email: true,
       phone: true,
       status: true,

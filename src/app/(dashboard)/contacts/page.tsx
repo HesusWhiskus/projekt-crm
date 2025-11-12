@@ -58,9 +58,10 @@ export default async function ContactsPage({
       client: {
         select: {
           id: true,
-          agencyName: true,
           firstName: true,
           lastName: true,
+          companyName: true,
+          type: true,
         },
       },
       user: {
@@ -98,7 +99,8 @@ export default async function ContactsPage({
         id: true,
         firstName: true,
         lastName: true,
-        agencyName: true,
+        companyName: true,
+        type: true,
       },
       orderBy: {
         lastName: "asc",

@@ -42,7 +42,10 @@ export default async function CalendarPage() {
       client: {
         select: {
           id: true,
-          agencyName: true,
+          firstName: true,
+          lastName: true,
+          companyName: true,
+          type: true,
         },
       },
     },
@@ -68,7 +71,8 @@ export default async function CalendarPage() {
         id: true,
         firstName: true,
         lastName: true,
-        agencyName: true,
+        companyName: true,
+        type: true,
       },
       orderBy: {
         lastName: "asc",

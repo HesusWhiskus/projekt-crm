@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { ClientDetail } from "@/components/clients/client-detail"
 import { getCachedUsers, getCachedGroups } from "@/lib/cache"
+import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 
 export default async function ClientDetailPage({
   params,
@@ -71,7 +72,10 @@ export default async function ClientDetailPage({
         include: {
           client: {
             select: {
-              agencyName: true,
+              firstName: true,
+              lastName: true,
+              companyName: true,
+              type: true,
             },
           },
         },
