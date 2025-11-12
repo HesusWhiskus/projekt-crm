@@ -5,22 +5,20 @@
  * Usage: npx tsx scripts/migrate-users-to-organization.ts
  */
 
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { db } from "../src/lib/db"
 
 async function main() {
   console.log("🔄 Starting migration: Assign users to 'Polskie Polisy' organization...")
 
   try {
     // Get or create default organization
-    let defaultOrg = await prisma.organization.findFirst({
+    let defaultOrg = await db.organization.findFirst({
       where: { name: "Polskie Polisy" },
     })
 
     if (!defaultOrg) {
       console.log("📝 Creating 'Polskie Polisy' organization...")
-      defaultOrg = await prisma.organization.create({
+      defaultOrg = await db.organization.create({
         data: {
           name: "Polskie Polisy",
           plan: "BASIC",
@@ -32,7 +30,7 @@ async function main() {
     }
 
     // Count users without organization
-    const usersWithoutOrg = await prisma.user.count({
+    const usersWithoutOrg = await db.user.count({
       where: { organizationId: null },
     })
 
@@ -40,7 +38,7 @@ async function main() {
 
     if (usersWithoutOrg > 0) {
       // Update all users without organization
-      const result = await prisma.user.updateMany({
+      const result = await db.user.updateMany({
         where: { organizationId: null },
         data: { organizationId: defaultOrg.id },
       })
@@ -51,7 +49,7 @@ async function main() {
     }
 
     // Verify migration
-    const remainingUsers = await prisma.user.count({
+    const remainingUsers = await db.user.count({
       where: { organizationId: null },
     })
 
@@ -64,7 +62,7 @@ async function main() {
     console.error("❌ Migration failed:", error)
     throw error
   } finally {
-    await prisma.$disconnect()
+    await db.$disconnect()
   }
 }
 
