@@ -52,15 +52,15 @@ export async function POST(request: Request) {
             if (validatedData.entityType === "clients") {
               const client = await db.client.create({
                 data: {
-                  ...change.data,
-                  assignedTo: change.data.assignedTo || user.id,
+                  ...(change.data || {}),
+                  assignedTo: change.data?.assignedTo || user.id,
                 },
               })
               results.synced.push({ id: change.id, serverId: client.id, action: "create" })
             } else if (validatedData.entityType === "contacts") {
               const contact = await db.contact.create({
                 data: {
-                  ...change.data,
+                  ...(change.data || {}),
                   userId: user.id,
                 },
               })
@@ -68,8 +68,8 @@ export async function POST(request: Request) {
             } else if (validatedData.entityType === "tasks") {
               const task = await db.task.create({
                 data: {
-                  ...change.data,
-                  assignedTo: change.data.assignedTo || user.id,
+                  ...(change.data || {}),
+                  assignedTo: change.data?.assignedTo || user.id,
                 },
               })
               results.synced.push({ id: change.id, serverId: task.id, action: "create" })
@@ -79,19 +79,19 @@ export async function POST(request: Request) {
             if (validatedData.entityType === "clients") {
               await db.client.update({
                 where: { id: change.id },
-                data: change.data,
+                data: change.data || {},
               })
               results.synced.push({ id: change.id, action: "update" })
             } else if (validatedData.entityType === "contacts") {
               await db.contact.update({
                 where: { id: change.id },
-                data: change.data,
+                data: change.data || {},
               })
               results.synced.push({ id: change.id, action: "update" })
             } else if (validatedData.entityType === "tasks") {
               await db.task.update({
                 where: { id: change.id },
-                data: change.data,
+                data: change.data || {},
               })
               results.synced.push({ id: change.id, action: "update" })
             }
