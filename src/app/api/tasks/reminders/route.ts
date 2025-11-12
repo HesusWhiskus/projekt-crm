@@ -19,8 +19,21 @@ export async function POST(request: Request) {
         assignedTo: { not: null },
       },
       include: {
-        assignee: true,
-        client: true,
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            type: true,
+          },
+        },
       },
     })
 

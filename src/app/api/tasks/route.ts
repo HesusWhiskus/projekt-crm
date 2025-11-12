@@ -149,6 +149,10 @@ export async function POST(request: Request) {
     if (validatedData.clientId) {
       const client = await db.client.findUnique({
         where: { id: validatedData.clientId },
+        select: {
+          id: true,
+          assignedTo: true,
+        },
       })
 
       if (!client) {

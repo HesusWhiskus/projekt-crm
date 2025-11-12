@@ -103,8 +103,21 @@ export async function syncTaskToCalendar(userId: string, taskId: string) {
     const task = await db.task.findUnique({
       where: { id: taskId },
       include: {
-        client: true,
-        assignee: true,
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            type: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     })
 

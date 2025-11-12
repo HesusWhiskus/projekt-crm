@@ -151,6 +151,10 @@ export async function POST(request: Request) {
     // Check if client exists and user has access
     const client = await db.client.findUnique({
       where: { id: validatedData.clientId },
+      select: {
+        id: true,
+        assignedTo: true,
+      },
     })
 
     if (!client) {

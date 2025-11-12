@@ -105,8 +105,21 @@ export async function GET(
     const task = await db.task.findUnique({
       where: { id: validatedId },
       include: {
-        assignee: true,
-        client: true,
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            type: true,
+          },
+        },
         sharedGroups: {
           include: {
             users: true,
@@ -300,8 +313,21 @@ export async function PATCH(
       where: { id: validatedId },
       data: updateData,
       include: {
-        assignee: true,
-        client: true,
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            type: true,
+          },
+        },
       },
     })
 

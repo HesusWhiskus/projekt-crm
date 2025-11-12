@@ -176,7 +176,15 @@ export async function PATCH(
     const existingContact = await db.contact.findUnique({
       where: { id: validatedId },
       include: {
-        client: true,
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            type: true,
+            assignedTo: true,
+          },
+        },
         sharedGroups: {
           include: {
             users: {
@@ -232,6 +240,7 @@ export async function PATCH(
             firstName: true,
             lastName: true,
             type: true,
+            assignedTo: true,
           },
         },
         user: {
@@ -351,7 +360,15 @@ export async function DELETE(
     const contact = await db.contact.findUnique({
       where: { id: validatedId },
       include: {
-        client: true,
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            type: true,
+            assignedTo: true,
+          },
+        },
       },
     })
 
