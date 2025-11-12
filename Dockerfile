@@ -65,10 +65,8 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
 COPY --from=builder /app/scripts ./scripts
-# Copy tsx and @prisma/client for TypeScript scripts
+# Copy tsx for TypeScript scripts (tsx is needed for running .ts scripts)
 COPY --from=builder /app/node_modules/tsx ./node_modules/tsx
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # Fix permissions for Prisma engines directory
 RUN chown -R nextjs:nodejs /app/node_modules/@prisma && \
