@@ -142,6 +142,20 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await hash(validatedData.password, 10)
 
+    // Get or create default organization "Polskie Polisy"
+    let defaultOrg = await db.organization.findFirst({
+      where: { name: "Polskie Polisy" },
+    })
+
+    if (!defaultOrg) {
+      defaultOrg = await db.organization.create({
+        data: {
+          name: "Polskie Polisy",
+          plan: "BASIC",
+        },
+      })
+    }
+
     // Create user
     const user = await db.user.create({
       data: {
@@ -150,6 +164,7 @@ export async function POST(request: Request) {
         password: hashedPassword,
         position: validatedData.position,
         role: "USER",
+        organizationId: defaultOrg.id,
       },
     })
 

@@ -54,6 +54,7 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 # Copy Prisma binaries for migrations (as fallback if migrations weren't run in build)
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
+COPY --from=builder /app/scripts ./scripts
 
 # Fix permissions for Prisma engines directory
 RUN chown -R nextjs:nodejs /app/node_modules/@prisma && \
@@ -66,6 +67,12 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo '  echo "Running database migrations..."' >> /app/start.sh && \
     echo '  export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
     echo '  npx prisma migrate deploy 2>&1 || (echo "Migrations failed, trying db push..." && npx prisma db push --accept-data-loss 2>&1 || echo "All migration attempts failed, continuing...")' >> /app/start.sh && \
+    echo '  echo "Running user organization migration..."' >> /app/start.sh && \
+    echo '  if command -v tsx >/dev/null 2>&1; then' >> /app/start.sh && \
+    echo '    npx tsx scripts/migrate-users-to-organization.ts 2>&1 || echo "User migration failed, continuing..."' >> /app/start.sh && \
+    echo '  else' >> /app/start.sh && \
+    echo '    echo "tsx not available, skipping user migration script (users will be assigned on first registration)"' >> /app/start.sh && \
+    echo '  fi' >> /app/start.sh && \
     echo '  echo "Migrations completed"' >> /app/start.sh && \
     echo 'fi' >> /app/start.sh && \
     echo 'echo "Starting application..."' >> /app/start.sh && \
