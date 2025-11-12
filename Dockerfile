@@ -66,7 +66,7 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'if [ -n "$DATABASE_URL" ]; then' >> /app/start.sh && \
     echo '  echo "Running database migrations..."' >> /app/start.sh && \
     echo '  export PATH="/app/node_modules/.bin:$PATH"' >> /app/start.sh && \
-    echo '  npx prisma migrate deploy 2>&1 || (echo "Migrations failed, trying db push..." && npx prisma db push --accept-data-loss 2>&1 || echo "All migration attempts failed, continuing...")' >> /app/start.sh && \
+    echo '  npx prisma migrate deploy 2>&1 || (echo "Migrations failed, trying db push..." && npx prisma db push --accept-data-loss --skip-generate 2>&1 || echo "All migration attempts failed, continuing...")' >> /app/start.sh && \
     echo '  echo "Running user organization migration..."' >> /app/start.sh && \
     echo '  if command -v tsx >/dev/null 2>&1; then' >> /app/start.sh && \
     echo '    npx tsx scripts/migrate-users-to-organization.ts 2>&1 || echo "User migration failed, continuing..."' >> /app/start.sh && \
