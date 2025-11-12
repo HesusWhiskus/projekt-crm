@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 
+// Force dynamic rendering - this endpoint should not be statically generated
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 /**
  * GET /api/organizations/public
  * Publiczny endpoint do pobierania listy organizacji (dla rejestracji)
