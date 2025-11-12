@@ -82,10 +82,12 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo '  echo "Step 1: Generating Prisma Client..."' >> /app/start.sh && \
     echo '  npx prisma generate 2>&1 || echo "Prisma generate failed, continuing..."' >> /app/start.sh && \
     echo '  echo "Step 2: Running fix script for missing companyName column..."' >> /app/start.sh && \
-    echo '  if [ -f /app/scripts/fix-company-name-column.sql ] && command -v psql >/dev/null 2>&1; then' >> /app/start.sh && \
+    echo '  if [ -f /app/scripts/fix-company-name-column.ts ] && command -v tsx >/dev/null 2>&1; then' >> /app/start.sh && \
+    echo '    npx tsx /app/scripts/fix-company-name-column.ts 2>&1 && echo "Fix script executed successfully" || echo "Fix script failed, trying db push..."' >> /app/start.sh && \
+    echo '  elif [ -f /app/scripts/fix-company-name-column.sql ] && command -v psql >/dev/null 2>&1; then' >> /app/start.sh && \
     echo '    psql "$DATABASE_URL" -f /app/scripts/fix-company-name-column.sql 2>&1 && echo "Fix script executed successfully" || echo "Fix script failed (psql), trying db push..."' >> /app/start.sh && \
-    echo '  elif [ -f /app/scripts/fix-company-name-column.sql ]; then' >> /app/start.sh && \
-    echo '    echo "psql not available, skipping fix script, will use db push..."' >> /app/start.sh && \
+    echo '  else' >> /app/start.sh && \
+    echo '    echo "Fix script not available, will use db push..."' >> /app/start.sh && \
     echo '  fi' >> /app/start.sh && \
     echo '  echo "Step 2b: Synchronizing database schema with db push..."' >> /app/start.sh && \
     echo '  npx prisma db push --accept-data-loss --skip-generate 2>&1 && echo "Database push succeeded" || echo "Database push failed, but continuing..."' >> /app/start.sh && \
