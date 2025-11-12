@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 
 const updatePreferencesSchema = z.object({
   theme: z.enum(["light", "dark"]).optional(),
@@ -82,10 +83,15 @@ const updatePreferencesSchema = z.object({
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "User", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
@@ -196,8 +202,13 @@ export async function GET() {
  */
 export async function PATCH(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "User", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 

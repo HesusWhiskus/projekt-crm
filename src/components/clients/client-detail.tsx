@@ -9,6 +9,7 @@ import { Edit, Plus } from "lucide-react"
 import { ContactForm } from "../contacts/contact-form"
 import { NoteForm } from "../notes/note-form"
 import { ClientForm } from "./client-form"
+import { IntegrationTabs } from "./integration-tabs"
 import Link from "next/link"
 
 interface ClientDetailProps {
@@ -26,6 +27,7 @@ interface ClientDetailProps {
     id: string
     role: UserRole
   }
+  integrationTabsEnabled?: boolean
 }
 
 const statusLabels: Record<ClientStatus, string> = {
@@ -51,7 +53,7 @@ const contactTypeLabels: Record<string, string> = {
   OTHER: "Inne",
 }
 
-export function ClientDetail({ client, users, groups, currentUser }: ClientDetailProps) {
+export function ClientDetail({ client, users, groups, currentUser, integrationTabsEnabled = false }: ClientDetailProps) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [isAddingContact, setIsAddingContact] = useState(false)
@@ -419,6 +421,10 @@ export function ClientDetail({ client, users, groups, currentUser }: ClientDetai
           )}
         </CardContent>
       </Card>
+
+      {integrationTabsEnabled && (
+        <IntegrationTabs clientId={client.id} enabled={integrationTabsEnabled} />
+      )}
     </div>
   )
 }

@@ -8,7 +8,7 @@ import { Select } from "@/components/ui/select"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
+import { ClientStatus, ClientPriority, ClientType, UserRole } from "@prisma/client"
 import { utcDateToLocalDateTime } from "@/lib/timezone"
 
 interface ClientFormProps {
@@ -27,9 +27,11 @@ interface ClientFormProps {
   }
   client?: {
     id: string
-    firstName: string
-    lastName: string
-    agencyName: string | null
+    type: ClientType
+    firstName: string | null
+    lastName: string | null
+    companyName: string | null
+    taxId: string | null
     email: string | null
     phone: string | null
     website: string | null
@@ -65,9 +67,11 @@ const priorityOptions: Record<ClientPriority, string> = {
 
 export function ClientForm({ users, groups, currentUser, client, onClose, onSuccess }: ClientFormProps) {
   const [formData, setFormData] = useState({
+    type: client?.type || ("PERSON" as ClientType),
     firstName: client?.firstName || "",
     lastName: client?.lastName || "",
-    agencyName: client?.agencyName || "",
+    companyName: client?.companyName || "",
+    taxId: client?.taxId || "",
     email: client?.email || "",
     phone: client?.phone || "",
     website: client?.website || "",
@@ -92,9 +96,7 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
       const method = client ? "PATCH" : "POST"
 
       const bodyData: any = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        agencyName: formData.agencyName || undefined,
+        type: formData.type,
         email: formData.email || undefined,
         phone: formData.phone || undefined,
         website: formData.website || undefined,
@@ -103,6 +105,15 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
         status: formData.status,
         priority: formData.priority || undefined,
         nextFollowUpAt: formData.nextFollowUpAt || undefined,
+      }
+
+      // Add type-specific fields
+      if (formData.type === "PERSON") {
+        bodyData.firstName = formData.firstName || undefined
+        bodyData.lastName = formData.lastName || undefined
+      } else if (formData.type === "COMPANY") {
+        bodyData.companyName = formData.companyName || undefined
+        bodyData.taxId = formData.taxId || undefined
       }
       
       if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
@@ -142,39 +153,67 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">Imię *</Label>
-              <Input
-                id="firstName"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Nazwisko *</Label>
-              <Input
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                required
-                disabled={isLoading}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="type">Typ klienta *</Label>
+            <Select
+              id="type"
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value as ClientType })}
+              disabled={isLoading}
+              required
+            >
+              <option value="PERSON">Osoba fizyczna</option>
+              <option value="COMPANY">Firma</option>
+            </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="agencyName">Nazwa agencji ubezpieczeniowej</Label>
-            <Input
-              id="agencyName"
-              value={formData.agencyName}
-              onChange={(e) => setFormData({ ...formData, agencyName: e.target.value })}
-              disabled={isLoading}
-              placeholder="Opcjonalnie"
-            />
-          </div>
+          {formData.type === "PERSON" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">Imię *</Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Nazwisko *</Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Nazwa firmy *</Label>
+                <Input
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="taxId">NIP</Label>
+                <Input
+                  id="taxId"
+                  value={formData.taxId}
+                  onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                  disabled={isLoading}
+                  placeholder="Opcjonalnie"
+                />
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">

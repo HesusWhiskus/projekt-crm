@@ -44,6 +44,16 @@ enum ClientPriority {
   HIGH
 }
 
+enum ClientType {
+  PERSON
+  COMPANY
+}
+
+enum PlanType {
+  BASIC
+  PRO
+}
+
 
 model User {
   id            String    @id @default(cuid())
@@ -54,10 +64,12 @@ model User {
   password      String? // Nullable for OAuth users
   role          UserRole  @default(USER)
   position      String?
+  organizationId String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   // Relations
+  organization    Organization? @relation(fields: [organizationId], references: [id])
   assignedClients Client[]         @relation("ClientAssignee")
   assignedTasks   Task[]           @relation("TaskAssignee")
   contacts        Contact[]
@@ -65,6 +77,7 @@ model User {
   activities      ActivityLog[]
   preferences     UserPreferences?
 
+  @@index([organizationId])
   @@map("users")
 }
 
@@ -99,9 +112,14 @@ model UserGroup {
 
 model Client {
   id             String          @id @default(cuid())
-  firstName      String
-  lastName       String
-  agencyName     String?
+  type           ClientType      @default(PERSON)
+  // Fields for PERSON type
+  firstName      String?
+  lastName       String?
+  // Fields for COMPANY type
+  companyName    String?
+  taxId          String? // NIP / Tax ID
+  // Common fields
   email          String?
   phone          String?
   website        String?
@@ -110,12 +128,14 @@ model Client {
   status         ClientStatus    @default(NEW_LEAD)
   priority       ClientPriority? // Priority for prospecting
   assignedTo     String? // User ID
+  organizationId String?
   lastContactAt  DateTime? // Last contact date (auto-updated)
   nextFollowUpAt DateTime? // Next follow-up date
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
   // Relations
+  organization   Organization?   @relation(fields: [organizationId], references: [id])
   assignee      User?                 @relation("ClientAssignee", fields: [assignedTo], references: [id])
   contacts      Contact[]
   tasks         Task[]
@@ -124,6 +144,8 @@ model Client {
 
   @@index([assignedTo])
   @@index([status])
+  @@index([type])
+  @@index([organizationId])
   @@index([lastContactAt])
   @@index([nextFollowUpAt])
   @@index([assignedTo, status])
@@ -251,4 +273,55 @@ model SystemSettings {
   updatedAt DateTime @updatedAt
 
   @@map("system_settings")
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  plan      PlanType @default(BASIC)
+  settings  Json?    // Konfiguracja funkcji per-organizacja
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  clients     Client[]
+  featureFlags FeatureFlag[]
+
+  @@map("organizations")
+}
+
+model FeatureFlag {
+  id             String   @id @default(cuid())
+  organizationId String?
+  featureKey     String   // np. "multi_tenant", "advanced_reports", "external_integrations"
+  enabled        Boolean  @default(false)
+  config         Json?    // Dodatkowa konfiguracja
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, featureKey])
+  @@index([organizationId])
+  @@index([featureKey])
+  @@map("feature_flags")
+}
+
+model IntegrationTab {
+  id        String   @id @default(cuid())
+  clientId  String
+  title     String
+  content   Json     // Dynamiczna zawartość zakładki
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([order])
+  @@map("integration_tabs")
 }

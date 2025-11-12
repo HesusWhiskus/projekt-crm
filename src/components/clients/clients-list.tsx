@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
-import { Plus, Search, Download, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
+import { Plus, Search, Download, ArrowUpDown, ArrowUp, ArrowDown, Mail, Phone, Building2 } from "lucide-react"
 import Link from "next/link"
 import { ClientForm } from "./client-form"
+import { useIsMobile } from "@/hooks/use-media-query"
 
 interface Client {
   id: string
@@ -88,6 +89,7 @@ type SortField = "firstName" | "lastName" | "agencyName" | "email" | "phone" | "
 type SortDirection = "asc" | "desc" | null
 
 export function ClientsList({ clients, users, groups, currentUser }: ClientsListProps) {
+  const isMobile = useIsMobile()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isCreating, setIsCreating] = useState(false)
@@ -371,7 +373,74 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
             <p className="text-center text-muted-foreground py-8">
               Brak klientów spełniających kryteria
             </p>
+          ) : isMobile ? (
+            // Mobile: Card view
+            <div className="space-y-4">
+              {filteredAndSortedClients.map((client) => (
+                <Card key={client.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-lg">
+                            {client.firstName} {client.lastName}
+                          </h3>
+                          {client.agencyName && (
+                            <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                              <Building2 className="h-4 w-4" />
+                              <span className="truncate">{client.agencyName}</span>
+                            </div>
+                          )}
+                        </div>
+                        <Link href={`/clients/${client.id}`}>
+                          <Button variant="ghost" size="sm" className="min-w-[80px]">
+                            Szczegóły
+                          </Button>
+                        </Link>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-2 text-sm">
+                        {client.email && (
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-muted-foreground" />
+                            <span className="truncate">{client.email}</span>
+                          </div>
+                        )}
+                        {client.phone && (
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-4 w-4 text-muted-foreground" />
+                            <span>{client.phone}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColors[client.status]}`}>
+                          {statusLabels[client.status]}
+                        </span>
+                        {client.priority && (
+                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityColors[client.priority]}`}>
+                            {priorityLabels[client.priority]}
+                          </span>
+                        )}
+                        {client.assignee && (
+                          <span className="text-xs text-muted-foreground">
+                            {client.assignee.name || client.assignee.email}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1">
+                        <span>Kontakty: {client._count.contacts}</span>
+                        <span>Zadania: {client._count.tasks}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : (
+            // Desktop: Table view
             <div className="overflow-x-auto">
               <table className="w-full divide-y divide-border">
                 <thead className="bg-muted">

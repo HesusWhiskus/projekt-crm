@@ -6,6 +6,7 @@ import { z } from "zod"
 import { nameSchema, textFieldSchema } from "@/lib/field-validators"
 import { validatePassword } from "@/lib/password-validator"
 import { revalidateTag } from "next/cache"
+import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 
 const updateProfileSchema = z.object({
   name: nameSchema("Imię", 2, 50).optional(),
@@ -16,8 +17,13 @@ const updateProfileSchema = z.object({
 
 export async function PATCH(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "User", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 

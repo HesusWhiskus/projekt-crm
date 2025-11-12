@@ -8,6 +8,7 @@ import { join } from "path"
 import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib/file-upload"
 import { validateQueryParams, contactQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
+import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 
 const createContactSchema = z.object({
   type: z.nativeEnum(ContactType).optional(), // Optional for notes (isNote=true)
@@ -123,8 +124,13 @@ const createContactSchema = z.object({
  */
 export async function POST(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Contact", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
@@ -368,8 +374,13 @@ export async function POST(request: Request) {
  */
 export async function GET(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Contact", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 

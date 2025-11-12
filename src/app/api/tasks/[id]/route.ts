@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { TaskStatus } from "@prisma/client"
 import { z } from "zod"
 import { textFieldSchema } from "@/lib/field-validators"
+import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 
 const updateTaskSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany").max(150, "Tytuł jest zbyt długi (max 150 znaków)").trim().optional(),
@@ -85,6 +86,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     // Validate ID (CUID format used by Prisma)
     if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
       return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
@@ -93,6 +98,7 @@ export async function GET(
     
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Task", validatedId, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
@@ -312,6 +318,9 @@ export async function PATCH(
       },
     })
 
+    // Log API activity
+    await logApiActivity(user.id, "TASK_UPDATED", "Task", validatedId, {}, request)
+
     return NextResponse.json({ task: updatedTask })
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -394,6 +403,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     // Validate ID (CUID format used by Prisma)
     if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
       return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
@@ -402,6 +415,7 @@ export async function DELETE(
     
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Task", validatedId, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
@@ -433,6 +447,9 @@ export async function DELETE(
         },
       },
     })
+
+    // Log API activity
+    await logApiActivity(user.id, "TASK_DELETED", "Task", validatedId, {}, request)
 
     return NextResponse.json({ message: "Zadanie zostało usunięte" })
   } catch (error) {

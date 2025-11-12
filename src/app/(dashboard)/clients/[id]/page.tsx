@@ -94,11 +94,20 @@ export default async function ClientDetailPage({
     redirect("/clients")
   }
 
-  const [users, groups] = await Promise.all([
+  const [users, groups, hasIntegrationTabs] = await Promise.all([
     getCachedUsers(),
     getCachedGroups(),
+    checkFeature(user.id, FEATURE_KEYS.INTEGRATION_TABS),
   ])
 
-  return <ClientDetail client={client} users={users} groups={groups} currentUser={user} />
+  return (
+    <ClientDetail
+      client={client}
+      users={users}
+      groups={groups}
+      currentUser={user}
+      integrationTabsEnabled={hasIntegrationTabs}
+    />
+  )
 }
 

@@ -5,6 +5,7 @@ import { z } from "zod"
 import { rateLimiters } from "@/lib/rate-limit"
 import { validatePassword } from "@/lib/password-validator"
 import { revalidateTag } from "next/cache"
+import { logApiActivity } from "@/lib/api-security"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Imię musi mieć co najmniej 2 znaki"),

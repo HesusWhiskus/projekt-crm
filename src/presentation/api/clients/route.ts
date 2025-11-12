@@ -6,6 +6,7 @@ import { ClientStatusChangeService } from '@/domain/clients/services'
 import { CreateClientDTO, ClientFilterDTO } from '@/application/clients/dto'
 import { validateQueryParams, clientQuerySchema } from '@/lib/query-validator'
 import { z } from 'zod'
+import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 
 // Initialize dependencies (in production, use DI container)
 const clientRepository = new PrismaClientRepository()
@@ -122,9 +123,14 @@ const listClientsUseCase = new ListClientsUseCase(clientRepository)
  */
 export async function POST(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     // Authentication
     const authResult = await requireAuth()
     if ('response' in authResult) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Client", null, {}, request)
       return authResult.response
     }
     const { user } = authResult
@@ -255,9 +261,14 @@ export async function POST(request: Request) {
  */
 export async function GET(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     // Authentication
     const authResult = await requireAuth()
     if ('response' in authResult) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Client", null, {}, request)
       return authResult.response
     }
     const { user } = authResult

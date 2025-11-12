@@ -5,6 +5,7 @@ import { PrismaClientRepository } from '@/infrastructure/persistence/prisma'
 import { ClientStatusChangeService } from '@/domain/clients/services'
 import { UpdateClientDTO } from '@/application/clients/dto'
 import { z } from 'zod'
+import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 
 // Initialize dependencies (in production, use DI container)
 const clientRepository = new PrismaClientRepository()
@@ -76,6 +77,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     // Validate ID
     if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
       return NextResponse.json({ error: 'Nieprawidłowy format ID' }, { status: 400 })
@@ -85,6 +90,7 @@ export async function GET(
     // Authentication
     const authResult = await requireAuth()
     if ('response' in authResult) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Client", clientId, {}, request)
       return authResult.response
     }
     const { user } = authResult
@@ -234,6 +240,10 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     // Validate ID
     if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
       return NextResponse.json({ error: 'Nieprawidłowy format ID' }, { status: 400 })
@@ -243,6 +253,7 @@ export async function PATCH(
     // Authentication
     const authResult = await requireAuth()
     if ('response' in authResult) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Client", clientId, {}, request)
       return authResult.response
     }
     const { user } = authResult
@@ -281,6 +292,9 @@ export async function PATCH(
 
     // Execute use case
     const client = await updateClientUseCase.execute(clientId, validatedData, user)
+
+    // Log API activity
+    await logApiActivity(user.id, "CLIENT_UPDATED", "Client", clientId, {}, request)
 
     return NextResponse.json({ client })
   } catch (error: any) {
@@ -386,6 +400,9 @@ export async function DELETE(
 
     // Execute use case
     await deleteClientUseCase.execute(clientId, user)
+
+    // Log API activity
+    await logApiActivity(user.id, "CLIENT_DELETED", "Client", clientId, {}, request)
 
     return NextResponse.json({ message: 'Klient został usunięty' })
   } catch (error: any) {

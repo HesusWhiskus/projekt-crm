@@ -5,6 +5,7 @@ import { TaskStatus } from "@prisma/client"
 import { z } from "zod"
 import { validateQueryParams, taskQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
+import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany").max(150, "Tytuł jest zbyt długi (max 150 znaków)").trim(),
@@ -117,8 +118,13 @@ const createTaskSchema = z.object({
  */
 export async function POST(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Task", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
@@ -173,19 +179,12 @@ export async function POST(request: Request) {
       },
     })
 
-    // Log activity
-    await db.activityLog.create({
-      data: {
-        userId: user.id,
-        action: "TASK_CREATED",
-        entityType: "Task",
-        entityId: task.id,
-        details: {
-          title: task.title,
-          clientId: validatedData.clientId,
-        },
-      },
-    })
+    // Log API activity
+    await logApiActivity(user.id, "TASK_CREATED", "Task", task.id, { 
+      title: task.title,
+      status: task.status,
+      clientId: validatedData.clientId 
+    }, request)
 
     return NextResponse.json({ task }, { status: 201 })
   } catch (error) {
@@ -265,8 +264,13 @@ export async function POST(request: Request) {
  */
 export async function GET(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Task", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 

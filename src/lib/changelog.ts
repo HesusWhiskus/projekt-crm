@@ -14,6 +14,36 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.0-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'security',
+        description: 'Zabezpieczenie API - rate limiting na wszystkich endpointach, centralizowane logowanie aktywności',
+      },
+      {
+        type: 'added',
+        description: 'Responsywność mobilna - tabele jako karty na mobile, hamburger menu w nawigacji',
+      },
+      {
+        type: 'added',
+        description: 'Wersje Basic/Pro - system organizacji i feature flags dla konfiguracji funkcji',
+      },
+      {
+        type: 'added',
+        description: 'Typ klienta - obsługa osób fizycznych (PERSON) i firm (COMPANY) z warunkowymi polami',
+      },
+      {
+        type: 'added',
+        description: 'Integracje zewnętrzne (Pro) - dynamiczne zakładki integracji dla klientów',
+      },
+      {
+        type: 'added',
+        description: 'Rozproszona baza danych - cache manager z IndexedDB, synchronizacja i offline support',
+      },
+    ],
+  },
+  {
     version: '0.4.5-beta',
     date: '2025-01-15',
     changes: [

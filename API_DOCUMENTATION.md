@@ -297,6 +297,102 @@ Tworzy nowy kontakt lub notatkę.
 
 ---
 
+## Integracje (Pro)
+
+### POST /api/integrations/webhook
+
+Tworzy dynamiczną zakładkę integracji dla klienta. Wymaga planu PRO i funkcji `integration_tabs`.
+
+**Request Body:**
+```json
+{
+  "clientId": "string (wymagane)",
+  "title": "string (wymagane, max 200 znaków)",
+  "content": {
+    "key1": "value1",
+    "key2": "value2"
+  },
+  "order": 0
+}
+```
+
+**Response:**
+- `201 Created`: Zakładka utworzona
+- `400 Bad Request`: Błąd walidacji
+- `401 Unauthorized`: Brak autoryzacji
+- `403 Forbidden`: Funkcja nie dostępna w planie
+- `404 Not Found`: Klient nie znaleziony
+
+**Uwagi techniczne:**
+- Endpoint wymaga autoryzacji
+- Sprawdza dostęp do klienta (przypisany lub ADMIN)
+- Wymaga włączonej funkcji `integration_tabs` w planie PRO
+
+### GET /api/clients/[id]/integration-tabs
+
+Pobiera zakładki integracji dla klienta. Wymaga planu PRO.
+
+**Response:**
+```json
+{
+  "tabs": [
+    {
+      "id": "string",
+      "title": "string",
+      "content": {},
+      "order": 0
+    }
+  ]
+}
+```
+
+**Uwagi techniczne:**
+- Endpoint wymaga autoryzacji
+- Sprawdza dostęp do klienta
+- Wymaga włączonej funkcji `integration_tabs` w planie PRO
+
+## Synchronizacja
+
+### POST /api/sync
+
+Synchronizuje dane między klientem a serwerem. Wysyła zmiany z klienta i pobiera najnowsze dane z serwera.
+
+**Request Body:**
+```json
+{
+  "entityType": "clients" | "contacts" | "tasks",
+  "lastSyncTimestamp": 1234567890,
+  "changes": [
+    {
+      "id": "string",
+      "action": "create" | "update" | "delete",
+      "data": {},
+      "timestamp": 1234567890
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "results": {
+    "synced": [],
+    "conflicts": [],
+    "errors": []
+  },
+  "data": [],
+  "timestamp": 1234567890
+}
+```
+
+**Uwagi techniczne:**
+- Endpoint wymaga autoryzacji
+- Rate limiting: 60 requestów/minutę
+- Obsługuje synchronizację dwukierunkową
+- Automatycznie filtruje dane według uprawnień użytkownika
+
 ## Notatki
 
 ### POST /api/notes

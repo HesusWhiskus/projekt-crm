@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { ContactType } from "@prisma/client"
 import { z } from "zod"
 import { textFieldSchema } from "@/lib/field-validators"
+import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 
 const updateContactSchema = z.object({
   type: z.nativeEnum(ContactType).optional(),
@@ -111,6 +112,10 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     // Validate ID (CUID format used by Prisma)
     if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
       return NextResponse.json({ error: "Nieprawidłowy format ID" }, { status: 400 })
@@ -119,6 +124,7 @@ export async function PATCH(
     
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Contact", validatedId, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
@@ -244,18 +250,10 @@ export async function PATCH(
       },
     })
 
-    // Log activity
-    await db.activityLog.create({
-      data: {
-        userId: user.id,
-        action: "CONTACT_UPDATED",
-        entityType: "Contact",
-        entityId: validatedId,
-        details: {
-          updatedFields: Object.keys(validatedData),
-        },
-      },
-    })
+    // Log API activity
+    await logApiActivity(user.id, "CONTACT_UPDATED", "Contact", validatedId, {
+      updatedFields: Object.keys(validatedData),
+    }, request)
 
     return NextResponse.json({ contact })
   } catch (error) {
@@ -384,6 +382,9 @@ export async function DELETE(
         entityId: validatedId,
       },
     })
+
+    // Log API activity
+    await logApiActivity(user.id, "CONTACT_DELETED", "Contact", validatedId, {}, request)
 
     return NextResponse.json({ message: "Kontakt został usunięty" })
   } catch (error) {

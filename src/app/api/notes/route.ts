@@ -6,6 +6,7 @@ import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
 import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib/file-upload"
 import { textFieldSchema } from "@/lib/field-validators"
+import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 
 const createNoteSchema = z.object({
   date: z.string().refine(
@@ -91,8 +92,13 @@ const createNoteSchema = z.object({
  */
 export async function POST(request: Request) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await applyRateLimit(request, "api")
+    if (rateLimitResponse) return rateLimitResponse
+
     const user = await getCurrentUser()
     if (!user) {
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Note", null, {}, request)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 
@@ -240,6 +246,9 @@ export async function POST(request: Request) {
         },
       },
     })
+
+    // Log API activity
+    await logApiActivity(user.id, "NOTE_CREATED", "Note", note.id, { clientId: validatedData.clientId }, request)
 
     return NextResponse.json({ contact: noteWithRelations }, { status: 201 })
   } catch (error) {

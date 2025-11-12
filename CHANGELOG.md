@@ -5,6 +5,59 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.0-beta] - 2025-01-15
+
+### Dodano
+- **Zabezpieczenie API:**
+  - Rate limiting na wszystkich endpointach API (auth: 5/15min, api: 60/min, general: 100/min)
+  - Centralizowane logowanie aktywności API z metadanymi (IP, user-agent, metoda, ścieżka)
+  - Helper `api-security.ts` z funkcjami do rate limitingu i logowania
+  - Logowanie nieautoryzowanych prób dostępu
+- **Responsywność mobilna:**
+  - Hook `useMediaQuery` do wykrywania rozdzielczości ekranu
+  - Tabele klientów przekształcone w karty na urządzeniach mobilnych
+  - Hamburger menu w nawigacji dla urządzeń mobilnych
+  - Zwiększone rozmiary przycisków na mobile (min 44x44px)
+- **Wersje Basic/Pro:**
+  - Model `Organization` z planem (BASIC/PRO)
+  - Model `FeatureFlag` dla konfiguracji funkcji per-organizacja
+  - System feature flags (`src/lib/feature-flags.ts`)
+  - Middleware do sprawdzania funkcji (`requireFeature`, `checkFeature`)
+  - Rozszerzenie modeli `User` i `Client` o relację z organizacją
+- **Typ klienta (PERSON/COMPANY):**
+  - Enum `ClientType` (PERSON, COMPANY)
+  - Zmiana modelu `Client` - usunięto `agencyName`, dodano `companyName` i `taxId`
+  - Warunkowe pola w `ClientForm` w zależności od typu klienta
+- **Integracje zewnętrzne (Pro):**
+  - Model `IntegrationTab` dla dynamicznych zakładek integracji
+  - Endpoint `/api/integrations/webhook` dla zewnętrznych danych
+  - Endpoint `/api/clients/[id]/integration-tabs` do pobierania zakładek
+  - Komponent `IntegrationTabs` do wyświetlania zakładek w ClientDetail
+- **Rozproszona baza danych:**
+  - Cache Manager z IndexedDB (`src/lib/cache-manager.ts`)
+  - Endpoint `/api/sync` do synchronizacji danych
+  - Service Worker (`public/sw.js`) dla offline functionality
+  - Kolejka synchronizacji dla operacji offline
+
+### Zmieniono
+- **Model Client:**
+  - `firstName` i `lastName` są teraz opcjonalne (dla typu COMPANY)
+  - Dodano `companyName` i `taxId` dla typu COMPANY
+  - Usunięto `agencyName` (zastąpione przez `companyName` dla firm)
+  - Dodano pole `type` z domyślną wartością `PERSON`
+- **ClientForm:**
+  - Warunkowe wyświetlanie pól w zależności od typu klienta
+  - Dla PERSON: `firstName`, `lastName` (wymagane)
+  - Dla COMPANY: `companyName` (wymagane), `taxId` (opcjonalne)
+
+### Uwagi techniczne
+- **Migracja bazy danych wymagana:** Nowe modele `Organization`, `FeatureFlag`, `IntegrationTab` oraz zmiany w modelu `Client`
+- **Feature flags:** Funkcje Pro są domyślnie wyłączone dla planu BASIC
+- **Offline support:** Service Worker i IndexedDB cache wymagają HTTPS w produkcji
+- **Backward compatibility:** Istniejące klienty będą miały typ `PERSON` domyślnie
+
+---
+
 ## [0.4.5-beta] - 2025-01-15
 
 ### Zmieniono

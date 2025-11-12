@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
@@ -16,8 +16,11 @@ import {
   CheckSquare,
   LogOut,
   Settings,
+  Menu,
+  X,
 } from "lucide-react"
 import { WhatsNewButton } from "@/components/whats-new-button"
+import { useIsMobile } from "@/hooks/use-media-query"
 
 interface DashboardNavProps {
   user: {
@@ -57,6 +60,8 @@ export function DashboardNav({
   defaultColorScheme,
 }: DashboardNavProps) {
   const pathname = usePathname()
+  const isMobile = useIsMobile()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { setTheme, theme } = useTheme()
 
   // Apply theme from user preferences
@@ -141,40 +146,112 @@ export function DashboardNav({
               })}
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <WhatsNewButton />
-            <div className="text-sm text-foreground">
-              <div className="font-medium">{user.name || user.email}</div>
-              {user.position && (
-                <div className="text-xs text-muted-foreground">{user.position}</div>
-              )}
-              {!user.position && user.role === "ADMIN" && (
-                <div className="text-xs text-muted-foreground">Administrator</div>
-              )}
-            </div>
-            <Link href="/settings">
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4 mr-2" />
-                Ustawienia
-              </Button>
-            </Link>
-            {user.role === "ADMIN" && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Admin
-                </Button>
-              </Link>
+          <div className="flex items-center space-x-2 md:space-x-4">
+            {!isMobile && <WhatsNewButton />}
+            {!isMobile && (
+              <div className="text-sm text-foreground">
+                <div className="font-medium">{user.name || user.email}</div>
+                {user.position && (
+                  <div className="text-xs text-muted-foreground">{user.position}</div>
+                )}
+                {!user.position && user.role === "ADMIN" && (
+                  <div className="text-xs text-muted-foreground">Administrator</div>
+                )}
+              </div>
+            )}
+            {!isMobile && (
+              <>
+                <Link href="/settings">
+                  <Button variant="ghost" size="sm">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Ustawienia
+                  </Button>
+                </Link>
+                {user.role === "ADMIN" && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="sm">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Admin
+                    </Button>
+                  </Link>
+                )}
+              </>
             )}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => signOut({ callbackUrl: "/signin" })}
+              className="min-w-[44px] min-h-[44px]"
             >
               <LogOut className="h-4 w-4" />
             </Button>
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="min-w-[44px] min-h-[44px]"
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            )}
           </div>
         </div>
+        {/* Mobile menu */}
+        {isMobile && mobileMenuOpen && (
+          <div className="md:hidden border-t border-border">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {navigation.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-colors min-h-[44px] ${
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{item.name}</span>
+                  </Link>
+                )
+              })}
+              <div className="pt-2 border-t border-border space-y-1">
+                <Link
+                  href="/settings"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
+                >
+                  <Settings className="h-5 w-5" />
+                  <span>Ustawienia</span>
+                </Link>
+                {user.role === "ADMIN" && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Admin</span>
+                  </Link>
+                )}
+                <div className="px-3 py-2 text-sm text-muted-foreground">
+                  <div className="font-medium text-foreground">{user.name || user.email}</div>
+                  {user.position && (
+                    <div className="text-xs">{user.position}</div>
+                  )}
+                  {!user.position && user.role === "ADMIN" && (
+                    <div className="text-xs">Administrator</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   )
