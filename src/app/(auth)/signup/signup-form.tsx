@@ -1,11 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { CardContent } from "@/components/ui/card"
+import { Select } from "@/components/ui/select"
+
+interface Organization {
+  id: string
+  name: string
+  plan: string
+}
 
 export default function SignUpForm() {
   const router = useRouter()
@@ -15,13 +22,39 @@ export default function SignUpForm() {
     password: "",
     confirmPassword: "",
     position: "",
+    organizationId: "",
   })
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingOrgs, setIsLoadingOrgs] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Load organizations
+    fetch("/api/organizations/public")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.organizations) {
+          setOrganizations(data.organizations)
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load organizations:", err)
+        setError("Nie udało się załadować listy organizacji")
+      })
+      .finally(() => {
+        setIsLoadingOrgs(false)
+      })
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+
+    if (!formData.organizationId) {
+      setError("Musisz wybrać organizację")
+      return
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setError("Hasła nie są identyczne")
@@ -46,6 +79,7 @@ export default function SignUpForm() {
           email: formData.email,
           password: formData.password,
           position: formData.position,
+          organizationId: formData.organizationId,
         }),
       })
 
@@ -95,6 +129,23 @@ export default function SignUpForm() {
             required
             disabled={isLoading}
           />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="organizationId">Organizacja *</Label>
+          <Select
+            id="organizationId"
+            value={formData.organizationId}
+            onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
+            disabled={isLoading || isLoadingOrgs}
+            required
+          >
+            <option value="">{isLoadingOrgs ? "Ładowanie..." : "Wybierz organizację"}</option>
+            {organizations.map((org) => (
+              <option key={org.id} value={org.id}>
+                {org.name}
+              </option>
+            ))}
+          </Select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="position">Stanowisko (opcjonalnie)</Label>
