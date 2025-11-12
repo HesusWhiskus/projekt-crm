@@ -17,7 +17,23 @@ export default async function ClientDetailPage({
 
   const client = await db.client.findUnique({
     where: { id: params.id },
-    include: {
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      type: true,
+      email: true,
+      phone: true,
+      website: true,
+      address: true,
+      source: true,
+      status: true,
+      priority: true,
+      assignedTo: true,
+      lastContactAt: true,
+      nextFollowUpAt: true,
+      createdAt: true,
+      updatedAt: true,
       assignee: {
         select: {
           id: true,
@@ -38,7 +54,16 @@ export default async function ClientDetailPage({
       },
       contacts: {
         orderBy: { date: "desc" },
-        include: {
+        select: {
+          id: true,
+          clientId: true,
+          type: true,
+          date: true,
+          notes: true,
+          isNote: true,
+          userId: true,
+          createdAt: true,
+          updatedAt: true,
           user: {
             select: {
               id: true,
@@ -57,7 +82,16 @@ export default async function ClientDetailPage({
       },
       tasks: {
         orderBy: { dueDate: "asc" },
-        include: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          dueDate: true,
+          status: true,
+          assignedTo: true,
+          clientId: true,
+          createdAt: true,
+          updatedAt: true,
           assignee: {
             select: {
               id: true,
@@ -69,14 +103,13 @@ export default async function ClientDetailPage({
       },
       statusHistory: {
         orderBy: { changedAt: "desc" },
-        include: {
-          client: {
-            select: {
-              firstName: true,
-              lastName: true,
-              type: true,
-            },
-          },
+        select: {
+          id: true,
+          clientId: true,
+          status: true,
+          changedAt: true,
+          changedBy: true,
+          notes: true,
         },
       },
     },

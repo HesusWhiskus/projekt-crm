@@ -22,6 +22,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
   - **Krytyczna poprawka:** Zmieniono wszystkie zapytania `db.client.findMany()` i `db.client.findUnique()` w `PrismaClientRepository.ts` z `include` na `select` - Prisma nie próbuje już pobierać wszystkich pól (w tym nieistniejącego `companyName`)
   - **Krytyczna poprawka:** Zmieniono wszystkie zapytania `db.task.findMany()` i `db.contact.findMany()` z `include: { client: true }` na `include: { client: { select: { ... } } }` - Prisma nie próbuje już pobierać wszystkich pól z relacji `client` (w tym nieistniejącego `companyName`)
   - Naprawiono wszystkie miejsca w API routes (`tasks/route.ts`, `contacts/route.ts`, `notes/route.ts`, `tasks/[id]/route.ts`, `contacts/[id]/route.ts`, `tasks/reminders/route.ts`) i komponentach (`google-calendar.ts`) używające `include: { client: true }`
+  - **Krytyczna poprawka:** Zmieniono `db.client.findMany()` i `db.client.findUnique()` w `sync/route.ts` i `clients/[id]/page.tsx` z `include` na `select` - wszystkie zapytania do Client używają teraz jawnie określonych pól
   - Aplikacja może teraz działać bez kolumny `companyName` w bazie danych
 
 ### Uwagi techniczne

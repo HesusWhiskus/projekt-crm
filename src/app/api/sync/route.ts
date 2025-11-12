@@ -137,7 +137,23 @@ export async function POST(request: Request) {
             gte: new Date(lastSync),
           },
         },
-        include: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          type: true,
+          email: true,
+          phone: true,
+          website: true,
+          address: true,
+          source: true,
+          status: true,
+          priority: true,
+          assignedTo: true,
+          lastContactAt: true,
+          nextFollowUpAt: true,
+          createdAt: true,
+          updatedAt: true,
           assignee: {
             select: {
               id: true,
