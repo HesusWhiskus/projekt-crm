@@ -26,6 +26,16 @@ RUN npx prisma generate
 # Copy source code (this layer will be invalidated when code changes)
 COPY . .
 
+# Run migrations if DATABASE_URL is available (Railway provides it during build)
+# This ensures schema is synced before Next.js build tries to use Prisma
+RUN if [ -n "$DATABASE_URL" ]; then \
+      echo "DATABASE_URL is available, running migrations before build..." && \
+      npx prisma db push --accept-data-loss --skip-generate || \
+      echo "Migration failed, but continuing build (migrations will run at startup)"; \
+    else \
+      echo "DATABASE_URL not available during build, skipping migrations (will run at startup)"; \
+    fi
+
 # Build Next.js with standalone output for Docker
 ENV DOCKER_BUILD=true
 ENV NEXT_TELEMETRY_DISABLED=1
