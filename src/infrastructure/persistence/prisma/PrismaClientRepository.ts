@@ -12,10 +12,28 @@ import { ClientStatus } from '@prisma/client'
  */
 export class PrismaClientRepository implements IClientRepository {
   async findById(id: string, options?: FindClientsOptions): Promise<Client | null> {
-    // Build include based on options
-    const include: any = {}
+    // Build select based on options
+    const select: any = {
+      id: true,
+      firstName: true,
+      lastName: true,
+      type: true,
+      email: true,
+      phone: true,
+      website: true,
+      address: true,
+      source: true,
+      status: true,
+      priority: true,
+      assignedTo: true,
+      lastContactAt: true,
+      nextFollowUpAt: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+    
     if (options?.include?.assignee) {
-      include.assignee = {
+      select.assignee = {
         select: {
           id: true,
           name: true,
@@ -24,7 +42,7 @@ export class PrismaClientRepository implements IClientRepository {
       }
     }
     if (options?.include?.sharedGroups) {
-      include.sharedGroups = {
+      select.sharedGroups = {
         select: {
           id: true,
           name: true,
@@ -34,30 +52,31 @@ export class PrismaClientRepository implements IClientRepository {
 
     const clientData = await db.client.findUnique({
       where: { id },
-      include: Object.keys(include).length > 0 ? include : undefined,
+      select,
     })
 
     if (!clientData) {
       return null
     }
 
+    const data = clientData as any
     return Client.fromPersistence({
-      id: clientData.id,
-      firstName: clientData.firstName ?? "",
-      lastName: clientData.lastName ?? "",
+      id: data.id,
+      firstName: data.firstName ?? "",
+      lastName: data.lastName ?? "",
       agencyName: null,
-      email: clientData.email,
-      phone: clientData.phone,
-      website: clientData.website,
-      address: clientData.address,
-      source: clientData.source,
-      status: clientData.status,
-      priority: clientData.priority,
-      assignedTo: clientData.assignedTo,
-      lastContactAt: clientData.lastContactAt,
-      nextFollowUpAt: clientData.nextFollowUpAt,
-      createdAt: clientData.createdAt,
-      updatedAt: clientData.updatedAt,
+      email: data.email,
+      phone: data.phone,
+      website: data.website,
+      address: data.address,
+      source: data.source,
+      status: data.status,
+      priority: data.priority,
+      assignedTo: data.assignedTo,
+      lastContactAt: data.lastContactAt,
+      nextFollowUpAt: data.nextFollowUpAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     })
   }
 
@@ -72,10 +91,28 @@ export class PrismaClientRepository implements IClientRepository {
     client: Client | null
     relations: { assignee: any; sharedGroups: any[] }
   }> {
-    // Build include based on options
-    const include: any = {}
+    // Build select based on options
+    const select: any = {
+      id: true,
+      firstName: true,
+      lastName: true,
+      type: true,
+      email: true,
+      phone: true,
+      website: true,
+      address: true,
+      source: true,
+      status: true,
+      priority: true,
+      assignedTo: true,
+      lastContactAt: true,
+      nextFollowUpAt: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+    
     if (options?.include?.assignee) {
-      include.assignee = {
+      select.assignee = {
         select: {
           id: true,
           name: true,
@@ -84,7 +121,7 @@ export class PrismaClientRepository implements IClientRepository {
       }
     }
     if (options?.include?.sharedGroups) {
-      include.sharedGroups = {
+      select.sharedGroups = {
         select: {
           id: true,
           name: true,
@@ -94,37 +131,38 @@ export class PrismaClientRepository implements IClientRepository {
 
     const clientData = await db.client.findUnique({
       where: { id },
-      include: Object.keys(include).length > 0 ? include : undefined,
+      select,
     })
 
     if (!clientData) {
       return { client: null, relations: { assignee: null, sharedGroups: [] } }
     }
 
+    const data = clientData as any
     const client = Client.fromPersistence({
-      id: clientData.id,
-      firstName: clientData.firstName ?? "",
-      lastName: clientData.lastName ?? "",
+      id: data.id,
+      firstName: data.firstName ?? "",
+      lastName: data.lastName ?? "",
       agencyName: null,
-      email: clientData.email,
-      phone: clientData.phone,
-      website: clientData.website,
-      address: clientData.address,
-      source: clientData.source,
-      status: clientData.status,
-      priority: clientData.priority,
-      assignedTo: clientData.assignedTo,
-      lastContactAt: clientData.lastContactAt,
-      nextFollowUpAt: clientData.nextFollowUpAt,
-      createdAt: clientData.createdAt,
-      updatedAt: clientData.updatedAt,
+      email: data.email,
+      phone: data.phone,
+      website: data.website,
+      address: data.address,
+      source: data.source,
+      status: data.status,
+      priority: data.priority,
+      assignedTo: data.assignedTo,
+      lastContactAt: data.lastContactAt,
+      nextFollowUpAt: data.nextFollowUpAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     })
 
     return {
       client,
       relations: {
-        assignee: (clientData as any).assignee || null,
-        sharedGroups: (clientData as any).sharedGroups || [],
+        assignee: data.assignee || null,
+        sharedGroups: data.sharedGroups || [],
       },
     }
   }
@@ -200,10 +238,28 @@ export class PrismaClientRepository implements IClientRepository {
       orderBy.updatedAt = 'desc'
     }
 
-    // Build include based on options
-    const include: any = {}
+    // Build select based on options
+    const select: any = {
+      id: true,
+      firstName: true,
+      lastName: true,
+      type: true,
+      email: true,
+      phone: true,
+      website: true,
+      address: true,
+      source: true,
+      status: true,
+      priority: true,
+      assignedTo: true,
+      lastContactAt: true,
+      nextFollowUpAt: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+    
     if (options?.include?.assignee) {
-      include.assignee = {
+      select.assignee = {
         select: {
           id: true,
           name: true,
@@ -212,7 +268,7 @@ export class PrismaClientRepository implements IClientRepository {
       }
     }
     if (options?.include?.sharedGroups) {
-      include.sharedGroups = {
+      select.sharedGroups = {
         select: {
           id: true,
           name: true,
@@ -223,27 +279,27 @@ export class PrismaClientRepository implements IClientRepository {
     const clientsData = await db.client.findMany({
       where,
       orderBy,
-      include: Object.keys(include).length > 0 ? include : undefined,
+      select,
     })
 
-      return clientsData.map((data) =>
+      return clientsData.map((item: any) =>
       Client.fromPersistence({
-        id: data.id,
-        firstName: data.firstName ?? "",
-        lastName: data.lastName ?? "",
+        id: item.id,
+        firstName: item.firstName ?? "",
+        lastName: item.lastName ?? "",
         agencyName: null,
-        email: data.email,
-        phone: data.phone,
-        website: data.website,
-        address: data.address,
-        source: data.source,
-        status: data.status,
-        priority: data.priority,
-        assignedTo: data.assignedTo,
-        lastContactAt: data.lastContactAt,
-        nextFollowUpAt: data.nextFollowUpAt,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
+        email: item.email,
+        phone: item.phone,
+        website: item.website,
+        address: item.address,
+        source: item.source,
+        status: item.status,
+        priority: item.priority,
+        assignedTo: item.assignedTo,
+        lastContactAt: item.lastContactAt,
+        nextFollowUpAt: item.nextFollowUpAt,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
       })
     )
   }
@@ -446,10 +502,28 @@ export class PrismaClientRepository implements IClientRepository {
       orderBy.updatedAt = 'desc'
     }
 
-    // Build include based on options
-    const include: any = {}
+    // Build select based on options
+    const select: any = {
+      id: true,
+      firstName: true,
+      lastName: true,
+      type: true,
+      email: true,
+      phone: true,
+      website: true,
+      address: true,
+      source: true,
+      status: true,
+      priority: true,
+      assignedTo: true,
+      lastContactAt: true,
+      nextFollowUpAt: true,
+      createdAt: true,
+      updatedAt: true,
+    }
+    
     if (options?.include?.assignee) {
-      include.assignee = {
+      select.assignee = {
         select: {
           id: true,
           name: true,
@@ -458,7 +532,7 @@ export class PrismaClientRepository implements IClientRepository {
       }
     }
     if (options?.include?.sharedGroups) {
-      include.sharedGroups = {
+      select.sharedGroups = {
         select: {
           id: true,
           name: true,
@@ -469,36 +543,36 @@ export class PrismaClientRepository implements IClientRepository {
     const clientsData = await db.client.findMany({
       where,
       orderBy,
-      include: Object.keys(include).length > 0 ? include : undefined,
+      select,
     })
 
-    const clients = clientsData.map((data) =>
+    const clients = clientsData.map((item: any) =>
       Client.fromPersistence({
-        id: data.id,
-        firstName: data.firstName ?? "",
-        lastName: data.lastName ?? "",
+        id: item.id,
+        firstName: item.firstName ?? "",
+        lastName: item.lastName ?? "",
         agencyName: null,
-        email: data.email,
-        phone: data.phone,
-        website: data.website,
-        address: data.address,
-        source: data.source,
-        status: data.status,
-        priority: data.priority,
-        assignedTo: data.assignedTo,
-        lastContactAt: data.lastContactAt,
-        nextFollowUpAt: data.nextFollowUpAt,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
+        email: item.email,
+        phone: item.phone,
+        website: item.website,
+        address: item.address,
+        source: item.source,
+        status: item.status,
+        priority: item.priority,
+        assignedTo: item.assignedTo,
+        lastContactAt: item.lastContactAt,
+        nextFollowUpAt: item.nextFollowUpAt,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
       })
     )
 
     // Extract relations
     const relations = new Map<string, { assignee: any; sharedGroups: any[] }>()
-    clientsData.forEach((data) => {
-      relations.set(data.id, {
-        assignee: (data as any).assignee || null,
-        sharedGroups: (data as any).sharedGroups || [],
+    clientsData.forEach((item: any) => {
+      relations.set(item.id, {
+        assignee: item.assignee || null,
+        sharedGroups: item.sharedGroups || [],
       })
     })
 

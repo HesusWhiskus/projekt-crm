@@ -19,6 +19,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
   - Tymczasowo zakomentowano `companyName` w `schema.prisma` - Prisma Client nie próbuje już używać tego pola
   - Usunięto wszystkie użycia `companyName` w `excel-importer.ts` i `clients/page.tsx`
   - Usunięto formularz dla typu COMPANY w `client-form.tsx` - wszystkie klienci są teraz typu PERSON
+  - **Krytyczna poprawka:** Zmieniono wszystkie zapytania `db.client.findMany()` i `db.client.findUnique()` w `PrismaClientRepository.ts` z `include` na `select` - Prisma nie próbuje już pobierać wszystkich pól (w tym nieistniejącego `companyName`)
   - Aplikacja może teraz działać bez kolumny `companyName` w bazie danych
 
 ### Uwagi techniczne
