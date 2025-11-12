@@ -117,7 +117,7 @@ model Client {
   firstName      String?
   lastName       String?
   // Fields for COMPANY type
-  companyName    String?
+  // companyName    String? // Temporarily commented out - column doesn't exist in database yet
   taxId          String? // NIP / Tax ID
   // Common fields
   email          String?

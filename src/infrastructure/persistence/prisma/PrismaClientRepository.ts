@@ -265,7 +265,6 @@ export class PrismaClientRepository implements IClientRepository {
     const createData: any = {
       firstName: data.firstName,
       lastName: data.lastName,
-      companyName: data.agencyName || null,
       type: data.agencyName ? "COMPANY" : "PERSON",
       email: data.email,
       phone: data.phone,
@@ -311,7 +310,6 @@ export class PrismaClientRepository implements IClientRepository {
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
-        companyName: data.agencyName || null,
         type: (data.agencyName ? "COMPANY" : "PERSON") as any,
         email: data.email,
         phone: data.phone,

@@ -383,8 +383,7 @@ function parseClientRow(row: ExcelRow): ParsedClient | null {
   return {
     firstName: finalFirstName,
     lastName: finalLastName,
-    companyName: companyName || undefined,
-    type: companyName ? "COMPANY" : "PERSON",
+    type: "PERSON",
     email: email || undefined,
     phone: phone || undefined,
     website: website || undefined,
@@ -551,10 +550,9 @@ export async function importExcelData(
           })
         }
 
-        if (!existingClient && clientData.companyName) {
+        if (!existingClient && clientData.firstName && clientData.lastName) {
           existingClient = await db.client.findFirst({
             where: {
-              companyName: clientData.companyName,
               firstName: clientData.firstName,
               lastName: clientData.lastName,
             },
@@ -568,8 +566,7 @@ export async function importExcelData(
             data: {
               firstName: clientData.firstName || existingClient.firstName,
               lastName: clientData.lastName || existingClient.lastName,
-              companyName: clientData.companyName || existingClient.companyName,
-              type: (clientData.companyName || existingClient.companyName) ? "COMPANY" : "PERSON",
+              type: "PERSON",
               email: clientData.email || existingClient.email,
               phone: clientData.phone || existingClient.phone,
               website: clientData.website || existingClient.website,
@@ -593,8 +590,7 @@ export async function importExcelData(
             data: {
               firstName: clientData.firstName,
               lastName: clientData.lastName,
-              companyName: clientData.companyName,
-              type: clientData.companyName ? "COMPANY" : "PERSON",
+              type: "PERSON",
               email: clientData.email,
               phone: clientData.phone,
               website: clientData.website,
@@ -634,7 +630,6 @@ export async function importExcelData(
             where: {
               OR: [
                 { email: contactData.clientIdentifier },
-                { companyName: contactData.clientIdentifier },
               ],
             },
           })
