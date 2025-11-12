@@ -71,10 +71,10 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo '  echo "Prisma schema location: $(ls -la prisma/schema.prisma 2>&1 || echo \"NOT FOUND\")"' >> /app/start.sh && \
     echo '  echo "Step 1: Generating Prisma Client..."' >> /app/start.sh && \
     echo '  npx prisma generate 2>&1 || echo "Prisma generate failed, continuing..."' >> /app/start.sh && \
-    echo '  echo "Step 2: Synchronizing database schema with db push..."' >> /app/start.sh && \
-    echo '  npx prisma db push --accept-data-loss --skip-generate 2>&1 && echo "Database push succeeded" || echo "Database push failed, trying migrate deploy..."' >> /app/start.sh && \
-    echo '  echo "Step 3: Applying pending migrations..."' >> /app/start.sh && \
-    echo '  npx prisma migrate deploy 2>&1 && echo "Migrations deploy succeeded" || echo "Migrations deploy failed, but continuing..."' >> /app/start.sh && \
+    echo '  echo "Step 2: Synchronizing database schema with db push (this will sync schema directly)..."' >> /app/start.sh && \
+    echo '  npx prisma db push --accept-data-loss --skip-generate 2>&1 && echo "Database push succeeded" || echo "Database push failed, but continuing..."' >> /app/start.sh && \
+    echo '  echo "Step 3: Applying pending migrations (if any)..."' >> /app/start.sh && \
+    echo '  npx prisma migrate deploy 2>&1 && echo "Migrations deploy succeeded" || echo "No pending migrations or migrate deploy failed, but continuing..."' >> /app/start.sh && \
     echo '  echo "Step 4: Running user organization migration..."' >> /app/start.sh && \
     echo '  if command -v tsx >/dev/null 2>&1; then' >> /app/start.sh && \
     echo '    npx tsx scripts/migrate-users-to-organization.ts 2>&1 || echo "User migration failed, continuing..."' >> /app/start.sh && \
