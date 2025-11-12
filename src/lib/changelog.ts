@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.4.4-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Krytyczny bug z dodawaniem notatek - naprawiono problem z zapisywaniem notatek (błąd "kontakt nie znaleziony")',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawiono inicjalizację clientId w ContactForm - teraz zawsze używa clientId z props gdy contact.clientId nie jest dostępne',
+      },
+      {
+        type: 'changed',
+        description: 'Dodano walidację clientId przed wysłaniem formularza - zapobiega wysyłaniu pustego clientId',
+      },
+    ],
+  },
+  {
     version: '0.4.3-beta',
     date: '2025-11-10',
     changes: [

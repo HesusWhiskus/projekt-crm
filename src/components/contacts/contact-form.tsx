@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -59,6 +59,8 @@ const contactTypeOptions: Record<ContactType, string> = {
 
 export function ContactForm({ clientId, clients, users, groups, currentUser, contact, onClose, onSuccess, onAddClient }: ContactFormProps) {
   const isNoteMode = contact?.isNote || (contact && Object.keys(contact).length === 1 && contact.isNote)
+  // Upewnij się, że clientId jest zawsze ustawiony - priorytet: contact.clientId > clientId z props > ""
+  const initialClientId = contact?.clientId || clientId || ""
   const [formData, setFormData] = useState({
     type: isNoteMode ? null : (contact?.type || "PHONE_CALL") as ContactType | null,
     date: contact && contact.date
@@ -67,12 +69,19 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
     notes: contact?.notes || "",
     isNote: isNoteMode || false,
     userId: contact?.userId || currentUser?.id || "",
-    clientId: (contact?.clientId || clientId || ""),
+    clientId: initialClientId,
     sharedGroupIds: contact?.sharedGroups?.map((g) => g.id) || [] as string[],
   })
   const [files, setFiles] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Upewnij się, że clientId z props jest zawsze synchronizowany z formData
+  useEffect(() => {
+    if (clientId && !formData.clientId) {
+      setFormData(prev => ({ ...prev, clientId: clientId }))
+    }
+  }, [clientId, formData.clientId])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -97,9 +106,11 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
       formDataToSend.append("userId", formData.userId)
       // Upewnij się, że clientId jest zawsze ustawiony - użyj formData.clientId lub fallback do clientId z props
       const finalClientId = formData.clientId || clientId || ""
-      if (!finalClientId) {
-        throw new Error("Klient jest wymagany")
+      if (!finalClientId || finalClientId.trim() === "") {
+        console.error("[ContactForm] Brak clientId:", { formDataClientId: formData.clientId, propClientId: clientId })
+        throw new Error("Klient jest wymagany. Proszę wybrać klienta.")
       }
+      console.log("[ContactForm] Wysyłanie z clientId:", finalClientId)
       formDataToSend.append("clientId", finalClientId)
       
       if (formData.sharedGroupIds.length > 0) {
@@ -156,6 +167,8 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
                     ...formData,
                     isNote: e.target.checked,
                     type: e.target.checked ? null : (formData.type || "PHONE_CALL" as ContactType),
+                    // Upewnij się, że clientId nie jest tracony przy zmianie checkboxa
+                    clientId: formData.clientId || clientId || "",
                   })
                 }}
                 disabled={isLoading}

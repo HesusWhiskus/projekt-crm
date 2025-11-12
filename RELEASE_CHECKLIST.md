@@ -27,6 +27,7 @@ Ten plik zawiera listę kroków do wykonania przy każdej poprawce lub dużej ak
 ### 2. Aktualizacja CHANGELOG.md
 
 - [ ] Dodaj nowy wpis na górze pliku `CHANGELOG.md`
+- [ ] **WAŻNE:** Zaktualizuj również `src/lib/changelog.ts` - to jest changelog wyświetlany w aplikacji w komponencie "Co nowego"
 - [ ] Użyj formatu zgodnego z [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/):
   ```markdown
   ## [WERSJA] - RRRR-MM-DD

@@ -161,8 +161,8 @@ export async function POST(request: Request) {
       sharedGroupIds,
     }
     console.log("[DEBUG CONTACTS POST] Parsed formData:", JSON.stringify(parsedData, null, 2))
-    console.log("[DEBUG CONTACTS POST] userId:", parsedData.userId, "type:", typeof parsedData.userId)
-    console.log("[DEBUG CONTACTS POST] clientId:", parsedData.clientId, "type:", typeof parsedData.clientId)
+    console.log("[DEBUG CONTACTS POST] userId:", parsedData.userId, "type:", typeof parsedData.userId, "length:", parsedData.userId?.length)
+    console.log("[DEBUG CONTACTS POST] clientId:", parsedData.clientId, "type:", typeof parsedData.clientId, "length:", parsedData.clientId?.length, "isEmpty:", parsedData.clientId === "" || !parsedData.clientId)
     console.log("[DEBUG CONTACTS POST] sharedGroupIds:", parsedData.sharedGroupIds, "type:", typeof parsedData.sharedGroupIds, "isArray:", Array.isArray(parsedData.sharedGroupIds))
     let validatedData
     try {
@@ -172,6 +172,12 @@ export async function POST(request: Request) {
       console.error("[DEBUG CONTACTS POST] Validation error:", error)
       if (error instanceof z.ZodError) {
         console.error("[DEBUG CONTACTS POST] Zod errors:", JSON.stringify(error.errors, null, 2))
+        // Zwróć bardziej szczegółowy błąd walidacji
+        const firstError = error.errors[0]
+        if (firstError.path.includes("clientId")) {
+          return NextResponse.json({ error: "Klient jest wymagany. Proszę wybrać klienta." }, { status: 400 })
+        }
+        return NextResponse.json({ error: firstError.message || "Błąd walidacji danych" }, { status: 400 })
       }
       throw error
     }
