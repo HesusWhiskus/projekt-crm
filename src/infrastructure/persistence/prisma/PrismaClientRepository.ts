@@ -13,13 +13,14 @@ import { ClientStatus } from '@prisma/client'
 export class PrismaClientRepository implements IClientRepository {
   async findById(id: string, options?: FindClientsOptions): Promise<Client | null> {
     // Build select based on options
+    // NOTE: companyName and taxId temporarily removed from select until migration is applied
     const select: any = {
       id: true,
       firstName: true,
       lastName: true,
       type: true,
-      companyName: true,
-      taxId: true,
+      // companyName: true, // Temporarily disabled - column doesn't exist in DB yet
+      // taxId: true, // Temporarily disabled - column doesn't exist in DB yet
       email: true,
       phone: true,
       website: true,
@@ -66,7 +67,7 @@ export class PrismaClientRepository implements IClientRepository {
       id: data.id,
       firstName: data.firstName ?? "",
       lastName: data.lastName ?? "",
-      agencyName: data.companyName ?? null,
+      agencyName: (data.companyName ?? null) as string | null, // Will be null until migration
       email: data.email,
       phone: data.phone,
       website: data.website,
@@ -94,13 +95,14 @@ export class PrismaClientRepository implements IClientRepository {
     relations: { assignee: any; sharedGroups: any[] }
   }> {
     // Build select based on options
+    // NOTE: companyName and taxId temporarily removed from select until migration is applied
     const select: any = {
       id: true,
       firstName: true,
       lastName: true,
       type: true,
-      companyName: true,
-      taxId: true,
+      // companyName: true, // Temporarily disabled - column doesn't exist in DB yet
+      // taxId: true, // Temporarily disabled - column doesn't exist in DB yet
       email: true,
       phone: true,
       website: true,
@@ -193,7 +195,7 @@ export class PrismaClientRepository implements IClientRepository {
         ...(where.OR || []),
         { firstName: { contains: filter.search, mode: 'insensitive' } },
         { lastName: { contains: filter.search, mode: 'insensitive' } },
-        { companyName: { contains: filter.search, mode: 'insensitive' } },
+        // { companyName: { contains: filter.search, mode: 'insensitive' } }, // Temporarily disabled - column doesn't exist in DB yet
         { email: { contains: filter.search, mode: 'insensitive' } },
       ]
     }
@@ -244,13 +246,14 @@ export class PrismaClientRepository implements IClientRepository {
     }
 
     // Build select based on options
+    // NOTE: companyName and taxId temporarily removed from select until migration is applied
     const select: any = {
       id: true,
       firstName: true,
       lastName: true,
       type: true,
-      companyName: true,
-      taxId: true,
+      // companyName: true, // Temporarily disabled - column doesn't exist in DB yet
+      // taxId: true, // Temporarily disabled - column doesn't exist in DB yet
       email: true,
       phone: true,
       website: true,
@@ -329,8 +332,8 @@ export class PrismaClientRepository implements IClientRepository {
       firstName: data.firstName,
       lastName: data.lastName,
       type: data.agencyName ? "COMPANY" : "PERSON",
-      companyName: data.agencyName || null,
-      taxId: null, // Will be set separately if provided
+      // companyName: data.agencyName || null, // Temporarily disabled - will be enabled after migration
+      // taxId: null, // Temporarily disabled - will be enabled after migration
       email: data.email,
       phone: data.phone,
       website: data.website,
@@ -376,7 +379,7 @@ export class PrismaClientRepository implements IClientRepository {
         firstName: data.firstName,
         lastName: data.lastName,
         type: (data.agencyName ? "COMPANY" : "PERSON") as any,
-        companyName: data.agencyName || null,
+        // companyName: data.agencyName || null, // Temporarily disabled - will be enabled after migration
         email: data.email,
         phone: data.phone,
         website: data.website,
@@ -463,7 +466,7 @@ export class PrismaClientRepository implements IClientRepository {
         ...(where.OR || []),
         { firstName: { contains: filter.search, mode: 'insensitive' } },
         { lastName: { contains: filter.search, mode: 'insensitive' } },
-        { companyName: { contains: filter.search, mode: 'insensitive' } },
+        // { companyName: { contains: filter.search, mode: 'insensitive' } }, // Temporarily disabled - column doesn't exist in DB yet
         { email: { contains: filter.search, mode: 'insensitive' } },
       ]
     }
@@ -514,13 +517,14 @@ export class PrismaClientRepository implements IClientRepository {
     }
 
     // Build select based on options
+    // NOTE: companyName and taxId temporarily removed from select until migration is applied
     const select: any = {
       id: true,
       firstName: true,
       lastName: true,
       type: true,
-      companyName: true,
-      taxId: true,
+      // companyName: true, // Temporarily disabled - column doesn't exist in DB yet
+      // taxId: true, // Temporarily disabled - column doesn't exist in DB yet
       email: true,
       phone: true,
       website: true,
