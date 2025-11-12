@@ -5,68 +5,6 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
-## [0.5.3-beta] - 2025-01-16
-
-### Naprawiono
-- **Krytyczny błąd builda - brak kolumny companyName w bazie danych:**
-  - Usunięto wszystkie odwołania do `companyName` z select/include w zapytaniach Prisma (wszystkie strony dashboard)
-  - Usunięto `companyName` z typów TypeScript w komponentach (tasks, contacts, clients)
-  - Zaktualizowano kod wyświetlania - używa teraz tylko `firstName` i `lastName` dla wszystkich typów klientów
-  - Usunięto kolumnę "Agencja" z tabeli klientów (sortowanie po companyName)
-  - Naprawiono pozostałe odwołania w `calendar/page.tsx` i `tasks/[id]/page.tsx`
-  - Usunięto odczytywanie `companyName` z bazy w `PrismaClientRepository.ts` - wszystkie miejsca używają teraz `null`
-  - Usunięto filtry po `companyName` z wyszukiwania
-  - Tymczasowo zakomentowano `companyName` w `schema.prisma` - Prisma Client nie próbuje już używać tego pola
-  - Usunięto wszystkie użycia `companyName` w `excel-importer.ts` i `clients/page.tsx`
-  - Usunięto formularz dla typu COMPANY w `client-form.tsx` - wszystkie klienci są teraz typu PERSON
-  - **Krytyczna poprawka:** Zmieniono wszystkie zapytania `db.client.findMany()` i `db.client.findUnique()` w `PrismaClientRepository.ts` z `include` na `select` - Prisma nie próbuje już pobierać wszystkich pól (w tym nieistniejącego `companyName`)
-  - **Krytyczna poprawka:** Zmieniono wszystkie zapytania `db.task.findMany()` i `db.contact.findMany()` z `include: { client: true }` na `include: { client: { select: { ... } } }` - Prisma nie próbuje już pobierać wszystkich pól z relacji `client` (w tym nieistniejącego `companyName`)
-  - Naprawiono wszystkie miejsca w API routes (`tasks/route.ts`, `contacts/route.ts`, `notes/route.ts`, `tasks/[id]/route.ts`, `contacts/[id]/route.ts`, `tasks/reminders/route.ts`) i komponentach (`google-calendar.ts`) używające `include: { client: true }`
-  - **Krytyczna poprawka:** Zmieniono `db.client.findMany()` i `db.client.findUnique()` w `sync/route.ts` i `clients/[id]/page.tsx` z `include` na `select` - wszystkie zapytania do Client używają teraz jawnie określonych pól
-  - Aplikacja może teraz działać bez kolumny `companyName` w bazie danych
-
-### Uwagi techniczne
-- **Backward compatibility:** Kod działa z bazą danych bez kolumny `companyName`
-- **Wyświetlanie:** Wszystkie klienci (PERSON i COMPANY) wyświetlani są używając `firstName` i `lastName`
-- **Migracja:** Po uruchomieniu migracji kolumna `companyName` zostanie dodana, ale nie jest wymagana do działania aplikacji
-
----
-
-## [0.5.2-beta] - 2025-01-16
-
-### Naprawiono
-- **Krytyczny problem z buildem w Railway:**
-  - Usunięto migracje z procesu build - build nie wymaga już połączenia z bazą danych
-  - Migracje są teraz uruchamiane wyłącznie przy starcie aplikacji (przed uruchomieniem serwera)
-  - Prisma Client jest generowany bez połączenia z bazą - build jest szybszy i bardziej niezawodny
-  - Zaktualizowano `src/lib/db.ts` z komentarzami wyjaśniającymi, że Prisma Client nie łączy się podczas inicjalizacji
-  - Zaktualizowano dokumentację w RAILWAY_QUICK_START.md z nowym podejściem
-
-### Uwagi techniczne
-- **Build:** Build nie wymaga połączenia z bazą danych - Prisma Client jest generowany bez DATABASE_URL
-- **Migracje:** Migracje są uruchamiane automatycznie przy starcie aplikacji, nie podczas build
-- **Bezpieczeństwo:** Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - zapewnia to spójność bazy danych
-- **Wydajność:** Build jest szybszy, ponieważ nie czeka na połączenie z bazą danych
-
----
-
-## [0.5.1-beta] - 2025-01-16
-
-### Naprawiono
-- **Krytyczny problem z migracjami bazy danych w Railway:**
-  - Migracje są teraz uruchamiane automatycznie przed buildem (jeśli DATABASE_URL jest dostępna)
-  - Migracje są uruchamiane obowiązkowo przy starcie aplikacji przed uruchomieniem serwera
-  - Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - zapewnia to spójność bazy danych
-  - Usunięto `preDeployCommand` z `railway.json` (nie działał poprawnie)
-  - Zaktualizowano Dockerfile z lepszymi komunikatami o statusie migracji
-  - Zaktualizowano dokumentację w RAILWAY_QUICK_START.md z informacjami o automatycznych migracjach
-
-### Uwagi techniczne
-- **Migracje:** Migracje są teraz uruchamiane automatycznie - nie wymagają ręcznego uruchomienia w terminalu Railway
-- **Build:** Jeśli DATABASE_URL nie jest dostępna podczas build, migracje będą uruchomione przy starcie aplikacji
-- **Bezpieczeństwo:** Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - to zapobiega problemom z niezsynchronizowaną bazą danych
-
----
 
 ## [0.5.0-beta] - 2025-01-15
 

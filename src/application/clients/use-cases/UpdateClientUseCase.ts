@@ -40,8 +40,9 @@ export class UpdateClientUseCase {
       const lastName = ClientName.create(dto.lastName, 'Nazwisko', 1, 50)
       existingClient.updateInfo({ lastName })
     }
-    if (dto.agencyName !== undefined) {
-      const agencyName = AgencyName.create(dto.agencyName)
+    // Use companyName if provided, otherwise fall back to agencyName for backward compatibility
+    if (dto.companyName !== undefined || dto.agencyName !== undefined) {
+      const agencyName = AgencyName.create(dto.companyName || dto.agencyName || null)
       existingClient.updateInfo({ agencyName })
     }
     if (dto.email !== undefined) {

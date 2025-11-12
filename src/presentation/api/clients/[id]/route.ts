@@ -262,9 +262,12 @@ export async function PATCH(
     const body = await request.json()
     
     const updateClientSchema = z.object({
+      type: z.enum(['PERSON', 'COMPANY']).optional(),
       firstName: z.string().min(1).max(50).optional(),
       lastName: z.string().min(1).max(50).optional(),
-      agencyName: z.string().max(150).optional().nullable(),
+      companyName: z.string().max(150).optional().nullable(),
+      taxId: z.string().max(50).optional().nullable(),
+      agencyName: z.string().max(150).optional().nullable(), // Deprecated
       email: z.string().email().max(255).optional().nullable(),
       phone: z.string().max(30).optional().nullable(),
       website: z.string().max(2048).optional().nullable(),

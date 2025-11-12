@@ -140,9 +140,12 @@ export async function POST(request: Request) {
     
     // Basic validation (detailed validation in use case)
     const createClientSchema = z.object({
-      firstName: z.string().min(1).max(50),
-      lastName: z.string().min(1).max(50),
-      agencyName: z.string().max(150).optional().nullable(),
+      type: z.enum(['PERSON', 'COMPANY']).optional(),
+      firstName: z.string().min(1).max(50).optional(),
+      lastName: z.string().min(1).max(50).optional(),
+      companyName: z.string().max(150).optional().nullable(),
+      taxId: z.string().max(50).optional().nullable(),
+      agencyName: z.string().max(150).optional().nullable(), // Deprecated
       email: z.string().email().max(255).optional().nullable(),
       phone: z.string().max(30).optional().nullable(),
       website: z.string().max(2048).optional().nullable(),
@@ -153,6 +156,17 @@ export async function POST(request: Request) {
       nextFollowUpAt: z.string().optional().nullable(),
       assignedTo: z.string().optional().nullable(),
       sharedGroupIds: z.array(z.string()).optional(),
+    }).refine((data) => {
+      // Validate type-specific required fields
+      if (data.type === 'PERSON') {
+        return data.firstName && data.lastName
+      } else if (data.type === 'COMPANY') {
+        return data.companyName
+      }
+      // If type not specified, require firstName and lastName (backward compatibility)
+      return data.firstName && data.lastName
+    }, {
+      message: "Dla typu PERSON wymagane są firstName i lastName. Dla typu COMPANY wymagane jest companyName."
     })
 
     let validatedData: CreateClientDTO

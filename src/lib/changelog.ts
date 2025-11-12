@@ -14,56 +14,6 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
-    version: '0.5.3-beta',
-    date: '2025-01-16',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Krytyczny błąd builda - usunięto odwołania do nieistniejącej kolumny companyName w bazie danych',
-      },
-      {
-        type: 'fixed',
-        description: 'Aplikacja może teraz działać bez kolumny companyName - wszystkie klienci wyświetlani używając firstName i lastName',
-      },
-    ],
-  },
-  {
-    version: '0.5.2-beta',
-    date: '2025-01-16',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Krytyczny problem z buildem w Railway - usunięto migracje z procesu build, build nie wymaga już połączenia z bazą danych',
-      },
-      {
-        type: 'fixed',
-        description: 'Migracje są teraz uruchamiane wyłącznie przy starcie aplikacji - build jest szybszy i bardziej niezawodny',
-      },
-      {
-        type: 'changed',
-        description: 'Prisma Client jest generowany bez połączenia z bazą - build nie wymaga DATABASE_URL',
-      },
-    ],
-  },
-  {
-    version: '0.5.1-beta',
-    date: '2025-01-16',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Krytyczny problem z migracjami bazy danych w Railway - migracje uruchamiane automatycznie przed buildem i przy starcie aplikacji',
-      },
-      {
-        type: 'fixed',
-        description: 'Aplikacja nie uruchomi się, jeśli migracje się nie powiodą - zapewnia to spójność bazy danych',
-      },
-      {
-        type: 'changed',
-        description: 'Usunięto preDeployCommand z railway.json (nie działał poprawnie), migracje obsługiwane przez Dockerfile i start.sh',
-      },
-    ],
-  },
-  {
     version: '0.5.0-beta',
     date: '2025-01-15',
     changes: [

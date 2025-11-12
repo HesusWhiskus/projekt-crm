@@ -30,6 +30,7 @@ interface ClientFormProps {
     type: ClientType
     firstName: string | null
     lastName: string | null
+    companyName: string | null
     taxId: string | null
     email: string | null
     phone: string | null
@@ -64,11 +65,17 @@ const priorityOptions: Record<ClientPriority, string> = {
   HIGH: "Wysoki",
 }
 
+const typeOptions: Record<ClientType, string> = {
+  PERSON: "Osoba fizyczna",
+  COMPANY: "Firma",
+}
+
 export function ClientForm({ users, groups, currentUser, client, onClose, onSuccess }: ClientFormProps) {
   const [formData, setFormData] = useState({
-    type: "PERSON" as ClientType, // Always PERSON - COMPANY type not supported yet
+    type: (client?.type || "PERSON") as ClientType,
     firstName: client?.firstName || "",
     lastName: client?.lastName || "",
+    companyName: client?.companyName || "",
     taxId: client?.taxId || "",
     email: client?.email || "",
     phone: client?.phone || "",
@@ -106,9 +113,13 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
       }
 
       // Add type-specific fields
-      bodyData.firstName = formData.firstName || undefined
-      bodyData.lastName = formData.lastName || undefined
-      bodyData.type = "PERSON" // Always PERSON - COMPANY type not supported yet
+      if (formData.type === "PERSON") {
+        bodyData.firstName = formData.firstName || undefined
+        bodyData.lastName = formData.lastName || undefined
+      } else if (formData.type === "COMPANY") {
+        bodyData.companyName = formData.companyName || undefined
+        bodyData.taxId = formData.taxId || undefined
+      }
       
       if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
       if (formData.sharedGroupIds.length > 0) bodyData.sharedGroupIds = formData.sharedGroupIds
@@ -147,28 +158,68 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">Imię *</Label>
-              <Input
-                id="firstName"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Nazwisko *</Label>
-              <Input
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                required
-                disabled={isLoading}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="type">Typ klienta *</Label>
+            <Select
+              id="type"
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value as ClientType })}
+              disabled={isLoading}
+            >
+              {Object.entries(typeOptions).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </Select>
           </div>
+
+          {formData.type === "PERSON" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">Imię *</Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Nazwisko *</Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Nazwa firmy *</Label>
+                <Input
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="taxId">NIP</Label>
+                <Input
+                  id="taxId"
+                  value={formData.taxId}
+                  onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
