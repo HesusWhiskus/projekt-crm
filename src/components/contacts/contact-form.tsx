@@ -67,7 +67,7 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
     notes: contact?.notes || "",
     isNote: isNoteMode || false,
     userId: contact?.userId || currentUser?.id || "",
-    clientId: contact && contact.clientId ? contact.clientId : (clientId || ""),
+    clientId: (contact?.clientId || clientId || ""),
     sharedGroupIds: contact?.sharedGroups?.map((g) => g.id) || [] as string[],
   })
   const [files, setFiles] = useState<File[]>([])
@@ -95,7 +95,12 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
       formDataToSend.append("notes", formData.notes)
       formDataToSend.append("isNote", formData.isNote ? "true" : "false")
       formDataToSend.append("userId", formData.userId)
-      formDataToSend.append("clientId", formData.clientId || clientId || "")
+      // Upewnij się, że clientId jest zawsze ustawiony - użyj formData.clientId lub fallback do clientId z props
+      const finalClientId = formData.clientId || clientId || ""
+      if (!finalClientId) {
+        throw new Error("Klient jest wymagany")
+      }
+      formDataToSend.append("clientId", finalClientId)
       
       if (formData.sharedGroupIds.length > 0) {
         formDataToSend.append("sharedGroupIds", JSON.stringify(formData.sharedGroupIds))

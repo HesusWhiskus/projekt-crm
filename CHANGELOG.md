@@ -5,6 +5,23 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.4.4-beta] - 2025-01-15
+
+### Naprawiono
+- **Krytyczny bug z dodawaniem notatek:**
+  - Naprawiono problem z zapisywaniem notatek - błąd "kontakt nie znaleziony"
+  - Poprawiono inicjalizację `clientId` w `ContactForm` - teraz zawsze używa `clientId` z props gdy `contact.clientId` nie jest dostępne
+  - Dodano walidację `clientId` przed wysłaniem formularza - zapobiega wysyłaniu pustego `clientId`
+  - Notatki można teraz poprawnie dodawać z widoku klienta bez konieczności wybierania kontaktu
+
+### Zmieniono
+- **ContactForm:**
+  - Uproszczono logikę inicjalizacji `clientId` w `formData` - używa `contact?.clientId || clientId || ""`
+  - Dodano walidację `finalClientId` w `handleSubmit` przed wysłaniem do API
+  - Lepsze obsługiwanie przypadku gdy notatka jest dodawana z widoku klienta
+
+---
+
 ## [0.4.3-beta] - 2025-11-10
 
 ### Dodano
