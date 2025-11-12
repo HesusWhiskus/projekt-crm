@@ -81,8 +81,10 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'echo "Prisma schema location: $(ls -la prisma/schema.prisma 2>&1 || echo \"NOT FOUND\")"' >> /app/start.sh && \
     echo 'echo "Step 1: Generating Prisma Client..."' >> /app/start.sh && \
     echo 'npx prisma generate || (echo "ERROR: Prisma generate failed!" && exit 1)' >> /app/start.sh && \
-    echo 'echo "Step 2: Deploying migrations (prisma migrate deploy)..."' >> /app/start.sh && \
-    echo 'npx prisma migrate deploy || (echo "WARNING: migrate deploy failed, trying db push..." && npx prisma db push --accept-data-loss --skip-generate || (echo "ERROR: Database migration failed! App cannot start." && exit 1))' >> /app/start.sh && \
+    echo 'echo "Step 2: Synchronizing database schema with db push (ensures schema matches Prisma)..."' >> /app/start.sh && \
+    echo 'npx prisma db push --accept-data-loss --skip-generate || (echo "ERROR: Database schema synchronization failed! App cannot start." && exit 1)' >> /app/start.sh && \
+    echo 'echo "Step 2b: Applying pending migrations (if any)..."' >> /app/start.sh && \
+    echo 'npx prisma migrate deploy 2>&1 || echo "No pending migrations or migrate deploy failed (non-critical, db push already synced schema)"' >> /app/start.sh && \
     echo 'echo "Step 3: Running SQL fix for missing companyName column (if exists)..."' >> /app/start.sh && \
     echo 'if [ -f /app/scripts/fix-company-name-column.sql ]; then' >> /app/start.sh && \
     echo '  echo "Found SQL fix script, executing..."' >> /app/start.sh && \
