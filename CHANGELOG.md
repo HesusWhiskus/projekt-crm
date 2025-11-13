@@ -5,6 +5,38 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.5-beta] - 2025-11-13
+
+### Dodano
+- **Pola PESEL i REGON w formularzu klienta:**
+  - Dodano pole PESEL dla klientów typu Osoba fizyczna
+  - Dodano pole REGON dla klientów typu Firma
+  - Pola są opcjonalne i zapisywane w bazie danych
+
+- **Wybór organizacji przy rejestracji:**
+  - Dodano pole wyboru organizacji w formularzu rejestracji
+  - Endpoint `/api/organizations` jest teraz publiczny (dostępny bez autoryzacji)
+  - Użytkownicy mogą wybrać organizację podczas rejestracji (opcjonalnie)
+
+### Naprawiono
+- **Panel administracyjny:**
+  - Wszystkie karty w panelu admin są teraz klikalne i prowadzą do odpowiednich stron zarządzania
+  - Linki do zarządzania użytkownikami, grupami i organizacjami działają poprawnie
+
+### Zmieniono
+- **Middleware:**
+  - Dodano wyjątek dla endpointu `/api/organizations` w middleware (endpoint jest publiczny)
+  - Endpoint może być używany w formularzu rejestracji bez autoryzacji
+
+- **DTO i Use Cases:**
+  - Zaktualizowano `CreateClientDTO` i `UpdateClientDTO` o pola `pesel`, `regon`, `type`, `companyName`, `taxId`
+  - Zaktualizowano schematy walidacji w API routes
+  - Use case'y zapisują nowe pola bezpośrednio w bazie danych
+
+### Uwagi techniczne
+- Utworzono migrację `20251113130000_add_pesel_and_regon` dodającą kolumny `pesel` i `regon` do tabeli `clients`
+- Migracja została wykonana w produkcji
+
 ## [0.5.4-beta] - 2025-11-13
 
 ### Naprawiono

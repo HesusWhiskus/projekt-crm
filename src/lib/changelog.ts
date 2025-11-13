@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.5-beta',
+    date: '2025-11-13',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano pola PESEL (dla osoby fizycznej) i REGON (dla firmy) w formularzu klienta',
+      },
+      {
+        type: 'added',
+        description: 'Dodano wybór organizacji przy rejestracji - użytkownicy mogą wybrać organizację podczas rejestracji',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono panel administracyjny - wszystkie karty są teraz klikalne i prowadzą do stron zarządzania',
+      },
+    ],
+  },
+  {
     version: '0.5.4-beta',
     date: '2025-11-13',
     changes: [
