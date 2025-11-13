@@ -5,6 +5,25 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.1-beta] - 2025-11-13
+
+### Naprawiono
+- **Krytyczne błędy "Application error":**
+  - Naprawiono błędy spowodowane brakującymi kolumnami w bazie produkcyjnej (companyName, lastContactAt, nextFollowUpAt, priority)
+  - Tymczasowo usunięto companyName z selectów do czasu wykonania migracji
+  - Tymczasowo wyłączono filtry prospecting (lastContactAt, nextFollowUpAt) na dashboardzie
+- **Migracje bazy danych:**
+  - Utworzono migrację `20251113102833_add_company_name_to_clients` dla kolumny companyName
+  - Przywrócono pełną funkcjonalność po przygotowaniu migracji
+  - Przywrócono companyName we wszystkich selectach i filtrach wyszukiwania
+  - Przywrócono filtry prospecting (noContactDays, followUpToday) na dashboardzie i stronie klientów
+
+### Uwagi techniczne
+- **Wymagana migracja bazy danych:** Przed wdrożeniem należy wykonać migrację `20251113102833_add_company_name_to_clients` w produkcji
+- Migracja zostanie wykonana automatycznie przy następnym deploy (Dockerfile zawiera skrypt startowy)
+- Alternatywnie można wykonać ręcznie: `railway run npx prisma migrate deploy`
+- Po wykonaniu migracji wszystkie funkcjonalności związane z companyName, lastContactAt i nextFollowUpAt będą w pełni dostępne
+
 ## [0.5.0-beta] - 2025-01-15
 
 ### Dodano

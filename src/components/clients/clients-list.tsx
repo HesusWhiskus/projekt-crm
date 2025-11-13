@@ -17,7 +17,7 @@ interface Client {
   id: string
   firstName: string | null
   lastName: string | null
-  companyName: string | null
+  companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
   type: string
   email: string | null
   phone: string | null

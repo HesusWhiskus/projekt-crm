@@ -35,9 +35,9 @@ export default async function ClientsPage({
   if (searchParams.search) {
     andConditions.push({
       OR: [
-        { companyName: { contains: searchParams.search, mode: "insensitive" } },
         { firstName: { contains: searchParams.search, mode: "insensitive" } },
         { lastName: { contains: searchParams.search, mode: "insensitive" } },
+        { companyName: { contains: searchParams.search, mode: "insensitive" } },
         { email: { contains: searchParams.search, mode: "insensitive" } },
       ]
     })

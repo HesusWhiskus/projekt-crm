@@ -20,7 +20,7 @@ interface TaskDetailProps {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
+    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
     type: string
   }>
   groups?: Array<{
@@ -178,7 +178,7 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
                   href={`/clients/${task.client.id}`}
                   className="text-primary hover:underline"
                 >
-                  {task.client.type === "COMPANY" ? task.client.companyName : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
+                  {task.client.type === "COMPANY" ? (task.client.companyName || "Brak nazwy firmy") : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
                 </Link>
               </div>
             )}

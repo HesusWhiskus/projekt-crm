@@ -17,7 +17,7 @@ interface ContactFormProps {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
+    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
     type: string
   }>
   users: Array<{
@@ -227,7 +227,7 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
                   <option value="">Wybierz klienta</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.type === "COMPANY" ? client.companyName : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
+                      {client.type === "COMPANY" ? (client.companyName || "Brak nazwy firmy") : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
                     </option>
                   ))}
                 </Select>

@@ -28,7 +28,7 @@ interface Task {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
+    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
     type: string
   } | null
 }
@@ -44,7 +44,7 @@ interface TasksListProps {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
+    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
     type: string
   }>
   groups?: Array<{
@@ -268,7 +268,7 @@ export function TasksList({
                             )}
                             {task.client && (
                               <span>
-                                Klient: {task.client.type === "COMPANY" ? task.client.companyName || "Brak nazwy firmy" : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
+                                Klient: {task.client.type === "COMPANY" ? (task.client.companyName || "Brak nazwy firmy") : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
                               </span>
                             )}
                           </div>

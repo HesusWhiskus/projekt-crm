@@ -20,7 +20,15 @@ export async function POST(request: Request) {
       },
       include: {
         assignee: true,
-        client: true,
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            companyName: true,
+            type: true,
+          },
+        },
       },
     })
 

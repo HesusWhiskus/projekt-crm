@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.1-beta',
+    date: '2025-11-13',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Krytyczne błędy "Application error" - naprawiono błędy spowodowane brakującymi kolumnami w bazie (companyName, lastContactAt, nextFollowUpAt)',
+      },
+      {
+        type: 'fixed',
+        description: 'Utworzono migrację dla kolumny companyName - przywrócono pełną funkcjonalność obsługi klientów typu COMPANY',
+      },
+      {
+        type: 'fixed',
+        description: 'Przywrócono filtry prospecting (bez kontaktu 7+/30+ dni, follow-up dzisiaj) na dashboardzie i stronie klientów',
+      },
+    ],
+  },
+  {
     version: '0.5.0-beta',
     date: '2025-01-15',
     changes: [

@@ -21,7 +21,7 @@ interface Contact {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
+    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
     type: string
   }
   user: {
@@ -46,7 +46,7 @@ interface ContactsListProps {
     id: string
     firstName: string | null
     lastName: string | null
-    companyName: string | null
+    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
     type: string
   }>
   users: Array<{
@@ -174,7 +174,7 @@ export function ContactsList({
                 <option value="">Wszyscy</option>
                 {clients.map((client) => (
                   <option key={client.id} value={client.id}>
-                    {client.type === "COMPANY" ? client.companyName : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
+                    {client.type === "COMPANY" ? (client.companyName || "Brak nazwy firmy") : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
                   </option>
                 ))}
               </Select>
@@ -223,7 +223,7 @@ export function ContactsList({
                             href={`/clients/${contact.client.id}`}
                             className="text-primary hover:underline"
                           >
-                            {contact.client.type === "COMPANY" ? contact.client.companyName : `${contact.client.firstName} ${contact.client.lastName}`.trim() || "Brak nazwy"}
+                            {contact.client.type === "COMPANY" ? (contact.client.companyName || "Brak nazwy firmy") : `${contact.client.firstName} ${contact.client.lastName}`.trim() || "Brak nazwy"}
                           </Link>
                         </span>
                       </div>

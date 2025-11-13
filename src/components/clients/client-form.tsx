@@ -30,7 +30,7 @@ interface ClientFormProps {
     type: ClientType
     firstName: string | null
     lastName: string | null
-    companyName: string | null
+    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
     taxId: string | null
     email: string | null
     phone: string | null

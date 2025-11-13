@@ -213,7 +213,7 @@ export default async function DashboardPage() {
                       <p className="font-medium">{task.title}</p>
                       {task.client && (
                         <p className="text-sm text-muted-foreground">
-                          {task.client.type === "COMPANY" ? task.client.companyName : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
+                          {task.client.type === "COMPANY" ? (task.client.companyName || "Brak nazwy firmy") : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
                         </p>
                       )}
                     </div>
