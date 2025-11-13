@@ -15,7 +15,13 @@ export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) 
   const pathname = usePathname()
   const isMobile = useIsMobile()
 
-  const proNavItems = [
+  const proNavItems: Array<{
+    name: string
+    href: string
+    icon: any
+    featureKey?: string
+    alwaysVisible?: boolean
+  }> = [
     {
       name: "Raporty",
       href: "/reports",
