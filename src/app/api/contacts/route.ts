@@ -446,7 +446,7 @@ export async function GET(request: Request) {
             id: true,
             firstName: true,
             lastName: true,
-            // companyName temporarily removed - migration must be executed first
+            companyName: true,
             type: true,
           },
         },

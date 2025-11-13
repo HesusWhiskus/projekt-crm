@@ -25,7 +25,7 @@ export async function POST(request: Request) {
             id: true,
             firstName: true,
             lastName: true,
-            // companyName temporarily removed - migration must be executed first
+            companyName: true,
             type: true,
           },
         },
@@ -39,8 +39,7 @@ export async function POST(request: Request) {
             task.assignee.email,
             task.title,
             task.dueDate!,
-            // companyName temporarily removed - migration must be executed first
-            task.client ? (`${task.client.firstName} ${task.client.lastName}`.trim() || undefined) : undefined
+            task.client?.type === "COMPANY" ? (task.client.companyName ?? undefined) : task.client ? (`${task.client.firstName} ${task.client.lastName}`.trim() || undefined) : undefined
           )
         } catch (error) {
           console.error(`Failed to send reminder for task ${task.id}:`, error)

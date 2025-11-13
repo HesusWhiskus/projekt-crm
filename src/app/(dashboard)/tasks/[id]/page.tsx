@@ -29,7 +29,7 @@ export default async function TaskDetailPage({
           id: true,
           firstName: true,
           lastName: true,
-          // companyName temporarily removed - migration must be executed first
+          companyName: true,
           type: true,
         },
       },
@@ -79,7 +79,7 @@ export default async function TaskDetailPage({
         id: true,
         firstName: true,
         lastName: true,
-        // companyName temporarily removed - migration must be executed first
+        companyName: true,
         type: true,
       },
       orderBy: {

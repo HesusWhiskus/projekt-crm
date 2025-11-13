@@ -58,7 +58,7 @@ export default async function DashboardPage() {
             id: true,
             firstName: true,
             lastName: true,
-            // companyName temporarily removed - migration must be executed first
+            companyName: true,
             type: true 
           } 
         } 
@@ -213,8 +213,7 @@ export default async function DashboardPage() {
                       <p className="font-medium">{task.title}</p>
                       {task.client && (
                         <p className="text-sm text-muted-foreground">
-                          {/* companyName temporarily removed - migration must be executed first */}
-                          {`${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
+                          {task.client.type === "COMPANY" ? (task.client.companyName || "Brak nazwy firmy") : `${task.client.firstName} ${task.client.lastName}`.trim() || "Brak nazwy"}
                         </p>
                       )}
                     </div>

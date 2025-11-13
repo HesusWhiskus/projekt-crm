@@ -74,7 +74,7 @@ export default async function ClientDetailPage({
             select: {
               firstName: true,
               lastName: true,
-              // companyName temporarily removed - migration must be executed first
+              companyName: true,
               type: true,
             },
           },
