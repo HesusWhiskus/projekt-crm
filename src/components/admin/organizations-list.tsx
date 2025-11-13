@@ -64,7 +64,19 @@ export function OrganizationsList({ organizations: initialOrganizations }: Organ
     setManagingFeaturesId(null)
   }
 
-  const handleSuccess = () => {
+  const handleSuccess = async () => {
+    // Fetch updated organizations list
+    try {
+      const response = await fetch("/api/admin/organizations")
+      if (response.ok) {
+        const data = await response.json()
+        if (data.organizations) {
+          setOrganizations(data.organizations)
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching organizations:", error)
+    }
     router.refresh()
     handleClose()
   }

@@ -9,6 +9,7 @@ const updateUserSchema = z.object({
   role: z.enum(["ADMIN", "USER"]).optional(),
   name: z.string().min(1).optional(),
   position: z.string().optional().nullable(),
+  organizationId: z.string().optional().nullable(),
 })
 
 /**

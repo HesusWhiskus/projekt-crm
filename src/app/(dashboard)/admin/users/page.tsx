@@ -16,6 +16,12 @@ export default async function AdminUsersPage() {
           group: true,
         },
       },
+      organization: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select } from "@/components/ui/select"
 import { UserRole } from "@prisma/client"
 import { Edit, X } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -15,6 +16,11 @@ interface User {
   name: string | null
   role: UserRole
   position: string | null
+  organizationId: string | null
+  organization: {
+    id: string
+    name: string
+  } | null
   createdAt: Date
   groups: Array<{
     group: {
@@ -22,6 +28,11 @@ interface User {
       name: string
     }
   }>
+}
+
+interface Organization {
+  id: string
+  name: string
 }
 
 interface UsersListProps {
@@ -32,10 +43,26 @@ export function UsersList({ users }: UsersListProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [editFormData, setEditFormData] = useState({
     name: "",
     position: "",
+    organizationId: "",
   })
+
+  // Fetch organizations on mount
+  useEffect(() => {
+    fetch("/api/admin/organizations")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.organizations) {
+          setOrganizations(data.organizations)
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching organizations:", err)
+      })
+  }, [])
 
   const handleRoleChange = async (userId: string, newRole: UserRole) => {
     setIsLoading(true)
@@ -64,6 +91,7 @@ export function UsersList({ users }: UsersListProps) {
     setEditFormData({
       name: user.name || "",
       position: user.position || "",
+      organizationId: user.organizationId || "",
     })
   }
 
@@ -79,6 +107,7 @@ export function UsersList({ users }: UsersListProps) {
         body: JSON.stringify({
           name: editFormData.name || null,
           position: editFormData.position || null,
+          organizationId: editFormData.organizationId || null,
         }),
       })
 
@@ -111,6 +140,7 @@ export function UsersList({ users }: UsersListProps) {
                   <th className="text-left p-2">Imię i nazwisko</th>
                   <th className="text-left p-2">Stanowisko</th>
                   <th className="text-left p-2">Rola</th>
+                  <th className="text-left p-2">Organizacja</th>
                   <th className="text-left p-2">Grupy</th>
                   <th className="text-left p-2">Akcje</th>
                 </tr>
@@ -134,6 +164,7 @@ export function UsersList({ users }: UsersListProps) {
                         <option value="ADMIN">Administrator</option>
                       </select>
                     </td>
+                    <td className="p-2">{user.organization?.name || "-"}</td>
                     <td className="p-2">
                       {user.groups.length > 0
                         ? user.groups.map((ug) => ug.group.name).join(", ")
@@ -220,6 +251,27 @@ export function UsersList({ users }: UsersListProps) {
                     disabled={isLoading}
                     placeholder="Specjalista ds. Sprzedaży"
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-organization">Organizacja</Label>
+                  <Select
+                    id="edit-organization"
+                    value={editFormData.organizationId}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        organizationId: e.target.value,
+                      })
+                    }
+                    disabled={isLoading}
+                  >
+                    <option value="">Brak organizacji</option>
+                    {organizations.map((org) => (
+                      <option key={org.id} value={org.id}>
+                        {org.name}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
                 <div className="flex justify-end space-x-2 pt-4">
                   <Button
