@@ -30,8 +30,10 @@ interface ClientFormProps {
     type: ClientType
     firstName: string | null
     lastName: string | null
-    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
+    pesel: string | null
+    companyName?: string | null
     taxId: string | null
+    regon: string | null
     email: string | null
     phone: string | null
     website: string | null
@@ -70,8 +72,10 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
     type: client?.type || ("PERSON" as ClientType),
     firstName: client?.firstName || "",
     lastName: client?.lastName || "",
+    pesel: client?.pesel || "",
     companyName: client?.companyName || "",
     taxId: client?.taxId || "",
+    regon: client?.regon || "",
     email: client?.email || "",
     phone: client?.phone || "",
     website: client?.website || "",
@@ -111,9 +115,11 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
       if (formData.type === "PERSON") {
         bodyData.firstName = formData.firstName || undefined
         bodyData.lastName = formData.lastName || undefined
+        bodyData.pesel = formData.pesel || undefined
       } else if (formData.type === "COMPANY") {
         bodyData.companyName = formData.companyName || undefined
         bodyData.taxId = formData.taxId || undefined
+        bodyData.regon = formData.regon || undefined
       }
       
       if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
@@ -189,6 +195,17 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
                   disabled={isLoading}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="pesel">PESEL</Label>
+                <Input
+                  id="pesel"
+                  value={formData.pesel}
+                  onChange={(e) => setFormData({ ...formData, pesel: e.target.value })}
+                  disabled={isLoading}
+                  placeholder="Opcjonalnie"
+                  maxLength={11}
+                />
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -208,6 +225,16 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
                   id="taxId"
                   value={formData.taxId}
                   onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                  disabled={isLoading}
+                  placeholder="Opcjonalnie"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="regon">REGON</Label>
+                <Input
+                  id="regon"
+                  value={formData.regon}
+                  onChange={(e) => setFormData({ ...formData, regon: e.target.value })}
                   disabled={isLoading}
                   placeholder="Opcjonalnie"
                 />

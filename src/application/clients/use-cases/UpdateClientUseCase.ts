@@ -96,14 +96,24 @@ export class UpdateClientUseCase {
     // Update client
     const updatedClient = await this.clientRepository.update(existingClient)
 
-    // Handle shared groups if provided
-    if (dto.sharedGroupIds !== undefined) {
+    // Update additional fields that are not in the domain entity
+    const additionalFields: any = {}
+    if (dto.type !== undefined) additionalFields.type = dto.type
+    if (dto.companyName !== undefined) additionalFields.companyName = dto.companyName
+    if (dto.taxId !== undefined) additionalFields.taxId = dto.taxId
+    if (dto.regon !== undefined) additionalFields.regon = dto.regon
+    if (dto.pesel !== undefined) additionalFields.pesel = dto.pesel
+
+    if (Object.keys(additionalFields).length > 0 || dto.sharedGroupIds !== undefined) {
       await db.client.update({
         where: { id: updatedClient.getId() },
         data: {
-          sharedGroups: {
-            set: dto.sharedGroupIds.map((id) => ({ id })),
-          },
+          ...additionalFields,
+          ...(dto.sharedGroupIds !== undefined ? {
+            sharedGroups: {
+              set: dto.sharedGroupIds.map((id) => ({ id })),
+            },
+          } : {}),
         },
       })
     }

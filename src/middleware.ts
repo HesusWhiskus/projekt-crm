@@ -67,7 +67,7 @@ export const config = {
     "/tasks/:path*",
     "/calendar/:path*",
     "/admin/:path*",
-    "/api/((?!auth|_next|favicon.ico).*)", // Protect all API routes except auth and Next.js internals
+    "/api/((?!auth|organizations|_next|favicon.ico).*)", // Protect all API routes except auth, organizations and Next.js internals
   ],
 }
 

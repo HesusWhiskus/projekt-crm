@@ -132,24 +132,27 @@ export default function SignUpForm() {
             disabled={isLoading}
           />
         </div>
-        {organizations.length > 0 && (
-          <div className="space-y-2">
-            <Label htmlFor="organizationId">Organizacja (opcjonalnie)</Label>
-            <Select
-              id="organizationId"
-              value={formData.organizationId}
-              onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
-              disabled={isLoading}
-            >
-              <option value="">Brak organizacji</option>
-              {organizations.map((org) => (
-                <option key={org.id} value={org.id}>
-                  {org.name}
-                </option>
-              ))}
-            </Select>
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="organizationId">Organizacja (opcjonalnie)</Label>
+          <Select
+            id="organizationId"
+            value={formData.organizationId}
+            onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
+            disabled={isLoading || organizations.length === 0}
+          >
+            <option value="">{organizations.length === 0 ? "Brak dostępnych organizacji" : "Brak organizacji"}</option>
+            {organizations.map((org) => (
+              <option key={org.id} value={org.id}>
+                {org.name}
+              </option>
+            ))}
+          </Select>
+          {organizations.length === 0 && (
+            <p className="text-xs text-muted-foreground">
+              Brak dostępnych organizacji. Możesz zarejestrować się bez organizacji.
+            </p>
+          )}
+        </div>
         <div className="space-y-2">
           <Label htmlFor="password">Hasło</Label>
           <Input

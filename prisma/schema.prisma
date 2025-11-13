@@ -116,9 +116,11 @@ model Client {
   // Fields for PERSON type
   firstName      String?
   lastName       String?
+  pesel          String? // PESEL dla osoby fizycznej
   // Fields for COMPANY type
   companyName    String?
   taxId          String? // NIP / Tax ID
+  regon          String? // REGON dla firmy
   // Common fields
   email          String?
   phone          String?

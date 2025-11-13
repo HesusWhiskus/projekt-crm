@@ -4,8 +4,13 @@ import { ClientStatus, ClientPriority } from '@prisma/client'
  * Data Transfer Object for creating a client
  */
 export interface CreateClientDTO {
-  firstName: string
-  lastName: string
+  type?: "PERSON" | "COMPANY"
+  firstName?: string
+  lastName?: string
+  pesel?: string | null
+  companyName?: string | null
+  taxId?: string | null
+  regon?: string | null
   agencyName?: string | null
   email?: string | null
   phone?: string | null

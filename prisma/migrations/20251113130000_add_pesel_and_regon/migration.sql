@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "clients" ADD COLUMN IF NOT EXISTS "pesel" TEXT;
+ALTER TABLE "clients" ADD COLUMN IF NOT EXISTS "regon" TEXT;
+
