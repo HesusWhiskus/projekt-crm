@@ -5,6 +5,17 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.2-beta] - 2025-01-15
+
+### Naprawiono
+- **Kontrola dostępu do funkcji PRO:** Ukryto funkcje PRO dla użytkowników bez organizacji i z planem BASIC - funkcje PRO są teraz całkowicie niewidoczne w menu i niedostępne
+- **Strona Funkcje PRO:** Dla użytkowników bez PRO wyświetla komunikat zamiast listy funkcji - poprawiono wyświetlanie statusu planu
+- **Menu użytkownika:** "Funkcje PRO" widoczne tylko dla użytkowników z planem PRO - usunięto `alwaysVisible` dla funkcji PRO
+
+### Zmieniono
+- **Logika `isFeatureEnabled`:** Funkcje PRO zwracają `false` gdy użytkownik nie ma organizacji (wcześniej zwracały `true`)
+- **UserMenu:** Dodano warunek `showOnlyIfPro` dla "Funkcje PRO" zamiast `alwaysVisible`
+
 ## [0.6.1-beta] - 2025-01-15
 
 ### Naprawiono

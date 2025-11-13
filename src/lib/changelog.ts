@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.2-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Ukryto funkcje PRO dla użytkowników bez organizacji i z planem BASIC - funkcje PRO są teraz całkowicie niewidoczne w menu',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawiono stronę Funkcje PRO - dla użytkowników bez PRO wyświetla komunikat zamiast listy funkcji',
+      },
+      {
+        type: 'changed',
+        description: 'Zmieniono logikę kontroli dostępu - funkcje PRO wymagają organizacji z planem PRO',
+      },
+    ],
+  },
+  {
     version: '0.6.1-beta',
     date: '2025-01-15',
     changes: [
