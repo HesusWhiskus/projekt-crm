@@ -46,7 +46,7 @@ export default async function TasksPage({
           id: true,
           firstName: true,
           lastName: true,
-          companyName: true,
+          // companyName temporarily removed - migration must be executed first
           type: true,
         },
       },
@@ -73,7 +73,7 @@ export default async function TasksPage({
         id: true,
         firstName: true,
         lastName: true,
-        companyName: true,
+        // companyName temporarily removed - migration must be executed first
         type: true,
       },
       orderBy: {

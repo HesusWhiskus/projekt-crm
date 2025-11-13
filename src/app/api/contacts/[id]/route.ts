@@ -231,7 +231,7 @@ export async function PATCH(
             id: true,
             firstName: true,
             lastName: true,
-            companyName: true,
+            // companyName temporarily removed - migration must be executed first
             type: true,
           },
         },

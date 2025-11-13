@@ -227,7 +227,7 @@ export async function POST(request: Request) {
             id: true,
             firstName: true,
             lastName: true,
-            companyName: true,
+            // companyName temporarily removed - migration must be executed first
             type: true,
           },
         },

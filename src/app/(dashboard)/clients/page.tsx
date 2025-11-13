@@ -37,7 +37,7 @@ export default async function ClientsPage({
       OR: [
         { firstName: { contains: searchParams.search, mode: "insensitive" } },
         { lastName: { contains: searchParams.search, mode: "insensitive" } },
-        { companyName: { contains: searchParams.search, mode: "insensitive" } },
+        // companyName temporarily removed - migration must be executed first
         { email: { contains: searchParams.search, mode: "insensitive" } },
       ]
     })
@@ -88,7 +88,7 @@ export default async function ClientsPage({
       id: true,
       firstName: true,
       lastName: true,
-      companyName: true,
+      // companyName temporarily removed - migration must be executed first
       type: true,
       email: true,
       phone: true,
