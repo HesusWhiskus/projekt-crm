@@ -13,10 +13,23 @@ export class CreateClientUseCase {
   constructor(private readonly clientRepository: IClientRepository) {}
 
   async execute(dto: CreateClientDTO, user: UserContext): Promise<ClientDTO> {
+    // Validate required fields based on type
+    const clientType = dto.type || 'PERSON'
+    
+    if (clientType === 'PERSON') {
+      if (!dto.firstName || !dto.lastName) {
+        throw new Error('Imię i nazwisko są wymagane dla osoby fizycznej')
+      }
+    } else if (clientType === 'COMPANY') {
+      if (!dto.companyName) {
+        throw new Error('Nazwa firmy jest wymagana dla firmy')
+      }
+    }
+
     // Create value objects
-    const firstName = ClientName.create(dto.firstName, 'Imię', 1, 50)
-    const lastName = ClientName.create(dto.lastName, 'Nazwisko', 1, 50)
-    const agencyName = AgencyName.create(dto.agencyName)
+    const firstName = dto.firstName ? ClientName.create(dto.firstName, 'Imię', 1, 50) : ClientName.create('', 'Imię', 1, 50)
+    const lastName = dto.lastName ? ClientName.create(dto.lastName, 'Nazwisko', 1, 50) : ClientName.create('', 'Nazwisko', 1, 50)
+    const agencyName = AgencyName.create(dto.agencyName || dto.companyName)
     const email = Email.create(dto.email)
     const phone = Phone.create(dto.phone)
     const website = Website.create(dto.website)
