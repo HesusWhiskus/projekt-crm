@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.4-beta',
+    date: '2025-11-13',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Kompletna migracja ClientType i companyName wykonana - dodano enum ClientType, kolumny type, companyName i taxId',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawiono składnię SQL migracji - użyto IF NOT EXISTS i bezpiecznego tworzenia enum',
+      },
+    ],
+  },
+  {
     version: '0.5.3-beta',
     date: '2025-11-13',
     changes: [

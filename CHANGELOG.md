@@ -5,6 +5,20 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.4-beta] - 2025-11-13
+
+### Naprawiono
+- **Kompletna migracja ClientType i companyName:**
+  - Utworzono kompletną migrację `20251113120000_add_client_type_and_company_fields` która dodaje enum ClientType, kolumnę type, companyName i taxId
+  - Usunięto niepełną migrację `20251113102833_add_company_name_to_clients`
+  - Wykonano migrację bezpośrednio w bazie przez `prisma db execute` (migracja została wykonana pomyślnie)
+  - Poprawiono składnię SQL migracji (użyto `IF NOT EXISTS` i `DO $$ BEGIN ... END $$` dla bezpiecznego tworzenia enum)
+
+### Zmieniono
+- **Metoda wykonania migracji:**
+  - Użyto `railway ssh` z `prisma db execute --stdin` do wykonania SQL bezpośrednio w bazie
+  - Migracja została wykonana pomyślnie - logi pokazują "All migrations have been successfully applied"
+
 ## [0.5.3-beta] - 2025-11-13
 
 ### Naprawiono
