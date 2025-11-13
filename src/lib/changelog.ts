@@ -14,6 +14,32 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.0-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'added',
+        description: 'Implementacja funkcjonalności PRO - dodano strony dla zaawansowanych raportów, kluczy API, webhooków, niestandardowych pól i integracji',
+      },
+      {
+        type: 'added',
+        description: 'Strona "Funkcje PRO" - przegląd wszystkich dostępnych funkcji PRO z informacją o statusie',
+      },
+      {
+        type: 'added',
+        description: 'Nawigacja warunkowa - linki do funkcji PRO widoczne tylko dla użytkowników z planem PRO',
+      },
+      {
+        type: 'added',
+        description: 'Badge "PRO" obok użytkownika w nawigacji gdy ma plan PRO',
+      },
+      {
+        type: 'changed',
+        description: 'Walidacja planu w panelu administracyjnym - blokowanie włączania funkcji PRO dla organizacji z planem BASIC',
+      },
+    ],
+  },
+  {
     version: '0.5.5-beta',
     date: '2025-11-13',
     changes: [

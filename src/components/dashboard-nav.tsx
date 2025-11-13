@@ -18,9 +18,11 @@ import {
   Settings,
   Menu,
   X,
+  Crown,
 } from "lucide-react"
 import { WhatsNewButton } from "@/components/whats-new-button"
 import { useIsMobile } from "@/hooks/use-media-query"
+import { ProNavItems } from "@/components/pro-nav-items"
 
 interface DashboardNavProps {
   user: {
@@ -42,6 +44,8 @@ interface DashboardNavProps {
     primaryColor?: string
     themeName?: string
   } | null
+  enabledFeatures?: string[]
+  isPro?: boolean
 }
 
 const navigation = [
@@ -58,6 +62,8 @@ export function DashboardNav({
   systemLogo,
   userColorScheme,
   defaultColorScheme,
+  enabledFeatures = [],
+  isPro = false,
 }: DashboardNavProps) {
   const pathname = usePathname()
   const isMobile = useIsMobile()
@@ -144,13 +150,22 @@ export function DashboardNav({
                   </Link>
                 )
               })}
+              <ProNavItems enabledFeatures={enabledFeatures} />
             </div>
           </div>
           <div className="flex items-center space-x-2 md:space-x-4">
             {!isMobile && <WhatsNewButton />}
             {!isMobile && (
               <div className="text-sm text-foreground">
-                <div className="font-medium">{user.name || user.email}</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{user.name || user.email}</span>
+                  {isPro && (
+                    <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 flex items-center gap-1">
+                      <Crown className="h-3 w-3" />
+                      PRO
+                    </span>
+                  )}
+                </div>
                 {user.position && (
                   <div className="text-xs text-muted-foreground">{user.position}</div>
                 )}
@@ -220,6 +235,13 @@ export function DashboardNav({
                   </Link>
                 )
               })}
+              {/* Pro features in mobile menu */}
+              <div className="pt-2 border-t border-border space-y-1">
+                <ProNavItems
+                  enabledFeatures={enabledFeatures}
+                  onItemClick={() => setMobileMenuOpen(false)}
+                />
+              </div>
               <div className="pt-2 border-t border-border space-y-1">
                 <Link
                   href="/settings"

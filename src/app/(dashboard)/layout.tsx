@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { db } from "@/lib/db"
+import { getEnabledFeatures, isProPlan } from "@/lib/feature-flags"
 
 export default async function DashboardLayout({
   children,
@@ -24,13 +25,19 @@ export default async function DashboardLayout({
       image: true,
       role: true,
       position: true,
-      // organizationId: true, // Skip organization relation to avoid migration issues
+      organizationId: true,
     },
   })
 
   if (!user) {
     redirect("/signin")
   }
+
+  // Get enabled features and PRO status
+  const [enabledFeatures, isPro] = await Promise.all([
+    getEnabledFeatures(user.organizationId),
+    isProPlan(user.organizationId),
+  ])
 
   // Get system settings for branding (with error handling)
   let systemName = null
@@ -70,6 +77,8 @@ export default async function DashboardLayout({
         systemLogo={systemLogo?.value || null}
         userColorScheme={userPreferences}
         defaultColorScheme={parsedDefaultColorScheme}
+        enabledFeatures={enabledFeatures}
+        isPro={isPro}
       />
       <main className="max-w-[98%] mx-auto px-4 py-6">{children}</main>
     </div>

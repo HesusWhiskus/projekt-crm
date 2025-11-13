@@ -5,6 +5,58 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.0-beta] - 2025-01-15
+
+### Dodano
+- **Implementacja funkcjonalności PRO:**
+  - Strona "Funkcje PRO" (`/dashboard/pro-features`) - przegląd wszystkich dostępnych funkcji PRO
+  - Zaawansowane raporty (`/dashboard/reports`) - strona z dostępnymi raportami (sprzedażowy, aktywności, klientów)
+  - Klucze API (`/dashboard/settings/api-keys`) - zarządzanie kluczami API dla integracji zewnętrznych
+  - Webhooks (`/dashboard/settings/webhooks`) - zarządzanie webhookami dla automatycznych powiadomień
+  - Niestandardowe pola (`/dashboard/settings/custom-fields`) - zarządzanie niestandardowymi polami w formularzu klienta
+  - Integracje zewnętrzne (`/dashboard/integrations`) - szkielet dla integracji z zewnętrznymi systemami CRM
+
+- **Nawigacja warunkowa:**
+  - Linki do funkcji PRO widoczne tylko dla użytkowników z planem PRO
+  - Badge "PRO" obok użytkownika w nawigacji gdy ma plan PRO
+  - Sekcja "Funkcje PRO" w nawigacji ustawień z linkami do funkcji PRO
+
+- **Walidacja planu w panelu administracyjnym:**
+  - Blokowanie włączania funkcji PRO dla organizacji z planem BASIC
+  - Wizualne oznaczenie funkcji PRO (badge "PRO")
+  - Tooltip z informacją o wymaganym planie dla zablokowanych funkcji
+  - Walidacja po stronie API - odrzucanie prób włączenia funkcji PRO dla BASIC
+
+- **Komponenty wspólne:**
+  - `ProUpgradePrompt` - komponent do wyświetlania komunikatu "Ulepsz do PRO"
+  - `ProNavItems` - komponent nawigacji dla funkcji PRO
+
+### Zmieniono
+- **FeatureFlagsManager:**
+  - Dodano walidację planu organizacji przed włączeniem funkcji PRO
+  - Dodano wizualne oznaczenie funkcji PRO (badge)
+  - Dodano tooltip z informacją o wymaganym planie
+
+- **API endpoint feature flags:**
+  - Dodano walidację planu organizacji przed zapisem feature flags
+  - Zwracanie planu organizacji w odpowiedzi GET
+  - Odrzucanie prób włączenia funkcji PRO dla planu BASIC (403)
+
+- **DashboardNav:**
+  - Dodano przekazywanie enabled features i statusu PRO
+  - Dodano badge "PRO" obok użytkownika
+  - Dodano warunkową nawigację do funkcji PRO
+
+- **SettingsNav:**
+  - Dodano sekcję "Funkcje PRO" z linkami do funkcji PRO
+  - Linki widoczne tylko gdy funkcja jest włączona
+
+### Uwagi techniczne
+- Wszystkie strony funkcji PRO sprawdzają dostęp przed renderowaniem
+- Wszystkie endpointy API funkcji PRO powinny używać `requireFeature()` middleware (do implementacji w przyszłości)
+- Feature flags mogą nadpisać domyślne ustawienia planu (PRO może mieć wyłączoną funkcję)
+- Utworzono komponent Tooltip używając @radix-ui/react-tooltip
+
 ## [0.5.5-beta] - 2025-11-13
 
 ### Dodano

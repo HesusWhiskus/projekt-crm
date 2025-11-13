@@ -17,6 +17,13 @@ export const FEATURE_KEYS = {
 export type FeatureKey = typeof FEATURE_KEYS[keyof typeof FEATURE_KEYS]
 
 /**
+ * Check if a feature key is a PRO feature
+ */
+export function isProFeature(featureKey: FeatureKey): boolean {
+  return PRO_FEATURES.includes(featureKey)
+}
+
+/**
  * Features available in BASIC plan
  */
 export const BASIC_FEATURES: FeatureKey[] = [

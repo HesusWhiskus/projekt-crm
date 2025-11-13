@@ -3,7 +3,8 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
-import { FEATURE_KEYS, FeatureKey } from "@/lib/feature-flags"
+import { FEATURE_KEYS, PRO_FEATURES, FeatureKey } from "@/lib/feature-flags"
+import { PlanType } from "@prisma/client"
 
 const featureFlagSchema = z.object({
   featureKey: z.string(),
@@ -39,12 +40,21 @@ export async function GET(
     }
     const organizationId = params.id.trim()
 
-    const featureFlags = await db.featureFlag.findMany({
-      where: { organizationId },
-      orderBy: { featureKey: "asc" },
-    })
+    const [featureFlags, organization] = await Promise.all([
+      db.featureFlag.findMany({
+        where: { organizationId },
+        orderBy: { featureKey: "asc" },
+      }),
+      db.organization.findUnique({
+        where: { id: organizationId },
+        select: { plan: true },
+      }),
+    ])
 
-    return NextResponse.json({ featureFlags })
+    return NextResponse.json({
+      featureFlags,
+      organizationPlan: organization?.plan || null,
+    })
   } catch (error) {
     console.error("Get feature flags error:", error)
     return NextResponse.json(
@@ -81,6 +91,29 @@ export async function PATCH(
 
     const body = await request.json()
     const validatedData = updateFeatureFlagsSchema.parse(body)
+
+    // Get organization plan
+    const organization = await db.organization.findUnique({
+      where: { id: organizationId },
+      select: { plan: true },
+    })
+
+    if (!organization) {
+      return NextResponse.json({ error: "Organizacja nie znaleziona" }, { status: 404 })
+    }
+
+    // Validate PRO features for BASIC plan
+    for (const ff of validatedData.featureFlags) {
+      const isProFeature = PRO_FEATURES.includes(ff.featureKey as FeatureKey)
+      if (organization.plan === PlanType.BASIC && isProFeature && ff.enabled) {
+        return NextResponse.json(
+          {
+            error: `Funkcja "${ff.featureKey}" jest dostępna tylko dla planu PRO. Ulepsz plan organizacji do PRO, aby włączyć tę funkcję.`,
+          },
+          { status: 403 }
+        )
+      }
+    }
 
     // Update or create feature flags
     const updates = await Promise.all(

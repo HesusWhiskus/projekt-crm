@@ -4,8 +4,14 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { FEATURE_KEYS, FeatureKey } from "@/lib/feature-flags"
-import { Flag, Check, X } from "lucide-react"
+import { FEATURE_KEYS, PRO_FEATURES, FeatureKey } from "@/lib/feature-flags"
+import { Flag, Check, X, Info } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 interface FeatureFlagsManagerProps {
   organizationId: string
@@ -41,6 +47,7 @@ export function FeatureFlagsManager({
   onSuccess,
 }: FeatureFlagsManagerProps) {
   const [featureFlags, setFeatureFlags] = useState<Record<FeatureKey, boolean>>({} as Record<FeatureKey, boolean>)
+  const [organizationPlan, setOrganizationPlan] = useState<"BASIC" | "PRO" | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -53,6 +60,11 @@ export function FeatureFlagsManager({
           throw new Error("Nie udało się pobrać funkcji")
         }
         const data = await response.json()
+        
+        // Set organization plan
+        if (data.organizationPlan) {
+          setOrganizationPlan(data.organizationPlan)
+        }
         
         // Initialize all features as disabled
         const flags: Record<FeatureKey, boolean> = {} as Record<FeatureKey, boolean>
@@ -77,10 +89,22 @@ export function FeatureFlagsManager({
   }, [organizationId])
 
   const handleToggle = (featureKey: FeatureKey) => {
+    // Prevent toggling PRO features for BASIC plan
+    const isProFeature = PRO_FEATURES.includes(featureKey)
+    if (organizationPlan === "BASIC" && isProFeature) {
+      setError("Funkcje PRO są dostępne tylko dla planu PRO")
+      return
+    }
+    
     setFeatureFlags((prev) => ({
       ...prev,
       [featureKey]: !prev[featureKey],
     }))
+  }
+
+  const isFeatureDisabled = (featureKey: FeatureKey): boolean => {
+    const isProFeature = PRO_FEATURES.includes(featureKey)
+    return organizationPlan === "BASIC" && isProFeature
   }
 
   const handleSave = async () => {
@@ -141,37 +165,64 @@ export function FeatureFlagsManager({
         )}
 
         <div className="space-y-4">
-          {Object.values(FEATURE_KEYS).map((featureKey) => (
-            <div key={featureKey} className="flex items-start justify-between p-4 border rounded-lg">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Label htmlFor={featureKey} className="font-semibold cursor-pointer">
-                    {featureLabels[featureKey]}
-                  </Label>
-                  {featureFlags[featureKey] ? (
-                    <Check className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <X className="h-4 w-4 text-gray-400" />
+          {Object.values(FEATURE_KEYS).map((featureKey) => {
+            const isProFeature = PRO_FEATURES.includes(featureKey)
+            const isDisabled = isFeatureDisabled(featureKey)
+            
+            return (
+              <div key={featureKey} className={`flex items-start justify-between p-4 border rounded-lg ${isDisabled ? "opacity-60" : ""}`}>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Label htmlFor={featureKey} className="font-semibold cursor-pointer">
+                      {featureLabels[featureKey]}
+                    </Label>
+                    {isProFeature && (
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                        PRO
+                      </span>
+                    )}
+                    {featureFlags[featureKey] ? (
+                      <Check className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <X className="h-4 w-4 text-gray-400" />
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {featureDescriptions[featureKey]}
+                  </p>
+                  {isDisabled && (
+                    <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                      <Info className="h-3 w-3" />
+                      Wymaga planu PRO
+                    </p>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {featureDescriptions[featureKey]}
-                </p>
+                <div className="ml-4">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={featureFlags[featureKey]}
+                            onChange={() => handleToggle(featureKey)}
+                            disabled={isSaving || isDisabled}
+                            className="sr-only peer"
+                          />
+                          <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}></div>
+                        </label>
+                      </TooltipTrigger>
+                      {isDisabled && (
+                        <TooltipContent>
+                          <p>Funkcja PRO wymaga planu PRO</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </div>
-              <div className="ml-4">
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={featureFlags[featureKey]}
-                    onChange={() => handleToggle(featureKey)}
-                    disabled={isSaving}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         <div className="flex justify-end space-x-2 mt-6 pt-4 border-t">
