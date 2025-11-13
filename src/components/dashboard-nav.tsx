@@ -19,10 +19,13 @@ import {
   Menu,
   X,
   Crown,
+  Sparkles,
 } from "lucide-react"
 import { WhatsNewButton } from "@/components/whats-new-button"
 import { useIsMobile } from "@/hooks/use-media-query"
 import { ProNavItems } from "@/components/pro-nav-items"
+import { MoreMenu } from "@/components/more-menu"
+import { FEATURE_KEYS } from "@/lib/feature-flags"
 
 interface DashboardNavProps {
   user: {
@@ -100,8 +103,8 @@ export function DashboardNav({
   return (
     <nav className="bg-card border-b border-border">
       <div className="max-w-[98%] mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
+        <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center space-x-4 md:space-x-6 flex-shrink-0">
             <Link
               href="/dashboard"
               className="flex flex-col items-center space-y-1"
@@ -130,7 +133,7 @@ export function DashboardNav({
                 <span className="text-xl font-bold">{systemName}</span>
               )}
             </Link>
-            <div className="hidden md:flex space-x-1">
+            <div className="hidden md:flex items-center space-x-1 flex-1 overflow-x-auto">
               {navigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
@@ -139,7 +142,7 @@ export function DashboardNav({
                     key={item.name}
                     href={item.href}
                     prefetch={true}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center space-x-2 px-2 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                       isActive
                         ? "bg-primary text-primary-foreground"
                         : "text-foreground hover:bg-muted"
@@ -151,10 +154,10 @@ export function DashboardNav({
                 )
               })}
               <ProNavItems enabledFeatures={enabledFeatures} />
+              <MoreMenu enabledFeatures={enabledFeatures} />
             </div>
           </div>
-          <div className="flex items-center space-x-2 md:space-x-4">
-            {!isMobile && <WhatsNewButton />}
+          <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
             {!isMobile && (
               <div className="text-sm text-foreground">
                 <div className="flex items-center gap-2">
@@ -174,6 +177,7 @@ export function DashboardNav({
                 )}
               </div>
             )}
+            {!isMobile && <WhatsNewButton />}
             {!isMobile && (
               <>
                 <Link href="/settings">
@@ -241,6 +245,30 @@ export function DashboardNav({
                   enabledFeatures={enabledFeatures}
                   onItemClick={() => setMobileMenuOpen(false)}
                 />
+                {/* More menu items in mobile */}
+                <div className="px-3 py-2">
+                  <div className="text-xs font-semibold text-muted-foreground uppercase mb-2">Więcej</div>
+                  <div className="space-y-1">
+                    <Link
+                      href="/pro-features"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
+                    >
+                      <Sparkles className="h-5 w-5" />
+                      <span>Funkcje PRO</span>
+                    </Link>
+                    {enabledFeatures.includes(FEATURE_KEYS.EXTERNAL_INTEGRATIONS) && (
+                      <Link
+                        href="/integrations"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
+                      >
+                        <Settings className="h-5 w-5" />
+                        <span>Integracje</span>
+                      </Link>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="pt-2 border-t border-border space-y-1">
                 <Link

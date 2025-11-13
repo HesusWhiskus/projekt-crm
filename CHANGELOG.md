@@ -5,6 +5,32 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.1-beta] - 2025-01-15
+
+### Naprawiono
+- **Nawigacja górna:** Optymalizacja layoutu nawigacji - przeniesienie mniej używanych funkcji do menu "Więcej", zmniejszenie paddingu, poprawa responsywności
+- **Routing 404:** Naprawiono błędy 404 dla stron Raporty, Funkcje PRO i Integracje - poprawiono linki zgodnie z Next.js App Router
+- **Formularze tworzenia:** Dodano działające formularze dla kluczy API, webhooków i niestandardowych pól z modalem Dialog
+- **Przyciski "Utwórz":** Naprawiono nieaktywne przyciski w ustawieniach - dodano onClick handlery i integrację z formularzami
+
+### Dodano
+- **Komponent MoreMenu:** Dropdown menu dla mniej używanych funkcji (Funkcje PRO, Integracje)
+- **Formularze PRO:** 
+  - `ApiKeyForm` - formularz tworzenia kluczy API
+  - `WebhookForm` - formularz tworzenia webhooków z wyborem zdarzeń
+  - `CustomFieldForm` - formularz tworzenia niestandardowych pól z obsługą różnych typów
+- **API endpoints:**
+  - `/api/settings/api-keys` - GET, POST dla kluczy API
+  - `/api/settings/webhooks` - GET, POST dla webhooków
+  - `/api/settings/custom-fields` - GET, POST dla niestandardowych pól
+- **Komponenty UI:** Dialog, Checkbox, DropdownMenu (Radix UI)
+
+### Zmieniono
+- **DashboardNav:** Zoptymalizowano layout, dodano MoreMenu, poprawiono responsywność
+- **ProNavItems:** Usunięto "Funkcje PRO" i "Integracje" (przeniesione do MoreMenu), pozostawiono tylko "Raporty"
+- **Middleware:** Dodano explicit routes dla `/reports`, `/pro-features`, `/integrations`
+- **Linki:** Zaktualizowano wszystkie linki z `/dashboard/...` na `/...` zgodnie z App Router
+
 ## [0.6.0-beta] - 2025-01-15
 
 ### Dodano

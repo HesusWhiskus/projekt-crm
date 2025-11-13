@@ -39,7 +39,7 @@ export default async function ReportsPage() {
               Ulepsz plan swojej organizacji do PRO, aby uzyskać dostęp do zaawansowanych raportów
               i analityki.
             </p>
-            <Link href="/dashboard/pro-features">
+            <Link href="/pro-features">
               <Button>
                 Zobacz funkcje PRO
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -57,7 +57,7 @@ export default async function ReportsPage() {
       title: "Raport sprzedażowy",
       description: "Analiza pipeline, konwersji i przychodów",
       icon: TrendingUp,
-      href: "/dashboard/reports/sales",
+      href: "/reports/sales",
       color: "text-blue-600",
     },
     {
@@ -65,7 +65,7 @@ export default async function ReportsPage() {
       title: "Raport aktywności",
       description: "Kontakty, zadania i follow-up",
       icon: Calendar,
-      href: "/dashboard/reports/activity",
+      href: "/reports/activity",
       color: "text-green-600",
     },
     {
@@ -73,7 +73,7 @@ export default async function ReportsPage() {
       title: "Raport klientów",
       description: "Status, priorytet, źródło leadów",
       icon: Users,
-      href: "/dashboard/reports/clients",
+      href: "/reports/clients",
       color: "text-purple-600",
     },
   ]

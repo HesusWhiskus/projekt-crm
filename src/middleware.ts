@@ -7,6 +7,9 @@ export async function middleware(request: NextRequest) {
   
   // Only log for protected routes to avoid spam (only in development)
   const isProtectedRoute = pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/reports") ||
+    pathname.startsWith("/pro-features") ||
+    pathname.startsWith("/integrations") ||
     pathname.startsWith("/clients") ||
     pathname.startsWith("/contacts") ||
     pathname.startsWith("/tasks") ||
@@ -62,6 +65,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/reports/:path*",
+    "/pro-features/:path*",
+    "/integrations/:path*",
     "/clients/:path*",
     "/contacts/:path*",
     "/tasks/:path*",

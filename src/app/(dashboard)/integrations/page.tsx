@@ -38,7 +38,7 @@ export default async function IntegrationsPage() {
             <p className="text-muted-foreground mb-4">
               Ulepsz plan swojej organizacji do PRO, aby uzyskać dostęp do integracji zewnętrznych.
             </p>
-            <Link href="/dashboard/pro-features">
+            <Link href="/pro-features">
               <Button>
                 Zobacz funkcje PRO
                 <ArrowRight className="h-4 w-4 ml-2" />

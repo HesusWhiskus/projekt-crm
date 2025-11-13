@@ -18,22 +18,11 @@ export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) 
   const proNavItems = [
     {
       name: "Raporty",
-      href: "/dashboard/reports",
+      href: "/reports",
       icon: BarChart3,
       featureKey: FEATURE_KEYS.ADVANCED_REPORTS,
     },
-    {
-      name: "Funkcje PRO",
-      href: "/dashboard/pro-features",
-      icon: Sparkles,
-      alwaysVisible: true, // Always show link to pro-features page
-    },
-    {
-      name: "Integracje",
-      href: "/dashboard/integrations",
-      icon: Settings,
-      featureKey: FEATURE_KEYS.EXTERNAL_INTEGRATIONS,
-    },
+    // "Funkcje PRO" and "Integracje" are now in MoreMenu
   ]
 
   const visibleItems = proNavItems.filter(
@@ -46,7 +35,7 @@ export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) 
 
   const baseClasses = isMobile
     ? "flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-colors min-h-[44px]"
-    : "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+    : "flex items-center space-x-2 px-2 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
 
   return (
     <>

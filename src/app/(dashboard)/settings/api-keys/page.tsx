@@ -39,7 +39,7 @@ export default async function ApiKeysPage() {
             <p className="text-muted-foreground mb-4">
               Ulepsz plan swojej organizacji do PRO, aby uzyskać dostęp do zarządzania kluczami API.
             </p>
-            <Link href="/dashboard/pro-features">
+            <Link href="/pro-features">
               <Button>
                 Zobacz funkcje PRO
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -63,10 +63,6 @@ export default async function ApiKeysPage() {
             Generuj i zarządzaj kluczami API do integracji zewnętrznych
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nowy klucz
-        </Button>
       </div>
 
       <ApiKeysList />

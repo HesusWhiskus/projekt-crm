@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { FileEdit, Trash2, Edit } from "lucide-react"
+import { FileEdit, Trash2, Edit, Plus } from "lucide-react"
+import { CustomFieldForm } from "./custom-field-form"
 
 interface CustomField {
   id: string
@@ -16,11 +17,24 @@ interface CustomField {
 export function CustomFieldsList() {
   const [fields, setFields] = useState<CustomField[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+
+  const fetchFields = async () => {
+    try {
+      const response = await fetch("/api/settings/custom-fields")
+      if (response.ok) {
+        const data = await response.json()
+        setFields(data.fields || [])
+      }
+    } catch (err) {
+      console.error("Error fetching custom fields:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    // TODO: Fetch custom fields from API
-    // For now, show empty state
-    setIsLoading(false)
+    fetchFields()
   }, [])
 
   if (isLoading) {
@@ -33,32 +47,43 @@ export function CustomFieldsList() {
     )
   }
 
-  if (fields.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Brak niestandardowych pól</CardTitle>
-          <CardDescription>
-            Utwórz swoje pierwsze niestandardowe pole, aby rozszerzyć formularz klienta
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Niestandardowe pola pozwalają na dodanie dodatkowych informacji do formularza klienta,
-            takich jak specjalne identyfikatory, dodatkowe dane kontaktowe czy inne informacje
-            specyficzne dla Twojej organizacji.
-          </p>
-          <Button>
-            <FileEdit className="h-4 w-4 mr-2" />
-            Utwórz pole
-          </Button>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
-    <div className="space-y-4">
+    <>
+      <CustomFieldForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        onSuccess={() => {
+          fetchFields()
+        }}
+      />
+      {fields.length === 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Brak niestandardowych pól</CardTitle>
+            <CardDescription>
+              Utwórz swoje pierwsze niestandardowe pole, aby rozszerzyć formularz klienta
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Niestandardowe pola pozwalają na dodanie dodatkowych informacji do formularza klienta,
+              takich jak specjalne identyfikatory, dodatkowe dane kontaktowe czy inne informacje
+              specyficzne dla Twojej organizacji.
+            </p>
+            <Button onClick={() => setIsFormOpen(true)}>
+              <FileEdit className="h-4 w-4 mr-2" />
+              Utwórz pole
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={() => setIsFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Nowe pole
+            </Button>
+          </div>
       {fields.map((field) => (
         <Card key={field.id}>
           <CardHeader>
@@ -91,7 +116,9 @@ export function CustomFieldsList() {
           )}
         </Card>
       ))}
-    </div>
+        </div>
+      )}
+    </>
   )
 }
 

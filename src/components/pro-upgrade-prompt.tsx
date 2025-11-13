@@ -24,7 +24,7 @@ export function ProUpgradePrompt({ featureName, description }: ProUpgradePromptP
         <p className="text-muted-foreground mb-4">
           Ulepsz plan swojej organizacji do PRO, aby uzyskać dostęp do tej funkcji.
         </p>
-        <Link href="/dashboard/pro-features">
+        <Link href="/pro-features">
           <Button>
             Zobacz funkcje PRO
             <ArrowRight className="h-4 w-4 ml-2" />

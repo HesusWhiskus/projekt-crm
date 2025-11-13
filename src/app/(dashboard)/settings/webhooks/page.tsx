@@ -39,7 +39,7 @@ export default async function WebhooksPage() {
             <p className="text-muted-foreground mb-4">
               Ulepsz plan swojej organizacji do PRO, aby uzyskać dostęp do zarządzania webhookami.
             </p>
-            <Link href="/dashboard/pro-features">
+            <Link href="/pro-features">
               <Button>
                 Zobacz funkcje PRO
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -63,10 +63,6 @@ export default async function WebhooksPage() {
             Konfiguruj webhooks do automatycznego powiadamiania zewnętrznych systemów
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nowy webhook
-        </Button>
       </div>
 
       <WebhooksList />

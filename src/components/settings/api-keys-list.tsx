@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Key, Copy, Trash2, Calendar } from "lucide-react"
+import { Key, Copy, Trash2, Calendar, Plus } from "lucide-react"
+import { ApiKeyForm } from "./api-key-form"
 
 interface ApiKey {
   id: string
@@ -15,11 +16,24 @@ interface ApiKey {
 export function ApiKeysList() {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+
+  const fetchApiKeys = async () => {
+    try {
+      const response = await fetch("/api/settings/api-keys")
+      if (response.ok) {
+        const data = await response.json()
+        setApiKeys(data.apiKeys || [])
+      }
+    } catch (err) {
+      console.error("Error fetching API keys:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    // TODO: Fetch API keys from API
-    // For now, show empty state
-    setIsLoading(false)
+    fetchApiKeys()
   }, [])
 
   if (isLoading) {
@@ -32,31 +46,42 @@ export function ApiKeysList() {
     )
   }
 
-  if (apiKeys.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Brak kluczy API</CardTitle>
-          <CardDescription>
-            Utwórz swój pierwszy klucz API, aby rozpocząć integrację z systemem
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Klucze API pozwalają na bezpieczne połączenie zewnętrznych aplikacji z systemem CRM.
-          </p>
-          <Button>
-            <Key className="h-4 w-4 mr-2" />
-            Utwórz klucz API
-          </Button>
-        </CardContent>
-      </Card>
-    )
-  }
-
   return (
-    <div className="space-y-4">
-      {apiKeys.map((key) => (
+    <>
+      <ApiKeyForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        onSuccess={() => {
+          fetchApiKeys()
+        }}
+      />
+      {apiKeys.length === 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Brak kluczy API</CardTitle>
+            <CardDescription>
+              Utwórz swój pierwszy klucz API, aby rozpocząć integrację z systemem
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Klucze API pozwalają na bezpieczne połączenie zewnętrznych aplikacji z systemem CRM.
+            </p>
+            <Button onClick={() => setIsFormOpen(true)}>
+              <Key className="h-4 w-4 mr-2" />
+              Utwórz klucz API
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={() => setIsFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Nowy klucz
+            </Button>
+          </div>
+        {apiKeys.map((key) => (
         <Card key={key.id}>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -89,7 +114,9 @@ export function ApiKeysList() {
           </CardContent>
         </Card>
       ))}
-    </div>
+        </div>
+      )}
+    </>
   )
 }
 

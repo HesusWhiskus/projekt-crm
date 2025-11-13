@@ -28,11 +28,11 @@ const featureDescriptions: Record<string, string> = {
 }
 
 const featureLinks: Record<string, string> = {
-  [FEATURE_KEYS.ADVANCED_REPORTS]: "/dashboard/reports",
-  [FEATURE_KEYS.API_KEYS]: "/dashboard/settings/api-keys",
-  [FEATURE_KEYS.WEBHOOKS]: "/dashboard/settings/webhooks",
-  [FEATURE_KEYS.CUSTOM_FIELDS]: "/dashboard/settings/custom-fields",
-  [FEATURE_KEYS.EXTERNAL_INTEGRATIONS]: "/dashboard/integrations",
+  [FEATURE_KEYS.ADVANCED_REPORTS]: "/reports",
+  [FEATURE_KEYS.API_KEYS]: "/settings/api-keys",
+  [FEATURE_KEYS.WEBHOOKS]: "/settings/webhooks",
+  [FEATURE_KEYS.CUSTOM_FIELDS]: "/settings/custom-fields",
+  [FEATURE_KEYS.EXTERNAL_INTEGRATIONS]: "/integrations",
 }
 
 export default async function ProFeaturesPage() {

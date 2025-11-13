@@ -14,6 +14,52 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.1-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Optymalizacja nawigacji górnej - przeniesienie mniej używanych funkcji do menu "Więcej", poprawa responsywności',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono błędy 404 dla stron Raporty, Funkcje PRO i Integracje - poprawiono linki zgodnie z Next.js App Router',
+      },
+      {
+        type: 'fixed',
+        description: 'Dodano działające formularze dla kluczy API, webhooków i niestandardowych pól z modalem Dialog',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono nieaktywne przyciski "Utwórz" w ustawieniach - dodano onClick handlery i integrację z formularzami',
+      },
+      {
+        type: 'added',
+        description: 'Komponent MoreMenu z dropdown dla mniej używanych funkcji (Funkcje PRO, Integracje)',
+      },
+      {
+        type: 'added',
+        description: 'Formularze tworzenia: ApiKeyForm, WebhookForm, CustomFieldForm z pełną funkcjonalnością',
+      },
+      {
+        type: 'added',
+        description: 'API endpoints dla kluczy API, webhooków i niestandardowych pól z walidacją uprawnień PRO',
+      },
+      {
+        type: 'added',
+        description: 'Komponenty UI: Dialog, Checkbox, DropdownMenu (Radix UI)',
+      },
+      {
+        type: 'changed',
+        description: 'Zoptymalizowano layout nawigacji DashboardNav - zmniejszono padding, dodano MoreMenu',
+      },
+      {
+        type: 'changed',
+        description: 'Zaktualizowano wszystkie linki z /dashboard/... na /... zgodnie z Next.js App Router',
+      },
+    ],
+  },
+  {
     version: '0.6.0-beta',
     date: '2025-01-15',
     changes: [
