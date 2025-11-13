@@ -1,11 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select } from "@/components/ui/select"
 import { CardContent } from "@/components/ui/card"
+
+interface Organization {
+  id: string
+  name: string
+  plan: string
+}
 
 export default function SignUpForm() {
   const router = useRouter()
@@ -15,9 +22,26 @@ export default function SignUpForm() {
     password: "",
     confirmPassword: "",
     position: "",
+    organizationId: "",
   })
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Pobierz listę organizacji przy mount
+    fetch("/api/organizations")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.organizations) {
+          setOrganizations(data.organizations)
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching organizations:", err)
+        // Nie pokazuj błędu użytkownikowi - organizacja jest opcjonalna
+      })
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,6 +70,7 @@ export default function SignUpForm() {
           email: formData.email,
           password: formData.password,
           position: formData.position,
+          organizationId: formData.organizationId || undefined,
         }),
       })
 
@@ -107,6 +132,24 @@ export default function SignUpForm() {
             disabled={isLoading}
           />
         </div>
+        {organizations.length > 0 && (
+          <div className="space-y-2">
+            <Label htmlFor="organizationId">Organizacja (opcjonalnie)</Label>
+            <Select
+              id="organizationId"
+              value={formData.organizationId}
+              onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
+              disabled={isLoading}
+            >
+              <option value="">Brak organizacji</option>
+              {organizations.map((org) => (
+                <option key={org.id} value={org.id}>
+                  {org.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
         <div className="space-y-2">
           <Label htmlFor="password">Hasło</Label>
           <Input

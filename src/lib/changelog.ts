@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.2-beta',
+    date: '2025-11-13',
+    changes: [
+      {
+        type: 'added',
+        description: 'Wybór organizacji w rejestracji - możliwość wyboru organizacji podczas rejestracji konta',
+      },
+      {
+        type: 'fixed',
+        description: 'Błąd Application error - dodano komentarze wskazujące na wymaganą migrację companyName',
+      },
+    ],
+  },
+  {
     version: '0.5.1-beta',
     date: '2025-11-13',
     changes: [

@@ -5,6 +5,24 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.2-beta] - 2025-11-13
+
+### Dodano
+- **Wybór organizacji w rejestracji:**
+  - Endpoint GET `/api/organizations` do pobierania listy organizacji (publiczny)
+  - Pole wyboru organizacji w formularzu rejestracji (opcjonalne)
+  - Obsługa `organizationId` w endpoincie rejestracji z walidacją
+
+### Naprawiono
+- **Błąd Application error:**
+  - Dodano komentarze wskazujące na wymaganą migrację `20251113102833_add_company_name_to_clients`
+  - Komponenty używają optional chaining dla bezpiecznego dostępu do `companyName`
+
+### Uwagi techniczne
+- **Wymagana migracja:** Przed wdrożeniem należy wykonać migrację `20251113102833_add_company_name_to_clients` w produkcji
+- Endpoint `/api/organizations` jest publiczny i nie wymaga autoryzacji (potrzebny do formularza rejestracji)
+- Wybór organizacji w rejestracji jest opcjonalny - użytkownicy mogą rejestrować się bez organizacji
+
 ## [0.5.1-beta] - 2025-11-13
 
 ### Naprawiono

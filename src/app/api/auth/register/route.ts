@@ -12,6 +12,7 @@ const registerSchema = z.object({
   email: z.string().email("Nieprawidłowy adres email"),
   password: z.string().min(8, "Hasło musi mieć co najmniej 8 znaków"),
   position: z.string().optional(),
+  organizationId: z.string().optional(),
 })
 
 /**
@@ -139,6 +140,20 @@ export async function POST(request: Request) {
       )
     }
 
+    // Validate organization if provided
+    if (validatedData.organizationId) {
+      const organization = await db.organization.findUnique({
+        where: { id: validatedData.organizationId },
+      })
+
+      if (!organization) {
+        return NextResponse.json(
+          { error: "Podana organizacja nie istnieje" },
+          { status: 400 }
+        )
+      }
+    }
+
     // Hash password
     const hashedPassword = await hash(validatedData.password, 10)
 
@@ -150,6 +165,7 @@ export async function POST(request: Request) {
         password: hashedPassword,
         position: validatedData.position,
         role: "USER",
+        organizationId: validatedData.organizationId || null,
       },
     })
 

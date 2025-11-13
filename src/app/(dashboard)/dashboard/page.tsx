@@ -58,7 +58,7 @@ export default async function DashboardPage() {
             id: true,
             firstName: true,
             lastName: true,
-            companyName: true,
+            companyName: true, // Wymagana migracja: 20251113102833_add_company_name_to_clients
             type: true 
           } 
         } 
