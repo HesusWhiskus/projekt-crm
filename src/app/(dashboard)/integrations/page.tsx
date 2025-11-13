@@ -51,24 +51,29 @@ export default async function IntegrationsPage() {
   }
 
   // Available integrations (skeleton - to be implemented)
-  const integrations = [
+  const integrations: Array<{
+    id: string
+    name: string
+    description: string
+    status: "not_configured" | "configured"
+  }> = [
     {
       id: "salesforce",
       name: "Salesforce",
       description: "Synchronizacja klientów i kontaktów z Salesforce",
-      status: "not_configured" as const,
+      status: "not_configured",
     },
     {
       id: "hubspot",
       name: "HubSpot",
       description: "Dwukierunkowa synchronizacja z HubSpot CRM",
-      status: "not_configured" as const,
+      status: "not_configured",
     },
     {
       id: "pipedrive",
       name: "Pipedrive",
       description: "Import i eksport danych z Pipedrive",
-      status: "not_configured" as const,
+      status: "not_configured",
     },
   ]
 
