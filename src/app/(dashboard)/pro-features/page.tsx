@@ -78,6 +78,68 @@ export default async function ProFeaturesPage() {
 
   const isPro = organizationPlan === "PRO"
 
+  // If user doesn't have PRO plan, show upgrade prompt instead of features list
+  if (!isPro) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="h-8 w-8 text-purple-600" />
+            <h1 className="text-3xl font-bold">Funkcje PRO</h1>
+          </div>
+          <p className="text-muted-foreground">
+            Funkcje PRO są dostępne tylko dla organizacji z planem PRO
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Funkcje PRO niedostępne</CardTitle>
+            <CardDescription>
+              {organizationPlan
+                ? `Obecnie masz plan: ${organizationPlan === "PRO" ? "PRO" : "BASIC"}`
+                : "Nie jesteś przypisany do żadnej organizacji"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-amber-600">
+                <X className="h-5 w-5" />
+                <span className="font-semibold">
+                  {organizationPlan === "BASIC"
+                    ? "Ulepsz plan swojej organizacji do PRO, aby uzyskać dostęp do wszystkich funkcji PRO"
+                    : "Przypisz się do organizacji z planem PRO, aby uzyskać dostęp do funkcji PRO"}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Funkcje PRO obejmują:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-4">
+                <li>Zaawansowane raporty i analityka</li>
+                <li>Integracje zewnętrzne z systemami sprzedażowymi i porównywarkami</li>
+                <li>Klucze API do integracji</li>
+                <li>Webhooks dla automatycznych powiadomień</li>
+                <li>Niestandardowe pola w formularzach</li>
+                <li>Zakładki integracji w szczegółach klienta</li>
+              </ul>
+              {user.role === "ADMIN" && (
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+                  <p className="text-sm text-blue-900 dark:text-blue-100">
+                    Jako administrator możesz ulepszyć plan organizacji w{" "}
+                    <Link href="/admin/organizations" className="underline font-semibold">
+                      panelu administracyjnym
+                    </Link>
+                    .
+                  </p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -95,27 +157,14 @@ export default async function ProFeaturesPage() {
         <CardHeader>
           <CardTitle>Twój plan</CardTitle>
           <CardDescription>
-            {organizationPlan
-              ? `Obecnie masz plan: ${organizationPlan === "PRO" ? "PRO" : "BASIC"}`
-              : "Nie jesteś przypisany do żadnej organizacji"}
+            Obecnie masz plan: PRO
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isPro ? (
-            <div className="flex items-center gap-2 text-green-600">
-              <Check className="h-5 w-5" />
-              <span className="font-semibold">Masz dostęp do wszystkich funkcji PRO</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 text-amber-600">
-              <X className="h-5 w-5" />
-              <span className="font-semibold">
-                {organizationPlan === "BASIC"
-                  ? "Ulepsz plan do PRO, aby uzyskać dostęp do wszystkich funkcji"
-                  : "Przypisz się do organizacji z planem PRO, aby uzyskać dostęp"}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-green-600">
+            <Check className="h-5 w-5" />
+            <span className="font-semibold">Masz dostęp do wszystkich funkcji PRO</span>
+          </div>
         </CardContent>
       </Card>
 
@@ -153,7 +202,7 @@ export default async function ProFeaturesPage() {
                 )}
                 {!feature.enabled && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    Wymaga planu PRO i włączenia funkcji przez administratora
+                    Wymaga włączenia funkcji przez administratora w panelu administracyjnym
                   </p>
                 )}
               </CardContent>

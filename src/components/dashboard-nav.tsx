@@ -200,30 +200,34 @@ export function DashboardNav({
                   enabledFeatures={enabledFeatures}
                   onItemClick={() => setMobileMenuOpen(false)}
                 />
-                {/* More menu items in mobile */}
-                <div className="px-3 py-2">
-                  <div className="text-xs font-semibold text-muted-foreground uppercase mb-2">Więcej</div>
-                  <div className="space-y-1">
-                    <Link
-                      href="/pro-features"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
-                    >
-                      <Sparkles className="h-5 w-5" />
-                      <span>Funkcje PRO</span>
-                    </Link>
-                    {enabledFeatures.includes(FEATURE_KEYS.EXTERNAL_INTEGRATIONS) && (
-                      <Link
-                        href="/integrations"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
-                      >
-                        <Settings className="h-5 w-5" />
-                        <span>Integracje</span>
-                      </Link>
-                    )}
+                {/* More menu items in mobile - only show if user has PRO or enabled features */}
+                {(isPro || enabledFeatures.includes(FEATURE_KEYS.EXTERNAL_INTEGRATIONS)) && (
+                  <div className="px-3 py-2">
+                    <div className="text-xs font-semibold text-muted-foreground uppercase mb-2">Więcej</div>
+                    <div className="space-y-1">
+                      {isPro && (
+                        <Link
+                          href="/pro-features"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
+                        >
+                          <Sparkles className="h-5 w-5" />
+                          <span>Funkcje PRO</span>
+                        </Link>
+                      )}
+                      {enabledFeatures.includes(FEATURE_KEYS.EXTERNAL_INTEGRATIONS) && (
+                        <Link
+                          href="/integrations"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium text-foreground hover:bg-muted min-h-[44px]"
+                        >
+                          <Settings className="h-5 w-5" />
+                          <span>Integracje</span>
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
               <div className="pt-2 border-t border-border space-y-1">
                 <Link

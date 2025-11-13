@@ -53,10 +53,12 @@ export async function isFeatureEnabled(
   organizationId: string | null,
   featureKey: FeatureKey
 ): Promise<boolean> {
-  // If organizationId is null, check global/system features
+  // If organizationId is null, user has no organization
+  // PRO features are never available without organization
   if (!organizationId) {
-    // Global features are always enabled for system-level operations
-    return true
+    // Only basic features (if any) are available without organization
+    // PRO features require organization with PRO plan
+    return BASIC_FEATURES.includes(featureKey)
   }
 
   // Get organization with its plan

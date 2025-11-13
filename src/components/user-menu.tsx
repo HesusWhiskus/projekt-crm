@@ -36,7 +36,7 @@ export function UserMenu({ user, enabledFeatures, isPro }: UserMenuProps) {
       name: "Funkcje PRO",
       href: "/pro-features",
       icon: Sparkles,
-      alwaysVisible: true,
+      showOnlyIfPro: true, // Show only if user has PRO plan
     },
     {
       name: "Integracje",
@@ -46,9 +46,15 @@ export function UserMenu({ user, enabledFeatures, isPro }: UserMenuProps) {
     },
   ]
 
-  const visibleMoreItems = moreItems.filter(
-    (item) => item.alwaysVisible || (item.featureKey && enabledFeatures.includes(item.featureKey))
-  )
+  const visibleMoreItems = moreItems.filter((item) => {
+    if (item.showOnlyIfPro) {
+      return isPro // Only show "Funkcje PRO" if user has PRO plan
+    }
+    if (item.featureKey) {
+      return enabledFeatures.includes(item.featureKey)
+    }
+    return false
+  })
 
   return (
     <DropdownMenu>
