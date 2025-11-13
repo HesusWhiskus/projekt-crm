@@ -5,6 +5,20 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.5.3-beta] - 2025-11-13
+
+### Naprawiono
+- **Migracja companyName wykonana:**
+  - Migracja `20251113102833_add_company_name_to_clients` została wykonana w produkcji przez `railway ssh`
+  - Przywrócono `companyName: true` we wszystkich selectach Prisma (16 miejsc w 12 plikach)
+  - Przywrócono `companyName` w filtrach wyszukiwania
+  - Przywrócono pełną funkcjonalność obsługi klientów typu COMPANY
+
+### Zmieniono
+- **Metoda wykonania migracji:**
+  - Użyto `railway ssh` zamiast `railway run` (Railway CLI nie może połączyć się z bazą przez `railway run`)
+  - Migracje są również wykonywane automatycznie przy starcie aplikacji przez skrypt startowy w Dockerfile
+
 ## [0.5.2-beta] - 2025-11-13
 
 ### Dodano

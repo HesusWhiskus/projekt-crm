@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.5.3-beta',
+    date: '2025-11-13',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Migracja companyName wykonana - przywrócono pełną funkcjonalność obsługi klientów typu COMPANY',
+      },
+      {
+        type: 'changed',
+        description: 'Użyto railway ssh do wykonania migracji (Railway CLI nie może połączyć się z bazą przez railway run)',
+      },
+    ],
+  },
+  {
     version: '0.5.2-beta',
     date: '2025-11-13',
     changes: [
