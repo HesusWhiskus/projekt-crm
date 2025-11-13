@@ -54,22 +54,21 @@ enum PlanType {
   PRO
 }
 
-
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  image         String?
-  password      String? // Nullable for OAuth users
-  role          UserRole  @default(USER)
-  position      String?
+  id             String    @id @default(cuid())
+  email          String    @unique
+  emailVerified  DateTime?
+  name           String?
+  image          String?
+  password       String? // Nullable for OAuth users
+  role           UserRole  @default(USER)
+  position       String?
   organizationId String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   // Relations
-  organization    Organization? @relation(fields: [organizationId], references: [id])
+  organization    Organization?    @relation(fields: [organizationId], references: [id])
   assignedClients Client[]         @relation("ClientAssignee")
   assignedTasks   Task[]           @relation("TaskAssignee")
   contacts        Contact[]
@@ -137,12 +136,12 @@ model Client {
   updatedAt      DateTime        @updatedAt
 
   // Relations
-  organization   Organization?   @relation(fields: [organizationId], references: [id])
-  assignee      User?                 @relation("ClientAssignee", fields: [assignedTo], references: [id])
-  contacts      Contact[]
-  tasks         Task[]
-  statusHistory ClientStatusHistory[]
-  sharedGroups  Group[]               @relation("GroupSharedClients")
+  organization    Organization?         @relation(fields: [organizationId], references: [id])
+  assignee        User?                 @relation("ClientAssignee", fields: [assignedTo], references: [id])
+  contacts        Contact[]
+  tasks           Task[]
+  statusHistory   ClientStatusHistory[]
+  sharedGroups    Group[]               @relation("GroupSharedClients")
   integrationTabs IntegrationTab[]
 
   @@index([assignedTo])
@@ -282,14 +281,15 @@ model Organization {
   id        String   @id @default(cuid())
   name      String
   plan      PlanType @default(BASIC)
-  settings  Json?    // Konfiguracja funkcji per-organizacja
+  settings  Json? // Konfiguracja funkcji per-organizacja
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  users       User[]
-  clients     Client[]
+  users        User[]
+  clients      Client[]
   featureFlags FeatureFlag[]
+  customFields CustomField[]
 
   @@map("organizations")
 }
@@ -297,14 +297,14 @@ model Organization {
 model FeatureFlag {
   id             String   @id @default(cuid())
   organizationId String?
-  featureKey     String   // np. "multi_tenant", "advanced_reports", "external_integrations"
+  featureKey     String // np. "multi_tenant", "advanced_reports", "external_integrations"
   enabled        Boolean  @default(false)
-  config         Json?    // Dodatkowa konfiguracja
+  config         Json? // Dodatkowa konfiguracja
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   // Relations
-  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, featureKey])
   @@index([organizationId])
@@ -316,7 +316,7 @@ model IntegrationTab {
   id        String   @id @default(cuid())
   clientId  String
   title     String
-  content   Json     // Dynamiczna zawartość zakładki
+  content   Json // Dynamiczna zawartość zakładki
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -327,4 +327,22 @@ model IntegrationTab {
   @@index([clientId])
   @@index([order])
   @@map("integration_tabs")
+}
+
+model CustomField {
+  id             String   @id @default(cuid())
+  organizationId String?
+  name           String
+  type           String // TEXT, NUMBER, DATE, SELECT
+  required       Boolean  @default(false)
+  options        Json? // Opcje dla typu SELECT
+  order          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("custom_fields")
 }

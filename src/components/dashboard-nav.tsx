@@ -24,7 +24,7 @@ import {
 import { WhatsNewButton } from "@/components/whats-new-button"
 import { useIsMobile } from "@/hooks/use-media-query"
 import { ProNavItems } from "@/components/pro-nav-items"
-import { MoreMenu } from "@/components/more-menu"
+import { UserMenu } from "@/components/user-menu"
 import { FEATURE_KEYS } from "@/lib/feature-flags"
 
 interface DashboardNavProps {
@@ -154,56 +154,11 @@ export function DashboardNav({
                 )
               })}
               <ProNavItems enabledFeatures={enabledFeatures} />
-              <MoreMenu enabledFeatures={enabledFeatures} />
             </div>
           </div>
           <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
-            {!isMobile && (
-              <div className="text-sm text-foreground">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{user.name || user.email}</span>
-                  {isPro && (
-                    <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 flex items-center gap-1">
-                      <Crown className="h-3 w-3" />
-                      PRO
-                    </span>
-                  )}
-                </div>
-                {user.position && (
-                  <div className="text-xs text-muted-foreground">{user.position}</div>
-                )}
-                {!user.position && user.role === "ADMIN" && (
-                  <div className="text-xs text-muted-foreground">Administrator</div>
-                )}
-              </div>
-            )}
             {!isMobile && <WhatsNewButton />}
-            {!isMobile && (
-              <>
-                <Link href="/settings">
-                  <Button variant="ghost" size="sm">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Ustawienia
-                  </Button>
-                </Link>
-                {user.role === "ADMIN" && (
-                  <Link href="/admin">
-                    <Button variant="ghost" size="sm">
-                      <Settings className="h-4 w-4 mr-2" />
-                      Admin
-                    </Button>
-                  </Link>
-                )}
-              </>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => signOut({ callbackUrl: "/signin" })}
-              className="min-w-[44px] min-h-[44px]"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <UserMenu user={user} enabledFeatures={enabledFeatures} isPro={isPro} />
             {isMobile && (
               <Button
                 variant="ghost"
@@ -297,6 +252,16 @@ export function DashboardNav({
                   {!user.position && user.role === "ADMIN" && (
                     <div className="text-xs">Administrator</div>
                   )}
+                </div>
+                <div className="pt-2 border-t border-border">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-destructive"
+                    onClick={() => signOut({ callbackUrl: "/signin" })}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Wyloguj się
+                  </Button>
                 </div>
               </div>
             </div>

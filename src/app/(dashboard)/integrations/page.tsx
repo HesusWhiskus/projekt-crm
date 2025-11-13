@@ -50,7 +50,7 @@ export default async function IntegrationsPage() {
     )
   }
 
-  // Available integrations (skeleton - to be implemented)
+  // Available integrations - systemy sprzedażowe, porównywarki ubezpieczeń itp.
   const integrations: Array<{
     id: string
     name: string
@@ -58,21 +58,27 @@ export default async function IntegrationsPage() {
     status: "not_configured" | "configured"
   }> = [
     {
-      id: "salesforce",
-      name: "Salesforce",
-      description: "Synchronizacja klientów i kontaktów z Salesforce",
+      id: "comparison-platform",
+      name: "Platforma porównawcza",
+      description: "Integracja z porównywarkami ubezpieczeń - automatyczny import leadów",
       status: "not_configured",
     },
     {
-      id: "hubspot",
-      name: "HubSpot",
-      description: "Dwukierunkowa synchronizacja z HubSpot CRM",
+      id: "sales-system",
+      name: "System sprzedażowy",
+      description: "Połączenie z systemem sprzedażowym - synchronizacja danych klientów",
       status: "not_configured",
     },
     {
-      id: "pipedrive",
-      name: "Pipedrive",
-      description: "Import i eksport danych z Pipedrive",
+      id: "insurance-api",
+      name: "API ubezpieczeń",
+      description: "Integracja z API dostawców ubezpieczeń - automatyczne pobieranie ofert",
+      status: "not_configured",
+    },
+    {
+      id: "crm-export",
+      name: "Eksport do systemów zewnętrznych",
+      description: "Eksport danych klientów do zewnętrznych systemów zarządzania",
       status: "not_configured",
     },
   ]
@@ -85,7 +91,7 @@ export default async function IntegrationsPage() {
           <h1 className="text-3xl font-bold">Integracje zewnętrzne</h1>
         </div>
         <p className="text-muted-foreground">
-          Połącz system z zewnętrznymi narzędziami CRM i zwiększ produktywność
+          Połącz system z platformami porównawczymi, systemami sprzedażowymi i API ubezpieczeń
         </p>
       </div>
 
@@ -119,7 +125,7 @@ export default async function IntegrationsPage() {
         <CardContent>
           <p className="text-sm text-muted-foreground">
             Integracje zewnętrzne są w trakcie rozwoju. Wkrótce będzie możliwość połączenia z
-            popularnymi systemami CRM.
+            platformami porównawczymi, systemami sprzedażowymi i API dostawców ubezpieczeń.
           </p>
         </CardContent>
       </Card>
