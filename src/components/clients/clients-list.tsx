@@ -373,7 +373,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>
             Lista klientów ({filteredAndSortedClients.length} z {clients.length})
@@ -455,8 +455,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
           </CardContent>
         ) : (
           // Desktop: Table view
-          <div className="overflow-x-auto w-full">
-            <table className="w-full divide-y divide-border" style={{ minWidth: '1500px' }}>
+          <div className="overflow-x-auto w-full -mx-6 px-6">
+            <table className="w-full divide-y divide-border" style={{ minWidth: '1600px' }}>
                 <thead className="bg-muted">
                   <tr>
                     <th

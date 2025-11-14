@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.7-beta] - 2025-01-15
+
+### Naprawiono
+- **Responsywność tabeli klientów:** Zwiększono minimalną szerokość tabeli do 1600px, dodano overflow-hidden do Card i ustawienia -mx-6 px-6 dla lepszego wykorzystania przestrzeni i pełnej widoczności wszystkich kolumn
+
 ## [0.6.6-beta] - 2025-01-15
 
 ### Naprawiono
