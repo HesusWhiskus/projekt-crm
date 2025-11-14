@@ -14,62 +14,12 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
-    version: '0.6.9-beta',
-    date: '2025-01-15',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Naprawiono dynamiczne rozszerzanie tabeli klientów - zmieniono na table-layout: fixed z procentowymi szerokościami kolumn dla stabilnej szerokości',
-      },
-    ],
-  },
-  {
-    version: '0.6.8-beta',
-    date: '2025-01-15',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Przeprojektowano strukturę tabeli klientów - usunięto konfliktujące style, dodano responsywne minimalne szerokości kolumn dla poprawnego skalowania na różnych rozdzielczościach',
-      },
-    ],
-  },
-  {
-    version: '0.6.7-beta',
-    date: '2025-01-15',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Zwiększono minimalną szerokość tabeli klientów do 1600px i dodano ustawienia overflow dla lepszego wykorzystania przestrzeni',
-      },
-    ],
-  },
-  {
-    version: '0.6.6-beta',
-    date: '2025-01-15',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Zwiększono minimalną szerokość tabeli klientów do 1500px dla pełnej widoczności wszystkich kolumn',
-      },
-    ],
-  },
-  {
-    version: '0.6.5-beta',
-    date: '2025-01-15',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Poprawiono strukturę tabeli klientów - usunięto ograniczenia CardContent, dodano wrapper z min-width dla pełnej widoczności wszystkich kolumn',
-      },
-    ],
-  },
-  {
     version: '0.6.4-beta',
     date: '2025-01-15',
     changes: [
       {
         type: 'fixed',
-        description: 'Naprawiono responsywność tabeli klientów - ostatnia kolumna jest teraz widoczna na wszystkich rozdzielczościach',
+        description: 'Przeprojektowano strukturę tabeli klientów - usunięto konfliktujące style, zmieniono na table-layout: fixed z procentowymi szerokościami kolumn dla stabilnej szerokości i poprawnego skalowania na różnych rozdzielczościach',
       },
     ],
   },
