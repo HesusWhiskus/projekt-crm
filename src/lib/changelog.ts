@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.5-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano paginację po stronie serwera dla listy klientów - znacznie poprawia wydajność przy dużej liczbie rekordów',
+      },
+      {
+        type: 'changed',
+        description: 'Przeniesiono sortowanie i filtrowanie na serwer - eliminuje przetwarzanie po stronie klienta i poprawia wydajność',
+      },
+    ],
+  },
+  {
     version: '0.6.4-beta',
     date: '2025-01-15',
     changes: [

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Plus, Search, Download, ArrowUpDown, ArrowUp, ArrowDown, Mail, Phone, B
 import Link from "next/link"
 import { ClientForm } from "./client-form"
 import { useIsMobile } from "@/hooks/use-media-query"
+import { Pagination } from "@/components/ui/pagination"
 
 interface Client {
   id: string
@@ -54,6 +55,10 @@ interface ClientsListProps {
     id: string
     role: UserRole
   }
+  total: number
+  page: number
+  limit: number
+  totalPages: number
 }
 
 const statusLabels: Record<ClientStatus, string> = {
@@ -98,14 +103,11 @@ function getClientDisplayName(client: Client): string {
 }
 type SortDirection = "asc" | "desc" | null
 
-export function ClientsList({ clients, users, groups, currentUser }: ClientsListProps) {
+export function ClientsList({ clients, users, groups, currentUser, total, page, limit, totalPages }: ClientsListProps) {
   const isMobile = useIsMobile()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isCreating, setIsCreating] = useState(false)
-  const [localSearch, setLocalSearch] = useState(searchParams.get("search") || "")
-  const [sortField, setSortField] = useState<SortField>(null)
-  const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   
   const [filters, setFilters] = useState({
     status: searchParams.get("status") || "",
@@ -115,111 +117,41 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
     groupId: searchParams.get("groupId") || "",
   })
 
-  // Filtrowanie i sortowanie po stronie klienta
-  const filteredAndSortedClients = useMemo(() => {
-    let result = [...clients]
-
-    // Filtrowanie po wyszukiwarce (lokalne)
-    if (localSearch) {
-      const searchLower = localSearch.toLowerCase()
-      result = result.filter((client) => {
-        return (
-          (client.firstName?.toLowerCase().includes(searchLower) ||
-            client.lastName?.toLowerCase().includes(searchLower) ||
-            client.companyName?.toLowerCase().includes(searchLower) ||
-            client.email?.toLowerCase().includes(searchLower) ||
-            client.phone?.toLowerCase().includes(searchLower) ||
-            getClientDisplayName(client).toLowerCase().includes(searchLower)) ||
-          false
-        )
-      })
-    }
-
-    // Filtrowanie po źródle
-    if (filters.source) {
-      result = result.filter((client) => client.source === filters.source)
-    }
-
-    // Filtrowanie po grupie
-    if (filters.groupId) {
-      result = result.filter((client) =>
-        client.sharedGroups.some((g) => g.id === filters.groupId)
-      )
-    }
-
-    // Sortowanie
-    if (sortField && sortDirection) {
-      result.sort((a, b) => {
-        let aValue: any
-        let bValue: any
-
-        switch (sortField) {
-          case "firstName":
-            aValue = a.firstName || ""
-            bValue = b.firstName || ""
-            break
-          case "lastName":
-            aValue = a.lastName || ""
-            bValue = b.lastName || ""
-            break
-          case "companyName":
-            aValue = getClientDisplayName(a)
-            bValue = getClientDisplayName(b)
-            break
-          case "email":
-            aValue = a.email || ""
-            bValue = b.email || ""
-            break
-          case "phone":
-            aValue = a.phone || ""
-            bValue = b.phone || ""
-            break
-          case "status":
-            aValue = a.status
-            bValue = b.status
-            break
-          case "priority":
-            aValue = a.priority || ""
-            bValue = b.priority || ""
-            break
-          case "assignee":
-            aValue = a.assignee?.name || a.assignee?.email || ""
-            bValue = b.assignee?.name || b.assignee?.email || ""
-            break
-          default:
-            return 0
-        }
-
-        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1
-        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1
-        return 0
-      })
-    }
-
-    return result
-  }, [clients, localSearch, filters.source, filters.groupId, sortField, sortDirection])
+  // Odczytaj aktualne sortowanie z URL
+  const currentSortBy = searchParams.get("sortBy") || "updatedAt"
+  const currentSortOrder = searchParams.get("sortOrder") || "desc"
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      if (sortDirection === "asc") {
-        setSortDirection("desc")
-      } else if (sortDirection === "desc") {
-        setSortField(null)
-        setSortDirection(null)
-      } else {
-        setSortDirection("asc")
+    if (!field) return
+    
+    const params = new URLSearchParams(searchParams.toString())
+    
+    // Jeśli kliknięto w to samo pole, zmień kierunek lub usuń sortowanie
+    if (currentSortBy === field) {
+      if (currentSortOrder === "asc") {
+        params.set("sortOrder", "desc")
+      } else if (currentSortOrder === "desc") {
+        // Usuń sortowanie (wróć do domyślnego)
+        params.delete("sortBy")
+        params.delete("sortOrder")
       }
     } else {
-      setSortField(field)
-      setSortDirection("asc")
+      // Nowe pole - ustaw asc
+      params.set("sortBy", field)
+      params.set("sortOrder", "asc")
     }
+    
+    // Resetuj stronę do 1 przy zmianie sortowania
+    params.delete("page")
+    
+    router.push(`/clients?${params.toString()}`)
   }
 
   const getSortIcon = (field: SortField) => {
-    if (sortField !== field) {
+    if (currentSortBy !== field) {
       return <ArrowUpDown className="h-4 w-4 ml-1 text-muted-foreground" />
     }
-    if (sortDirection === "asc") {
+    if (currentSortOrder === "asc") {
       return <ArrowUp className="h-4 w-4 ml-1" />
     }
     return <ArrowDown className="h-4 w-4 ml-1" />
@@ -232,6 +164,20 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
     Object.entries(newFilters).forEach(([k, v]) => {
       if (v) params.set(k, v)
     })
+    // Resetuj stronę do 1 przy zmianie filtrów
+    params.delete("page")
+    router.push(`/clients?${params.toString()}`)
+  }
+
+  const handleSearchChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (value) {
+      params.set("search", value)
+    } else {
+      params.delete("search")
+    }
+    // Resetuj stronę do 1 przy zmianie wyszukiwania
+    params.delete("page")
     router.push(`/clients?${params.toString()}`)
   }
 
@@ -305,8 +251,13 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                 <Input
                   id="search"
                   placeholder="Nazwa, email, telefon, agencja..."
-                  value={localSearch}
-                  onChange={(e) => setLocalSearch(e.target.value)}
+                  defaultValue={searchParams.get("search") || ""}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchChange(e.currentTarget.value)
+                    }
+                  }}
+                  onBlur={(e) => handleSearchChange(e.target.value)}
                   className="pl-8"
                 />
               </div>
@@ -376,10 +327,10 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
       <Card>
         <CardHeader>
           <CardTitle>
-            Lista klientów ({filteredAndSortedClients.length} z {clients.length})
+            Lista klientów ({clients.length} z {total})
           </CardTitle>
         </CardHeader>
-        {filteredAndSortedClients.length === 0 ? (
+        {clients.length === 0 ? (
           <CardContent>
             <p className="text-center text-muted-foreground py-8">
               Brak klientów spełniających kryteria
@@ -389,7 +340,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
           <CardContent>
             {/* Mobile: Card view */}
             <div className="space-y-4">
-              {filteredAndSortedClients.map((client) => (
+              {clients.map((client) => (
                 <Card key={client.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="space-y-3">
@@ -452,6 +403,12 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                 </Card>
               ))}
             </div>
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              total={total}
+              limit={limit}
+            />
           </CardContent>
         ) : (
           // Desktop: Table view
@@ -536,7 +493,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                   </tr>
                 </thead>
                 <tbody className="bg-card divide-y divide-border">
-                  {filteredAndSortedClients.map((client) => (
+                  {clients.map((client) => (
                     <tr key={client.id} className="hover:bg-muted/50">
                       <td className="px-3 py-3 whitespace-nowrap">
                         <div className="font-medium text-foreground">
@@ -587,6 +544,12 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                 </tbody>
               </table>
             </div>
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              total={total}
+              limit={limit}
+            />
           </CardContent>
         )}
       </Card>

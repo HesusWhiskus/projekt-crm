@@ -5,6 +5,16 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.5-beta] - 2025-01-15
+
+### Dodano
+- **Paginacja po stronie serwera:** Dodano paginację dla listy klientów z domyślnym limitem 50 rekordów na stronę. Paginacja działa na poziomie bazy danych (Prisma skip/take), co znacznie poprawia wydajność przy dużej liczbie klientów (5000+)
+- **Komponent paginacji:** Nowy komponent UI z przyciskami nawigacji, numeracją stron i informacją o liczbie wyników
+
+### Zmieniono
+- **Sortowanie i filtrowanie:** Przeniesiono sortowanie i wszystkie filtry (source, groupId) z frontendu na serwer. Sortowanie odbywa się w bazie danych używając Prisma orderBy, co eliminuje przetwarzanie po stronie klienta
+- **Wydajność listy klientów:** Zoptymalizowano pobieranie danych - aplikacja nie pobiera już wszystkich klientów na raz, tylko stronę po stronie, co eliminuje lagowanie przy dużej liczbie rekordów
+
 ## [0.6.4-beta] - 2025-01-15
 
 ### Naprawiono
