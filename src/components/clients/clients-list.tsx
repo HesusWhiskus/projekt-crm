@@ -457,11 +457,12 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
           // Desktop: Table view
           <CardContent className="p-0">
             <div className="overflow-x-auto w-full">
-              <table className="w-full divide-y divide-border table-auto">
+              <table className="w-full divide-y divide-border" style={{ tableLayout: 'fixed' }}>
                 <thead className="bg-muted">
                   <tr>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[150px]"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      style={{ width: '15%' }}
                       onClick={() => handleSort("firstName")}
                     >
                       <div className="flex items-center">
@@ -470,7 +471,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[150px]"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      style={{ width: '15%' }}
                       onClick={() => handleSort("companyName")}
                     >
                       <div className="flex items-center">
@@ -479,7 +481,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[180px]"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      style={{ width: '18%' }}
                       onClick={() => handleSort("email")}
                     >
                       <div className="flex items-center">
@@ -488,7 +491,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[120px]"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      style={{ width: '12%' }}
                       onClick={() => handleSort("phone")}
                     >
                       <div className="flex items-center">
@@ -497,7 +501,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[120px]"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      style={{ width: '12%' }}
                       onClick={() => handleSort("status")}
                     >
                       <div className="flex items-center">
@@ -506,7 +511,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[100px]"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      style={{ width: '10%' }}
                       onClick={() => handleSort("priority")}
                     >
                       <div className="flex items-center">
@@ -515,7 +521,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[130px]"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      style={{ width: '13%' }}
                       onClick={() => handleSort("assignee")}
                     >
                       <div className="flex items-center">
@@ -523,7 +530,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                         {getSortIcon("assignee")}
                       </div>
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap min-w-[100px]">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap" style={{ width: '5%' }}>
                       Akcje
                     </th>
                   </tr>

@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.9-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono dynamiczne rozszerzanie tabeli klientów - zmieniono na table-layout: fixed z procentowymi szerokościami kolumn dla stabilnej szerokości',
+      },
+    ],
+  },
+  {
     version: '0.6.8-beta',
     date: '2025-01-15',
     changes: [
