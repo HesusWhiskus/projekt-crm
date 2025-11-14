@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.8-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Przeprojektowano strukturę tabeli klientów - usunięto konfliktujące style, dodano responsywne minimalne szerokości kolumn dla poprawnego skalowania na różnych rozdzielczościach',
+      },
+    ],
+  },
+  {
     version: '0.6.7-beta',
     date: '2025-01-15',
     changes: [

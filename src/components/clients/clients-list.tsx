@@ -373,7 +373,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
         </CardContent>
       </Card>
 
-      <Card className="overflow-hidden">
+      <Card>
         <CardHeader>
           <CardTitle>
             Lista klientów ({filteredAndSortedClients.length} z {clients.length})
@@ -455,12 +455,13 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
           </CardContent>
         ) : (
           // Desktop: Table view
-          <div className="overflow-x-auto w-full -mx-6 px-6">
-            <table className="w-full divide-y divide-border" style={{ minWidth: '1600px' }}>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full divide-y divide-border table-auto">
                 <thead className="bg-muted">
                   <tr>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[150px]"
                       onClick={() => handleSort("firstName")}
                     >
                       <div className="flex items-center">
@@ -469,7 +470,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[150px]"
                       onClick={() => handleSort("companyName")}
                     >
                       <div className="flex items-center">
@@ -478,7 +479,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[180px]"
                       onClick={() => handleSort("email")}
                     >
                       <div className="flex items-center">
@@ -487,7 +488,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap w-24"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[120px]"
                       onClick={() => handleSort("phone")}
                     >
                       <div className="flex items-center">
@@ -496,7 +497,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap w-28"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[120px]"
                       onClick={() => handleSort("status")}
                     >
                       <div className="flex items-center">
@@ -505,7 +506,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap w-24"
+                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[100px]"
                       onClick={() => handleSort("priority")}
                     >
                       <div className="flex items-center">
@@ -514,7 +515,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                       </div>
                     </th>
                     <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
+                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap min-w-[130px]"
                       onClick={() => handleSort("assignee")}
                     >
                       <div className="flex items-center">
@@ -522,7 +523,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                         {getSortIcon("assignee")}
                       </div>
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap min-w-[100px]">
                       Akcje
                     </th>
                   </tr>
@@ -578,7 +579,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                   ))}
                 </tbody>
               </table>
-          </div>
+            </div>
+          </CardContent>
         )}
       </Card>
     </div>

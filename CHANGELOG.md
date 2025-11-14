@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.8-beta] - 2025-01-15
+
+### Naprawiono
+- **Responsywność tabeli klientów:** Przeprojektowano strukturę tabeli - usunięto overflow-hidden z Card, negatywne marginesy i stałą minWidth, dodano CardContent z p-0, table-auto oraz minimalne szerokości kolumn (min-w-[...]) dla responsywnego skalowania. Tabela teraz poprawnie skaluje się na różnych rozdzielczościach z poziomym scrollowaniem tylko gdy konieczne.
+
 ## [0.6.7-beta] - 2025-01-15
 
 ### Naprawiono
