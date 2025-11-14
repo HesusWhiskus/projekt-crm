@@ -5,35 +5,10 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
-## [0.6.9-beta] - 2025-01-15
-
-### Naprawiono
-- **Responsywność tabeli klientów:** Zmieniono table-layout z auto na fixed z procentowymi szerokościami kolumn (15%, 15%, 18%, 12%, 12%, 10%, 13%, 5%) aby zapobiec dynamicznemu rozszerzaniu tabeli po załadowaniu. Tabela teraz ma stałą szerokość 100% kontenera i nie rozszerza się po renderowaniu.
-
-## [0.6.8-beta] - 2025-01-15
-
-### Naprawiono
-- **Responsywność tabeli klientów:** Przeprojektowano strukturę tabeli - usunięto overflow-hidden z Card, negatywne marginesy i stałą minWidth, dodano CardContent z p-0, table-auto oraz minimalne szerokości kolumn (min-w-[...]) dla responsywnego skalowania. Tabela teraz poprawnie skaluje się na różnych rozdzielczościach z poziomym scrollowaniem tylko gdy konieczne.
-
-## [0.6.7-beta] - 2025-01-15
-
-### Naprawiono
-- **Responsywność tabeli klientów:** Zwiększono minimalną szerokość tabeli do 1600px, dodano overflow-hidden do Card i ustawienia -mx-6 px-6 dla lepszego wykorzystania przestrzeni i pełnej widoczności wszystkich kolumn
-
-## [0.6.6-beta] - 2025-01-15
-
-### Naprawiono
-- **Responsywność tabeli klientów:** Zwiększono minimalną szerokość tabeli do 1500px i uproszczono strukturę, aby zapewnić pełną widoczność wszystkich kolumn włącznie z ostatnią "Akcje"
-
-## [0.6.5-beta] - 2025-01-15
-
-### Naprawiono
-- **Responsywność tabeli klientów:** Poprawiono strukturę tabeli - usunięto CardContent dla widoku desktop, dodano wrapper z min-width 1200px, aby zapewnić widoczność wszystkich kolumn (w tym ostatniej "Akcje") na wszystkich rozdzielczościach
-
 ## [0.6.4-beta] - 2025-01-15
 
 ### Naprawiono
-- **Responsywność tabeli klientów:** Naprawiono problem z skalowaniem tabeli - ostatnia kolumna jest teraz widoczna na wszystkich rozdzielczościach dzięki poprawionemu overflow-x-auto i minimalnej szerokości tabeli
+- **Responsywność tabeli klientów:** Przeprojektowano strukturę tabeli - usunięto overflow-hidden z Card, negatywne marginesy i stałą minWidth, zmieniono table-layout z auto na fixed z procentowymi szerokościami kolumn (15%, 15%, 18%, 12%, 12%, 10%, 13%, 5%) aby zapobiec dynamicznemu rozszerzaniu tabeli po załadowaniu. Tabela teraz ma stałą szerokość 100% kontenera, poprawnie skaluje się na różnych rozdzielczościach i wszystkie kolumny są widoczne.
 
 ## [0.6.3-beta] - 2025-01-15
 
