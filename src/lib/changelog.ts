@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.5-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Poprawiono strukturę tabeli klientów - usunięto ograniczenia CardContent, dodano wrapper z min-width dla pełnej widoczności wszystkich kolumn',
+      },
+    ],
+  },
+  {
     version: '0.6.4-beta',
     date: '2025-01-15',
     changes: [

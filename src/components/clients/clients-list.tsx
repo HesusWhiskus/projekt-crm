@@ -379,17 +379,16 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
             Lista klientów ({filteredAndSortedClients.length} z {clients.length})
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 sm:p-6">
-          {filteredAndSortedClients.length === 0 ? (
-            <div className="p-8">
-              <p className="text-center text-muted-foreground">
-                Brak klientów spełniających kryteria
-              </p>
-            </div>
-          ) : isMobile ? (
-            <div className="p-4">
-              {/* Mobile: Card view */}
-              <div className="space-y-4">
+        {filteredAndSortedClients.length === 0 ? (
+          <CardContent>
+            <p className="text-center text-muted-foreground py-8">
+              Brak klientów spełniających kryteria
+            </p>
+          </CardContent>
+        ) : isMobile ? (
+          <CardContent>
+            {/* Mobile: Card view */}
+            <div className="space-y-4">
               {filteredAndSortedClients.map((client) => (
                 <Card key={client.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
@@ -453,11 +452,12 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                 </Card>
               ))}
             </div>
-            </div>
-          ) : (
-            // Desktop: Table view
-            <div className="overflow-x-auto w-full">
-              <table className="w-full min-w-[1000px] divide-y divide-border">
+          </CardContent>
+        ) : (
+          // Desktop: Table view
+          <div className="overflow-x-auto w-full">
+            <div style={{ minWidth: '1200px' }}>
+              <table className="w-full divide-y divide-border">
                 <thead className="bg-muted">
                   <tr>
                     <th
@@ -580,8 +580,8 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                 </tbody>
               </table>
             </div>
-          )}
-        </CardContent>
+          </div>
+        )}
       </Card>
     </div>
   )

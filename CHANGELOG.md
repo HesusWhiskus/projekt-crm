@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.5-beta] - 2025-01-15
+
+### Naprawiono
+- **Responsywność tabeli klientów:** Poprawiono strukturę tabeli - usunięto CardContent dla widoku desktop, dodano wrapper z min-width 1200px, aby zapewnić widoczność wszystkich kolumn (w tym ostatniej "Akcje") na wszystkich rozdzielczościach
+
 ## [0.6.4-beta] - 2025-01-15
 
 ### Naprawiono
