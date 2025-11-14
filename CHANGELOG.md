@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.4-beta] - 2025-01-15
+
+### Naprawiono
+- **Responsywność tabeli klientów:** Naprawiono problem z skalowaniem tabeli - ostatnia kolumna jest teraz widoczna na wszystkich rozdzielczościach dzięki poprawionemu overflow-x-auto i minimalnej szerokości tabeli
+
 ## [0.6.3-beta] - 2025-01-15
 
 ### Dodano

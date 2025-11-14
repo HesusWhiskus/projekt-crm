@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.4-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono responsywność tabeli klientów - ostatnia kolumna jest teraz widoczna na wszystkich rozdzielczościach',
+      },
+    ],
+  },
+  {
     version: '0.6.3-beta',
     date: '2025-01-15',
     changes: [

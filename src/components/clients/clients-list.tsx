@@ -379,14 +379,17 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
             Lista klientów ({filteredAndSortedClients.length} z {clients.length})
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-6">
           {filteredAndSortedClients.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
-              Brak klientów spełniających kryteria
-            </p>
+            <div className="p-8">
+              <p className="text-center text-muted-foreground">
+                Brak klientów spełniających kryteria
+              </p>
+            </div>
           ) : isMobile ? (
-            // Mobile: Card view
-            <div className="space-y-4">
+            <div className="p-4">
+              {/* Mobile: Card view */}
+              <div className="space-y-4">
               {filteredAndSortedClients.map((client) => (
                 <Card key={client.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
@@ -450,10 +453,11 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                 </Card>
               ))}
             </div>
+            </div>
           ) : (
             // Desktop: Table view
-            <div className="overflow-x-auto">
-              <table className="w-full divide-y divide-border">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full min-w-[1000px] divide-y divide-border">
                 <thead className="bg-muted">
                   <tr>
                     <th
