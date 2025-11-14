@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.3-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano wyszukiwanie klientów w formularzach - rozwiązuje problem z wydajnością przy dużej liczbie klientów',
+      },
+      {
+        type: 'added',
+        description: 'Dodano narzędzie masowego przydzielania klientów w sekcji Admin',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono problem z nieskończonym scrollowaniem w listach wyboru klientów',
+      },
+      {
+        type: 'changed',
+        description: 'Zoptymalizowano zapytania do bazy - formularze nie pobierają już wszystkich klientów na raz',
+      },
+    ],
+  },
+  {
     version: '0.6.2-beta',
     date: '2025-01-15',
     changes: [

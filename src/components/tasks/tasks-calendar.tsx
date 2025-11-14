@@ -194,7 +194,6 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
           <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <TaskForm
               users={users}
-              clients={clients}
               groups={groups}
               currentUser={currentUser}
               initialDueDate={selectedDate || undefined}

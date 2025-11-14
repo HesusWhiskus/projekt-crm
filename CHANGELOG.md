@@ -5,6 +5,30 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.3-beta] - 2025-01-15
+
+### Dodano
+- **Wyszukiwanie klientów w formularzach:** Zastąpiono rozwijalne listy komponentem wyszukiwania (SearchableClientSelect) z debounce i limitem wyników - rozwiązuje problem z wydajnością przy dużej liczbie klientów
+- **API endpoint wyszukiwania:** Nowy endpoint `/api/clients/search` z limitem 50 wyników i wyszukiwaniem po nazwie, emailu i telefonie
+- **Narzędzie masowego przydzielania:** Nowa funkcjonalność w sekcji Admin (`/admin/clients/bulk-assign`) do masowego przypisywania klientów do użytkowników z filtrami i paginacją
+- **Komponenty UI:** Popover i Command (Radix UI) dla zaawansowanych interfejsów wyszukiwania
+
+### Zmieniono
+- **Formularz kontaktu:** Usunięto wymaganie przekazywania wszystkich klientów - teraz używa wyszukiwania przez API
+- **Formularz zadania:** Usunięto wymaganie przekazywania wszystkich klientów - teraz używa wyszukiwania przez API
+- **Optymalizacja zapytań:** Dodano limit 100 klientów w zapytaniach dla filtrów (contacts/page.tsx, tasks/page.tsx) zamiast pobierania wszystkich
+
+### Naprawiono
+- **Wydajność przy dużej bazie:** Naprawiono problem z nieskończonym scrollowaniem w listach wyboru klientów przy dużej liczbie rekordów (5000+)
+- **Czas odpowiedzi:** Zoptymalizowano zapytania do bazy - formularze nie pobierają już wszystkich klientów na raz
+
+### Uwagi techniczne
+- Wymagane pakiety: `@radix-ui/react-popover`, `cmdk` (zainstalowane automatycznie)
+- Wyszukiwanie klientów wymaga minimum 2 znaków
+- Debounce wyszukiwania: 300ms
+- Limit wyników wyszukiwania: 50
+- Paginacja masowego przydzielania: 100 klientów na stronę
+
 ## [0.6.2-beta] - 2025-01-15
 
 ### Naprawiono

@@ -84,6 +84,7 @@ export default async function ContactsPage({
     },
   })
 
+  // Limit clients for filter dropdown (not needed for form anymore)
   const [clients, users, groups] = await Promise.all([
     db.client.findMany({
       where:
@@ -105,6 +106,7 @@ export default async function ContactsPage({
       orderBy: {
         lastName: "asc",
       },
+      take: 100, // Limit for filter dropdown
     }),
     getCachedUsers(),
     getCachedGroups(),

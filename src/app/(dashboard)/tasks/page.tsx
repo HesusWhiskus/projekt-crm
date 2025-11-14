@@ -56,6 +56,7 @@ export default async function TasksPage({
     },
   })
 
+  // Limit clients for filter dropdown (not needed for form anymore)
   const [users, groups, clients] = await Promise.all([
     getCachedUsers(),
     getCachedGroups(),
@@ -79,6 +80,7 @@ export default async function TasksPage({
       orderBy: {
         lastName: "asc",
       },
+      take: 100, // Limit for filter dropdown
     }),
   ])
 

@@ -126,7 +126,6 @@ export function ContactsList({
 
       {isCreating && (
         <ContactForm
-          clients={clients}
           users={users}
           groups={groups}
           currentUser={currentUser}
@@ -274,7 +273,6 @@ export function ContactsList({
                           clientId: contact.client?.id,
                           sharedGroups: contact.sharedGroups || [],
                         }}
-                        clients={clients}
                         users={users}
                         groups={groups}
                         currentUser={currentUser}

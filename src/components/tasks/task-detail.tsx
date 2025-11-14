@@ -107,7 +107,6 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
         <TaskForm
           task={task}
           users={users}
-          clients={clients}
           groups={groups}
           currentUser={currentUser}
           onClose={() => setIsEditing(false)}

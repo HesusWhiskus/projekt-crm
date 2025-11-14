@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
+import { SearchableClientSelect } from "@/components/ui/client-select"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,13 +14,6 @@ import { utcDateToLocalDateTime } from "@/lib/timezone"
 
 interface ContactFormProps {
   clientId?: string
-  clients?: Array<{
-    id: string
-    firstName: string | null
-    lastName: string | null
-    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
-    type: string
-  }>
   users: Array<{
     id: string
     name: string | null
@@ -58,7 +52,7 @@ const contactTypeOptions: Record<ContactType, string> = {
   OTHER: "Inne",
 }
 
-export function ContactForm({ clientId, clients, users, groups, currentUser, contact, onClose, onSuccess, onAddClient }: ContactFormProps) {
+export function ContactForm({ clientId, users, groups, currentUser, contact, onClose, onSuccess, onAddClient }: ContactFormProps) {
   const isNoteMode = contact?.isNote || (contact && Object.keys(contact).length === 1 && contact.isNote)
   // Upewnij się, że clientId jest zawsze ustawiony - priorytet: contact.clientId > clientId z props > ""
   const initialClientId = contact?.clientId || clientId || ""
@@ -212,43 +206,29 @@ export function ContactForm({ clientId, clients, users, groups, currentUser, con
             />
           </div>
 
-          {clients && (
-            <div className="space-y-2">
-              <Label htmlFor="clientId">Klient *</Label>
-              <div className="flex gap-2">
-                <Select
-                  id="clientId"
-                  value={formData.clientId}
-                  onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
-                  required
+          <div className="space-y-2">
+            <Label htmlFor="clientId">Klient *</Label>
+            <div className="flex gap-2">
+              <SearchableClientSelect
+                value={formData.clientId}
+                onValueChange={(value) => setFormData({ ...formData, clientId: value })}
+                placeholder="Wyszukaj klienta..."
+                disabled={isLoading}
+                required
+                className="flex-1"
+              />
+              {onAddClient && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onAddClient}
                   disabled={isLoading}
-                  className="flex-1"
                 >
-                  <option value="">Wybierz klienta</option>
-                  {clients.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.type === "COMPANY" ? (client.companyName || "Brak nazwy firmy") : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
-                    </option>
-                  ))}
-                </Select>
-                {onAddClient && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onAddClient}
-                    disabled={isLoading}
-                  >
-                    + Dodaj klienta
-                  </Button>
-                )}
-              </div>
-              {clients.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Brak dostępnych klientów. {onAddClient ? "Dodaj nowego klienta." : "Dodaj najpierw klienta w sekcji Klienci."}
-                </p>
+                  + Dodaj klienta
+                </Button>
               )}
             </div>
-          )}
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="notes">Notatka / Podsumowanie *</Label>

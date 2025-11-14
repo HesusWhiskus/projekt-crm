@@ -89,6 +89,28 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/admin/clients/bulk-assign">
+          <Card className="hover:bg-gray-50 transition-colors cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <UserCheck className="h-5 w-5" />
+                <span>Masowe przydzielanie klientów</span>
+              </CardTitle>
+              <CardDescription>
+                Masowo przypisz klientów do wybranych użytkowników
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Wybór wielu klientów naraz</li>
+                <li>• Filtrowanie po statusie i przypisaniu</li>
+                <li>• Masowa aktualizacja przypisań</li>
+                <li>• Paginacja dla dużych list</li>
+              </ul>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   )

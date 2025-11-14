@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
+import { SearchableClientSelect } from "@/components/ui/client-select"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,13 +17,6 @@ interface TaskFormProps {
     id: string
     name: string | null
     email: string
-  }>
-  clients?: Array<{
-    id: string
-    firstName: string | null
-    lastName: string | null
-    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
-    type: string
   }>
   groups?: Array<{
     id: string
@@ -56,7 +50,7 @@ const statusOptions: Record<TaskStatus, string> = {
   COMPLETED: "Zakończone",
 }
 
-export function TaskForm({ users, clients, groups, currentUser, task, onClose, onSuccess, onAddClient, initialDueDate }: TaskFormProps) {
+export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess, onAddClient, initialDueDate }: TaskFormProps) {
   const [formData, setFormData] = useState({
     title: task?.title || "",
     description: task?.description || "",
@@ -191,42 +185,28 @@ export function TaskForm({ users, clients, groups, currentUser, task, onClose, o
                 ))}
               </Select>
             </div>
-            {clients && (
-              <div className="space-y-2">
-                <Label htmlFor="clientId">Klient (opcjonalnie)</Label>
-                <div className="flex gap-2">
-                  <Select
-                    id="clientId"
-                    value={formData.clientId}
-                    onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
+            <div className="space-y-2">
+              <Label htmlFor="clientId">Klient (opcjonalnie)</Label>
+              <div className="flex gap-2">
+                <SearchableClientSelect
+                  value={formData.clientId || ""}
+                  onValueChange={(value) => setFormData({ ...formData, clientId: value || "" })}
+                  placeholder="Wyszukaj klienta (opcjonalnie)..."
+                  disabled={isLoading}
+                  className="flex-1"
+                />
+                {onAddClient && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onAddClient}
                     disabled={isLoading}
-                    className="flex-1"
                   >
-                    <option value="">Brak klienta</option>
-                    {clients.map((client) => (
-                      <option key={client.id} value={client.id}>
-                        {client.type === "COMPANY" ? (client.companyName || "Brak nazwy firmy") : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
-                      </option>
-                    ))}
-                  </Select>
-                  {onAddClient && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={onAddClient}
-                      disabled={isLoading}
-                    >
-                      + Dodaj klienta
-                    </Button>
-                  )}
-                </div>
-                {clients.length === 0 && (
-                  <p className="text-sm text-muted-foreground">
-                    Brak dostępnych klientów. {onAddClient ? "Dodaj nowego klienta." : "Dodaj najpierw klienta w sekcji Klienci."}
-                  </p>
+                    + Dodaj klienta
+                  </Button>
                 )}
               </div>
-            )}
+            </div>
           </div>
 
           {groups && groups.length > 0 && (

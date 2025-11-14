@@ -161,7 +161,6 @@ export function TasksList({
       {isCreating && (
         <TaskForm
           users={users}
-          clients={clients}
           groups={groups}
           currentUser={currentUser}
           onClose={() => setIsCreating(false)}

@@ -225,6 +225,78 @@ Aktualizuje klienta.
 
 Usuwa klienta. (Tylko ADMIN)
 
+### GET /api/clients/search
+
+Wyszukuje klientów po nazwie, emailu lub telefonie. Zwraca maksymalnie 50 wyników.
+
+**Query Parameters:**
+- `q` (wymagane) - Fraza wyszukiwania (minimum 2 znaki)
+
+**Response:**
+```json
+{
+  "clients": [
+    {
+      "id": "string",
+      "firstName": "string | null",
+      "lastName": "string | null",
+      "companyName": "string | null",
+      "type": "PERSON | COMPANY",
+      "email": "string | null"
+    }
+  ]
+}
+```
+
+**Kody odpowiedzi:**
+- `200` - Sukces
+- `400` - Błąd walidacji (fraza za krótka)
+- `401` - Nieautoryzowany
+- `500` - Błąd serwera
+
+**Uwagi:**
+- Wyszukiwanie wymaga minimum 2 znaków
+- Limit wyników: 50
+- Wyszukiwanie uwzględnia uprawnienia użytkownika (tylko przypisani klienci lub udostępnieni przez grupy)
+- Wyszukiwanie jest case-insensitive
+
+### POST /api/clients/bulk-assign
+
+Masowo przypisuje klientów do użytkownika.
+
+**Request Body:**
+```json
+{
+  "clientIds": ["string"],
+  "assignedTo": "string | null"
+}
+```
+
+**Parametry:**
+- `clientIds` (wymagane, array) - Array ID klientów do przypisania (minimum 1)
+- `assignedTo` (opcjonalne, string | null) - ID użytkownika do przypisania (null aby usunąć przypisanie)
+
+**Response:**
+```json
+{
+  "success": true,
+  "updated": 5
+}
+```
+
+**Kody odpowiedzi:**
+- `200` - Sukces
+- `400` - Błąd walidacji
+- `401` - Nieautoryzowany
+- `403` - Brak uprawnień (tylko ADMIN lub właściciel klientów)
+- `500` - Błąd serwera
+
+**Uwagi:**
+- ADMIN może przypisać dowolnych klientów
+- USER może przypisać tylko swoich klientów
+- Operacja wykonywana w transakcji
+- Aktualizacja jest atomowa (wszystko lub nic)
+
 ---
 
 ## Kontakty
