@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.6-beta',
+    date: '2025-01-15',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Zwiększono minimalną szerokość tabeli klientów do 1500px dla pełnej widoczności wszystkich kolumn',
+      },
+    ],
+  },
+  {
     version: '0.6.5-beta',
     date: '2025-01-15',
     changes: [

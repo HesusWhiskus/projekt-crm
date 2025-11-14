@@ -456,8 +456,7 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
         ) : (
           // Desktop: Table view
           <div className="overflow-x-auto w-full">
-            <div style={{ minWidth: '1200px' }}>
-              <table className="w-full divide-y divide-border">
+            <table className="w-full divide-y divide-border" style={{ minWidth: '1500px' }}>
                 <thead className="bg-muted">
                   <tr>
                     <th
@@ -579,7 +578,6 @@ export function ClientsList({ clients, users, groups, currentUser }: ClientsList
                   ))}
                 </tbody>
               </table>
-            </div>
           </div>
         )}
       </Card>
