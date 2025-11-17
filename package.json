@@ -1,6 +1,6 @@
 {
   "name": "internal-crm",
-  "version": "0.6.5-beta",
+  "version": "0.6.6-beta",
   "description": "Wewnętrzny system CRM do zarządzania relacjami z agencjami ubezpieczeniowymi. Zawiera zarządzanie klientami, kontaktami, zadaniami oraz integrację z Google Calendar.",
   "private": true,
   "author": "Internal CRM Team",

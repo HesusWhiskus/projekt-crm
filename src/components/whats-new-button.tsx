@@ -5,26 +5,49 @@ import { Button } from "@/components/ui/button"
 import { Sparkles, X } from "lucide-react"
 import { changelog, getLatestVersion, type ChangelogEntry } from "@/lib/changelog"
 
-const STORAGE_KEY = "crm_last_seen_version"
-
 export function WhatsNewButton() {
   const [isOpen, setIsOpen] = useState(false)
   const [hasNewVersion, setHasNewVersion] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const latestVersion = getLatestVersion()
 
   useEffect(() => {
-    // Check if user has seen the latest version
-    const lastSeenVersion = localStorage.getItem(STORAGE_KEY)
-    if (lastSeenVersion !== latestVersion) {
-      setHasNewVersion(true)
+    // Check if user has seen the latest version from API
+    const checkLastSeenVersion = async () => {
+      try {
+        const response = await fetch("/api/users/last-seen-version")
+        if (response.ok) {
+          const data = await response.json()
+          const lastSeenVersion = data.lastSeenVersion
+          if (lastSeenVersion !== latestVersion) {
+            setHasNewVersion(true)
+          }
+        }
+      } catch (error) {
+        console.error("Error checking last seen version:", error)
+      } finally {
+        setIsLoading(false)
+      }
     }
+
+    checkLastSeenVersion()
   }, [latestVersion])
 
-  const handleOpen = () => {
+  const handleOpen = async () => {
     setIsOpen(true)
-    // Mark current version as seen
-    localStorage.setItem(STORAGE_KEY, latestVersion)
-    setHasNewVersion(false)
+    // Mark current version as seen via API
+    try {
+      await fetch("/api/users/last-seen-version", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ version: latestVersion }),
+      })
+      setHasNewVersion(false)
+    } catch (error) {
+      console.error("Error updating last seen version:", error)
+    }
   }
 
   const handleClose = () => {
@@ -52,7 +75,7 @@ export function WhatsNewButton() {
       >
         <Sparkles className="h-4 w-4 mr-2" />
         Co nowego
-        {hasNewVersion && (
+        {!isLoading && hasNewVersion && (
           <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></span>
         )}
       </Button>

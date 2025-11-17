@@ -67,20 +67,28 @@ export default async function DashboardPage() {
     // Klienci bez kontaktu przez 7 dni
     db.client.count({
       where: {
-        ...clientWhere,
-        OR: [
-          { lastContactAt: { lt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
-          { lastContactAt: null },
+        AND: [
+          clientWhere,
+          {
+            OR: [
+              { lastContactAt: { lt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+              { lastContactAt: null },
+            ],
+          },
         ],
       },
     }),
     // Klienci bez kontaktu przez 30 dni
     db.client.count({
       where: {
-        ...clientWhere,
-        OR: [
-          { lastContactAt: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
-          { lastContactAt: null },
+        AND: [
+          clientWhere,
+          {
+            OR: [
+              { lastContactAt: { lt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+              { lastContactAt: null },
+            ],
+          },
         ],
       },
     }),

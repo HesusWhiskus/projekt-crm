@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.6-beta',
+    date: '2025-11-17',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono kafelki "Bez kontaktu" na dashboardzie - teraz pokazują tylko klientów przypisanych do użytkownika, a nie wszystkich z bazy',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono znacznik "Co nowego" - teraz jest per użytkownik (zapis w bazie danych) zamiast globalnego localStorage',
+      },
+    ],
+  },
+  {
     version: '0.6.5-beta',
     date: '2025-01-15',
     changes: [

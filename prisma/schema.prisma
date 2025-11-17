@@ -261,6 +261,9 @@ model UserPreferences {
   emailTasks    Boolean @default(true)
   emailContacts Boolean @default(true)
 
+  // Changelog tracking
+  lastSeenVersion String? // Last version seen in "What's New"
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

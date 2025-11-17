@@ -837,6 +837,7 @@ Pobiera preferencje zalogowanego użytkownika.
     "themeName": "blue | green | purple | red | custom | system | null",
     "emailTasks": true,
     "emailContacts": true,
+    "lastSeenVersion": "string | null",
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
   }
@@ -860,7 +861,8 @@ Aktualizuje preferencje użytkownika.
   "notifications": {
     "emailTasks": "boolean (optional)",
     "emailContacts": "boolean (optional)"
-  }
+  },
+  "lastSeenVersion": "string (optional, e.g., '0.6.6-beta')"
 }
 ```
 
@@ -878,6 +880,7 @@ Aktualizuje preferencje użytkownika.
     "themeName": "blue | green | purple | red | custom | system | null",
     "emailTasks": true,
     "emailContacts": true,
+    "lastSeenVersion": "string | null",
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
   }
@@ -888,6 +891,49 @@ Aktualizuje preferencje użytkownika.
 - Pole `timezone` przyjmuje wartości IANA timezone (np. "Europe/Warsaw", "America/New_York")
 - Jeśli `timezone` nie jest podane, system używa domyślnej strefy czasowej przeglądarki
 - Wszystkie pola są opcjonalne - można aktualizować tylko wybrane preferencje
+
+---
+
+## Ostatnia zobaczona wersja changelogu
+
+### GET /api/users/last-seen-version
+
+Pobiera ostatnią zobaczoną wersję changelogu dla zalogowanego użytkownika (używane przez komponent "Co nowego").
+
+**Response:**
+```json
+{
+  "lastSeenVersion": "0.6.6-beta | null"
+}
+```
+
+**Uwagi:**
+- Zwraca `null` jeśli użytkownik nie ma zapisanej ostatniej zobaczonej wersji
+- Wersja jest zapisywana w polu `lastSeenVersion` w tabeli `user_preferences`
+
+### POST /api/users/last-seen-version
+
+Zapisuje ostatnią zobaczoną wersję changelogu dla zalogowanego użytkownika.
+
+**Request Body:**
+```json
+{
+  "version": "string (required, e.g., '0.6.6-beta')"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Ostatnia zobaczona wersja została zaktualizowana",
+  "lastSeenVersion": "0.6.6-beta"
+}
+```
+
+**Uwagi:**
+- Endpoint automatycznie tworzy rekord `UserPreferences` jeśli nie istnieje
+- Wersja jest używana do wyświetlania znacznika "nowe" w komponencie "Co nowego"
+- Każdy użytkownik ma osobny znacznik - kliknięcie przez jednego użytkownika nie znika dla innych
 
 ---
 

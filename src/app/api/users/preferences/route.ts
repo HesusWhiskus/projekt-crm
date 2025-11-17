@@ -22,6 +22,7 @@ const updatePreferencesSchema = z.object({
       emailContacts: z.boolean().optional(),
     })
     .optional(),
+  lastSeenVersion: z.string().optional(),
 })
 
 /**
@@ -229,6 +230,7 @@ export async function PATCH(request: Request) {
         themeName: validatedData.colorScheme?.themeName,
         emailTasks: validatedData.notifications?.emailTasks ?? true,
         emailContacts: validatedData.notifications?.emailContacts ?? true,
+        lastSeenVersion: validatedData.lastSeenVersion,
       },
       update: {
         ...(validatedData.theme !== undefined && { theme: validatedData.theme }),
@@ -249,6 +251,9 @@ export async function PATCH(request: Request) {
         }),
         ...(validatedData.notifications?.emailContacts !== undefined && {
           emailContacts: validatedData.notifications.emailContacts,
+        }),
+        ...(validatedData.lastSeenVersion !== undefined && {
+          lastSeenVersion: validatedData.lastSeenVersion,
         }),
       },
     })

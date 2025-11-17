@@ -5,6 +5,24 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.6-beta] - 2025-11-17
+
+### Naprawiono
+- **Kafelki "Bez kontaktu" na dashboardzie:**
+  - Naprawiono zapytania Prisma - kafelki "Bez kontaktu 7+ dni" i "Bez kontaktu 30+ dni" teraz poprawnie filtrują klientów przypisanych do użytkownika
+  - Użyto struktury `AND` do poprawnego połączenia warunków dostępu z warunkami kontaktu
+  - Kafelki pokazują teraz tylko klientów przypisanych do danego użytkownika lub udostępnionych przez grupy
+
+- **Znacznik "Co nowego" per użytkownik:**
+  - Zmieniono z localStorage na zapis w bazie danych (pole `lastSeenVersion` w `UserPreferences`)
+  - Każdy użytkownik ma teraz osobny znacznik - kliknięcie przez jednego użytkownika nie znika dla innych
+  - Dodano endpoint API `/api/users/last-seen-version` do zarządzania ostatnią zobaczoną wersją
+
+### Zmieniono
+- **Schema bazy danych:**
+  - Dodano pole `lastSeenVersion` do modelu `UserPreferences` w Prisma schema
+  - Wymagana migracja bazy danych
+
 ## [0.6.5-beta] - 2025-01-15
 
 ### Dodano
