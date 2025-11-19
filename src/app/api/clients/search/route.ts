@@ -5,6 +5,9 @@ import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
 import { db } from '@/lib/db'
 
+// Force dynamic rendering - this route uses request headers and requires database connection
+export const dynamic = 'force-dynamic'
+
 const clientRepository = new PrismaClientRepository()
 
 /**

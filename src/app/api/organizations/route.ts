@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 
+// Force dynamic rendering - this route requires database connection
+export const dynamic = 'force-dynamic'
+
 /**
  * @swagger
  * /api/organizations:
