@@ -1,7 +1,6 @@
 import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { readFileSync } from "fs"
-import { join } from "path"
+import { headers } from "next/headers"
 import { MarkdownViewer } from "@/components/admin/markdown-viewer"
 
 export default async function ProjectDocsPage() {
@@ -10,14 +9,38 @@ export default async function ProjectDocsPage() {
     redirect("/dashboard")
   }
 
-  // Read README markdown file
-  const filePath = join(process.cwd(), "README.md")
+  // Fetch project documentation from API endpoint
   let content = ""
   
   try {
-    content = readFileSync(filePath, "utf-8")
-  } catch (error) {
-    content = "# Dokumentacja projektu\n\nNie udało się wczytać dokumentacji projektu."
+    const headersList = await headers()
+    const host = headersList.get("host") || "localhost:3000"
+    const cookie = headersList.get("cookie") || ""
+    const baseUrl = process.env.NEXTAUTH_URL || (host.includes("localhost") 
+      ? "http://localhost:3000" 
+      : `https://${host}`)
+    
+    const response = await fetch(`${baseUrl}/api/admin/docs/project`, {
+      cache: "no-store",
+      headers: {
+        // Pass cookies manually for Server Component fetch
+        Cookie: cookie,
+      },
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      content = data.content || ""
+      if (!content || content.trim().length === 0) {
+        content = "# Dokumentacja projektu\n\nPlik dokumentacji jest pusty."
+      }
+    } else {
+      const errorData = await response.json().catch(() => ({}))
+      content = `# Dokumentacja projektu\n\nNie udało się wczytać dokumentacji projektu.\n\n**Status:** ${response.status}\n\n**Błąd:** ${errorData.error || "Nieznany błąd"}\n\n${errorData.details ? `**Szczegóły:** ${errorData.details}` : ""}`
+    }
+  } catch (error: any) {
+    console.error("[ProjectDocsPage] Error fetching project documentation:", error)
+    content = `# Dokumentacja projektu\n\nNie udało się wczytać dokumentacji projektu.\n\n**Błąd:** ${error?.message || "Nieznany błąd"}`
   }
 
   return (

@@ -5,6 +5,25 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.8-beta] - 2025-01-19
+
+### Naprawiono
+- **Dokumentacja API w panelu administracyjnym:**
+  - Naprawiono problem z niedostępnością dokumentacji API w panelu administracyjnym
+  - Utworzono endpointy API (`/api/admin/docs/api` i `/api/admin/docs/project`) do odczytu plików markdown
+  - Strony dokumentacji używają teraz endpointów API zamiast bezpośredniego odczytu plików, co zapewnia działanie w środowisku produkcyjnym (np. Railway)
+  - Dodano obsługę błędów z informacyjnymi komunikatami dla użytkownika
+
+- **Logowanie:**
+  - Naprawiono problem z nieskończonym ładowaniem przy pierwszym logowaniu
+  - Zastąpiono `router.push()` i `router.refresh()` przez `window.location.href` dla natychmiastowego przekierowania
+  - Usunięto nieużywany import `useRouter` z formularza logowania
+
+### Zmieniono
+- **Architektura dokumentacji:**
+  - Przeniesiono logikę odczytu plików markdown do endpointów API
+  - Strony dokumentacji są teraz bardziej niezawodne i działają w różnych środowiskach
+
 ## [0.6.7-beta] - 2025-01-17
 
 ### Dodano

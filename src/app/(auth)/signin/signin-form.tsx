@@ -2,14 +2,13 @@
 
 import { signIn } from "next-auth/react"
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function SignInForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
   const error = searchParams.get("error")
@@ -47,10 +46,9 @@ export default function SignInForm() {
         setIsLoading(false)
       } else if (result?.ok) {
         console.log("[CLIENT] Sign in successful, redirecting...")
-        // Don't set isLoading to false - keep button disabled during redirect
-        router.push(callbackUrl)
-        router.refresh()
-        // Button will be disabled until page unloads
+        // Use window.location.href for immediate redirect - ensures session is established
+        // This prevents the infinite loading issue on first login
+        window.location.href = callbackUrl
       } else {
         console.warn("[CLIENT] Sign in returned unexpected result:", result)
         setErrorMessage("Wystąpił błąd podczas logowania")

@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.8-beta',
+    date: '2025-01-19',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono problem z niedostępnością dokumentacji API w panelu administracyjnym - dokumentacja działa teraz poprawnie w środowisku produkcyjnym',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono problem z nieskończonym ładowaniem przy pierwszym logowaniu - logowanie działa teraz natychmiast',
+      },
+    ],
+  },
+  {
     version: '0.6.7-beta',
     date: '2025-01-17',
     changes: [

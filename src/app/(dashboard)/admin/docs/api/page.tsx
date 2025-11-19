@@ -1,7 +1,6 @@
 import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { readFileSync } from "fs"
-import { join } from "path"
+import { headers } from "next/headers"
 import { MarkdownViewer } from "@/components/admin/markdown-viewer"
 
 export default async function ApiDocsPage() {
@@ -10,14 +9,38 @@ export default async function ApiDocsPage() {
     redirect("/dashboard")
   }
 
-  // Read API documentation markdown file
-  const filePath = join(process.cwd(), "API_DOCUMENTATION.md")
+  // Fetch API documentation from API endpoint
   let content = ""
   
   try {
-    content = readFileSync(filePath, "utf-8")
-  } catch (error) {
-    content = "# Dokumentacja API\n\nNie udało się wczytać dokumentacji API."
+    const headersList = await headers()
+    const host = headersList.get("host") || "localhost:3000"
+    const cookie = headersList.get("cookie") || ""
+    const baseUrl = process.env.NEXTAUTH_URL || (host.includes("localhost") 
+      ? "http://localhost:3000" 
+      : `https://${host}`)
+    
+    const response = await fetch(`${baseUrl}/api/admin/docs/api`, {
+      cache: "no-store",
+      headers: {
+        // Pass cookies manually for Server Component fetch
+        Cookie: cookie,
+      },
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      content = data.content || ""
+      if (!content || content.trim().length === 0) {
+        content = "# Dokumentacja API\n\nPlik dokumentacji jest pusty."
+      }
+    } else {
+      const errorData = await response.json().catch(() => ({}))
+      content = `# Dokumentacja API\n\nNie udało się wczytać dokumentacji API.\n\n**Status:** ${response.status}\n\n**Błąd:** ${errorData.error || "Nieznany błąd"}\n\n${errorData.details ? `**Szczegóły:** ${errorData.details}` : ""}`
+    }
+  } catch (error: any) {
+    console.error("[ApiDocsPage] Error fetching API documentation:", error)
+    content = `# Dokumentacja API\n\nNie udało się wczytać dokumentacji API.\n\n**Błąd:** ${error?.message || "Nieznany błąd"}`
   }
 
   return (
