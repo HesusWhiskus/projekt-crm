@@ -19,6 +19,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed-insurance-companies.ts",
     "db:clear": "npx --yes tsx scripts/clear-db.ts",
     "admin:create": "npx --yes tsx scripts/create-admin.ts",
     "git:status": "node scripts/git-wrapper.js status",

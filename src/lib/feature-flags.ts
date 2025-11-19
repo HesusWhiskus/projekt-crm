@@ -12,6 +12,13 @@ export const FEATURE_KEYS = {
   CUSTOM_FIELDS: "custom_fields",
   INTEGRATION_TABS: "integration_tabs",
   WEBHOOKS: "webhooks",
+  INSURANCE_AGENTS: "insurance_agents",
+  INSURANCE_DATA_VALIDATION: "insurance_data_validation",
+  INSURANCE_SECURITY_ENHANCED: "insurance_security_enhanced",
+  GDPR_COMPLIANCE: "gdpr_compliance",
+  DATA_ENCRYPTION: "data_encryption",
+  PERFORMANCE_OPTIMIZATION: "performance_optimization",
+  AUDIT_LOGGING: "audit_logging",
 } as const
 
 export type FeatureKey = typeof FEATURE_KEYS[keyof typeof FEATURE_KEYS]
@@ -41,6 +48,13 @@ export const PRO_FEATURES: FeatureKey[] = [
   FEATURE_KEYS.CUSTOM_FIELDS,
   FEATURE_KEYS.INTEGRATION_TABS,
   FEATURE_KEYS.WEBHOOKS,
+  FEATURE_KEYS.INSURANCE_AGENTS,
+  FEATURE_KEYS.INSURANCE_DATA_VALIDATION,
+  FEATURE_KEYS.INSURANCE_SECURITY_ENHANCED,
+  FEATURE_KEYS.GDPR_COMPLIANCE,
+  FEATURE_KEYS.DATA_ENCRYPTION,
+  FEATURE_KEYS.PERFORMANCE_OPTIMIZATION,
+  FEATURE_KEYS.AUDIT_LOGGING,
 ]
 
 /**

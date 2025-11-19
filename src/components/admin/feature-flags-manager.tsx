@@ -28,6 +28,13 @@ const featureLabels: Record<FeatureKey, string> = {
   [FEATURE_KEYS.CUSTOM_FIELDS]: "Niestandardowe pola",
   [FEATURE_KEYS.INTEGRATION_TABS]: "Zakładki integracji",
   [FEATURE_KEYS.WEBHOOKS]: "Webhooks",
+  [FEATURE_KEYS.INSURANCE_AGENTS]: "Agenci ubezpieczeniowi",
+  [FEATURE_KEYS.INSURANCE_DATA_VALIDATION]: "Walidacja danych ubezpieczeniowych",
+  [FEATURE_KEYS.INSURANCE_SECURITY_ENHANCED]: "Zaawansowane zabezpieczenia ubezpieczeniowe",
+  [FEATURE_KEYS.GDPR_COMPLIANCE]: "Zgodność z RODO",
+  [FEATURE_KEYS.DATA_ENCRYPTION]: "Szyfrowanie danych",
+  [FEATURE_KEYS.PERFORMANCE_OPTIMIZATION]: "Optymalizacja wydajności",
+  [FEATURE_KEYS.AUDIT_LOGGING]: "Logowanie audytu",
 }
 
 const featureDescriptions: Record<FeatureKey, string> = {
@@ -38,6 +45,13 @@ const featureDescriptions: Record<FeatureKey, string> = {
   [FEATURE_KEYS.CUSTOM_FIELDS]: "Dodawanie niestandardowych pól do klientów",
   [FEATURE_KEYS.INTEGRATION_TABS]: "Dynamiczne zakładki integracji w szczegółach klienta",
   [FEATURE_KEYS.WEBHOOKS]: "Webhooks dla zewnętrznych integracji",
+  [FEATURE_KEYS.INSURANCE_AGENTS]: "Obsługa agentów ubezpieczeniowych - pojazdy, kalkulacje, polisy",
+  [FEATURE_KEYS.INSURANCE_DATA_VALIDATION]: "Walidacja danych ubezpieczeniowych (PESEL, VIN, numer rejestracyjny)",
+  [FEATURE_KEYS.INSURANCE_SECURITY_ENHANCED]: "Zaawansowane bezpieczeństwo dla danych ubezpieczeniowych",
+  [FEATURE_KEYS.GDPR_COMPLIANCE]: "Zgodność z RODO - eksport i usuwanie danych osobowych",
+  [FEATURE_KEYS.DATA_ENCRYPTION]: "Szyfrowanie wrażliwych danych osobowych",
+  [FEATURE_KEYS.PERFORMANCE_OPTIMIZATION]: "Optymalizacje wydajności dla dużych ilości danych",
+  [FEATURE_KEYS.AUDIT_LOGGING]: "Szczegółowe logowanie operacji audytowych",
 }
 
 export function FeatureFlagsManager({

@@ -32,17 +32,82 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
     - Klient HTTP do komunikacji z systemem zewnętrznym: ExternalSystemClient, ExternalSystemMapper, WebhookHandler
   - **Migracja Prisma:** Utworzono migrację dla wszystkich nowych modeli
 
-### W trakcie implementacji (Faza 5-9)
-- **API Routes:** Endpointy API dla vehicles, calculations, policies, insurance-agents, external integration, validation, security, audit, configuration (planowane w następnej fazie)
-- **UI Components:** Dashboard dla agentów, pipeline kalkulacji, formularze, widoki szczegółowe (planowane w następnej fazie)
-- **Feature Flags:** Aktualizacja feature-flags.ts o nowe klucze INSURANCE_AGENTS, INSURANCE_DATA_VALIDATION, itp. (planowane w następnej fazie)
-- **Seed Data:** Seed data dla InsuranceCompany (19 TU z logo) (planowane w następnej fazie)
-- **Testy i dokumentacja:** Testy jednostkowe, integracyjne, aktualizacja dokumentacji API (planowane w następnej fazie)
+### Dodano (Faza 5, 7, 8)
+- **API Routes:** 
+  - Endpointy API dla vehicles: POST/GET/PUT `/api/vehicles`, POST/DELETE `/api/vehicles/[id]/owners`, POST `/api/vehicles/[id]/enrich`
+  - Endpointy API dla calculations: POST/GET/PUT `/api/calculations`, POST `/api/calculations/[id]/status`, POST `/api/calculations/[id]/sync`
+  - Endpointy API dla policies: POST/GET/PUT `/api/policies`, POST `/api/policies/[id]/documents`, GET `/api/policies/[id]/documents/[docId]/download`
+  - Endpointy API dla insurance-agents: POST/GET/PUT `/api/insurance-agents`, PUT `/api/insurance-agents/[id]/visibility`
+  - Endpointy API dla integracji: GET `/api/external/sync/status`, POST `/api/external/webhook`
+  - Endpointy API dla walidacji: POST `/api/validation/pesel`, `/api/validation/vin`, `/api/validation/registration-number`, `/api/validation/postal-code`
+  - Endpointy API dla bezpieczeństwa i RODO: GET `/api/clients/[id]/export-data`, DELETE `/api/clients/[id]/personal-data`, GET/POST/DELETE `/api/clients/[id]/consents`
+  - Endpointy API dla audytu: GET `/api/audit/calculations/[id]/history`, GET `/api/audit/policies/[id]/history`, GET `/api/audit/personal-data`, GET `/api/audit/sync`
+  - Endpointy API dla konfiguracji: GET/PUT `/api/organizations/[id]/insurance-settings`
+- **Feature Flags:** 
+  - Dodano nowe klucze: `INSURANCE_AGENTS`, `INSURANCE_DATA_VALIDATION`, `INSURANCE_SECURITY_ENHANCED`, `GDPR_COMPLIANCE`, `DATA_ENCRYPTION`, `PERFORMANCE_OPTIMIZATION`, `AUDIT_LOGGING`
+  - Wszystkie nowe feature flags są dostępne w planie PRO
+- **Seed Data:** 
+  - Utworzono seed data dla InsuranceCompany (19 Towarzystw Ubezpieczeniowych z logo)
+  - Skrypt seed: `npm run db:seed`
+
+### Dodano (Faza 6 - UI Components)
+- **Dashboard dla agentów ubezpieczeniowych:**
+  - Strona `/insurance-agent/dashboard` z statystykami kalkulacji, polis i pojazdów
+  - Karty statystyk: Kalkulacje, Polisy, Pojazdy, Akceptacje
+  - Sekcje: Status kalkulacji, Polisy, Ostatnie kalkulacje, Nadchodzące odnowienia
+- **Strony list:**
+  - `/insurance-agent/calculations` - lista kalkulacji z filtrowaniem po statusie
+  - `/insurance-agent/policies` - lista polis z informacją o wygasaniu
+  - `/insurance-agent/vehicles` - lista pojazdów z właścicielami
+- **Rozszerzenie ClientDetail:**
+  - Dodano zakładki dla pojazdów, kalkulacji i polis (widoczne gdy feature flag INSURANCE_AGENTS jest włączony)
+  - Integracja z istniejącym widokiem szczegółów klienta
+- **Formularze:**
+  - `VehicleForm` - formularz do tworzenia/edycji pojazdów
+  - `CalculationForm` - formularz do tworzenia/edycji kalkulacji z pełnymi danymi z formularza ubezpieczenia
+  - `PolicyForm` - formularz do tworzenia/edycji polis z wyborem TU
+
+### Dodano (Faza 6 - dokończenie)
+- **Pipeline kalkulacji:**
+  - Komponent `CalculationPipeline` z drag & drop (HTML5 Drag & Drop API)
+  - Strona `/insurance-agent/calculations/pipeline` z widokiem kanban
+  - Automatyczna aktualizacja statusu kalkulacji po przeciągnięciu
+- **Panele konfiguracji:**
+  - `AgentVisibilitySettings` - konfiguracja widoczności elementów UI dla agenta
+  - `InsuranceSettingsPanel` - konfiguracja integracji zewnętrznej i funkcji ubezpieczeniowych
+  - Strony: `/insurance-agent/settings` i `/settings/insurance`
+- **Testy:**
+  - Podstawowe testy jednostkowe dla Value Objects (VIN, RegistrationNumber)
+  - Testy dla Use Cases (CreateCalculationUseCase)
+  - Struktura testów gotowa do rozbudowy
+- **Dokumentacja API:**
+  - Utworzono `README_API.md` z pełną dokumentacją wszystkich endpointów
+  - Przykłady użycia (cURL, JavaScript)
+  - Opis kodów błędów i rate limiting
+
+### Naprawiono
+- **Błędy kompilacji TypeScript:**
+  - Naprawiono pobieranie `organizationId` z bazy danych we wszystkich plikach insurance-agent (getCurrentUser() nie zwraca organizationId)
+  - Naprawiono sygnatury metod use cases - usunięto niepotrzebne parametry `user` z metod GET
+  - Naprawiono DTO - usunięto nieistniejące pola (`limit`, `offset`, `clientIds`, `externalId`, `calculationId`)
+  - Naprawiono konwersję typów - dodano konwersję `Decimal` na `number` w pipeline kalkulacji
+  - Naprawiono historię - zmieniono `createdAt` na `changedAt` w CalculationHistory i PolicyHistory
+  - Naprawiono walidację - dodano sprawdzenia null dla Value Objects (PESEL, PostalCode, RegistrationNumber, VIN)
+  - Naprawiono feature flags - dodano brakujące klucze do `featureLabels` w feature-flags-manager.tsx
+  - Naprawiono typy - dodano typy dla parametrów funkcji w calculation-form.tsx
+  - Naprawiono wywołania use cases - poprawiono argumenty dla ChangeCalculationStatusUseCase, SendCalculationToExternalUseCase, AssignVehicleToClientUseCase
 
 ### Uwagi techniczne
 - Wymagana migracja Prisma dla nowych modeli: Vehicle, VehicleOwner, Calculation, Policy, PolicyDocument, InsuranceAgent, InsuranceCompany, ExternalSync, OrganizationInsuranceSettings, CalculationHistory, PolicyHistory, AuditLog, DataConsent
 - Migracja została utworzona i jest gotowa do wykonania w produkcji
-- Backend (warstwa domenowa, aplikacyjna i infrastruktury) jest gotowy - brakuje tylko API routes i UI components
+- **Wszystkie fazy implementacji zostały ukończone:**
+  - ✅ Backend (DDD): schemat bazy, warstwa domenowa, aplikacyjna, infrastruktura
+  - ✅ API Routes: wszystkie endpointy dla vehicles, calculations, policies, insurance-agents, integracji, walidacji, bezpieczeństwa, audytu
+  - ✅ UI Components: dashboard, listy, formularze, pipeline, panele konfiguracji
+  - ✅ Feature Flags: wszystkie nowe flagi dodane i skonfigurowane
+  - ✅ Seed Data: dane dla InsuranceCompany gotowe
+  - ✅ Testy: podstawowa struktura testów utworzona
+  - ✅ Dokumentacja: pełna dokumentacja API w README_API.md
 
 ## [0.6.8-beta] - 2025-01-19
 

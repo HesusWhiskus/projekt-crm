@@ -19,7 +19,7 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       {
         type: 'added',
-        description: 'Dodano backend dla agentów ubezpieczeniowych - schemat bazy danych, warstwa domenowa (DDD), warstwa aplikacyjna (Use Cases) i infrastruktura (Repozytoria Prisma)',
+        description: 'Dodano pełną obsługę agentów ubezpieczeniowych - backend (DDD), API Routes, UI Components',
       },
       {
         type: 'added',
@@ -35,11 +35,43 @@ export const changelog: ChangelogEntry[] = [
       },
       {
         type: 'added',
-        description: 'Dodano migrację Prisma dla wszystkich nowych modeli - gotowa do wykonania w produkcji',
+        description: 'Dodano API Routes dla vehicles, calculations, policies, insurance-agents, external integration, validation, security, audit, configuration',
       },
       {
-        type: 'changed',
-        description: 'API Routes i UI Components są planowane w następnej fazie implementacji',
+        type: 'added',
+        description: 'Dodano Dashboard dla agentów ubezpieczeniowych z statystykami i przeglądem kalkulacji/polis',
+      },
+      {
+        type: 'added',
+        description: 'Dodano zakładki w ClientDetail dla pojazdów, kalkulacji i polis (gdy feature flag INSURANCE_AGENTS jest włączony)',
+      },
+      {
+        type: 'added',
+        description: 'Dodano formularze: VehicleForm, CalculationForm, PolicyForm',
+      },
+      {
+        type: 'added',
+        description: 'Dodano Feature Flags: INSURANCE_AGENTS, INSURANCE_DATA_VALIDATION, GDPR_COMPLIANCE, DATA_ENCRYPTION, AUDIT_LOGGING i inne',
+      },
+      {
+        type: 'added',
+        description: 'Dodano seed data dla InsuranceCompany (19 Towarzystw Ubezpieczeniowych)',
+      },
+      {
+        type: 'added',
+        description: 'Dodano Pipeline kalkulacji z drag & drop - widok kanban z automatyczną aktualizacją statusu',
+      },
+      {
+        type: 'added',
+        description: 'Dodano panele konfiguracji: AgentVisibilitySettings i InsuranceSettingsPanel',
+      },
+      {
+        type: 'added',
+        description: 'Dodano podstawowe testy jednostkowe i dokumentację API (README_API.md)',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono wszystkie błędy kompilacji TypeScript - pobieranie organizationId z bazy, poprawki sygnatur use cases, DTO i typów',
       },
     ],
   },

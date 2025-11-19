@@ -98,11 +98,96 @@ export default async function ClientDetailPage({
     redirect("/clients")
   }
 
-  const [users, groups, hasIntegrationTabs] = await Promise.all([
+  // Get user with organizationId from database
+  const userWithOrg = await db.user.findUnique({
+    where: { id: user.id },
+    select: { organizationId: true },
+  })
+
+  const [users, groups, hasIntegrationTabs, hasInsuranceAgents] = await Promise.all([
     getCachedUsers(),
     getCachedGroups(),
     checkFeature(user.id, FEATURE_KEYS.INTEGRATION_TABS),
+    checkFeature(user.id, FEATURE_KEYS.INSURANCE_AGENTS),
   ])
+
+  // Fetch insurance-related data if feature is enabled
+  let vehicles: any[] = []
+  let calculations: any[] = []
+  let policies: any[] = []
+
+  if (hasInsuranceAgents) {
+    const [vehiclesData, calculationsData, policiesData] = await Promise.all([
+      db.vehicle.findMany({
+        where: {
+          organizationId: userWithOrg?.organizationId || undefined,
+          owners: {
+            some: {
+              clientId: client.id,
+            },
+          },
+        },
+        include: {
+          owners: {
+            include: {
+              client: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  companyName: true,
+                  type: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      db.calculation.findMany({
+        where: {
+          clientId: client.id,
+          organizationId: userWithOrg?.organizationId || undefined,
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          vehicle: {
+            select: {
+              id: true,
+              vin: true,
+              registrationNumber: true,
+            },
+          },
+        },
+      }),
+      db.policy.findMany({
+        where: {
+          clientId: client.id,
+          organizationId: userWithOrg?.organizationId || undefined,
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          vehicle: {
+            select: {
+              id: true,
+              vin: true,
+              registrationNumber: true,
+            },
+          },
+          insuranceCompany: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+            },
+          },
+        },
+      }),
+    ])
+
+    vehicles = vehiclesData
+    calculations = calculationsData
+    policies = policiesData
+  }
 
   return (
     <ClientDetail
@@ -111,6 +196,10 @@ export default async function ClientDetailPage({
       groups={groups}
       currentUser={user}
       integrationTabsEnabled={hasIntegrationTabs}
+      insuranceAgentsEnabled={hasInsuranceAgents}
+      vehicles={vehicles}
+      calculations={calculations}
+      policies={policies}
     />
   )
 }

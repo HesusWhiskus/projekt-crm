@@ -1,0 +1,123 @@
+import { NextResponse } from 'next/server'
+import { requireAuth } from '@/presentation/api/middleware/auth'
+import { GetPolicyUseCase, UpdatePolicyUseCase } from '@/application/policies/use-cases'
+import { PrismaPolicyRepository } from '@/infrastructure/persistence/prisma'
+import { UpdatePolicyDTO } from '@/application/policies/dto'
+import { applyRateLimit, logApiActivity } from '@/lib/api-security'
+import { z } from 'zod'
+
+const policyRepository = new PrismaPolicyRepository()
+const getPolicyUseCase = new GetPolicyUseCase(policyRepository)
+const updatePolicyUseCase = new UpdatePolicyUseCase(policyRepository)
+
+const updatePolicySchema = z.object({
+  policyNumber: z.string().optional(),
+  issueDate: z.string().datetime().optional(),
+  validFrom: z.string().datetime().optional(),
+  validTo: z.string().datetime().optional(),
+  status: z.enum(['ACTIVE', 'EXPIRED', 'CANCELLED', 'RENEWED']).optional(),
+  calculationId: z.string().optional().nullable(),
+  clientId: z.string().optional().nullable(),
+  vehicleId: z.string().optional().nullable(),
+  insuranceCompanyId: z.string().optional(),
+  agentId: z.string().optional().nullable(),
+  externalId: z.string().optional().nullable(),
+})
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const rateLimitResponse = await applyRateLimit(request, 'api')
+    if (rateLimitResponse) return rateLimitResponse
+
+    const authResult = await requireAuth()
+    if ('response' in authResult) {
+      await logApiActivity(null, 'API_UNAUTHORIZED_ATTEMPT', 'Policy', params.id, {}, request)
+      return authResult.response
+    }
+    const { user } = authResult
+
+    if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
+      return NextResponse.json({ error: 'Nieprawidłowy format ID' }, { status: 400 })
+    }
+
+    const policy = await getPolicyUseCase.execute(params.id.trim())
+
+    return NextResponse.json({ policy })
+  } catch (error: any) {
+    if (error.message?.includes('nie znaleziony')) {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+
+    console.error('Get policy error:', error)
+    return NextResponse.json(
+      { error: 'Wystąpił błąd podczas pobierania polisy' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const rateLimitResponse = await applyRateLimit(request, 'api')
+    if (rateLimitResponse) return rateLimitResponse
+
+    const authResult = await requireAuth()
+    if ('response' in authResult) {
+      await logApiActivity(null, 'API_UNAUTHORIZED_ATTEMPT', 'Policy', params.id, {}, request)
+      return authResult.response
+    }
+    const { user } = authResult
+
+    if (!params.id || typeof params.id !== 'string' || params.id.trim().length === 0) {
+      return NextResponse.json({ error: 'Nieprawidłowy format ID' }, { status: 400 })
+    }
+
+    const body = await request.json()
+    const validatedData = updatePolicySchema.parse(body)
+
+    const dto: UpdatePolicyDTO = {
+      policyNumber: validatedData.policyNumber,
+      issueDate: validatedData.issueDate,
+      validFrom: validatedData.validFrom,
+      validTo: validatedData.validTo,
+      status: validatedData.status,
+      calculationId: validatedData.calculationId !== undefined ? validatedData.calculationId || undefined : undefined,
+      clientId: validatedData.clientId !== undefined ? validatedData.clientId || undefined : undefined,
+      vehicleId: validatedData.vehicleId !== undefined ? validatedData.vehicleId || undefined : undefined,
+      insuranceCompanyId: validatedData.insuranceCompanyId,
+      agentId: validatedData.agentId !== undefined ? validatedData.agentId || undefined : undefined,
+    }
+
+    const policy = await updatePolicyUseCase.execute(params.id.trim(), dto, user)
+
+    await logApiActivity(user.id, 'POLICY_UPDATED', 'Policy', policy.id, {
+      updatedFields: Object.keys(validatedData),
+    }, request)
+
+    return NextResponse.json({ policy })
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    if (error.message?.includes('nie znaleziony')) {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+
+    console.error('Update policy error:', error)
+    return NextResponse.json(
+      { error: error.message || 'Wystąpił błąd podczas aktualizacji polisy' },
+      { status: error.message?.includes('już istnieje') || error.message?.includes('Nieprawidłowy') ? 400 : 500 }
+    )
+  }
+}
+

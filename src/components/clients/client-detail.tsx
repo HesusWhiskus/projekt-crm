@@ -28,6 +28,10 @@ interface ClientDetailProps {
     role: UserRole
   }
   integrationTabsEnabled?: boolean
+  insuranceAgentsEnabled?: boolean
+  vehicles?: any[]
+  calculations?: any[]
+  policies?: any[]
 }
 
 const statusLabels: Record<ClientStatus, string> = {
@@ -53,13 +57,24 @@ const contactTypeLabels: Record<string, string> = {
   OTHER: "Inne",
 }
 
-export function ClientDetail({ client, users, groups, currentUser, integrationTabsEnabled = false }: ClientDetailProps) {
+export function ClientDetail({ 
+  client, 
+  users, 
+  groups, 
+  currentUser, 
+  integrationTabsEnabled = false,
+  insuranceAgentsEnabled = false,
+  vehicles = [],
+  calculations = [],
+  policies = [],
+}: ClientDetailProps) {
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [isAddingContact, setIsAddingContact] = useState(false)
   const [addingNote, setAddingNote] = useState(false)
   const [editingContactId, setEditingContactId] = useState<string | null>(null)
   const [contactFilter, setContactFilter] = useState<"all" | "contacts" | "notes">("all")
+  const [activeTab, setActiveTab] = useState<"vehicles" | "calculations" | "policies">("vehicles")
   
   // Filtruj kontakty
   const filteredContacts = client.contacts.filter((contact: any) => {
@@ -424,6 +439,147 @@ export function ClientDetail({ client, users, groups, currentUser, integrationTa
 
       {integrationTabsEnabled && (
         <IntegrationTabs clientId={client.id} enabled={integrationTabsEnabled} />
+      )}
+
+      {insuranceAgentsEnabled && (
+        <Card>
+          <CardHeader>
+            <div className="flex gap-2 border-b">
+              <Button
+                variant={activeTab === "vehicles" ? "default" : "ghost"}
+                onClick={() => setActiveTab("vehicles")}
+                className="rounded-b-none"
+              >
+                Pojazdy ({vehicles.length})
+              </Button>
+              <Button
+                variant={activeTab === "calculations" ? "default" : "ghost"}
+                onClick={() => setActiveTab("calculations")}
+                className="rounded-b-none"
+              >
+                Kalkulacje ({calculations.length})
+              </Button>
+              <Button
+                variant={activeTab === "policies" ? "default" : "ghost"}
+                onClick={() => setActiveTab("policies")}
+                className="rounded-b-none"
+              >
+                Polisy ({policies.length})
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {activeTab === "vehicles" && (
+              <div className="space-y-2">
+                {vehicles.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Brak pojazdów</p>
+                ) : (
+                  vehicles.map((vehicle) => (
+                    <Link
+                      key={vehicle.id}
+                      href={`/insurance-agent/vehicles/${vehicle.id}`}
+                      className="flex items-center justify-between p-3 border rounded hover:bg-muted/50 transition-colors"
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {vehicle.registrationNumber || vehicle.vin || 'Brak numeru'}
+                        </p>
+                        {vehicle.vin && (
+                          <p className="text-sm text-muted-foreground">VIN: {vehicle.vin}</p>
+                        )}
+                      </div>
+                    </Link>
+                  ))
+                )}
+              </div>
+            )}
+
+            {activeTab === "calculations" && (
+              <div className="space-y-2">
+                {calculations.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Brak kalkulacji</p>
+                ) : (
+                  calculations.map((calculation) => (
+                    <Link
+                      key={calculation.id}
+                      href={`/insurance-agent/calculations/${calculation.id}`}
+                      className="flex items-center justify-between p-3 border rounded hover:bg-muted/50 transition-colors"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">
+                            Kalkulacja #{calculation.id.slice(-8)}
+                          </p>
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            calculation.status === 'DRAFT' ? 'bg-gray-100 text-gray-800' :
+                            calculation.status === 'SENT' ? 'bg-blue-100 text-blue-800' :
+                            calculation.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {calculation.status}
+                          </span>
+                        </div>
+                        {calculation.vehicle && (
+                          <p className="text-sm text-muted-foreground">
+                            Pojazd: {calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}
+                          </p>
+                        )}
+                        {calculation.value && (
+                          <p className="text-sm text-muted-foreground">
+                            Wartość: {calculation.value.toFixed(2)} zł
+                          </p>
+                        )}
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(calculation.createdAt).toLocaleDateString('pl-PL')}
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            )}
+
+            {activeTab === "policies" && (
+              <div className="space-y-2">
+                {policies.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Brak polis</p>
+                ) : (
+                  policies.map((policy) => (
+                    <Link
+                      key={policy.id}
+                      href={`/insurance-agent/policies/${policy.id}`}
+                      className="flex items-center justify-between p-3 border rounded hover:bg-muted/50 transition-colors"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">
+                            Polisa: {policy.policyNumber}
+                          </p>
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            policy.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
+                            policy.status === 'EXPIRED' ? 'bg-gray-100 text-gray-800' :
+                            policy.status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
+                            'bg-blue-100 text-blue-800'
+                          }`}>
+                            {policy.status}
+                          </span>
+                        </div>
+                        {policy.insuranceCompany && (
+                          <p className="text-sm text-muted-foreground">
+                            TU: {policy.insuranceCompany.name}
+                          </p>
+                        )}
+                        <p className="text-sm text-muted-foreground">
+                          Ważna do: {new Date(policy.validTo).toLocaleDateString('pl-PL')}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   )
