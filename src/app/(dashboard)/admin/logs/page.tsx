@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
-import { headers } from "next/headers"
+import { db } from "@/lib/db"
 
 export default async function AdminLogsPage() {
   const user = await getCurrentUser()
@@ -8,28 +8,38 @@ export default async function AdminLogsPage() {
     redirect("/dashboard")
   }
 
-  // Fetch auth logs from API endpoint
+  // Fetch activity logs directly from database
   let logs: any[] = []
   
   try {
-    const headersList = await headers()
-    const host = headersList.get("host") || "localhost:3000"
-    const cookie = headersList.get("cookie") || ""
-    const baseUrl = process.env.NEXTAUTH_URL || (host.includes("localhost") 
-      ? "http://localhost:3000" 
-      : `https://${host}`)
-    
-    const response = await fetch(`${baseUrl}/api/auth-logs`, {
-      cache: "no-store",
-      headers: {
-        Cookie: cookie,
+    const activityLogs = await db.activityLog.findMany({
+      take: 100,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
       },
     })
-    
-    if (response.ok) {
-      const data = await response.json()
-      logs = data.logs || []
-    }
+
+    // Map to format expected by the frontend
+    logs = activityLogs.map((log) => ({
+      id: log.id,
+      timestamp: log.createdAt.toISOString(),
+      userId: log.userId,
+      email: log.user.email || log.userId,
+      action: log.action,
+      entityType: log.entityType,
+      entityId: log.entityId,
+      ip: log.ipAddress || "-",
+      userAgent: log.userAgent || "-",
+      details: log.details,
+      success: true,
+    }))
   } catch (error: any) {
     console.error("[AdminLogsPage] Error fetching auth logs:", error)
   }

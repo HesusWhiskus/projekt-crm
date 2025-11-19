@@ -1,15 +1,56 @@
 import { NextResponse } from "next/server"
-import { getAuthLogs, clearAuthLogs } from "@/lib/logger"
+import { getCurrentUser } from "@/lib/auth"
+import { db } from "@/lib/db"
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
-  const clear = searchParams.get("clear") === "true"
-  
-  if (clear) {
-    clearAuthLogs()
-    return NextResponse.json({ message: "Logs cleared" })
+  // Check admin permissions
+  const user = await getCurrentUser()
+  if (!user || user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  
-  const logs = getAuthLogs()
-  return NextResponse.json({ logs }, { status: 200 })
+
+  const { searchParams } = new URL(request.url)
+  const limit = parseInt(searchParams.get("limit") || "100")
+  const offset = parseInt(searchParams.get("offset") || "0")
+
+  try {
+    // Get activity logs from database
+    const activityLogs = await db.activityLog.findMany({
+      take: limit,
+      skip: offset,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    })
+
+    // Map to format expected by the frontend
+    const logs = activityLogs.map((log) => ({
+      id: log.id,
+      timestamp: log.createdAt.toISOString(),
+      userId: log.userId,
+      email: log.user.email || log.userId,
+      action: log.action,
+      entityType: log.entityType,
+      entityId: log.entityId,
+      ip: log.ipAddress || "-",
+      userAgent: log.userAgent || "-",
+      details: log.details,
+      success: true, // Activity logs are always successful (failed actions might not be logged)
+    }))
+
+    return NextResponse.json({ logs }, { status: 200 })
+  } catch (error: any) {
+    console.error("[Auth Logs API] Error fetching logs:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch logs", details: error?.message },
+      { status: 500 }
+    )
+  }
 }
