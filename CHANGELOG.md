@@ -18,6 +18,13 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
   - Dodano komponent `InsuranceNavItems` z linkami do modułu agentów ubezpieczeniowych
   - Linki widoczne w nawigacji głównej (desktop i mobile) dla aktywnych agentów ubezpieczeniowych
   - Automatyczne sprawdzanie statusu agenta w layout i wyświetlanie linków tylko dla aktywnych agentów
+- **Strony szczegółów i formularze dla modułu agentów ubezpieczeniowych:**
+  - Dodano strony szczegółów dla pojazdów (`/insurance-agent/vehicles/[id]`) z komponentem `VehicleDetail`
+  - Dodano strony szczegółów dla kalkulacji (`/insurance-agent/calculations/[id]`) z komponentem `CalculationDetail`
+  - Dodano strony szczegółów dla polis (`/insurance-agent/policies/[id]`) z komponentem `PolicyDetail`
+  - Dodano strony tworzenia nowych rekordów (`/insurance-agent/vehicles/new`, `/insurance-agent/calculations/new`, `/insurance-agent/policies/new`)
+  - Komponenty szczegółów z możliwością edycji inline i nawigacją do powiązanych rekordów
+  - Pełna integracja z formularzami edycji i walidacją danych
 
 ### Zmieniono
 - **Refaktoryzacja modułu zarządzania użytkownikami:**

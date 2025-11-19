@@ -26,6 +26,10 @@ export const changelog: ChangelogEntry[] = [
         description: 'Dodano nawigację dla agentów ubezpieczeniowych - linki widoczne w menu głównym dla aktywnych agentów',
       },
       {
+        type: 'added',
+        description: 'Dodano strony szczegółów i formularze dla pojazdów, kalkulacji i polis - pełna obsługa CRUD z edycją inline',
+      },
+      {
         type: 'changed',
         description: 'Zrefaktoryzowano moduł zarządzania użytkownikami - zintegrowano zarządzanie agentami ubezpieczeniowymi',
       },
