@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.7-beta',
+    date: '2025-01-17',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano sekcję "Dokumentacja i narzędzia" w panelu administracyjnym z dostępem do Swagger UI, dokumentacji API i dokumentacji projektu',
+      },
+    ],
+  },
+  {
     version: '0.6.6-beta',
     date: '2025-11-17',
     changes: [

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Settings, UserCheck, Shield, FileSpreadsheet, Building2, Flag } from "lucide-react"
+import { Users, Settings, UserCheck, Shield, FileSpreadsheet, Building2, Flag, Code, FileText, BookOpen } from "lucide-react"
 
 export default async function AdminPage() {
   const user = await getCurrentUser()
@@ -111,6 +111,53 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
         </Link>
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-semibold mb-4">Dokumentacja i narzędzia</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link href="/api-docs" target="_blank" rel="noopener noreferrer">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Code className="h-5 w-5" />
+                  <span>Swagger UI</span>
+                </CardTitle>
+                <CardDescription>
+                  Interaktywna dokumentacja API z możliwością testowania endpointów
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link href="/admin/docs/api">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <FileText className="h-5 w-5" />
+                  <span>Dokumentacja API</span>
+                </CardTitle>
+                <CardDescription>
+                  Pełna dokumentacja wszystkich endpointów API w formacie markdown
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link href="/admin/docs/project">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BookOpen className="h-5 w-5" />
+                  <span>Dokumentacja projektu</span>
+                </CardTitle>
+                <CardDescription>
+                  Ogólna dokumentacja projektu, instalacja i konfiguracja
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+        </div>
       </div>
     </div>
   )

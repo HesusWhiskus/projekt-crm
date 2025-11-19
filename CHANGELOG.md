@@ -5,6 +5,21 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.7-beta] - 2025-01-17
+
+### Dodano
+- **Sekcja dokumentacji w panelu administracyjnym:**
+  - Dodano sekcję "Dokumentacja i narzędzia" do panelu admin (`/admin`)
+  - Kafelek "Swagger UI" - link do interaktywnej dokumentacji API (`/api-docs`)
+  - Kafelek "Dokumentacja API" - strona renderująca pełną dokumentację API w formacie markdown (`/admin/docs/api`)
+  - Kafelek "Dokumentacja projektu" - strona renderująca dokumentację projektu (`/admin/docs/project`)
+  - Wszystkie strony dokumentacji dostępne tylko dla użytkowników z rolą ADMIN
+
+### Zmieniono
+- **Komponenty:**
+  - Dodano komponent `MarkdownViewer` do renderowania dokumentacji markdown z podświetlaniem składni kodu
+  - Wszystkie strony dokumentacji używają wspólnego komponentu do spójnego stylowania
+
 ## [0.6.6-beta] - 2025-11-17
 
 ### Naprawiono
