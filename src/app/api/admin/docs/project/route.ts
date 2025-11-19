@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { readFileSync } from "fs"
-import { join } from "path"
+import { join, dirname, resolve } from "path"
 import { existsSync } from "fs"
+import { fileURLToPath } from "url"
+
+// Get __dirname equivalent for ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export async function GET() {
   const user = await getCurrentUser()
@@ -12,22 +17,52 @@ export async function GET() {
   }
 
   // Read README markdown file
-  const filePath = join(process.cwd(), "README.md")
+  // Try multiple possible paths for different environments
+  const cwd = process.cwd()
+  const possiblePaths = [
+    join(cwd, "README.md"),
+    resolve(cwd, "README.md"),
+    join(cwd, "..", "README.md"),
+    join(cwd, "..", "..", "README.md"),
+    resolve(__dirname, "..", "..", "..", "..", "..", "README.md"),
+    resolve(__dirname, "..", "..", "..", "..", "README.md"),
+  ]
+  
+  let filePath: string | null = null
   let content = ""
   
-  try {
-    // Check if file exists first
-    if (!existsSync(filePath)) {
-      console.error("[Project Docs Endpoint] File does not exist:", filePath)
-      return NextResponse.json(
-        { 
-          error: "Nie udało się wczytać dokumentacji projektu",
-          details: "Plik README.md nie został znaleziony"
-        },
-        { status: 404 }
-      )
+  // Find the file in one of the possible paths
+  for (const path of possiblePaths) {
+    try {
+      if (existsSync(path)) {
+        filePath = path
+        console.log("[Project Docs Endpoint] Found file at:", path)
+        break
+      }
+    } catch (err) {
+      // Continue to next path if this one fails
+      continue
     }
-    
+  }
+  
+  if (!filePath) {
+    console.error("[Project Docs Endpoint] File not found in any of these paths:", possiblePaths)
+    console.error("[Project Docs Endpoint] process.cwd():", cwd)
+    console.error("[Project Docs Endpoint] __dirname:", __dirname)
+    return NextResponse.json(
+      { 
+        error: "Nie udało się wczytać dokumentacji projektu",
+        details: `Plik README.md nie został znaleziony. Sprawdzono ścieżki: ${possiblePaths.slice(0, 3).join(", ")}...`,
+        debug: {
+          cwd: cwd,
+          dirname: __dirname,
+        }
+      },
+      { status: 404 }
+    )
+  }
+  
+  try {
     content = readFileSync(filePath, "utf-8")
     
     if (!content || content.trim().length === 0) {
