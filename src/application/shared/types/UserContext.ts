@@ -5,5 +5,6 @@ export interface UserContext {
   id: string
   role: 'ADMIN' | 'USER'
   email: string
+  organizationId?: string | null
 }
 

@@ -5,6 +5,25 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.6.9-beta] - 2025-01-19
+
+### Dodano
+- **Obsługa agentów ubezpieczeniowych:**
+  - Nowy typ użytkownika: InsuranceAgent z konfigurowalną widocznością elementów UI
+  - Model pojazdów (Vehicle) z relacją N:M do klientów (współwłasność)
+  - Model kalkulacji ubezpieczeniowych (Calculation) jako szanse sprzedaży z pełnymi danymi z formularza ubezpieczenia
+  - Model polis (Policy) z dokumentami do pobrania i informacją o TU
+  - Integracja dwukierunkowa z systemem zewnętrznym (REST API + Webhooks)
+  - Warstwa domenowa (DDD) dla wszystkich nowych encji z Value Objects i Domain Services
+  - Repozytoria Prisma dla wszystkich nowych domen
+  - Use Cases dla wszystkich operacji CRUD i biznesowych
+  - Konfiguracja widoczności elementów na poziomie organizacji
+
+### Uwagi techniczne
+- Wymagana migracja Prisma dla nowych modeli: Vehicle, VehicleOwner, Calculation, Policy, PolicyDocument, InsuranceAgent, InsuranceCompany, ExternalSync, OrganizationInsuranceSettings, CalculationHistory, PolicyHistory, AuditLog, DataConsent
+- Rozszerzenie modelu Client o dodatkowe pola dla agentów ubezpieczeniowych
+- Nowe endpointy API będą dostępne w następnej fazie implementacji (UI components)
+
 ## [0.6.8-beta] - 2025-01-19
 
 ### Naprawiono

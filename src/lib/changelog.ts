@@ -14,6 +14,32 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.6.9-beta',
+    date: '2025-01-19',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano obsługę agentów ubezpieczeniowych - nowy typ użytkownika z konfigurowalną widocznością elementów UI',
+      },
+      {
+        type: 'added',
+        description: 'Dodano zarządzanie pojazdami z relacją N:M do klientów (współwłasność pojazdów)',
+      },
+      {
+        type: 'added',
+        description: 'Dodano kalkulacje ubezpieczeniowe jako szanse sprzedaży z pełnymi danymi z formularza ubezpieczenia',
+      },
+      {
+        type: 'added',
+        description: 'Dodano zarządzanie polisami ubezpieczeniowymi z dokumentami do pobrania i informacją o TU',
+      },
+      {
+        type: 'added',
+        description: 'Dodano integrację dwukierunkową z systemem zewnętrznym (REST API + Webhooks)',
+      },
+    ],
+  },
+  {
     version: '0.6.8-beta',
     date: '2025-01-19',
     changes: [

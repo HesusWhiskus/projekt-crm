@@ -6,6 +6,61 @@ Internal CRM to system do zarządzania relacjami z agencjami ubezpieczeniowymi. 
 
 ## ✅ Zaimplementowane funkcjonalności
 
+### 0. Obsługa agentów ubezpieczeniowych (Insurance Agents) 🆕
+
+- **Typ użytkownika InsuranceAgent:**
+  - Osobny model dla agentów ubezpieczeniowych
+  - Konfigurowalna widoczność elementów UI na poziomie organizacji
+  - Numer licencji agenta
+  - Status aktywności (isActive)
+  
+- **Zarządzanie pojazdami (Vehicles):**
+  - CRUD operacje dla pojazdów
+  - Numer VIN z walidacją
+  - Numer rejestracyjny
+  - Relacja N:M z klientami (współwłasność pojazdów)
+  - Dane z Eurotax i Info-Ekspert (JSON)
+  - Informacje o pojeździe: data pierwszej rejestracji, sprowadzenie z zagranicy, badanie techniczne, instalacja LPG, rok nabycia, przebieg
+  
+- **Kalkulacje ubezpieczeniowe (Calculations):**
+  - Kalkulacje jako szanse sprzedaży
+  - Pełne dane z formularza ubezpieczenia:
+    - Dane osobowe (PESEL, imię, nazwisko, poprzednie nazwisko, telefon, email)
+    - Adres zamieszkania i korespondencyjny
+    - Dane dodatkowe (prawo jazdy, zawód, stan cywilny, dziecko <26 lat)
+  - Statusy: DRAFT, SENT, ACCEPTED, REJECTED
+  - Warianty ubezpieczenia: MINIMAL, OPTIMAL, MAXIMAL
+  - Zakresy ubezpieczenia: OC, AC, NNW, ASS
+  - Wartość kalkulacji i data ważności
+  
+- **Polisy ubezpieczeniowe (Policies):**
+  - CRUD operacje dla polis
+  - Numer polisy z walidacją
+  - Data wystawienia i okres ważności
+  - Statusy: ACTIVE, EXPIRED, CANCELLED, RENEWED
+  - Powiązanie z kalkulacją, klientem, pojazdem i TU
+  - Dokumenty polisy (PolicyDocument) - pliki do pobrania
+  - Informacja o Towarzystwie Ubezpieczeniowym (logo, strona www)
+  
+- **Integracja z systemem zewnętrznym:**
+  - Dwukierunkowa synchronizacja danych (REST API + Webhooks)
+  - Śledzenie synchronizacji (ExternalSync)
+  - Retry mechanism z exponential backoff
+  - Historia synchronizacji
+  
+- **Audyt i zgodność RODO:**
+  - AuditLog dla danych osobowych
+  - CalculationHistory - historia zmian kalkulacji
+  - PolicyHistory - historia zmian polis
+  - DataConsent - zarządzanie zgodami RODO
+  
+- **Konfiguracja organizacji:**
+  - OrganizationInsuranceSettings - ustawienia per organizacja
+  - Poziomy walidacji (STRICT, RELAXED)
+  - Szyfrowanie danych
+  - Retencja danych i logów audytu
+  - Cache i TTL
+
 ### 1. Zarządzanie klientami (Clients)
 
 - **CRUD operacje** - tworzenie, edycja, usuwanie, przeglądanie klientów

@@ -54,6 +54,61 @@ enum PlanType {
   PRO
 }
 
+enum InsuranceVariant {
+  MINIMAL
+  OPTIMAL
+  MAXIMAL
+}
+
+enum InsuranceScope {
+  OC
+  AC
+  NNW
+  ASS
+}
+
+enum CalculationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+}
+
+enum PolicyStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  RENEWED
+}
+
+enum SyncDirection {
+  IN
+  OUT
+}
+
+enum SyncStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum ValidationLevel {
+  STRICT
+  RELAXED
+}
+
+enum ConsentType {
+  MARKETING
+  DATA_PROCESSING
+  COMMUNICATION
+}
+
+enum DataType {
+  PERSONAL_DATA
+  VEHICLE_DATA
+  POLICY_DATA
+}
+
 model User {
   id             String    @id @default(cuid())
   email          String    @unique
@@ -68,13 +123,17 @@ model User {
   updatedAt      DateTime  @updatedAt
 
   // Relations
-  organization    Organization?    @relation(fields: [organizationId], references: [id])
-  assignedClients Client[]         @relation("ClientAssignee")
-  assignedTasks   Task[]           @relation("TaskAssignee")
-  contacts        Contact[]
-  groups          UserGroup[]
-  activities      ActivityLog[]
-  preferences     UserPreferences?
+  organization         Organization?    @relation(fields: [organizationId], references: [id])
+  assignedClients      Client[]         @relation("ClientAssignee")
+  assignedTasks        Task[]           @relation("TaskAssignee")
+  contacts             Contact[]
+  groups               UserGroup[]
+  activities           ActivityLog[]
+  preferences          UserPreferences?
+  insuranceAgent       InsuranceAgent?
+  assignedCalculations Calculation[]    @relation("CalculationAssignee")
+  assignedPolicies     Policy[]         @relation("PolicyAssignee")
+  auditLogs            AuditLog[] // Relacja zwrotna do AuditLog
 
   @@index([organizationId])
   @@map("users")
@@ -110,30 +169,38 @@ model UserGroup {
 }
 
 model Client {
-  id             String          @id @default(cuid())
-  type           ClientType      @default(PERSON)
+  id                    String          @id @default(cuid())
+  type                  ClientType      @default(PERSON)
   // Fields for PERSON type
-  firstName      String?
-  lastName       String?
-  pesel          String? // PESEL dla osoby fizycznej
+  firstName             String?
+  lastName              String?
+  pesel                 String? // PESEL dla osoby fizycznej
   // Fields for COMPANY type
-  companyName    String?
-  taxId          String? // NIP / Tax ID
-  regon          String? // REGON dla firmy
+  companyName           String?
+  taxId                 String? // NIP / Tax ID
+  regon                 String? // REGON dla firmy
   // Common fields
-  email          String?
-  phone          String?
-  website        String?
-  address        String?
-  source         String? // Lead source
-  status         ClientStatus    @default(NEW_LEAD)
-  priority       ClientPriority? // Priority for prospecting
-  assignedTo     String? // User ID
-  organizationId String?
-  lastContactAt  DateTime? // Last contact date (auto-updated)
-  nextFollowUpAt DateTime? // Next follow-up date
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  email                 String?
+  phone                 String?
+  website               String?
+  address               String?
+  source                String? // Lead source
+  status                ClientStatus    @default(NEW_LEAD)
+  priority              ClientPriority? // Priority for prospecting
+  assignedTo            String? // User ID
+  organizationId        String?
+  lastContactAt         DateTime? // Last contact date (auto-updated)
+  nextFollowUpAt        DateTime? // Next follow-up date
+  // Additional fields for insurance agents
+  previousLastName      String? // Poprzednie nazwisko
+  drivingLicenseDate    DateTime? // Data uzyskania prawa jazdy
+  occupation            String? // Zawód
+  maritalStatus         String? // Stan cywilny
+  hasChildUnder26       Boolean?        @default(false) // Dziecko poniżej 26 roku życia
+  // Correspondence address (if different)
+  correspondenceAddress Json? // Adres korespondencyjny jako JSON
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 
   // Relations
   organization    Organization?         @relation(fields: [organizationId], references: [id])
@@ -143,6 +210,10 @@ model Client {
   statusHistory   ClientStatusHistory[]
   sharedGroups    Group[]               @relation("GroupSharedClients")
   integrationTabs IntegrationTab[]
+  vehicleOwners   VehicleOwner[]
+  calculations    Calculation[]
+  policies        Policy[]
+  dataConsents    DataConsent[]
 
   @@index([assignedTo])
   @@index([status])
@@ -289,10 +360,15 @@ model Organization {
   updatedAt DateTime @updatedAt
 
   // Relations
-  users        User[]
-  clients      Client[]
-  featureFlags FeatureFlag[]
-  customFields CustomField[]
+  users             User[]
+  clients           Client[]
+  featureFlags      FeatureFlag[]
+  customFields      CustomField[]
+  insuranceSettings OrganizationInsuranceSettings?
+  insuranceAgents   InsuranceAgent[]
+  vehicles          Vehicle[]
+  calculations      Calculation[]
+  policies          Policy[]
 
   @@map("organizations")
 }
@@ -348,4 +424,347 @@ model CustomField {
 
   @@index([organizationId])
   @@map("custom_fields")
+}
+
+// Insurance Agent Model
+model InsuranceAgent {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  licenseNumber  String? // Numer licencji agenta
+  settings       Json? // Konfiguracja widoczności elementów (JSON)
+  isActive       Boolean  @default(true)
+  organizationId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([isActive])
+  @@map("insurance_agents")
+}
+
+// Vehicle Model
+model Vehicle {
+  id                    String    @id @default(cuid())
+  vin                   String?   @unique // Vehicle Identification Number
+  registrationNumber    String? // Numer rejestracyjny
+  firstRegistrationDate DateTime? // Data pierwszej rejestracji
+  // Dane z Eurotax/Info-Ekspert (JSON)
+  eurotaxData           Json? // Dane z Eurotax
+  infoEkspertData       Json? // Dane z Info-Ekspert
+  // Dodatkowe informacje
+  importedFromAbroad    Boolean   @default(false) // Sprowadzony z zagranicy
+  hasValidInspection    Boolean? // Czy jest ważne badanie techniczne
+  hasLpgInstallation    Boolean?  @default(false) // Czy posiada instalację gazową
+  purchaseYear          Int? // Rok nabycia pojazdu
+  currentMileage        Int? // Aktualny przebieg
+  organizationId        String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  // Relations
+  organization Organization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owners       VehicleOwner[] // Relacja N:M z Client
+  calculations Calculation[]
+  policies     Policy[]
+
+  @@index([vin])
+  @@index([registrationNumber])
+  @@index([organizationId])
+  @@map("vehicles")
+}
+
+// VehicleOwner - relacja N:M między Vehicle a Client
+model VehicleOwner {
+  id        String   @id @default(cuid())
+  vehicleId String
+  clientId  String
+  isPrimary Boolean  @default(true) // Główny właściciel
+  createdAt DateTime @default(now())
+
+  // Relations
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  client  Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([vehicleId, clientId])
+  @@index([vehicleId])
+  @@index([clientId])
+  @@map("vehicle_owners")
+}
+
+// Calculation Model (Kalkulacja/Szansa sprzedaży)
+model Calculation {
+  id                    String            @id @default(cuid())
+  // Dane osobowe klienta
+  pesel                 String?
+  firstName             String?
+  lastName              String?
+  previousLastName      String? // Poprzednie nazwisko
+  phone                 String?
+  email                 String?
+  // Adres zamieszkania
+  postalCode            String? // Kod pocztowy
+  city                  String? // Miejscowość/Poczta
+  street                String? // Ulica
+  houseNumber           String? // Numer domu
+  apartmentNumber       String? // Numer mieszkania
+  // Adres korespondencyjny (jeśli inny)
+  correspondenceAddress Json? // Adres korespondencyjny jako JSON
+  // Dane dodatkowe
+  hasDrivingLicense     Boolean? // Prawo jazdy odpowiednie dla pojazdu
+  drivingLicenseDate    DateTime? // Data uzyskania prawa jazdy
+  occupation            String? // Zawód
+  maritalStatus         String? // Stan cywilny
+  hasChildUnder26       Boolean?          @default(false) // Dziecko poniżej 26 roku życia
+  // Powiązania
+  clientId              String?
+  vehicleId             String?
+  agentId               String? // Przypisany agent
+  organizationId        String?
+  // Pola biznesowe
+  status                CalculationStatus @default(DRAFT)
+  value                 Decimal?          @db.Decimal(10, 2) // Wartość kalkulacji
+  validUntil            DateTime? // Data ważności
+  // Dane z formularza ubezpieczenia
+  variant               InsuranceVariant? // Wariant ubezpieczenia
+  scopes                InsuranceScope[] // Zakres ubezpieczenia (array)
+  // Dane z systemu zewnętrznego
+  externalId            String?
+  syncedAt              DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  // Relations
+  client       Client?              @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  vehicle      Vehicle?             @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  agent        User?                @relation("CalculationAssignee", fields: [agentId], references: [id], onDelete: SetNull)
+  organization Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  history      CalculationHistory[]
+  policies     Policy[] // Relacja zwrotna do Policy
+
+  @@index([clientId])
+  @@index([vehicleId])
+  @@index([agentId])
+  @@index([status])
+  @@index([organizationId])
+  @@index([createdAt])
+  @@index([clientId, status])
+  @@map("calculations")
+}
+
+// InsuranceCompany Model (Towarzystwo Ubezpieczeniowe)
+model InsuranceCompany {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  code              String?  @unique // Kod TU
+  logoUrl           String? // URL do logo
+  website           String? // Strona www
+  integrationConfig Json? // Konfiguracja integracji (JSON)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  policies Policy[]
+
+  @@index([code])
+  @@map("insurance_companies")
+}
+
+// Policy Model (Polisa)
+model Policy {
+  id                 String       @id @default(cuid())
+  policyNumber       String       @unique // Numer polisy
+  issueDate          DateTime // Data wystawienia
+  validFrom          DateTime // Data ważności od
+  validTo            DateTime // Data ważności do
+  status             PolicyStatus @default(ACTIVE)
+  // Powiązania
+  calculationId      String? // Powiązana kalkulacja
+  clientId           String?
+  vehicleId          String?
+  insuranceCompanyId String
+  agentId            String? // Agent który wystawił polisę
+  organizationId     String?
+  // Dane z systemu zewnętrznego
+  externalId         String?
+  syncedAt           DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  // Relations
+  calculation      Calculation?     @relation(fields: [calculationId], references: [id], onDelete: SetNull)
+  client           Client?          @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  vehicle          Vehicle?         @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  insuranceCompany InsuranceCompany @relation(fields: [insuranceCompanyId], references: [id], onDelete: Restrict)
+  agent            User?            @relation("PolicyAssignee", fields: [agentId], references: [id], onDelete: SetNull)
+  organization     Organization?    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documents        PolicyDocument[]
+  history          PolicyHistory[]
+
+  @@index([policyNumber])
+  @@index([clientId])
+  @@index([vehicleId])
+  @@index([insuranceCompanyId])
+  @@index([status])
+  @@index([validTo])
+  @@index([organizationId])
+  @@index([status, validTo])
+  @@map("policies")
+}
+
+// PolicyDocument Model
+model PolicyDocument {
+  id         String   @id @default(cuid())
+  policyId   String
+  filename   String
+  path       String // File path or URL
+  size       Int? // File size in bytes
+  mimeType   String?
+  uploadedBy String? // User ID
+  createdAt  DateTime @default(now())
+
+  // Relations
+  policy Policy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([policyId])
+  @@map("policy_documents")
+}
+
+// ExternalSync Model (Synchronizacja z systemem zewnętrznym)
+model ExternalSync {
+  id              String        @id @default(cuid())
+  entityType      String // "client", "vehicle", "calculation", "policy"
+  entityId        String // ID encji w CRM
+  externalId      String? // ID w systemie zewnętrznym
+  direction       SyncDirection // IN lub OUT
+  status          SyncStatus    @default(PENDING)
+  syncedAt        DateTime?
+  error           String? // Błąd synchronizacji
+  requestPayload  Json? // Payload requestu
+  responsePayload Json? // Payload odpowiedzi
+  retryCount      Int           @default(0)
+  nextRetryAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Note: Relations are handled via entityType + entityId, not direct foreign keys
+  // This allows syncing different entity types flexibly
+
+  @@unique([entityType, entityId, direction])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([externalId])
+  @@index([status])
+  @@index([syncedAt])
+  @@map("external_syncs")
+}
+
+// OrganizationInsuranceSettings Model
+model OrganizationInsuranceSettings {
+  id                 String          @id @default(cuid())
+  organizationId     String          @unique
+  validationLevel    ValidationLevel @default(RELAXED)
+  encryptionEnabled  Boolean         @default(false)
+  auditRetentionDays Int? // Okres retencji logów audytu (dni)
+  gdprEnabled        Boolean         @default(false)
+  dataRetentionDays  Int? // Okres retencji danych (dni)
+  cacheEnabled       Boolean         @default(false)
+  cacheTTL           Int? // TTL cache w sekundach
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("organization_insurance_settings")
+}
+
+// CalculationHistory Model
+model CalculationHistory {
+  id            String   @id @default(cuid())
+  calculationId String
+  field         String // Nazwa pola które się zmieniło
+  oldValue      String? // Stara wartość (JSON string)
+  newValue      String? // Nowa wartość (JSON string)
+  changedBy     String? // User ID
+  changedAt     DateTime @default(now())
+  reason        String? // Powód zmiany
+
+  // Relations
+  calculation Calculation @relation(fields: [calculationId], references: [id], onDelete: Cascade)
+
+  @@index([calculationId])
+  @@index([changedAt])
+  @@map("calculation_history")
+}
+
+// PolicyHistory Model
+model PolicyHistory {
+  id        String   @id @default(cuid())
+  policyId  String
+  field     String // Nazwa pola które się zmieniło
+  oldValue  String? // Stara wartość (JSON string)
+  newValue  String? // Nowa wartość (JSON string)
+  changedBy String? // User ID
+  changedAt DateTime @default(now())
+  reason    String? // Powód zmiany
+
+  // Relations
+  policy Policy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([policyId])
+  @@index([changedAt])
+  @@map("policy_history")
+}
+
+// AuditLog Model (rozszerzenie ActivityLog dla danych osobowych)
+model AuditLog {
+  id              String   @id @default(cuid())
+  userId          String
+  action          String // Typ akcji
+  dataType        DataType // Typ danych (PERSONAL_DATA, VEHICLE_DATA, POLICY_DATA)
+  entityType      String // Typ encji
+  entityId        String? // ID encji
+  dataBefore      Json? // Dane przed zmianą
+  dataAfter       Json? // Dane po zmianie
+  ipAddress       String?
+  userAgent       String?
+  retentionPeriod Int? // Okres retencji (dni)
+  createdAt       DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([dataType])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// DataConsent Model (Zgody RODO)
+model DataConsent {
+  id          String      @id @default(cuid())
+  clientId    String
+  consentType ConsentType
+  granted     Boolean     @default(false)
+  grantedAt   DateTime?
+  expiresAt   DateTime? // Data wygaśnięcia zgody
+  revokedAt   DateTime? // Data cofnięcia zgody
+  notes       String? // Notatki
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, consentType])
+  @@index([clientId])
+  @@index([consentType])
+  @@index([granted])
+  @@map("data_consents")
 }
