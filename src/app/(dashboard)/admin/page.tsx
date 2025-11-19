@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Settings, UserCheck, Shield, FileSpreadsheet, Building2, Flag, Code, FileText, BookOpen } from "lucide-react"
+import { Users, Settings, UserCheck, Shield, FileSpreadsheet, Building2, Flag, Code, FileText, BookOpen, Activity, Heart, History } from "lucide-react"
 
 export default async function AdminPage() {
   const user = await getCurrentUser()
@@ -115,7 +115,7 @@ export default async function AdminPage() {
 
       <div>
         <h2 className="text-2xl font-semibold mb-4">Dokumentacja i narzędzia</h2>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
           <Link href="/api-docs" target="_blank" rel="noopener noreferrer">
             <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
               <CardHeader>
@@ -153,6 +153,48 @@ export default async function AdminPage() {
                 </CardTitle>
                 <CardDescription>
                   Ogólna dokumentacja projektu, instalacja i konfiguracja
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link href="/admin/logs">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Activity className="h-5 w-5" />
+                  <span>Logi systemowe</span>
+                </CardTitle>
+                <CardDescription>
+                  Przegląd logów autoryzacji i aktywności użytkowników
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link href="/admin/health">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Heart className="h-5 w-5" />
+                  <span>Status systemu</span>
+                </CardTitle>
+                <CardDescription>
+                  Health check systemu, bazy danych i integracji
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
+
+          <Link href="/admin/changelog">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <History className="h-5 w-5" />
+                  <span>Changelog</span>
+                </CardTitle>
+                <CardDescription>
+                  Historia zmian i aktualizacji systemu
                 </CardDescription>
               </CardHeader>
             </Card>

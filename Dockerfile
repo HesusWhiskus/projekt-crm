@@ -51,6 +51,11 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
+# Copy documentation files for API endpoints
+COPY --from=builder --chown=nextjs:nodejs /app/API_DOCUMENTATION.md ./API_DOCUMENTATION.md
+COPY --from=builder --chown=nextjs:nodejs /app/README.md ./README.md
+COPY --from=builder --chown=nextjs:nodejs /app/CHANGELOG.md ./CHANGELOG.md
+
 # Copy Prisma binaries for migrations (as fallback if migrations weren't run in build)
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
