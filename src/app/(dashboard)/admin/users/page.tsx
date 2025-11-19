@@ -22,6 +22,14 @@ export default async function AdminUsersPage() {
           name: true,
         },
       },
+      insuranceAgent: {
+        select: {
+          id: true,
+          licenseNumber: true,
+          isActive: true,
+          settings: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",

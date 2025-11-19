@@ -24,6 +24,7 @@ import {
 import { WhatsNewButton } from "@/components/whats-new-button"
 import { useIsMobile } from "@/hooks/use-media-query"
 import { ProNavItems } from "@/components/pro-nav-items"
+import { InsuranceNavItems } from "@/components/insurance-nav-items"
 import { UserMenu } from "@/components/user-menu"
 import { FEATURE_KEYS } from "@/lib/feature-flags"
 
@@ -49,6 +50,7 @@ interface DashboardNavProps {
   } | null
   enabledFeatures?: string[]
   isPro?: boolean
+  isInsuranceAgent?: boolean
 }
 
 const navigation = [
@@ -67,6 +69,7 @@ export function DashboardNav({
   defaultColorScheme,
   enabledFeatures = [],
   isPro = false,
+  isInsuranceAgent = false,
 }: DashboardNavProps) {
   const pathname = usePathname()
   const isMobile = useIsMobile()
@@ -154,6 +157,7 @@ export function DashboardNav({
                 )
               })}
               <ProNavItems enabledFeatures={enabledFeatures} />
+              <InsuranceNavItems enabledFeatures={enabledFeatures} isInsuranceAgent={isInsuranceAgent} />
             </div>
           </div>
           <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
@@ -198,6 +202,11 @@ export function DashboardNav({
               <div className="pt-2 border-t border-border space-y-1">
                 <ProNavItems
                   enabledFeatures={enabledFeatures}
+                  onItemClick={() => setMobileMenuOpen(false)}
+                />
+                <InsuranceNavItems
+                  enabledFeatures={enabledFeatures}
+                  isInsuranceAgent={isInsuranceAgent}
                   onItemClick={() => setMobileMenuOpen(false)}
                 />
                 {/* More menu items in mobile - only show if user has PRO or enabled features */}

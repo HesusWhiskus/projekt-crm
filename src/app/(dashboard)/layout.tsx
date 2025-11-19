@@ -39,6 +39,16 @@ export default async function DashboardLayout({
     isProPlan(user.organizationId),
   ])
 
+  // Check if user is an insurance agent (only if feature is enabled)
+  let isInsuranceAgent = false
+  if (enabledFeatures.includes('insurance_agents')) {
+    const insuranceAgent = await db.insuranceAgent.findUnique({
+      where: { userId: user.id },
+      select: { isActive: true },
+    })
+    isInsuranceAgent = insuranceAgent?.isActive === true
+  }
+
   // Get system settings for branding (with error handling)
   let systemName = null
   let systemLogo = null
@@ -79,6 +89,7 @@ export default async function DashboardLayout({
         defaultColorScheme={parsedDefaultColorScheme}
         enabledFeatures={enabledFeatures}
         isPro={isPro}
+        isInsuranceAgent={isInsuranceAgent}
       />
       <main className="max-w-[98%] mx-auto px-4 py-6">{children}</main>
     </div>

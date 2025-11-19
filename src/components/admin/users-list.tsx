@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { UserRole } from "@prisma/client"
 import { Edit, X } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -28,6 +29,12 @@ interface User {
       name: string
     }
   }>
+  insuranceAgent: {
+    id: string
+    licenseNumber: string | null
+    isActive: boolean
+    settings: any
+  } | null
 }
 
 interface Organization {
@@ -48,6 +55,18 @@ export function UsersList({ users }: UsersListProps) {
     name: "",
     position: "",
     organizationId: "",
+    insuranceAgentId: null as string | null,
+    isInsuranceAgent: false,
+    licenseNumber: "",
+    isActive: true,
+    agentSettings: {
+      showVehicles: true,
+      showCalculations: true,
+      showPolicies: true,
+      showClients: true,
+      showDashboard: true,
+      showReports: true,
+    },
   })
 
   // Fetch organizations on mount
@@ -88,10 +107,24 @@ export function UsersList({ users }: UsersListProps) {
 
   const handleEditClick = (user: User) => {
     setEditingUser(user)
+    const agent = user.insuranceAgent
+    const agentSettings = agent?.settings as any || {}
     setEditFormData({
       name: user.name || "",
       position: user.position || "",
       organizationId: user.organizationId || "",
+      insuranceAgentId: agent?.id || null,
+      isInsuranceAgent: !!agent,
+      licenseNumber: agent?.licenseNumber || "",
+      isActive: agent?.isActive ?? true,
+      agentSettings: {
+        showVehicles: agentSettings.showVehicles !== false,
+        showCalculations: agentSettings.showCalculations !== false,
+        showPolicies: agentSettings.showPolicies !== false,
+        showClients: agentSettings.showClients !== false,
+        showDashboard: agentSettings.showDashboard !== false,
+        showReports: agentSettings.showReports !== false,
+      },
     })
   }
 
@@ -101,7 +134,8 @@ export function UsersList({ users }: UsersListProps) {
 
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/admin/users/${editingUser.id}`, {
+      // Update user data
+      const userResponse = await fetch(`/api/admin/users/${editingUser.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,15 +145,70 @@ export function UsersList({ users }: UsersListProps) {
         }),
       })
 
-      if (!response.ok) {
+      if (!userResponse.ok) {
         throw new Error("Błąd podczas aktualizacji użytkownika")
+      }
+
+      // Handle insurance agent
+      if (editFormData.isInsuranceAgent) {
+        if (editFormData.insuranceAgentId) {
+          // Update existing agent
+          const agentResponse = await fetch(`/api/insurance-agents/${editFormData.insuranceAgentId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              licenseNumber: editFormData.licenseNumber || null,
+              isActive: editFormData.isActive,
+              settings: editFormData.agentSettings,
+            }),
+          })
+
+          if (!agentResponse.ok) {
+            const errorData = await agentResponse.json().catch(() => ({}))
+            throw new Error(errorData.error || "Błąd podczas aktualizacji agenta ubezpieczeniowego")
+          }
+        } else {
+          // Create new agent
+          const agentResponse = await fetch("/api/insurance-agents", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: editingUser.id,
+              licenseNumber: editFormData.licenseNumber || null,
+              isActive: editFormData.isActive,
+              settings: editFormData.agentSettings,
+              organizationId: editingUser.organizationId,
+            }),
+          })
+
+          if (!agentResponse.ok) {
+            const errorData = await agentResponse.json().catch(() => ({}))
+            throw new Error(errorData.error || "Błąd podczas tworzenia agenta ubezpieczeniowego")
+          }
+        }
+      } else {
+        // Deactivate agent if exists
+        if (editFormData.insuranceAgentId) {
+          const agentResponse = await fetch(`/api/insurance-agents/${editFormData.insuranceAgentId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              isActive: false,
+            }),
+          })
+
+          if (!agentResponse.ok) {
+            const errorData = await agentResponse.json().catch(() => ({}))
+            throw new Error(errorData.error || "Błąd podczas deaktywacji agenta ubezpieczeniowego")
+          }
+        }
       }
 
       setEditingUser(null)
       router.refresh()
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
-      alert("Wystąpił błąd podczas aktualizacji użytkownika")
+      alert(error.message || "Wystąpił błąd podczas aktualizacji użytkownika")
     } finally {
       setIsLoading(false)
     }
@@ -194,7 +283,7 @@ export function UsersList({ users }: UsersListProps) {
       {/* Edit User Dialog */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md m-4">
+          <Card className="w-full max-w-2xl m-4 max-h-[90vh] overflow-y-auto">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>Edytuj użytkownika</CardTitle>
@@ -273,6 +362,211 @@ export function UsersList({ users }: UsersListProps) {
                     ))}
                   </Select>
                 </div>
+
+                {/* Insurance Agent Section */}
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="is-insurance-agent"
+                      checked={editFormData.isInsuranceAgent}
+                      onCheckedChange={(checked) =>
+                        setEditFormData({
+                          ...editFormData,
+                          isInsuranceAgent: checked === true,
+                        })
+                      }
+                      disabled={isLoading}
+                    />
+                    <Label
+                      htmlFor="is-insurance-agent"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Użytkownik jest agentem ubezpieczeniowym
+                    </Label>
+                  </div>
+
+                  {editFormData.isInsuranceAgent && (
+                    <div className="space-y-4 pl-6 border-l-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="license-number">Numer licencji</Label>
+                        <Input
+                          id="license-number"
+                          type="text"
+                          value={editFormData.licenseNumber}
+                          onChange={(e) =>
+                            setEditFormData({
+                              ...editFormData,
+                              licenseNumber: e.target.value,
+                            })
+                          }
+                          disabled={isLoading}
+                          placeholder="np. LIC/2024/001"
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="agent-active"
+                          checked={editFormData.isActive}
+                          onCheckedChange={(checked) =>
+                            setEditFormData({
+                              ...editFormData,
+                              isActive: checked === true,
+                            })
+                          }
+                          disabled={isLoading}
+                        />
+                        <Label
+                          htmlFor="agent-active"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Agent aktywny
+                        </Label>
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label className="text-sm font-semibold">
+                          Ustawienia widoczności
+                        </Label>
+                        <div className="space-y-2 pl-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="show-vehicles"
+                              checked={editFormData.agentSettings.showVehicles}
+                              onCheckedChange={(checked) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  agentSettings: {
+                                    ...editFormData.agentSettings,
+                                    showVehicles: checked === true,
+                                  },
+                                })
+                              }
+                              disabled={isLoading}
+                            />
+                            <Label
+                              htmlFor="show-vehicles"
+                              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Pokaż pojazdy
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="show-calculations"
+                              checked={editFormData.agentSettings.showCalculations}
+                              onCheckedChange={(checked) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  agentSettings: {
+                                    ...editFormData.agentSettings,
+                                    showCalculations: checked === true,
+                                  },
+                                })
+                              }
+                              disabled={isLoading}
+                            />
+                            <Label
+                              htmlFor="show-calculations"
+                              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Pokaż kalkulacje
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="show-policies"
+                              checked={editFormData.agentSettings.showPolicies}
+                              onCheckedChange={(checked) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  agentSettings: {
+                                    ...editFormData.agentSettings,
+                                    showPolicies: checked === true,
+                                  },
+                                })
+                              }
+                              disabled={isLoading}
+                            />
+                            <Label
+                              htmlFor="show-policies"
+                              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Pokaż polisy
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="show-clients"
+                              checked={editFormData.agentSettings.showClients}
+                              onCheckedChange={(checked) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  agentSettings: {
+                                    ...editFormData.agentSettings,
+                                    showClients: checked === true,
+                                  },
+                                })
+                              }
+                              disabled={isLoading}
+                            />
+                            <Label
+                              htmlFor="show-clients"
+                              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Pokaż klientów
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="show-dashboard"
+                              checked={editFormData.agentSettings.showDashboard}
+                              onCheckedChange={(checked) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  agentSettings: {
+                                    ...editFormData.agentSettings,
+                                    showDashboard: checked === true,
+                                  },
+                                })
+                              }
+                              disabled={isLoading}
+                            />
+                            <Label
+                              htmlFor="show-dashboard"
+                              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Pokaż dashboard
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="show-reports"
+                              checked={editFormData.agentSettings.showReports}
+                              onCheckedChange={(checked) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  agentSettings: {
+                                    ...editFormData.agentSettings,
+                                    showReports: checked === true,
+                                  },
+                                })
+                              }
+                              disabled={isLoading}
+                            />
+                            <Label
+                              htmlFor="show-reports"
+                              className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Pokaż raporty
+                            </Label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex justify-end space-x-2 pt-4">
                   <Button
                     type="button"

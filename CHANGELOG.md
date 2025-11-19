@@ -5,6 +5,26 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.7.0-beta] - 2025-01-19
+
+### Dodano
+- **Integracja zarządzania agentami ubezpieczeniowymi w module zarządzania użytkownikami:**
+  - Rozszerzono formularz edycji użytkownika w panelu administracyjnym o pełne zarządzanie agentami ubezpieczeniowymi
+  - Możliwość tworzenia, edycji i deaktywacji agentów ubezpieczeniowych bezpośrednio z formularza użytkownika
+  - Zarządzanie numerem licencji agenta
+  - Zarządzanie statusem aktywności agenta (aktywny/nieaktywny)
+  - Pełna kontrola nad ustawieniami widoczności elementów UI dla agenta (pojazdy, kalkulacje, polisy, klienci, dashboard, raporty)
+- **Nawigacja dla agentów ubezpieczeniowych:**
+  - Dodano komponent `InsuranceNavItems` z linkami do modułu agentów ubezpieczeniowych
+  - Linki widoczne w nawigacji głównej (desktop i mobile) dla aktywnych agentów ubezpieczeniowych
+  - Automatyczne sprawdzanie statusu agenta w layout i wyświetlanie linków tylko dla aktywnych agentów
+
+### Zmieniono
+- **Refaktoryzacja modułu zarządzania użytkownikami:**
+  - Zintegrowano zarządzanie agentami ubezpieczeniowymi z istniejącym modułem `/admin/users`
+  - Rozszerzono zapytanie o dane agentów ubezpieczeniowych w `admin/users/page.tsx`
+  - Ujednolicono interfejs zarządzania użytkownikami - wszystkie funkcjonalności w jednym miejscu
+
 ## [0.6.9-beta] - 2025-01-19
 
 ### Dodano

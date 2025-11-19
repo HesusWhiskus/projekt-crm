@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.7.0-beta',
+    date: '2025-01-19',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano integrację zarządzania agentami ubezpieczeniowymi w module zarządzania użytkownikami - pełna kontrola z formularza edycji użytkownika',
+      },
+      {
+        type: 'added',
+        description: 'Dodano nawigację dla agentów ubezpieczeniowych - linki widoczne w menu głównym dla aktywnych agentów',
+      },
+      {
+        type: 'changed',
+        description: 'Zrefaktoryzowano moduł zarządzania użytkownikami - zintegrowano zarządzanie agentami ubezpieczeniowymi',
+      },
+    ],
+  },
+  {
     version: '0.6.9-beta',
     date: '2025-01-19',
     changes: [
