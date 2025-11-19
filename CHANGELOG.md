@@ -8,21 +8,41 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 ## [0.6.9-beta] - 2025-01-19
 
 ### Dodano
-- **Obsługa agentów ubezpieczeniowych:**
-  - Nowy typ użytkownika: InsuranceAgent z konfigurowalną widocznością elementów UI
-  - Model pojazdów (Vehicle) z relacją N:M do klientów (współwłasność)
-  - Model kalkulacji ubezpieczeniowych (Calculation) jako szanse sprzedaży z pełnymi danymi z formularza ubezpieczenia
-  - Model polis (Policy) z dokumentami do pobrania i informacją o TU
-  - Integracja dwukierunkowa z systemem zewnętrznym (REST API + Webhooks)
-  - Warstwa domenowa (DDD) dla wszystkich nowych encji z Value Objects i Domain Services
-  - Repozytoria Prisma dla wszystkich nowych domen
-  - Use Cases dla wszystkich operacji CRUD i biznesowych
-  - Konfiguracja widoczności elementów na poziomie organizacji
+- **Obsługa agentów ubezpieczeniowych - Faza 1-4 (Backend):**
+  - **Schemat bazy danych:**
+    - Nowy typ użytkownika: InsuranceAgent z konfigurowalną widocznością elementów UI
+    - Model pojazdów (Vehicle) z relacją N:M do klientów (współwłasność)
+    - Model kalkulacji ubezpieczeniowych (Calculation) jako szanse sprzedaży z pełnymi danymi z formularza ubezpieczenia
+    - Model polis (Policy) z dokumentami do pobrania i informacją o TU
+    - Modele wspierające: InsuranceCompany, ExternalSync, OrganizationInsuranceSettings, CalculationHistory, PolicyHistory, AuditLog, DataConsent
+    - Rozszerzenie modelu Client o dodatkowe pola dla agentów ubezpieczeniowych
+  - **Warstwa domenowa (DDD):**
+    - Value Objects: VIN, RegistrationNumber, PESEL, PostalCode, InsuranceVariant, InsuranceScope, PolicyNumber, PolicyStatus, ExternalId, SyncDirection
+    - Entities: Vehicle, Calculation, Policy, InsuranceAgent
+    - Domain Services: VehicleDataEnrichmentService, CalculationStatusService, AgentVisibilityService, ExternalSyncService
+    - Repository Interfaces dla wszystkich domen
+  - **Warstwa aplikacyjna:**
+    - Use Cases dla pojazdów: CreateVehicleUseCase, UpdateVehicleUseCase, GetVehicleUseCase, ListVehiclesUseCase, AssignVehicleToClientUseCase, EnrichVehicleDataUseCase
+    - Use Cases dla kalkulacji: CreateCalculationUseCase, UpdateCalculationUseCase, GetCalculationUseCase, ListCalculationsUseCase, ChangeCalculationStatusUseCase, SendCalculationToExternalUseCase
+    - Use Cases dla polis: CreatePolicyUseCase, UpdatePolicyUseCase, GetPolicyUseCase, ListPoliciesUseCase, UploadPolicyDocumentUseCase, DownloadPolicyDocumentUseCase
+    - Use Cases dla agentów: CreateInsuranceAgentUseCase, UpdateInsuranceAgentUseCase, GetInsuranceAgentUseCase, UpdateAgentVisibilitySettingsUseCase
+    - Use Cases dla integracji: GetSyncStatusUseCase
+  - **Warstwa infrastruktury:**
+    - Repozytoria Prisma: PrismaVehicleRepository, PrismaCalculationRepository, PrismaPolicyRepository, PrismaInsuranceAgentRepository, PrismaExternalSyncRepository
+    - Klient HTTP do komunikacji z systemem zewnętrznym: ExternalSystemClient, ExternalSystemMapper, WebhookHandler
+  - **Migracja Prisma:** Utworzono migrację dla wszystkich nowych modeli
+
+### W trakcie implementacji (Faza 5-9)
+- **API Routes:** Endpointy API dla vehicles, calculations, policies, insurance-agents, external integration, validation, security, audit, configuration (planowane w następnej fazie)
+- **UI Components:** Dashboard dla agentów, pipeline kalkulacji, formularze, widoki szczegółowe (planowane w następnej fazie)
+- **Feature Flags:** Aktualizacja feature-flags.ts o nowe klucze INSURANCE_AGENTS, INSURANCE_DATA_VALIDATION, itp. (planowane w następnej fazie)
+- **Seed Data:** Seed data dla InsuranceCompany (19 TU z logo) (planowane w następnej fazie)
+- **Testy i dokumentacja:** Testy jednostkowe, integracyjne, aktualizacja dokumentacji API (planowane w następnej fazie)
 
 ### Uwagi techniczne
 - Wymagana migracja Prisma dla nowych modeli: Vehicle, VehicleOwner, Calculation, Policy, PolicyDocument, InsuranceAgent, InsuranceCompany, ExternalSync, OrganizationInsuranceSettings, CalculationHistory, PolicyHistory, AuditLog, DataConsent
-- Rozszerzenie modelu Client o dodatkowe pola dla agentów ubezpieczeniowych
-- Nowe endpointy API będą dostępne w następnej fazie implementacji (UI components)
+- Migracja została utworzona i jest gotowa do wykonania w produkcji
+- Backend (warstwa domenowa, aplikacyjna i infrastruktury) jest gotowy - brakuje tylko API routes i UI components
 
 ## [0.6.8-beta] - 2025-01-19
 

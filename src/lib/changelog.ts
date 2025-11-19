@@ -19,23 +19,27 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       {
         type: 'added',
-        description: 'Dodano obsługę agentów ubezpieczeniowych - nowy typ użytkownika z konfigurowalną widocznością elementów UI',
+        description: 'Dodano backend dla agentów ubezpieczeniowych - schemat bazy danych, warstwa domenowa (DDD), warstwa aplikacyjna (Use Cases) i infrastruktura (Repozytoria Prisma)',
       },
       {
         type: 'added',
-        description: 'Dodano zarządzanie pojazdami z relacją N:M do klientów (współwłasność pojazdów)',
+        description: 'Dodano modele: InsuranceAgent, Vehicle, Calculation, Policy, InsuranceCompany, ExternalSync oraz modele wspierające',
       },
       {
         type: 'added',
-        description: 'Dodano kalkulacje ubezpieczeniowe jako szanse sprzedaży z pełnymi danymi z formularza ubezpieczenia',
+        description: 'Dodano Value Objects i Domain Services dla pojazdów, kalkulacji, polis i integracji zewnętrznej',
       },
       {
         type: 'added',
-        description: 'Dodano zarządzanie polisami ubezpieczeniowymi z dokumentami do pobrania i informacją o TU',
+        description: 'Dodano Use Cases dla wszystkich operacji CRUD i biznesowych (pojazdy, kalkulacje, polisy, agenci)',
       },
       {
         type: 'added',
-        description: 'Dodano integrację dwukierunkową z systemem zewnętrznym (REST API + Webhooks)',
+        description: 'Dodano migrację Prisma dla wszystkich nowych modeli - gotowa do wykonania w produkcji',
+      },
+      {
+        type: 'changed',
+        description: 'API Routes i UI Components są planowane w następnej fazie implementacji',
       },
     ],
   },
