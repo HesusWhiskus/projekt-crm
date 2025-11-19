@@ -5,6 +5,42 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.8.0-beta] - 2025-01-19
+
+### Dodano
+- **Redesign nawigacji dla agentów ubezpieczeniowych:**
+  - Zmieniono nawigację z pojedynczych linków na dropdown menu z triggerem "Agenci ubezpieczeniowi"
+  - Usunięto link "Dashboard agenta" z nawigacji (dashboard jest zintegrowany z głównym dashboardem)
+  - Dodano obsługę mobile menu z sekcją "Agenci ubezpieczeniowi" z nagłówkiem
+  - Zachowano aktywny stan dla aktualnie otwartej strony
+- **Integracja dashboardów:**
+  - Dodano sekcję "Agenci ubezpieczeniowi" do głównego dashboardu (`/dashboard`)
+  - Sekcja wyświetla statystyki kalkulacji (DRAFT, SENT, ACCEPTED, REJECTED)
+  - Sekcja wyświetla statystyki polis (aktywne, wygasające wkrótce)
+  - Sekcja wyświetla liczbę pojazdów
+  - Sekcja wyświetla listę ostatnich kalkulacji (5)
+  - Sekcja wyświetla listę nadchodzących odnowień polis (5)
+  - Sekcja jest widoczna tylko dla aktywnych agentów ubezpieczeniowych
+  - Dodano linki do szczegółowych widoków agenta
+- **Rozszerzenie formularza klienta:**
+  - Dodano sekcję "Powiązania ubezpieczeniowe" do formularza klienta
+  - Sekcja zawiera linki do tworzenia kalkulacji, polis i pojazdów dla klienta
+  - Sekcja jest widoczna tylko gdy feature flag INSURANCE_AGENTS jest włączony
+  - Linki są aktywne tylko po zapisaniu klienta (dla nowych klientów wyświetlana jest informacja o konieczności zapisania)
+
+### Zmieniono
+- **Refaktoryzacja feature flags:**
+  - Przeniesiono core features (GDPR_COMPLIANCE, DATA_ENCRYPTION, INSURANCE_DATA_VALIDATION, AUDIT_LOGGING) z PRO_FEATURES do BASIC_FEATURES
+  - Dodano stałą CORE_FEATURES dla lepszej organizacji kodu
+  - Zaktualizowano logikę `isFeatureEnabled` - core features zawsze zwracają `true` niezależnie od planu
+  - Zaktualizowano feature-flags-manager - core features oznaczone jako "Core" i zawsze włączone
+  - Core features są oznaczone jako "Zawsze włączone - część core systemu" w interfejsie zarządzania
+
+### Uwagi techniczne
+- Core features są zawsze dostępne niezależnie od planu (BASIC/PRO)
+- Dashboard główny automatycznie wykrywa aktywnych agentów ubezpieczeniowych i wyświetla sekcję z ich danymi
+- Nawigacja agentów używa komponentu DropdownMenu z Radix UI dla lepszej organizacji menu
+
 ## [0.7.0-beta] - 2025-01-19
 
 ### Dodano

@@ -60,6 +60,23 @@ Internal CRM to system do zarządzania relacjami z agencjami ubezpieczeniowymi. 
   - Szyfrowanie danych
   - Retencja danych i logów audytu
   - Cache i TTL
+  
+- **Nawigacja i interfejs użytkownika** 🆕:
+  - Dropdown menu dla agentów ubezpieczeniowych zamiast pojedynczych linków
+  - Usunięto link "Dashboard agenta" z nawigacji (dashboard jest zintegrowany z głównym dashboardem)
+  - Obsługa mobile menu z sekcją "Agenci ubezpieczeniowi" z nagłówkiem
+  - Zachowanie aktywnego stanu dla aktualnie otwartej strony
+  
+- **Rozszerzenie formularza klienta** 🆕:
+  - Sekcja "Powiązania ubezpieczeniowe" w formularzu klienta
+  - Linki do tworzenia kalkulacji, polis i pojazdów dla klienta
+  - Sekcja widoczna tylko gdy feature flag INSURANCE_AGENTS jest włączony
+  - Linki aktywne tylko po zapisaniu klienta (dla nowych klientów wyświetlana jest informacja o konieczności zapisania)
+  
+- **Feature flags - refaktoryzacja** 🆕:
+  - Core features (GDPR_COMPLIANCE, DATA_ENCRYPTION, INSURANCE_DATA_VALIDATION, AUDIT_LOGGING) są zawsze dostępne niezależnie od planu
+  - Core features oznaczone jako "Core" w interfejsie zarządzania feature flags
+  - Core features nie mogą być wyłączone przez administratora
 
 ### 1. Zarządzanie klientami (Clients)
 
@@ -150,6 +167,14 @@ Internal CRM to system do zarządzania relacjami z agencjami ubezpieczeniowymi. 
   - **Bez kontaktu 30+ dni** - szybki link do klientów bez kontaktu przez 30 dni
   - **Follow-up dzisiaj** - szybki link do klientów z follow-up dzisiaj
 - **Nadchodzące zadania** - lista zadań przypisanych do użytkownika
+- **Integracja dashboardów agentów ubezpieczeniowych** 🆕:
+  - Sekcja "Agenci ubezpieczeniowi" widoczna tylko dla aktywnych agentów
+  - Statystyki kalkulacji według statusu (DRAFT, SENT, ACCEPTED, REJECTED)
+  - Statystyki polis (aktywne, wygasające wkrótce)
+  - Liczba pojazdów
+  - Lista ostatnich kalkulacji (5)
+  - Lista nadchodzących odnowień polis (5)
+  - Linki do szczegółowych widoków agenta
 
 ### 5. Zarządzanie użytkownikami
 

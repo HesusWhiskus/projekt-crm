@@ -123,6 +123,7 @@ export function ClientDetail({
           users={users}
           groups={groups}
           currentUser={currentUser}
+          insuranceAgentsEnabled={insuranceAgentsEnabled}
           onClose={() => setIsEditing(false)}
           onSuccess={() => {
             setIsEditing(false)

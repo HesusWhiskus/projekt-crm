@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { FEATURE_KEYS, PRO_FEATURES, FeatureKey } from "@/lib/feature-flags"
+import { FEATURE_KEYS, PRO_FEATURES, CORE_FEATURES, FeatureKey } from "@/lib/feature-flags"
 import { Flag, Check, X, Info } from "lucide-react"
 import {
   Tooltip,
@@ -103,6 +103,12 @@ export function FeatureFlagsManager({
   }, [organizationId])
 
   const handleToggle = (featureKey: FeatureKey) => {
+    // Prevent toggling core features - they are always enabled
+    if (CORE_FEATURES.includes(featureKey)) {
+      setError("Funkcje core są zawsze włączone i nie można ich wyłączyć")
+      return
+    }
+    
     // Prevent toggling PRO features for BASIC plan
     const isProFeature = PRO_FEATURES.includes(featureKey)
     if (organizationPlan === "BASIC" && isProFeature) {
@@ -117,6 +123,11 @@ export function FeatureFlagsManager({
   }
 
   const isFeatureDisabled = (featureKey: FeatureKey): boolean => {
+    // Core features are always enabled and cannot be disabled
+    if (CORE_FEATURES.includes(featureKey)) {
+      return true
+    }
+    
     const isProFeature = PRO_FEATURES.includes(featureKey)
     return organizationPlan === "BASIC" && isProFeature
   }
@@ -181,6 +192,7 @@ export function FeatureFlagsManager({
         <div className="space-y-4">
           {Object.values(FEATURE_KEYS).map((featureKey) => {
             const isProFeature = PRO_FEATURES.includes(featureKey)
+            const isCoreFeature = CORE_FEATURES.includes(featureKey)
             const isDisabled = isFeatureDisabled(featureKey)
             
             return (
@@ -190,7 +202,12 @@ export function FeatureFlagsManager({
                     <Label htmlFor={featureKey} className="font-semibold cursor-pointer">
                       {featureLabels[featureKey]}
                     </Label>
-                    {isProFeature && (
+                    {isCoreFeature && (
+                      <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        Core
+                      </span>
+                    )}
+                    {isProFeature && !isCoreFeature && (
                       <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
                         PRO
                       </span>
@@ -203,11 +220,18 @@ export function FeatureFlagsManager({
                   </div>
                   <p className="text-sm text-muted-foreground">
                     {featureDescriptions[featureKey]}
+                    {isCoreFeature && " (Zawsze włączone - część core systemu)"}
                   </p>
-                  {isDisabled && (
+                  {isDisabled && !isCoreFeature && (
                     <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
                       <Info className="h-3 w-3" />
                       Wymaga planu PRO
+                    </p>
+                  )}
+                  {isCoreFeature && (
+                    <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                      <Info className="h-3 w-3" />
+                      Zawsze włączone - część core systemu
                     </p>
                   )}
                 </div>
@@ -218,7 +242,7 @@ export function FeatureFlagsManager({
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={featureFlags[featureKey]}
+                            checked={isCoreFeature ? true : featureFlags[featureKey]}
                             onChange={() => handleToggle(featureKey)}
                             disabled={isSaving || isDisabled}
                             className="sr-only peer"
@@ -226,7 +250,12 @@ export function FeatureFlagsManager({
                           <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}></div>
                         </label>
                       </TooltipTrigger>
-                      {isDisabled && (
+                      {isCoreFeature && (
+                        <TooltipContent>
+                          <p>Funkcja core jest zawsze włączona</p>
+                        </TooltipContent>
+                      )}
+                      {isDisabled && !isCoreFeature && (
                         <TooltipContent>
                           <p>Funkcja PRO wymaga planu PRO</p>
                         </TooltipContent>

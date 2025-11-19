@@ -20,6 +20,9 @@ Internal CRM to nowoczesny system zarządzania relacjami z klientami (CRM) przez
 - Polisy ubezpieczeniowe z dokumentami i informacją o TU
 - Integracja dwukierunkowa z systemem zewnętrznym (REST API + Webhooks)
 - Audyt i zgodność RODO dla danych osobowych
+- **Redesign nawigacji** - dropdown menu dla agentów ubezpieczeniowych z lepszą organizacją
+- **Integracja dashboardów** - sekcja agentów w głównym dashboardzie z pełnymi statystykami
+- **Rozszerzenie formularza klienta** - sekcja powiązań ubezpieczeniowych z linkami do tworzenia kalkulacji/polis/pojazdów
 
 ### 🔐 Autoryzacja i uwierzytelnianie
 - Logowanie przez email/hasło (Credentials)
@@ -57,6 +60,12 @@ Internal CRM to nowoczesny system zarządzania relacjami z klientami (CRM) przez
 ### 📊 Dashboard
 - Statystyki (klienci, kontakty, zadania)
 - Nadchodzące zadania z linkami do szczegółów
+- **Integracja dashboardów agentów ubezpieczeniowych** 🆕
+  - Sekcja "Agenci ubezpieczeniowi" w głównym dashboardzie (dla aktywnych agentów)
+  - Statystyki kalkulacji według statusu (DRAFT, SENT, ACCEPTED, REJECTED)
+  - Statystyki polis (aktywne, wygasające wkrótce)
+  - Lista ostatnich kalkulacji i nadchodzących odnowień polis
+  - Linki do szczegółowych widoków agenta
 
 ### ⚙️ Ustawienia użytkownika
 - Preferencje wyświetlania (jasny/ciemny motyw)

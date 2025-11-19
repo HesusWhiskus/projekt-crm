@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.0-beta',
+    date: '2025-01-19',
+    changes: [
+      {
+        type: 'added',
+        description: 'Redesign nawigacji dla agentów ubezpieczeniowych - dropdown menu zamiast pojedynczych linków, lepsza organizacja menu',
+      },
+      {
+        type: 'added',
+        description: 'Integracja dashboardów - sekcja agentów ubezpieczeniowych w głównym dashboardzie z statystykami i listami kalkulacji/polis',
+      },
+      {
+        type: 'added',
+        description: 'Rozszerzenie formularza klienta - sekcja powiązań ubezpieczeniowych z linkami do tworzenia kalkulacji, polis i pojazdów',
+      },
+      {
+        type: 'changed',
+        description: 'Refaktoryzacja feature flags - core features (GDPR, szyfrowanie, walidacja, audyt) są zawsze włączone niezależnie od planu',
+      },
+    ],
+  },
+  {
     version: '0.7.0-beta',
     date: '2025-01-19',
     changes: [

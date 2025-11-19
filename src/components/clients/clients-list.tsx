@@ -55,6 +55,7 @@ interface ClientsListProps {
     id: string
     role: UserRole
   }
+  insuranceAgentsEnabled?: boolean
   total: number
   page: number
   limit: number
@@ -103,7 +104,7 @@ function getClientDisplayName(client: Client): string {
 }
 type SortDirection = "asc" | "desc" | null
 
-export function ClientsList({ clients, users, groups, currentUser, total, page, limit, totalPages }: ClientsListProps) {
+export function ClientsList({ clients, users, groups, currentUser, insuranceAgentsEnabled = false, total, page, limit, totalPages }: ClientsListProps) {
   const isMobile = useIsMobile()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -230,6 +231,7 @@ export function ClientsList({ clients, users, groups, currentUser, total, page, 
           users={users}
           groups={groups}
           currentUser={currentUser}
+          insuranceAgentsEnabled={insuranceAgentsEnabled}
           onClose={() => setIsCreating(false)}
           onSuccess={() => {
             setIsCreating(false)

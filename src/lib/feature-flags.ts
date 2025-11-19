@@ -31,9 +31,21 @@ export function isProFeature(featureKey: FeatureKey): boolean {
 }
 
 /**
+ * Core features - always enabled regardless of plan
+ * These are fundamental features required for basic system operation
+ */
+export const CORE_FEATURES: FeatureKey[] = [
+  FEATURE_KEYS.GDPR_COMPLIANCE,
+  FEATURE_KEYS.DATA_ENCRYPTION,
+  FEATURE_KEYS.INSURANCE_DATA_VALIDATION,
+  FEATURE_KEYS.AUDIT_LOGGING,
+]
+
+/**
  * Features available in BASIC plan
  */
 export const BASIC_FEATURES: FeatureKey[] = [
+  ...CORE_FEATURES,
   // All basic features are enabled by default
 ]
 
@@ -49,12 +61,8 @@ export const PRO_FEATURES: FeatureKey[] = [
   FEATURE_KEYS.INTEGRATION_TABS,
   FEATURE_KEYS.WEBHOOKS,
   FEATURE_KEYS.INSURANCE_AGENTS,
-  FEATURE_KEYS.INSURANCE_DATA_VALIDATION,
   FEATURE_KEYS.INSURANCE_SECURITY_ENHANCED,
-  FEATURE_KEYS.GDPR_COMPLIANCE,
-  FEATURE_KEYS.DATA_ENCRYPTION,
   FEATURE_KEYS.PERFORMANCE_OPTIMIZATION,
-  FEATURE_KEYS.AUDIT_LOGGING,
 ]
 
 /**
@@ -67,6 +75,11 @@ export async function isFeatureEnabled(
   organizationId: string | null,
   featureKey: FeatureKey
 ): Promise<boolean> {
+  // Core features are always enabled regardless of plan or organization
+  if (CORE_FEATURES.includes(featureKey)) {
+    return true
+  }
+
   // If organizationId is null, user has no organization
   // PRO features are never available without organization
   if (!organizationId) {

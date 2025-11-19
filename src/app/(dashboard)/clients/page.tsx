@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { ClientsList } from "@/components/clients/clients-list"
 import { getCachedUsers, getCachedGroups } from "@/lib/cache"
+import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 
 export default async function ClientsPage({
   searchParams,
@@ -189,9 +190,10 @@ export default async function ClientsPage({
 
   const totalPages = Math.ceil(total / limit)
 
-  const [users, groups] = await Promise.all([
+  const [users, groups, hasInsuranceAgents] = await Promise.all([
     getCachedUsers(),
     getCachedGroups(),
+    checkFeature(user.id, FEATURE_KEYS.INSURANCE_AGENTS),
   ])
 
   return (
@@ -200,6 +202,7 @@ export default async function ClientsPage({
       users={users} 
       groups={groups} 
       currentUser={user}
+      insuranceAgentsEnabled={hasInsuranceAgents}
       total={total}
       page={page}
       limit={limit}

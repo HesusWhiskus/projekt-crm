@@ -1033,11 +1033,975 @@ const newTask = await fetch('/api/tasks', {
 
 ---
 
+## Agenty ubezpieczeniowi (Insurance Agents)
+
+### POST /api/insurance-agents
+
+Tworzy nowego agenta ubezpieczeniowego. (Tylko ADMIN)
+
+**Request Body:**
+```json
+{
+  "userId": "string (required, CUID)",
+  "licenseNumber": "string (optional)",
+  "isActive": "boolean (optional, default: true)",
+  "settings": {
+    "showVehicles": "boolean (optional)",
+    "showCalculations": "boolean (optional)",
+    "showPolicies": "boolean (optional)",
+    "showClients": "boolean (optional)",
+    "showDashboard": "boolean (optional)",
+    "showReports": "boolean (optional)"
+  },
+  "organizationId": "string (optional, CUID)"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "agent": {
+    "id": "string",
+    "userId": "string",
+    "licenseNumber": "string | null",
+    "isActive": true,
+    "settings": {},
+    "organizationId": "string | null",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### GET /api/insurance-agents/[id]
+
+Pobiera szczegóły agenta ubezpieczeniowego.
+
+**Response:**
+```json
+{
+  "agent": {
+    "id": "string",
+    "userId": "string",
+    "licenseNumber": "string | null",
+    "isActive": true,
+    "settings": {},
+    "user": {
+      "id": "string",
+      "name": "string | null",
+      "email": "string"
+    },
+    "organizationId": "string | null"
+  }
+}
+```
+
+### PUT /api/insurance-agents/[id]
+
+Aktualizuje agenta ubezpieczeniowego. (Tylko ADMIN)
+
+**Request Body:** (wszystkie pola opcjonalne)
+```json
+{
+  "licenseNumber": "string",
+  "isActive": "boolean",
+  "settings": {}
+}
+```
+
+### PUT /api/insurance-agents/[id]/visibility
+
+Aktualizuje ustawienia widoczności elementów UI dla agenta.
+
+**Request Body:**
+```json
+{
+  "settings": {
+    "showVehicles": "boolean",
+    "showCalculations": "boolean",
+    "showPolicies": "boolean",
+    "showClients": "boolean",
+    "showDashboard": "boolean",
+    "showReports": "boolean"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Ustawienia widoczności zostały zaktualizowane",
+  "agent": {
+    "id": "string",
+    "settings": {}
+  }
+}
+```
+
+---
+
+## Pojazdy (Vehicles)
+
+### POST /api/vehicles
+
+Tworzy nowy pojazd. Wymaga feature flag `INSURANCE_AGENTS` i aktywnego agenta ubezpieczeniowego.
+
+**Request Body:**
+```json
+{
+  "vin": "string (optional, min 17 znaków)",
+  "registrationNumber": "string (optional)",
+  "firstRegistrationDate": "string (optional, ISO datetime)",
+  "importedFromAbroad": "boolean (optional)",
+  "hasValidInspection": "boolean (optional)",
+  "hasLpgInstallation": "boolean (optional)",
+  "purchaseYear": "number (optional, 1900-2100)",
+  "currentMileage": "number (optional, min 0)",
+  "eurotaxData": "object (optional)",
+  "infoEkspertData": "object (optional)",
+  "clientIds": ["string"] (optional, array CUID) - Array ID klientów-właścicieli
+}
+```
+
+**Uwagi:**
+- Wymagany jest VIN lub numer rejestracyjny (przynajmniej jedno)
+- `clientIds` - opcjonalna lista ID klientów do przypisania jako właściciele
+
+**Response:** `201 Created`
+```json
+{
+  "vehicle": {
+    "id": "string",
+    "vin": "string | null",
+    "registrationNumber": "string | null",
+    "firstRegistrationDate": "2024-01-01T00:00:00.000Z | null",
+    "importedFromAbroad": false,
+    "hasValidInspection": true,
+    "hasLpgInstallation": false,
+    "purchaseYear": 2015,
+    "currentMileage": 220000,
+    "eurotaxData": {},
+    "infoEkspertData": {},
+    "organizationId": "string",
+    "owners": [
+      {
+        "id": "string",
+        "clientId": "string",
+        "vehicleId": "string",
+        "client": {
+          "id": "string",
+          "firstName": "string",
+          "lastName": "string"
+        }
+      }
+    ],
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### GET /api/vehicles
+
+Pobiera listę pojazdów z filtrowaniem.
+
+**Query Parameters:**
+- `clientId` (opcjonalne, CUID) - Filtr po kliencie-właścicielu
+- `vin` (opcjonalne) - Filtr po numerze VIN
+- `registrationNumber` (opcjonalne) - Filtr po numerze rejestracyjnym
+- `page` (opcjonalne, default: 1) - Numer strony
+- `limit` (opcjonalne, default: 20) - Liczba wyników na stronę
+
+**Response:**
+```json
+{
+  "vehicles": [
+    {
+      "id": "string",
+      "vin": "string | null",
+      "registrationNumber": "string | null",
+      "owners": [
+        {
+          "client": {
+            "id": "string",
+            "firstName": "string",
+            "lastName": "string"
+          }
+        }
+      ]
+    }
+  ],
+  "total": 100,
+  "page": 1,
+  "limit": 20,
+  "totalPages": 5
+}
+```
+
+### GET /api/vehicles/[id]
+
+Pobiera szczegóły pojazdu.
+
+**Response:**
+```json
+{
+  "vehicle": {
+    "id": "string",
+    "vin": "string | null",
+    "registrationNumber": "string | null",
+    "firstRegistrationDate": "2024-01-01T00:00:00.000Z | null",
+    "importedFromAbroad": false,
+    "hasValidInspection": true,
+    "hasLpgInstallation": false,
+    "purchaseYear": 2015,
+    "currentMileage": 220000,
+    "eurotaxData": {},
+    "infoEkspertData": {},
+    "owners": [...],
+    "calculations": [...],
+    "policies": [...]
+  }
+}
+```
+
+### PUT /api/vehicles/[id]
+
+Aktualizuje pojazd.
+
+**Request Body:** (wszystkie pola opcjonalne)
+```json
+{
+  "vin": "string",
+  "registrationNumber": "string",
+  "firstRegistrationDate": "string (ISO datetime)",
+  "importedFromAbroad": "boolean",
+  "hasValidInspection": "boolean",
+  "hasLpgInstallation": "boolean",
+  "purchaseYear": "number",
+  "currentMileage": "number",
+  "eurotaxData": {},
+  "infoEkspertData": {}
+}
+```
+
+### POST /api/vehicles/[id]/owners
+
+Przypisuje klienta jako właściciela pojazdu.
+
+**Request Body:**
+```json
+{
+  "clientId": "string (required, CUID)"
+}
+```
+
+**Response:** `201 Created`
+
+### DELETE /api/vehicles/[id]/owners/[clientId]
+
+Usuwa klienta z listy właścicieli pojazdu.
+
+**Response:** `200 OK`
+
+### POST /api/vehicles/[id]/enrich
+
+Wzbogaca dane pojazdu z zewnętrznych źródeł (Eurotax, Info-Ekspert).
+
+**Response:**
+```json
+{
+  "message": "Dane pojazdu zostały wzbogacone",
+  "vehicle": {
+    "id": "string",
+    "eurotaxData": {},
+    "infoEkspertData": {}
+  }
+}
+```
+
+---
+
+## Kalkulacje (Calculations)
+
+### POST /api/calculations
+
+Tworzy nową kalkulację ubezpieczeniową. Wymaga feature flag `INSURANCE_AGENTS` i aktywnego agenta ubezpieczeniowego.
+
+**Request Body:**
+```json
+{
+  "pesel": "string (optional)",
+  "firstName": "string (optional)",
+  "lastName": "string (optional)",
+  "previousLastName": "string (optional)",
+  "phone": "string (optional)",
+  "email": "string (optional, email format)",
+  "postalCode": "string (optional)",
+  "city": "string (optional)",
+  "street": "string (optional)",
+  "houseNumber": "string (optional)",
+  "apartmentNumber": "string (optional)",
+  "correspondenceAddress": "object (optional)",
+  "hasDrivingLicense": "boolean (optional)",
+  "drivingLicenseDate": "string (optional, ISO datetime)",
+  "occupation": "string (optional)",
+  "maritalStatus": "string (optional)",
+  "hasChildUnder26": "boolean (optional)",
+  "clientId": "string (optional, CUID)",
+  "vehicleId": "string (optional, CUID)",
+  "status": "DRAFT | SENT | ACCEPTED | REJECTED (optional, default: DRAFT)",
+  "value": "number (optional)",
+  "validUntil": "string (optional, ISO datetime)",
+  "variant": "MINIMAL | OPTIMAL | MAXIMAL (optional)",
+  "scopes": ["OC", "AC", "NNW", "ASS"] (optional, array)
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "calculation": {
+    "id": "string",
+    "pesel": "string | null",
+    "firstName": "string | null",
+    "lastName": "string | null",
+    "status": "DRAFT",
+    "value": 1500.00,
+    "variant": "OPTIMAL",
+    "scopes": ["OC", "AC"],
+    "clientId": "string | null",
+    "vehicleId": "string | null",
+    "agentId": "string",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### GET /api/calculations
+
+Pobiera listę kalkulacji z filtrowaniem.
+
+**Query Parameters:**
+- `clientId` (opcjonalne, CUID) - Filtr po kliencie
+- `vehicleId` (opcjonalne, CUID) - Filtr po pojeździe
+- `status` (opcjonalne) - Filtr po statusie (DRAFT, SENT, ACCEPTED, REJECTED)
+- `page` (opcjonalne, default: 1) - Numer strony
+- `limit` (opcjonalne, default: 20) - Liczba wyników
+
+**Response:**
+```json
+{
+  "calculations": [
+    {
+      "id": "string",
+      "status": "DRAFT",
+      "value": 1500.00,
+      "client": {
+        "id": "string",
+        "firstName": "string",
+        "lastName": "string"
+      },
+      "vehicle": {
+        "id": "string",
+        "registrationNumber": "string"
+      }
+    }
+  ],
+  "total": 50,
+  "page": 1,
+  "limit": 20
+}
+```
+
+### GET /api/calculations/[id]
+
+Pobiera szczegóły kalkulacji.
+
+**Response:**
+```json
+{
+  "calculation": {
+    "id": "string",
+    "pesel": "string | null",
+    "firstName": "string | null",
+    "lastName": "string | null",
+    "status": "DRAFT",
+    "value": 1500.00,
+    "variant": "OPTIMAL",
+    "scopes": ["OC", "AC"],
+    "client": {...},
+    "vehicle": {...},
+    "agentId": "string",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### PUT /api/calculations/[id]
+
+Aktualizuje kalkulację.
+
+**Request Body:** (wszystkie pola opcjonalne, takie same jak POST)
+
+### POST /api/calculations/[id]/status
+
+Zmienia status kalkulacji.
+
+**Request Body:**
+```json
+{
+  "status": "SENT | ACCEPTED | REJECTED (required)"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Status kalkulacji został zaktualizowany",
+  "calculation": {
+    "id": "string",
+    "status": "SENT"
+  }
+}
+```
+
+### POST /api/calculations/[id]/sync
+
+Synchronizuje kalkulację z systemem zewnętrznym.
+
+**Response:**
+```json
+{
+  "message": "Kalkulacja została zsynchronizowana",
+  "syncId": "string",
+  "externalId": "string"
+}
+```
+
+---
+
+## Polisy (Policies)
+
+### POST /api/policies
+
+Tworzy nową polisę ubezpieczeniową. Wymaga feature flag `INSURANCE_AGENTS` i aktywnego agenta ubezpieczeniowego.
+
+**Request Body:**
+```json
+{
+  "policyNumber": "string (required, min 1 znak)",
+  "issueDate": "string (required, ISO datetime)",
+  "validFrom": "string (required, ISO datetime)",
+  "validTo": "string (required, ISO datetime)",
+  "status": "ACTIVE | EXPIRED | CANCELLED | RENEWED (optional, default: ACTIVE)",
+  "calculationId": "string (optional, CUID)",
+  "clientId": "string (optional, CUID)",
+  "vehicleId": "string (optional, CUID)",
+  "insuranceCompanyId": "string (required, CUID)",
+  "agentId": "string (optional, CUID)",
+  "externalId": "string (optional)"
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "policy": {
+    "id": "string",
+    "policyNumber": "POL-2025-001",
+    "issueDate": "2025-01-19T00:00:00.000Z",
+    "validFrom": "2025-01-20T00:00:00.000Z",
+    "validTo": "2026-01-20T00:00:00.000Z",
+    "status": "ACTIVE",
+    "insuranceCompany": {
+      "id": "string",
+      "name": "string",
+      "logoUrl": "string | null"
+    },
+    "client": {...},
+    "vehicle": {...}
+  }
+}
+```
+
+### GET /api/policies
+
+Pobiera listę polis z filtrowaniem.
+
+**Query Parameters:**
+- `clientId` (opcjonalne, CUID) - Filtr po kliencie
+- `vehicleId` (opcjonalne, CUID) - Filtr po pojeździe
+- `status` (opcjonalne) - Filtr po statusie (ACTIVE, EXPIRED, CANCELLED, RENEWED)
+- `insuranceCompanyId` (opcjonalne, CUID) - Filtr po Towarzystwie Ubezpieczeniowym
+- `page` (opcjonalne, default: 1) - Numer strony
+- `limit` (opcjonalne, default: 20) - Liczba wyników
+
+**Response:**
+```json
+{
+  "policies": [
+    {
+      "id": "string",
+      "policyNumber": "POL-2025-001",
+      "status": "ACTIVE",
+      "validTo": "2026-01-20T00:00:00.000Z",
+      "insuranceCompany": {
+        "name": "string"
+      },
+      "client": {...},
+      "vehicle": {...}
+    }
+  ],
+  "total": 30,
+  "page": 1,
+  "limit": 20
+}
+```
+
+### GET /api/policies/[id]
+
+Pobiera szczegóły polisy.
+
+**Response:**
+```json
+{
+  "policy": {
+    "id": "string",
+    "policyNumber": "POL-2025-001",
+    "issueDate": "2025-01-19T00:00:00.000Z",
+    "validFrom": "2025-01-20T00:00:00.000Z",
+    "validTo": "2026-01-20T00:00:00.000Z",
+    "status": "ACTIVE",
+    "insuranceCompany": {...},
+    "client": {...},
+    "vehicle": {...},
+    "documents": [
+      {
+        "id": "string",
+        "name": "string",
+        "type": "string",
+        "size": 1024,
+        "uploadedAt": "2024-01-01T00:00:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+### PUT /api/policies/[id]
+
+Aktualizuje polisę.
+
+**Request Body:** (wszystkie pola opcjonalne, takie same jak POST)
+
+### POST /api/policies/[id]/documents
+
+Przesyła dokument polisy.
+
+**Request:** FormData (multipart/form-data)
+- `file` (required) - Plik dokumentu
+- `name` (optional) - Nazwa dokumentu
+- `type` (optional) - Typ dokumentu
+
+**Response:** `201 Created`
+```json
+{
+  "message": "Dokument został przesłany",
+  "document": {
+    "id": "string",
+    "name": "string",
+    "type": "string",
+    "size": 1024,
+    "uploadedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### GET /api/policies/[id]/documents/[docId]/download
+
+Pobiera dokument polisy.
+
+**Response:** Plik binarny z odpowiednimi nagłówkami Content-Type i Content-Disposition
+
+---
+
+## Walidacja danych (Validation)
+
+### POST /api/validation/pesel
+
+Waliduje numer PESEL.
+
+**Request Body:**
+```json
+{
+  "pesel": "string (required)"
+}
+```
+
+**Response:**
+```json
+{
+  "valid": true,
+  "message": "Numer PESEL jest poprawny"
+}
+```
+
+**Kody odpowiedzi:**
+- `200` - Walidacja zakończona (valid: true/false)
+- `400` - Błąd walidacji (brak pola pesel)
+
+### POST /api/validation/vin
+
+Waliduje numer VIN pojazdu.
+
+**Request Body:**
+```json
+{
+  "vin": "string (required, min 17 znaków)"
+}
+```
+
+**Response:**
+```json
+{
+  "valid": true,
+  "message": "Numer VIN jest poprawny"
+}
+```
+
+### POST /api/validation/registration-number
+
+Waliduje numer rejestracyjny pojazdu.
+
+**Request Body:**
+```json
+{
+  "registrationNumber": "string (required)"
+}
+```
+
+**Response:**
+```json
+{
+  "valid": true,
+  "message": "Numer rejestracyjny jest poprawny"
+}
+```
+
+### POST /api/validation/postal-code
+
+Waliduje kod pocztowy (format polski: XX-XXX).
+
+**Request Body:**
+```json
+{
+  "postalCode": "string (required)"
+}
+```
+
+**Response:**
+```json
+{
+  "valid": true,
+  "message": "Kod pocztowy jest poprawny"
+}
+```
+
+---
+
+## Integracja zewnętrzna (External Integration)
+
+### GET /api/external/sync/status
+
+Pobiera status synchronizacji z systemem zewnętrznym.
+
+**Query Parameters:**
+- `entityType` (opcjonalne) - Typ encji (CALCULATION, POLICY, VEHICLE)
+- `entityId` (opcjonalne, CUID) - ID encji
+- `direction` (opcjonalne) - Kierunek synchronizacji (IN, OUT)
+
+**Response:**
+```json
+{
+  "syncs": [
+    {
+      "id": "string",
+      "entityType": "CALCULATION",
+      "entityId": "string",
+      "direction": "OUT",
+      "status": "SUCCESS",
+      "externalId": "string",
+      "syncedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+### POST /api/external/webhook
+
+Webhook do odbierania danych z systemu zewnętrznego.
+
+**Request Body:**
+```json
+{
+  "event": "string (required, np. 'calculation.created', 'policy.updated')",
+  "data": {
+    ...
+  },
+  "signature": "string (optional, dla weryfikacji)"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Webhook został przetworzony",
+  "processed": true
+}
+```
+
+---
+
+## Audyt (Audit)
+
+### GET /api/audit/calculations/[id]/history
+
+Pobiera historię zmian kalkulacji.
+
+**Response:**
+```json
+{
+  "history": [
+    {
+      "id": "string",
+      "calculationId": "string",
+      "changedBy": "string",
+      "field": "status",
+      "oldValue": "DRAFT",
+      "newValue": "SENT",
+      "changedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+### GET /api/audit/policies/[id]/history
+
+Pobiera historię zmian polisy.
+
+**Response:** (podobny format jak dla kalkulacji)
+
+### GET /api/audit/personal-data
+
+Pobiera logi dostępu do danych osobowych (RODO).
+
+**Query Parameters:**
+- `clientId` (opcjonalne, CUID) - Filtr po kliencie
+- `userId` (opcjonalne, CUID) - Filtr po użytkowniku
+- `page` (opcjonalne, default: 1)
+- `limit` (opcjonalne, default: 20)
+
+**Response:**
+```json
+{
+  "logs": [
+    {
+      "id": "string",
+      "userId": "string",
+      "clientId": "string",
+      "action": "EXPORT_DATA | DELETE_DATA | VIEW_DATA",
+      "timestamp": "2024-01-01T00:00:00.000Z",
+      "details": {}
+    }
+  ],
+  "total": 100
+}
+```
+
+### GET /api/audit/sync
+
+Pobiera logi synchronizacji z systemem zewnętrznym.
+
+**Query Parameters:**
+- `entityType` (opcjonalne) - Typ encji
+- `direction` (opcjonalne) - Kierunek (IN, OUT)
+- `page` (opcjonalne, default: 1)
+- `limit` (opcjonalne, default: 20)
+
+**Response:**
+```json
+{
+  "logs": [
+    {
+      "id": "string",
+      "entityType": "CALCULATION",
+      "entityId": "string",
+      "direction": "OUT",
+      "status": "SUCCESS",
+      "error": "string | null",
+      "timestamp": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "total": 50
+}
+```
+
+---
+
+## Konfiguracja organizacji (Organization Settings)
+
+### GET /api/organizations/[id]/insurance-settings
+
+Pobiera ustawienia ubezpieczeń dla organizacji.
+
+**Response:**
+```json
+{
+  "settings": {
+    "id": "string",
+    "organizationId": "string",
+    "externalSystemUrl": "string | null",
+    "externalSystemApiKey": "string | null",
+    "enableBidirectionalSync": false,
+    "validationLevel": "STRICT | RELAXED",
+    "enableDataEncryption": false,
+    "auditRetentionDays": 365,
+    "cacheEnabled": true,
+    "cacheTtl": 3600
+  }
+}
+```
+
+### PUT /api/organizations/[id]/insurance-settings
+
+Aktualizuje ustawienia ubezpieczeń dla organizacji. (Tylko ADMIN)
+
+**Request Body:**
+```json
+{
+  "externalSystemUrl": "string (optional)",
+  "externalSystemApiKey": "string (optional)",
+  "enableBidirectionalSync": "boolean (optional)",
+  "validationLevel": "STRICT | RELAXED (optional)",
+  "enableDataEncryption": "boolean (optional)",
+  "auditRetentionDays": "number (optional)",
+  "cacheEnabled": "boolean (optional)",
+  "cacheTtl": "number (optional)"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Ustawienia zostały zaktualizowane",
+  "settings": {...}
+}
+```
+
+---
+
+## Bezpieczeństwo i RODO (Security & GDPR)
+
+### GET /api/clients/[id]/export-data
+
+Eksportuje dane osobowe klienta zgodnie z RODO.
+
+**Response:**
+```json
+{
+  "data": {
+    "client": {...},
+    "contacts": [...],
+    "tasks": [...],
+    "vehicles": [...],
+    "calculations": [...],
+    "policies": [...]
+  },
+  "exportedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+### DELETE /api/clients/[id]/personal-data
+
+Usuwa dane osobowe klienta zgodnie z RODO (prawo do bycia zapomnianym).
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Dane osobowe zostały usunięte",
+  "deletedAt": "2024-01-01T00:00:00.000Z"
+}
+```
+
+**Uwaga:** Operacja jest nieodwracalna. Usuwa tylko dane osobowe, zachowuje strukturalne dane biznesowe.
+
+### GET /api/clients/[id]/consents
+
+Pobiera listę zgód klienta.
+
+**Response:**
+```json
+{
+  "consents": [
+    {
+      "id": "string",
+      "clientId": "string",
+      "type": "MARKETING | DATA_PROCESSING | COMMUNICATION",
+      "granted": true,
+      "grantedAt": "2024-01-01T00:00:00.000Z",
+      "revokedAt": "2024-01-01T00:00:00.000Z | null"
+    }
+  ]
+}
+```
+
+### POST /api/clients/[id]/consents
+
+Dodaje zgodę klienta.
+
+**Request Body:**
+```json
+{
+  "type": "MARKETING | DATA_PROCESSING | COMMUNICATION (required)",
+  "granted": "boolean (required)"
+}
+```
+
+**Response:** `201 Created`
+
+### DELETE /api/clients/[id]/consents/[consentId]
+
+Odwołuje zgodę klienta.
+
+**Response:** `200 OK`
+
+---
+
 ## Wersjonowanie
 
 Obecna wersja API: **v1** (domyślna)
 
 W przyszłości można dodać wersjonowanie poprzez prefiks `/api/v1/...`
+
+---
+
+## Uwagi dotyczące feature flags
+
+Niektóre endpointy wymagają włączonych feature flags:
+
+- **Agenty ubezpieczeniowi:** Wymaga `INSURANCE_AGENTS` (plan PRO)
+- **Walidacja danych:** Wymaga `INSURANCE_DATA_VALIDATION` (core feature - zawsze dostępne)
+- **Bezpieczeństwo:** Wymaga `GDPR_COMPLIANCE`, `DATA_ENCRYPTION`, `AUDIT_LOGGING` (core features - zawsze dostępne)
+
+**Core features** (zawsze dostępne niezależnie od planu):
+- `GDPR_COMPLIANCE` - Zgodność z RODO
+- `DATA_ENCRYPTION` - Szyfrowanie danych
+- `INSURANCE_DATA_VALIDATION` - Walidacja danych ubezpieczeniowych
+- `AUDIT_LOGGING` - Logowanie audytu
+
+**PRO features** (wymagają planu PRO):
+- `INSURANCE_AGENTS` - Moduł agentów ubezpieczeniowych
+- `INSURANCE_SECURITY_ENHANCED` - Zaawansowane zabezpieczenia
 
 ---
 

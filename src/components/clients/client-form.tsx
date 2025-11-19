@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClientStatus, ClientPriority, ClientType, UserRole } from "@prisma/client"
 import { utcDateToLocalDateTime } from "@/lib/timezone"
+import { FileText, Shield, Car, Plus } from "lucide-react"
+import Link from "next/link"
 
 interface ClientFormProps {
   users: Array<{
@@ -25,6 +27,7 @@ interface ClientFormProps {
     id: string
     role: UserRole
   }
+  insuranceAgentsEnabled?: boolean
   client?: {
     id: string
     type: ClientType
@@ -67,7 +70,7 @@ const priorityOptions: Record<ClientPriority, string> = {
   HIGH: "Wysoki",
 }
 
-export function ClientForm({ users, groups, currentUser, client, onClose, onSuccess }: ClientFormProps) {
+export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled = false, client, onClose, onSuccess }: ClientFormProps) {
   const [formData, setFormData] = useState({
     type: client?.type || ("PERSON" as ClientType),
     firstName: client?.firstName || "",
@@ -391,6 +394,61 @@ export function ClientForm({ users, groups, currentUser, client, onClose, onSucc
               <p className="text-xs text-muted-foreground">
                 Klienci udostępnieni grupom będą widoczni dla wszystkich użytkowników w tych grupach
               </p>
+            </div>
+          )}
+
+          {insuranceAgentsEnabled && (
+            <div className="pt-4 border-t">
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-base font-semibold">Powiązania ubezpieczeniowe</Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Utwórz powiązane rekordy ubezpieczeniowe dla tego klienta
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {client ? (
+                    <>
+                      <Link
+                        href={`/insurance-agent/calculations/new?clientId=${client.id}`}
+                        className="flex items-center space-x-2 p-3 border rounded hover:bg-muted/50 transition-colors"
+                      >
+                        <FileText className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm font-medium">Dodaj kalkulację</span>
+                      </Link>
+                      <Link
+                        href={`/insurance-agent/policies/new?clientId=${client.id}`}
+                        className="flex items-center space-x-2 p-3 border rounded hover:bg-muted/50 transition-colors"
+                      >
+                        <Shield className="h-4 w-4 text-green-500" />
+                        <span className="text-sm font-medium">Dodaj polisę</span>
+                      </Link>
+                      <Link
+                        href={`/insurance-agent/vehicles/new?clientId=${client.id}`}
+                        className="flex items-center space-x-2 p-3 border rounded hover:bg-muted/50 transition-colors"
+                      >
+                        <Car className="h-4 w-4 text-purple-500" />
+                        <span className="text-sm font-medium">Dodaj pojazd</span>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center space-x-2 p-3 border rounded bg-muted/30 opacity-60">
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Zapisz klienta, aby dodać kalkulację</span>
+                      </div>
+                      <div className="flex items-center space-x-2 p-3 border rounded bg-muted/30 opacity-60">
+                        <Shield className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Zapisz klienta, aby dodać polisę</span>
+                      </div>
+                      <div className="flex items-center space-x-2 p-3 border rounded bg-muted/30 opacity-60">
+                        <Car className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Zapisz klienta, aby dodać pojazd</span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
