@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react"
+import { CheckCircle2, XCircle, AlertCircle, Activity, Clock, TrendingUp, Zap } from "lucide-react"
 
 export default async function AdminHealthPage() {
   const user = await getCurrentUser()
@@ -99,6 +99,95 @@ export default async function AdminHealthPage() {
               </Card>
             ))}
           </div>
+
+          {/* Performance Metrics */}
+          {health.performance && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Activity className="h-5 w-5" />
+                  <span>Metryki wydajności</span>
+                </CardTitle>
+                <CardDescription>
+                  Statystyki z ostatnich 24 godzin na podstawie logów aktywności
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>Średni czas</span>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {health.performance.averageResponseTime}ms
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Średnia z {health.performance.totalRequests} żądań
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <TrendingUp className="h-4 w-4" />
+                      <span>P95</span>
+                    </div>
+                    <div className={`text-2xl font-bold ${
+                      health.performance.p95ResponseTime > 1000 ? "text-orange-600" : 
+                      health.performance.p95ResponseTime > 2000 ? "text-red-600" : ""
+                    }`}>
+                      {health.performance.p95ResponseTime}ms
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      95% żądań poniżej
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <TrendingUp className="h-4 w-4" />
+                      <span>P99</span>
+                    </div>
+                    <div className={`text-2xl font-bold ${
+                      health.performance.p99ResponseTime > 2000 ? "text-red-600" : 
+                      health.performance.p99ResponseTime > 1000 ? "text-orange-600" : ""
+                    }`}>
+                      {health.performance.p99ResponseTime}ms
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      99% żądań poniżej
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <Activity className="h-4 w-4" />
+                      <span>Łącznie</span>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {health.performance.totalRequests}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Żądań (24h)
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                      <Zap className="h-4 w-4" />
+                      <span>Ostatnia godzina</span>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {health.performance.requestsLastHour}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Żądań w ostatniej godzinie
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       ) : (
         <Card>

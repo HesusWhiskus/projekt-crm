@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.6-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono health check w panelu admina - dodano wyświetlanie metryk wydajności (średni czas, P95, P99, liczba żądań)',
+      },
+    ],
+  },
+  {
     version: '0.9.5-beta',
     date: '2025-01-20',
     changes: [

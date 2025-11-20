@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.6-beta] - 2025-01-20
+
+### Naprawiono
+- **Health check w panelu admina:** Dodano wyświetlanie metryk wydajności (średni czas odpowiedzi, P95, P99, liczba żądań) które były już zbierane przez API, ale nie były wyświetlane w interfejsie.
+
 ## [0.9.5-beta] - 2025-01-20
 
 ### Naprawiono
