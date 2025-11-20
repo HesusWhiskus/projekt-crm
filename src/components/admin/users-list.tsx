@@ -54,7 +54,7 @@ export function UsersList({ users }: UsersListProps) {
   const [editFormData, setEditFormData] = useState({
     name: "",
     position: "",
-    organizationId: "",
+    organizationId: null as string | null,
     insuranceAgentId: null as string | null,
     isInsuranceAgent: false,
     licenseNumber: "",
@@ -112,7 +112,7 @@ export function UsersList({ users }: UsersListProps) {
     setEditFormData({
       name: user.name || "",
       position: user.position || "",
-      organizationId: user.organizationId || "",
+      organizationId: user.organizationId || null,
       insuranceAgentId: agent?.id || null,
       isInsuranceAgent: !!agent,
       licenseNumber: agent?.licenseNumber || "",
@@ -344,7 +344,7 @@ export function UsersList({ users }: UsersListProps) {
                 <div className="space-y-2">
                   <Label htmlFor="edit-organization">Organizacja</Label>
                   <Select
-                    value={editFormData.organizationId || "none"}
+                    value={editFormData.organizationId ?? "none"}
                     onValueChange={(value) =>
                       setEditFormData({
                         ...editFormData,
