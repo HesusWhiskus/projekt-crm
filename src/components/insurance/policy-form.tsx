@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface PolicyFormProps {
@@ -124,17 +124,21 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
             <div>
               <Label htmlFor="insuranceCompanyId">Towarzystwo Ubezpieczeniowe *</Label>
               <Select
-                id="insuranceCompanyId"
                 value={formData.insuranceCompanyId}
-                onChange={(e) => setFormData({ ...formData, insuranceCompanyId: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, insuranceCompanyId: value })}
                 required
               >
-                <option value="">Wybierz TU</option>
-                {insuranceCompanies.map((company) => (
-                  <option key={company.id} value={company.id}>
-                    {company.name}
-                  </option>
-                ))}
+                <SelectTrigger id="insuranceCompanyId">
+                  <SelectValue placeholder="Wybierz TU" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Wybierz TU</SelectItem>
+                  {insuranceCompanies.map((company) => (
+                    <SelectItem key={company.id} value={company.id}>
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
@@ -152,14 +156,18 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
             <div>
               <Label htmlFor="status">Status</Label>
               <Select
-                id="status"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
               >
-                <option value="ACTIVE">Aktywna</option>
-                <option value="EXPIRED">Wygasła</option>
-                <option value="CANCELLED">Anulowana</option>
-                <option value="RENEWED">Odnowiona</option>
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Wybierz status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ACTIVE">Aktywna</SelectItem>
+                  <SelectItem value="EXPIRED">Wygasła</SelectItem>
+                  <SelectItem value="CANCELLED">Anulowana</SelectItem>
+                  <SelectItem value="RENEWED">Odnowiona</SelectItem>
+                </SelectContent>
               </Select>
             </div>
 

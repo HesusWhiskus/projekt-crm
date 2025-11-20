@@ -6,7 +6,7 @@ import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ColorSchemePicker } from "./color-scheme-picker"
 import { COMMON_TIMEZONES, getUserTimezone } from "@/lib/timezone"
 
@@ -156,15 +156,19 @@ export function PreferencesSettings({
           <div className="space-y-2">
             <Label htmlFor="timezone">Strefa czasowa</Label>
             <Select
-              id="timezone"
               value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
+              onValueChange={(value) => setTimezone(value)}
             >
-              {COMMON_TIMEZONES.map((tz) => (
-                <option key={tz.value} value={tz.value}>
-                  {tz.label}
-                </option>
-              ))}
+              <SelectTrigger id="timezone">
+                <SelectValue placeholder="Wybierz strefę czasową" />
+              </SelectTrigger>
+              <SelectContent>
+                {COMMON_TIMEZONES.map((tz) => (
+                  <SelectItem key={tz.value} value={tz.value}>
+                    {tz.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
               Wszystkie daty i godziny będą wyświetlane zgodnie z wybraną strefą czasową

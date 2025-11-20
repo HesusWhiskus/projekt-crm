@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -87,7 +87,7 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
     status: client?.status || ("NEW_LEAD" as ClientStatus),
     priority: client?.priority || null,
     nextFollowUpAt: client?.nextFollowUpAt ? utcDateToLocalDateTime(client.nextFollowUpAt) : "",
-    assignedTo: client?.assignedTo || currentUser?.id || "",
+    assignedTo: client?.assignedTo || currentUser?.id || null,
     sharedGroupIds: client?.sharedGroups?.map(g => g.id) || [] as string[],
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -165,14 +165,18 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
           <div className="space-y-2">
             <Label htmlFor="type">Typ klienta *</Label>
             <Select
-              id="type"
               value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value as ClientType })}
+              onValueChange={(value) => setFormData({ ...formData, type: value as ClientType })}
               disabled={isLoading}
               required
             >
-              <option value="PERSON">Osoba fizyczna</option>
-              <option value="COMPANY">Firma</option>
+              <SelectTrigger id="type">
+                <SelectValue placeholder="Wybierz typ" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="PERSON">Osoba fizyczna</SelectItem>
+                <SelectItem value="COMPANY">Firma</SelectItem>
+              </SelectContent>
             </Select>
           </div>
 
@@ -282,16 +286,20 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
-                id="status"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as ClientStatus })}
+                onValueChange={(value) => setFormData({ ...formData, status: value as ClientStatus })}
                 disabled={isLoading}
               >
-                {Object.entries(statusOptions).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Wybierz status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(statusOptions).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -300,17 +308,21 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
             <div className="space-y-2">
               <Label htmlFor="priority">Priorytet</Label>
               <Select
-                id="priority"
                 value={formData.priority || ""}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value ? (e.target.value as ClientPriority) : null })}
+                onValueChange={(value) => setFormData({ ...formData, priority: value ? (value as ClientPriority) : null })}
                 disabled={isLoading}
               >
-                <option value="">Brak priorytetu</option>
-                {Object.entries(priorityOptions).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <SelectTrigger id="priority">
+                  <SelectValue placeholder="Brak priorytetu" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Brak priorytetu</SelectItem>
+                  {Object.entries(priorityOptions).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <DateTimePicker
@@ -347,17 +359,21 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
             <div className="space-y-2">
               <Label htmlFor="assignedTo">Odpowiedzialny</Label>
               <Select
-                id="assignedTo"
-                value={formData.assignedTo}
-                onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+                value={formData.assignedTo ?? ""}
+                onValueChange={(value) => setFormData({ ...formData, assignedTo: value === "" ? null : value })}
                 disabled={isLoading}
               >
-                <option value="">Brak przypisania</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name || user.email}
-                  </option>
-                ))}
+                <SelectTrigger id="assignedTo">
+                  <SelectValue placeholder="Brak przypisania" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Brak przypisania</SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>

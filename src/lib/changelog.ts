@@ -19,7 +19,7 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       {
         type: 'fixed',
-        description: 'Naprawiono komponent Select w filtrach klientów - zastąpiono nieprawidłowe użycie HTML select właściwą składnią Radix UI (SelectTrigger, SelectContent, SelectItem, SelectValue)',
+        description: 'Naprawiono komponent Select we wszystkich formularzach i listach - zastąpiono nieprawidłowe użycie HTML select właściwą składnią Radix UI (SelectTrigger, SelectContent, SelectItem, SelectValue). Naprawiono w: clients-list, client-form, contacts-list, contact-form, tasks-list, task-form, calculation-form, policy-form, note-form, preferences-settings, custom-field-form, advanced-filters i innych komponentach',
       },
     ],
   },

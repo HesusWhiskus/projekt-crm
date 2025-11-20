@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { ContactType, UserRole } from "@prisma/client"
 import { Plus } from "lucide-react"
@@ -145,46 +145,58 @@ export function ContactsList({
             <div className="space-y-2">
               <Label htmlFor="type">Typ kontaktu</Label>
               <Select
-                id="type"
                 value={filters.type}
-                onChange={(e) => handleFilterChange("type", e.target.value)}
+                onValueChange={(value) => handleFilterChange("type", value)}
               >
-                <option value="">Wszystkie</option>
-                {Object.entries(contactTypeLabels).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="Wszystkie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Wszystkie</SelectItem>
+                  {Object.entries(contactTypeLabels).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="clientId">Klient</Label>
               <Select
-                id="clientId"
                 value={filters.clientId}
-                onChange={(e) => handleFilterChange("clientId", e.target.value)}
+                onValueChange={(value) => handleFilterChange("clientId", value)}
               >
-                <option value="">Wszyscy</option>
-                {clients.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.type === "COMPANY" ? (client.companyName || "Brak nazwy firmy") : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
-                  </option>
-                ))}
+                <SelectTrigger id="clientId">
+                  <SelectValue placeholder="Wszyscy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Wszyscy</SelectItem>
+                  {clients.map((client) => (
+                    <SelectItem key={client.id} value={client.id}>
+                      {client.type === "COMPANY" ? (client.companyName || "Brak nazwy firmy") : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="userId">Użytkownik</Label>
               <Select
-                id="userId"
                 value={filters.userId}
-                onChange={(e) => handleFilterChange("userId", e.target.value)}
+                onValueChange={(value) => handleFilterChange("userId", value)}
               >
-                <option value="">Wszyscy</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name || user.email}
-                  </option>
-                ))}
+                <SelectTrigger id="userId">
+                  <SelectValue placeholder="Wszyscy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Wszyscy</SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>

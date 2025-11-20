@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
@@ -293,27 +293,35 @@ export function CalculationForm({ calculation, clientId, vehicleId, onClose, onS
               <div>
                 <Label htmlFor="status">Status</Label>
                 <Select
-                  id="status"
                   value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
                 >
-                  <option value="DRAFT">Szkic</option>
-                  <option value="SENT">Wysłane</option>
-                  <option value="ACCEPTED">Zaakceptowane</option>
-                  <option value="REJECTED">Odrzucone</option>
+                  <SelectTrigger id="status">
+                    <SelectValue placeholder="Wybierz status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DRAFT">Szkic</SelectItem>
+                    <SelectItem value="SENT">Wysłane</SelectItem>
+                    <SelectItem value="ACCEPTED">Zaakceptowane</SelectItem>
+                    <SelectItem value="REJECTED">Odrzucone</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label htmlFor="variant">Wariant</Label>
                 <Select
-                  id="variant"
                   value={formData.variant}
-                  onChange={(e) => setFormData({ ...formData, variant: e.target.value })}
+                  onValueChange={(value) => setFormData({ ...formData, variant: value })}
                 >
-                  <option value="">Wybierz wariant</option>
-                  <option value="MINIMAL">Minimalny</option>
-                  <option value="OPTIMAL">Optymalny</option>
-                  <option value="MAXIMAL">Maksymalny</option>
+                  <SelectTrigger id="variant">
+                    <SelectValue placeholder="Wybierz wariant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Wybierz wariant</SelectItem>
+                    <SelectItem value="MINIMAL">Minimalny</SelectItem>
+                    <SelectItem value="OPTIMAL">Optymalny</SelectItem>
+                    <SelectItem value="MAXIMAL">Maksymalny</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
               <div>

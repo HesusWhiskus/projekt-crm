@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { PlanType } from "@prisma/client"
 
 interface Organization {
@@ -92,17 +92,21 @@ export function OrganizationForm({ organization, onClose, onSuccess }: Organizat
           <div className="space-y-2">
             <Label htmlFor="plan">Plan *</Label>
             <Select
-              id="plan"
               value={formData.plan}
-              onChange={(e) => setFormData({ ...formData, plan: e.target.value as PlanType })}
-              required
+              onValueChange={(value) => setFormData({ ...formData, plan: value as PlanType })}
               disabled={isLoading}
+              required
             >
-              {Object.entries(planLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
+              <SelectTrigger id="plan">
+                <SelectValue placeholder="Wybierz plan" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(planLabels).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
               Plan PRO umożliwia dostęp do zaawansowanych funkcji (integracje, raporty, multi-tenant)

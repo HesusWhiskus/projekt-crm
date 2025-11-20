@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CardContent } from "@/components/ui/card"
 
 interface Organization {
@@ -135,17 +135,21 @@ export default function SignUpForm() {
         <div className="space-y-2">
           <Label htmlFor="organizationId">Organizacja (opcjonalnie)</Label>
           <Select
-            id="organizationId"
-            value={formData.organizationId}
-            onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
+            value={formData.organizationId || ""}
+            onValueChange={(value) => setFormData({ ...formData, organizationId: value || "" })}
             disabled={isLoading || organizations.length === 0}
           >
-            <option value="">{organizations.length === 0 ? "Brak dostępnych organizacji" : "Brak organizacji"}</option>
-            {organizations.map((org) => (
-              <option key={org.id} value={org.id}>
-                {org.name}
-              </option>
-            ))}
+            <SelectTrigger id="organizationId">
+              <SelectValue placeholder={organizations.length === 0 ? "Brak dostępnych organizacji" : "Brak organizacji"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">{organizations.length === 0 ? "Brak dostępnych organizacji" : "Brak organizacji"}</SelectItem>
+              {organizations.map((org) => (
+                <SelectItem key={org.id} value={org.id}>
+                  {org.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
           {organizations.length === 0 && (
             <p className="text-xs text-muted-foreground">

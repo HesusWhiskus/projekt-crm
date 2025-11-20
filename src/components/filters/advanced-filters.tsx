@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ChevronDown, ChevronUp, X, Filter } from "lucide-react"
@@ -146,16 +146,20 @@ export function AdvancedFilters({
                         <div key={filter.id} className="space-y-2">
                           <Label htmlFor={filter.id}>{filter.label}</Label>
                           <Select
-                            id={filter.id}
                             value={localValues[filter.id] || ""}
-                            onChange={(e) => handleChange(filter.id, e.target.value)}
+                            onValueChange={(value) => handleChange(filter.id, value)}
                           >
-                            <option value="">Wszystkie</option>
-                            {filter.options?.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
+                            <SelectTrigger id={filter.id}>
+                              <SelectValue placeholder="Wszystkie" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">Wszystkie</SelectItem>
+                              {filter.options?.map((option) => (
+                                <SelectItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
                           </Select>
                         </div>
                       )
@@ -194,18 +198,22 @@ export function AdvancedFilters({
                         <div key={filter.id} className="space-y-2">
                           <Label htmlFor={filter.id}>{filter.label}</Label>
                           <Select
-                            id={filter.id}
                             value={localValues[filter.id] === undefined ? "" : String(localValues[filter.id])}
-                            onChange={(e) =>
+                            onValueChange={(value) =>
                               handleChange(
                                 filter.id,
-                                e.target.value === "" ? undefined : e.target.value === "true"
+                                value === "" ? undefined : value === "true"
                               )
                             }
                           >
-                            <option value="">Wszystkie</option>
-                            <option value="true">Tak</option>
-                            <option value="false">Nie</option>
+                            <SelectTrigger id={filter.id}>
+                              <SelectValue placeholder="Wszystkie" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">Wszystkie</SelectItem>
+                              <SelectItem value="true">Tak</SelectItem>
+                              <SelectItem value="false">Nie</SelectItem>
+                            </SelectContent>
                           </Select>
                         </div>
                       )

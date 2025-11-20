@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { UserRole } from "@prisma/client"
 import { Edit, X } from "lucide-react"
@@ -344,22 +344,26 @@ export function UsersList({ users }: UsersListProps) {
                 <div className="space-y-2">
                   <Label htmlFor="edit-organization">Organizacja</Label>
                   <Select
-                    id="edit-organization"
-                    value={editFormData.organizationId}
-                    onChange={(e) =>
+                    value={editFormData.organizationId || ""}
+                    onValueChange={(value) =>
                       setEditFormData({
                         ...editFormData,
-                        organizationId: e.target.value,
+                        organizationId: value,
                       })
                     }
                     disabled={isLoading}
                   >
-                    <option value="">Brak organizacji</option>
-                    {organizations.map((org) => (
-                      <option key={org.id} value={org.id}>
-                        {org.name}
-                      </option>
-                    ))}
+                    <SelectTrigger id="edit-organization">
+                      <SelectValue placeholder="Brak organizacji" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Brak organizacji</SelectItem>
+                      {organizations.map((org) => (
+                        <SelectItem key={org.id} value={org.id}>
+                          {org.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
 

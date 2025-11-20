@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -157,18 +157,22 @@ export function NoteForm({ clientId, users, groups, currentUser, note, onClose, 
           <div className="space-y-2">
             <Label htmlFor="userId">Dodane przez</Label>
             <Select
-              id="userId"
               value={formData.userId}
-              onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
+              onValueChange={(value) => setFormData({ ...formData, userId: value })}
               required
               disabled={isLoading}
             >
-              <option value="">Wybierz użytkownika</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.name || user.email}
-                </option>
-              ))}
+              <SelectTrigger id="userId">
+                <SelectValue placeholder="Wybierz użytkownika" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Wybierz użytkownika</SelectItem>
+                {users.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.name || user.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
 

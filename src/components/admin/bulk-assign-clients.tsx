@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ClientStatus } from "@prisma/client"
 import { useRouter } from "next/navigation"
@@ -212,39 +212,47 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
-                id="status"
-                value={filters.status}
-                onChange={(e) => {
-                  setFilters({ ...filters, status: e.target.value })
+                value={filters.status || ""}
+                onValueChange={(value) => {
+                  setFilters({ ...filters, status: value })
                   setCurrentPage(1)
                 }}
               >
-                <option value="">Wszystkie</option>
-                {Object.entries(statusLabels).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Wszystkie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Wszystkie</SelectItem>
+                  {Object.entries(statusLabels).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="filterAssignedTo">Przypisany do</Label>
               <Select
-                id="filterAssignedTo"
-                value={filters.assignedTo}
-                onChange={(e) => {
-                  setFilters({ ...filters, assignedTo: e.target.value })
+                value={filters.assignedTo || ""}
+                onValueChange={(value) => {
+                  setFilters({ ...filters, assignedTo: value })
                   setCurrentPage(1)
                 }}
               >
-                <option value="">Wszyscy</option>
-                <option value="unassigned">Nieprzypisani</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name || user.email}
-                  </option>
-                ))}
+                <SelectTrigger id="filterAssignedTo">
+                  <SelectValue placeholder="Wszyscy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Wszyscy</SelectItem>
+                  <SelectItem value="unassigned">Nieprzypisani</SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -271,17 +279,20 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
                 <div className="space-y-2">
                   <Label htmlFor="assignTo">Przypisz do</Label>
                   <Select
-                    id="assignTo"
-                    value={assignedTo}
-                    onChange={(e) => setAssignedTo(e.target.value)}
-                    className="w-48"
+                    value={assignedTo || ""}
+                    onValueChange={(value) => setAssignedTo(value)}
                   >
-                    <option value="">Wybierz użytkownika</option>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name || user.email}
-                      </option>
-                    ))}
+                    <SelectTrigger id="assignTo" className="w-48">
+                      <SelectValue placeholder="Wybierz użytkownika" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Wybierz użytkownika</SelectItem>
+                      {users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name || user.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
                 <Button

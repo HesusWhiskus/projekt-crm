@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SearchableClientSelect } from "@/components/ui/client-select"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
@@ -181,17 +181,21 @@ export function ContactForm({ clientId, users, groups, currentUser, contact, onC
               <div className="space-y-2">
                 <Label htmlFor="type">Typ kontaktu *</Label>
                 <Select
-                  id="type"
                   value={formData.type || "PHONE_CALL"}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as ContactType })}
+                  onValueChange={(value) => setFormData({ ...formData, type: value as ContactType })}
                   required
                   disabled={isLoading}
                 >
-                  {Object.entries(contactTypeOptions).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
+                  <SelectTrigger id="type">
+                    <SelectValue placeholder="Wybierz typ" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(contactTypeOptions).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             )}
@@ -245,18 +249,22 @@ export function ContactForm({ clientId, users, groups, currentUser, contact, onC
           <div className="space-y-2">
             <Label htmlFor="userId">Dodane przez</Label>
             <Select
-              id="userId"
               value={formData.userId}
-              onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
+              onValueChange={(value) => setFormData({ ...formData, userId: value })}
               required
               disabled={isLoading}
             >
-              <option value="">Wybierz użytkownika</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.name || user.email}
-                </option>
-              ))}
+              <SelectTrigger id="userId">
+                <SelectValue placeholder="Wybierz użytkownika" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Wybierz użytkownika</SelectItem>
+                {users.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.name || user.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </div>
 

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SearchableClientSelect } from "@/components/ui/client-select"
 import { DateTimePicker } from "@/components/ui/datetime-picker"
 import { Textarea } from "@/components/ui/textarea"
@@ -154,16 +154,20 @@ export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess,
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
-                id="status"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as TaskStatus })}
+                onValueChange={(value) => setFormData({ ...formData, status: value as TaskStatus })}
                 disabled={isLoading}
               >
-                {Object.entries(statusOptions).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Wybierz status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(statusOptions).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -172,17 +176,21 @@ export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess,
             <div className="space-y-2">
               <Label htmlFor="assignedTo">Przypisane do</Label>
               <Select
-                id="assignedTo"
                 value={formData.assignedTo}
-                onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+                onValueChange={(value) => setFormData({ ...formData, assignedTo: value })}
                 disabled={isLoading}
               >
-                <option value="">Nieprzypisane</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name || user.email}
-                  </option>
-                ))}
+                <SelectTrigger id="assignedTo">
+                  <SelectValue placeholder="Nieprzypisane" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Nieprzypisane</SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">

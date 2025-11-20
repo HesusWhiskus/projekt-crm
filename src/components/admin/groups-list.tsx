@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X } from "lucide-react"
 
 interface Group {
@@ -233,20 +233,24 @@ export function GroupsList({ groups: initialGroups, users }: GroupsListProps) {
                       {addingUserToGroup === group.id && (
                         <div className="flex gap-2 mb-3">
                           <Select
-                            value={selectedUserId}
-                            onChange={(e) => setSelectedUserId(e.target.value)}
-                            className="flex-1"
+                            value={selectedUserId || ""}
+                            onValueChange={(value) => setSelectedUserId(value)}
                           >
-                            <option value="">Wybierz użytkownika</option>
-                            {users
-                              .filter(
-                                (u) => !group.users.some((ug) => ug.user.id === u.id)
-                              )
-                              .map((user) => (
-                                <option key={user.id} value={user.id}>
-                                  {user.name || user.email}
-                                </option>
-                              ))}
+                            <SelectTrigger className="flex-1">
+                              <SelectValue placeholder="Wybierz użytkownika" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">Wybierz użytkownika</SelectItem>
+                              {users
+                                .filter(
+                                  (u) => !group.users.some((ug) => ug.user.id === u.id)
+                                )
+                                .map((user) => (
+                                  <SelectItem key={user.id} value={user.id}>
+                                    {user.name || user.email}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
                           </Select>
                           <Button
                             type="button"

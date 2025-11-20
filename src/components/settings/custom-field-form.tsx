@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Dialog,
   DialogContent,
@@ -123,21 +123,25 @@ export function CustomFieldForm({ open, onOpenChange, onSuccess }: CustomFieldFo
             <div className="space-y-2">
               <Label htmlFor="type">Typ pola *</Label>
               <Select
-                id="type"
                 value={type}
-                onChange={(e) => {
-                  setType(e.target.value as "TEXT" | "NUMBER" | "DATE" | "SELECT")
-                  if (e.target.value !== "SELECT") {
+                onValueChange={(value) => {
+                  setType(value as "TEXT" | "NUMBER" | "DATE" | "SELECT")
+                  if (value !== "SELECT") {
                     setOptions([])
                   }
                 }}
                 disabled={isLoading}
               >
-                {fieldTypes.map((ft) => (
-                  <option key={ft.value} value={ft.value}>
-                    {ft.label}
-                  </option>
-                ))}
+                <SelectTrigger id="type">
+                  <SelectValue placeholder="Wybierz typ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fieldTypes.map((ft) => (
+                    <SelectItem key={ft.value} value={ft.value}>
+                      {ft.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             {type === "SELECT" && (

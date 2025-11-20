@@ -8,7 +8,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 ## [0.9.7-beta] - 2025-01-20
 
 ### Naprawiono
-- **Komponent Select w filtrach klientów:** Naprawiono użycie komponentu Select z Radix UI w `clients-list.tsx` - zastąpiono nieprawidłowe użycie HTML `<select>` właściwą składnią z `SelectTrigger`, `SelectContent`, `SelectItem` i `SelectValue`. Naprawiono błędy TypeScript związane z właściwościami `id` i `onChange`.
+- **Komponent Select we wszystkich formularzach i listach:** Naprawiono użycie komponentu Select z Radix UI we wszystkich komponentach - zastąpiono nieprawidłowe użycie HTML `<select>` właściwą składnią z `SelectTrigger`, `SelectContent`, `SelectItem` i `SelectValue`. Naprawiono błędy TypeScript związane z właściwościami `id` i `onChange`. Naprawione komponenty: `clients-list.tsx`, `client-form.tsx`, `contacts-list.tsx`, `contact-form.tsx`, `tasks-list.tsx`, `task-form.tsx`, `calculation-form.tsx`, `policy-form.tsx`, `note-form.tsx`, `preferences-settings.tsx`, `custom-field-form.tsx`, `advanced-filters.tsx` oraz inne komponenty używające Select.
 
 ## [0.9.6-beta] - 2025-01-20
 
