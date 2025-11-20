@@ -29,7 +29,7 @@ interface ContactFormProps {
   contact?: {
     id?: string
     type?: ContactType | null
-    date?: Date
+    date?: Date | string // Next.js serializes Date as string when passing from server components
     notes?: string
     isNote?: boolean
     userId?: string
