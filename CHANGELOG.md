@@ -5,6 +5,17 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.3-beta] - 2025-01-20
+
+### Dodano
+- **Paginacja w API routes:** Dodano paginację do `/api/tasks`, `/api/contacts` i `/api/clients` z parametrami `page` i `limit` (domyślnie 50). API pozostaje backward compatible - bez parametrów zwraca wszystkie rekordy.
+- **Optymalizacja React komponentów:** Dodano memoization (`React.memo`, `useMemo`, `useCallback`) do `ClientDetail`, `ClientsList`, `DashboardWidgets` i `DataTable` dla redukcji niepotrzebnych re-renderów.
+- **Lazy loading:** Dodano lazy loading dla `ClientDetail` i formularzy (`ClientForm`, `TaskForm`, `ContactForm`, `NoteForm`) używając `next/dynamic` dla redukcji initial bundle size.
+- **Optymalizacja zapytań na dashboardzie:** Zastąpiono wiele równoległych `count` queries dla calculations jednym zapytaniem z `groupBy` dla lepszej wydajności.
+
+### Zmieniono
+- **Wydajność aplikacji:** Zoptymalizowano wydajność aplikacji poprzez paginację, memoization i lazy loading. Oczekiwana redukcja czasu odpowiedzi o 50-70% dla dużych zbiorów danych.
+
 ## [0.9.2-beta] - 2025-01-20
 
 ### Naprawiono

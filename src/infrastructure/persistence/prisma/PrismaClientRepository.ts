@@ -378,6 +378,7 @@ export class PrismaClientRepository implements IClientRepository {
   ): Promise<{
     clients: Client[]
     relations: Map<string, { assignee: any; sharedGroups: any[] }>
+    total?: number // Total count for pagination
   }> {
     const where: any = {}
 
@@ -470,11 +471,22 @@ export class PrismaClientRepository implements IClientRepository {
       }
     }
 
-    const clientsData = await db.client.findMany({
-      where,
-      orderBy,
-      include: Object.keys(include).length > 0 ? include : undefined,
-    })
+    // Apply pagination if provided
+    const pagination = options?.pagination
+    const skip = pagination?.page && pagination?.limit ? (pagination.page - 1) * pagination.limit : undefined
+    const take = pagination?.limit
+
+    // Fetch clients and total count in parallel if pagination is used
+    const [clientsData, total] = await Promise.all([
+      db.client.findMany({
+        where,
+        orderBy,
+        include: Object.keys(include).length > 0 ? include : undefined,
+        ...(skip !== undefined && { skip }),
+        ...(take !== undefined && { take }),
+      }),
+      pagination ? db.client.count({ where }) : Promise.resolve(undefined),
+    ])
 
     const clients = clientsData.map((data) =>
       Client.fromPersistence({
@@ -506,7 +518,7 @@ export class PrismaClientRepository implements IClientRepository {
       })
     })
 
-    return { clients, relations }
+    return { clients, relations, total }
   }
 }
 

@@ -1,9 +1,24 @@
 import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
-import { ClientDetail } from "@/components/clients/client-detail"
+import dynamic from "next/dynamic"
 import { getCachedUsers, getCachedGroups } from "@/lib/cache"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Lazy load ClientDetail component
+const ClientDetail = dynamic(
+  () => import("@/components/clients/client-detail").then((mod) => ({ default: mod.ClientDetail })),
+  {
+    loading: () => (
+      <div className="space-y-6">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    ),
+    ssr: true, // Keep SSR for SEO and initial load performance
+  }
+)
 
 export default async function ClientDetailPage({
   params,

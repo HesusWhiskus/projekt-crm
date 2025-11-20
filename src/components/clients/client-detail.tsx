@@ -1,14 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo, useCallback, memo } from "react"
+import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
 import { Edit, Plus } from "lucide-react"
-import { ContactForm } from "../contacts/contact-form"
-import { NoteForm } from "../notes/note-form"
-import { ClientForm } from "./client-form"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Lazy load forms
+const ContactForm = dynamic(() => import("../contacts/contact-form").then(mod => ({ default: mod.ContactForm })), {
+  loading: () => <Skeleton className="h-96 w-full" />,
+  ssr: false,
+})
+
+const NoteForm = dynamic(() => import("../notes/note-form").then(mod => ({ default: mod.NoteForm })), {
+  loading: () => <Skeleton className="h-96 w-full" />,
+  ssr: false,
+})
+
+const ClientForm = dynamic(() => import("./client-form").then(mod => ({ default: mod.ClientForm })), {
+  loading: () => <Skeleton className="h-96 w-full" />,
+  ssr: false,
+})
 import { IntegrationTabs } from "./integration-tabs"
 import { ClientHeader } from "./client-header"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -66,15 +81,69 @@ export function ClientDetail({
   const [activeInsuranceTab, setActiveInsuranceTab] = useState<"vehicles" | "calculations" | "policies">("vehicles")
   const [activeMainTab, setActiveMainTab] = useState("general")
   
-  // Filtruj kontakty
-  const filteredContacts = client.contacts.filter((contact: any) => {
-    if (contactFilter === "contacts") return !contact.isNote
-    if (contactFilter === "notes") return contact.isNote
-    return true
-  })
+  // Memoized filtered contacts
+  const filteredContacts = useMemo(() => {
+    return client.contacts.filter((contact: any) => {
+      if (contactFilter === "contacts") return !contact.isNote
+      if (contactFilter === "notes") return contact.isNote
+      return true
+    })
+  }, [client.contacts, contactFilter])
   
-  const contactsCount = client.contacts.filter((c: any) => !c.isNote).length
-  const notesCount = client.contacts.filter((c: any) => c.isNote).length
+  // Memoized counts
+  const contactsCount = useMemo(() => {
+    return client.contacts.filter((c: any) => !c.isNote).length
+  }, [client.contacts])
+  
+  const notesCount = useMemo(() => {
+    return client.contacts.filter((c: any) => c.isNote).length
+  }, [client.contacts])
+
+  // Memoized handlers
+  const handleEdit = useCallback(() => {
+    setIsEditing(true)
+  }, [])
+
+  const handleAddContact = useCallback(() => {
+    setIsAddingContact(true)
+    setAddingNote(false)
+  }, [])
+
+  const handleAddNote = useCallback(() => {
+    setIsAddingContact(true)
+    setAddingNote(true)
+  }, [])
+
+  const handleCloseEdit = useCallback(() => {
+    setIsEditing(false)
+  }, [])
+
+  const handleEditSuccess = useCallback(() => {
+    setIsEditing(false)
+    router.refresh()
+  }, [router])
+
+  const handleCloseContact = useCallback(() => {
+    setIsAddingContact(false)
+    setAddingNote(false)
+  }, [])
+
+  const handleContactSuccess = useCallback(() => {
+    setIsAddingContact(false)
+    setAddingNote(false)
+    router.refresh()
+  }, [router])
+
+  const handleCloseNote = useCallback(() => {
+    setIsAddingContact(false)
+    setAddingNote(false)
+  }, [])
+
+  const handleNoteSuccess = useCallback(() => {
+    setIsAddingContact(false)
+    setAddingNote(false)
+    router.refresh()
+  }, [router])
 
   return (
     <div className="space-y-6">
@@ -89,15 +158,9 @@ export function ClientDetail({
           priority: client.priority,
           assignee: client.assignee,
         }}
-        onEdit={() => setIsEditing(true)}
-        onAddContact={() => {
-          setIsAddingContact(true)
-          setAddingNote(false)
-        }}
-        onAddNote={() => {
-          setIsAddingContact(true)
-          setAddingNote(true)
-        }}
+        onEdit={handleEdit}
+        onAddContact={handleAddContact}
+        onAddNote={handleAddNote}
       />
 
       {isEditing && (
@@ -107,11 +170,8 @@ export function ClientDetail({
           groups={groups}
           currentUser={currentUser}
           insuranceAgentsEnabled={insuranceAgentsEnabled}
-          onClose={() => setIsEditing(false)}
-          onSuccess={() => {
-            setIsEditing(false)
-            router.refresh()
-          }}
+          onClose={handleCloseEdit}
+          onSuccess={handleEditSuccess}
         />
       )}
 
@@ -121,15 +181,8 @@ export function ClientDetail({
           users={users}
           groups={groups}
           currentUser={currentUser}
-          onClose={() => {
-            setIsAddingContact(false)
-            setAddingNote(false)
-          }}
-          onSuccess={() => {
-            setIsAddingContact(false)
-            setAddingNote(false)
-            router.refresh()
-          }}
+          onClose={handleCloseContact}
+          onSuccess={handleContactSuccess}
         />
       )}
       {isAddingContact && addingNote && (
@@ -138,15 +191,8 @@ export function ClientDetail({
           users={users}
           groups={groups}
           currentUser={currentUser}
-          onClose={() => {
-            setIsAddingContact(false)
-            setAddingNote(false)
-          }}
-          onSuccess={() => {
-            setIsAddingContact(false)
-            setAddingNote(false)
-            router.refresh()
-          }}
+          onClose={handleCloseContact}
+          onSuccess={handleContactSuccess}
         />
       )}
 

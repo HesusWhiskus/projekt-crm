@@ -17,6 +17,8 @@ export const clientQuerySchema = z.object({
   assignedTo: z.string().min(1, 'Nieprawidłowy format ID użytkownika').optional().or(z.literal("")), // CUID format, not UUID
   noContactDays: z.string().optional(), // Number of days as string, will be converted to number
   followUpToday: z.string().optional(), // Boolean as string "true"/"false"
+  page: z.string().regex(/^\d+$/, 'Strona musi być liczbą').optional(),
+  limit: z.string().regex(/^\d+$/, 'Limit musi być liczbą').optional(),
 })
 
 /**
@@ -32,6 +34,8 @@ export const contactQuerySchema = z.object({
     'OTHER',
   ]).optional(),
   userId: z.string().min(1, 'Nieprawidłowy format ID użytkownika').optional().or(z.literal("")), // CUID format, not UUID
+  page: z.string().regex(/^\d+$/, 'Strona musi być liczbą').optional(),
+  limit: z.string().regex(/^\d+$/, 'Limit musi być liczbą').optional(),
 })
 
 /**
@@ -40,6 +44,8 @@ export const contactQuerySchema = z.object({
 export const taskQuerySchema = z.object({
   status: z.enum(['TODO', 'IN_PROGRESS', 'COMPLETED']).optional(),
   assignedTo: z.string().min(1, 'Nieprawidłowy format ID użytkownika').optional().or(z.literal("")), // CUID format, not UUID
+  page: z.string().regex(/^\d+$/, 'Strona musi być liczbą').optional(),
+  limit: z.string().regex(/^\d+$/, 'Limit musi być liczbą').optional(),
 })
 
 /**

@@ -9,6 +9,7 @@ import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib
 import { validateQueryParams, contactQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
+import { calculatePagination, PaginatedResponse } from "@/lib/types/pagination"
 
 const createContactSchema = z.object({
   type: z.nativeEnum(ContactType).optional(), // Optional for notes (isNote=true)
@@ -438,39 +439,76 @@ export async function GET(request: Request) {
       where.userId = validatedParams.userId
     }
 
-    const contacts = await db.contact.findMany({
-      where,
-      include: {
-        client: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            companyName: true,
-            type: true,
-          },
-        },
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        attachments: true,
-        sharedGroups: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-      orderBy: {
-        date: "desc",
-      },
-    })
+    // Parse pagination parameters
+    const pageParam = searchParams.get("page")
+    const limitParam = searchParams.get("limit")
+    const page = pageParam ? parseInt(pageParam, 10) : undefined
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined
 
-    return NextResponse.json({ contacts })
+    // Backward compatible: if no pagination params, return all contacts (with warning in logs)
+    const usePagination = page !== undefined || limit !== undefined
+
+    if (!usePagination) {
+      console.warn("[API CONTACTS] Pagination not used - returning all contacts. Consider using ?page=1&limit=50")
+    }
+
+    const { page: validPage, limit: validLimit, skip } = calculatePagination(page, limit, 50)
+
+    // Fetch contacts and total count in parallel
+    const [contacts, total] = await Promise.all([
+      db.contact.findMany({
+        where,
+        include: {
+          client: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              companyName: true,
+              type: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          attachments: true,
+          sharedGroups: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          date: "desc",
+        },
+        ...(usePagination && { skip, take: validLimit }),
+      }),
+      db.contact.count({ where }),
+    ])
+
+    // Backward compatible response format
+    if (usePagination) {
+      const totalPages = Math.ceil(total / validLimit)
+      const response: PaginatedResponse<typeof contacts[0]> = {
+        data: contacts,
+        pagination: {
+          page: validPage,
+          limit: validLimit,
+          total,
+          totalPages,
+          hasMore: validPage * validLimit < total,
+        },
+      }
+      return NextResponse.json(response)
+    } else {
+      // Old format for backward compatibility
+      return NextResponse.json({ contacts })
+    }
   } catch (error) {
     console.error("Contacts fetch error:", error)
     return NextResponse.json(

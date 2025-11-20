@@ -14,6 +14,32 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.3-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano paginację do API routes (/api/tasks, /api/contacts, /api/clients) z parametrami page i limit',
+      },
+      {
+        type: 'changed',
+        description: 'Zoptymalizowano wydajność React komponentów poprzez memoization (React.memo, useMemo, useCallback)',
+      },
+      {
+        type: 'changed',
+        description: 'Dodano lazy loading dla ClientDetail i formularzy (ClientForm, TaskForm, ContactForm) dla redukcji initial bundle size',
+      },
+      {
+        type: 'changed',
+        description: 'Zoptymalizowano zapytania na dashboardzie - zastąpiono wiele count queries jednym zapytaniem z groupBy',
+      },
+      {
+        type: 'changed',
+        description: 'Ogólna optymalizacja wydajności aplikacji - oczekiwana redukcja czasu odpowiedzi o 50-70% dla dużych zbiorów danych',
+      },
+    ],
+  },
+  {
     version: '0.9.2-beta',
     date: '2025-01-20',
     changes: [

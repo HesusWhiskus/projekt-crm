@@ -1,5 +1,6 @@
 import { Client } from '../entities/Client'
 import { ClientStatus, ClientPriority } from '@prisma/client'
+import { PaginationParams } from '@/lib/types/pagination'
 
 /**
  * Filter criteria for finding clients
@@ -29,6 +30,7 @@ export interface FindClientsOptions {
     field: 'updatedAt' | 'createdAt' | 'lastContactAt' | 'nextFollowUpAt'
     direction: 'asc' | 'desc'
   }
+  pagination?: PaginationParams
 }
 
 /**

@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo, useCallback, memo } from "react"
 import { WidgetRegistry, WidgetConfig } from "./widgets/widget-registry"
 import { Users, FileText, CheckSquare, Clock, AlertCircle, Calendar, Shield, Car, TrendingUp, FileCheck } from "lucide-react"
 import Link from "next/link"
@@ -41,21 +42,23 @@ interface DashboardWidgetsProps {
   } | null
 }
 
-export function DashboardWidgets({
+export const DashboardWidgets = memo(function DashboardWidgets({
   stats,
   upcomingTasks,
   insuranceStats,
 }: DashboardWidgetsProps) {
-  const getClientDisplayName = (client: DashboardWidgetsProps["upcomingTasks"][0]["client"]) => {
+  const getClientDisplayName = useCallback((client: DashboardWidgetsProps["upcomingTasks"][0]["client"]) => {
     if (!client) return "-"
     if (client.type === "COMPANY") {
       return client.companyName || "Brak nazwy firmy"
     }
     const name = [client.firstName, client.lastName].filter(Boolean).join(" ")
     return name || "Brak nazwy"
-  }
+  }, [])
 
-  const widgets: WidgetConfig[] = [
+  // Memoized widgets configuration
+  const widgets: WidgetConfig[] = useMemo(() => {
+    const baseWidgets: WidgetConfig[] = [
     // Stats widgets
     {
       id: "clients",
@@ -172,11 +175,11 @@ export function DashboardWidgets({
         viewAllHref: "/tasks",
       },
     },
-  ]
+    ]
 
-  // Add insurance widgets if available
-  if (insuranceStats) {
-    widgets.push(
+    // Add insurance widgets if available
+    if (insuranceStats) {
+      baseWidgets.push(
       {
         id: "insuranceCalculations",
         type: "stats",
@@ -297,9 +300,12 @@ export function DashboardWidgets({
           viewAllHref: "/insurance-agent/policies",
         },
       }
-    )
-  }
+      )
+    }
+
+    return baseWidgets
+  }, [stats, upcomingTasks, insuranceStats, getClientDisplayName])
 
   return <WidgetRegistry widgets={widgets} />
-}
+})
 

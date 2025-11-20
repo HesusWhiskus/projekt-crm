@@ -6,6 +6,7 @@ import { z } from "zod"
 import { validateQueryParams, taskQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
+import { calculatePagination, PaginatedResponse } from "@/lib/types/pagination"
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany").max(150, "Tytuł jest zbyt długi (max 150 znaków)").trim(),
@@ -315,32 +316,69 @@ export async function GET(request: Request) {
       where.clientId = validatedClientId
     }
 
-    const tasks = await db.task.findMany({
-      where,
-      include: {
-        assignee: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        client: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            companyName: true,
-            type: true,
-          },
-        },
-      },
-      orderBy: {
-        dueDate: "asc",
-      },
-    })
+    // Parse pagination parameters
+    const pageParam = searchParams.get("page")
+    const limitParam = searchParams.get("limit")
+    const page = pageParam ? parseInt(pageParam, 10) : undefined
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined
 
-    return NextResponse.json({ tasks })
+    // Backward compatible: if no pagination params, return all tasks (with warning in logs)
+    const usePagination = page !== undefined || limit !== undefined
+
+    if (!usePagination) {
+      console.warn("[API TASKS] Pagination not used - returning all tasks. Consider using ?page=1&limit=50")
+    }
+
+    const { page: validPage, limit: validLimit, skip } = calculatePagination(page, limit, 50)
+
+    // Fetch tasks and total count in parallel
+    const [tasks, total] = await Promise.all([
+      db.task.findMany({
+        where,
+        include: {
+          assignee: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          client: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              companyName: true,
+              type: true,
+            },
+          },
+        },
+        orderBy: {
+          dueDate: "asc",
+        },
+        ...(usePagination && { skip, take: validLimit }),
+      }),
+      db.task.count({ where }),
+    ])
+
+    // Backward compatible response format
+    if (usePagination) {
+      const totalPages = Math.ceil(total / validLimit)
+      const response: PaginatedResponse<typeof tasks[0]> = {
+        data: tasks,
+        pagination: {
+          page: validPage,
+          limit: validLimit,
+          total,
+          totalPages,
+          hasMore: validPage * validLimit < total,
+        },
+      }
+      return NextResponse.json(response)
+    } else {
+      // Old format for backward compatibility
+      return NextResponse.json({ tasks })
+    }
   } catch (error) {
     console.error("Tasks fetch error:", error)
     return NextResponse.json(

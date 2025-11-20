@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, ReactNode } from "react"
+import { useState, useMemo, useCallback, ReactNode, memo } from "react"
 import { useIsMobile } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import { Card, CardContent } from "@/components/ui/card"
@@ -70,7 +70,7 @@ export function DataTable<T extends { id: string }>({
   const isMobile = useIsMobile()
   const [hoveredRow, setHoveredRow] = useState<string | null>(null)
 
-  const handleSort = (columnKey: string) => {
+  const handleSort = useCallback((columnKey: string) => {
     if (!sortable || !onSort) return
     
     const column = columns.find((col) => col.key === columnKey)
@@ -82,9 +82,9 @@ export function DataTable<T extends { id: string }>({
     } else {
       onSort(columnKey, "asc")
     }
-  }
+  }, [sortable, onSort, columns, sortBy, sortOrder])
 
-  const getSortIcon = (columnKey: string) => {
+  const getSortIcon = useCallback((columnKey: string) => {
     if (sortBy !== columnKey) {
       return <ArrowUpDown className="h-4 w-4 ml-1 text-muted-foreground" />
     }
@@ -92,7 +92,7 @@ export function DataTable<T extends { id: string }>({
       return <ArrowUp className="h-4 w-4 ml-1" />
     }
     return <ArrowDown className="h-4 w-4 ml-1" />
-  }
+  }, [sortBy, sortOrder])
 
   const visibleColumns = useMemo(() => {
     if (!isMobile) return columns

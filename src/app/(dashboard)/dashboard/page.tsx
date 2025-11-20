@@ -50,12 +50,9 @@ export default async function DashboardPage() {
             organizationId: userWithOrg?.organizationId || undefined,
           }
       
+      // Optimize: Use groupBy for calculation counts instead of multiple count queries
       const [
-        calculationsCount,
-        calculationsDraft,
-        calculationsSent,
-        calculationsAccepted,
-        calculationsRejected,
+        calculationCounts,
         policiesCount,
         policiesActive,
         policiesExpiringSoon,
@@ -63,11 +60,14 @@ export default async function DashboardPage() {
         recentCalculations,
         upcomingRenewals,
       ] = await Promise.all([
-        db.calculation.count({ where }),
-        db.calculation.count({ where: { ...where, status: 'DRAFT' } }),
-        db.calculation.count({ where: { ...where, status: 'SENT' } }),
-        db.calculation.count({ where: { ...where, status: 'ACCEPTED' } }),
-        db.calculation.count({ where: { ...where, status: 'REJECTED' } }),
+        // Single query with groupBy for all calculation status counts
+        db.calculation.groupBy({
+          by: ['status'],
+          where,
+          _count: {
+            status: true,
+          },
+        }),
         db.policy.count({ where }),
         db.policy.count({ where: { ...where, status: 'ACTIVE' } }),
         db.policy.count({
@@ -156,6 +156,13 @@ export default async function DashboardPage() {
           },
         }),
       ])
+
+      // Process grouped calculation counts
+      const calculationsCount = calculationCounts.reduce((sum, item) => sum + item._count.status, 0)
+      const calculationsDraft = calculationCounts.find(item => item.status === 'DRAFT')?._count.status || 0
+      const calculationsSent = calculationCounts.find(item => item.status === 'SENT')?._count.status || 0
+      const calculationsAccepted = calculationCounts.find(item => item.status === 'ACCEPTED')?._count.status || 0
+      const calculationsRejected = calculationCounts.find(item => item.status === 'REJECTED')?._count.status || 0
       
       insuranceStats = {
         calculationsCount,

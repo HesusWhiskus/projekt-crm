@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo, useCallback, memo } from "react"
+import dynamic from "next/dynamic"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,7 +11,11 @@ import { Label } from "@/components/ui/label"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
 import { Plus, Search, Download, Mail, Phone, Building2 } from "lucide-react"
 import Link from "next/link"
-import { ClientForm } from "./client-form"
+// Lazy load ClientForm
+const ClientForm = dynamic(() => import("./client-form").then(mod => ({ default: mod.ClientForm })), {
+  loading: () => <div className="p-6"><div className="h-96 bg-muted animate-pulse rounded" /></div>,
+  ssr: false,
+})
 import { DataTable } from "@/components/ui/data-table"
 import { StatusBadge } from "@/components/ui/status-badge"
 import {
@@ -79,7 +84,7 @@ function getClientDisplayName(client: Client): string {
 }
 type SortDirection = "asc" | "desc" | null
 
-export function ClientsList({ clients, users, groups, currentUser, insuranceAgentsEnabled = false, total, page, limit, totalPages }: ClientsListProps) {
+export const ClientsList = memo(function ClientsList({ clients, users, groups, currentUser, insuranceAgentsEnabled = false, total, page, limit, totalPages }: ClientsListProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isCreating, setIsCreating] = useState(false)
@@ -128,7 +133,7 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
     router.push(`/clients?${params.toString()}`)
   }
 
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     const csv = [
       ["Nazwa agencji", "Imię", "Nazwisko", "Email", "Telefon", "Status", "Odpowiedzialny"].join(","),
       ...clients.map((c) =>
@@ -149,7 +154,110 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
     link.href = URL.createObjectURL(blob)
     link.download = `klienci-${new Date().toISOString().split("T")[0]}.csv`
     link.click()
-  }
+  }, [clients])
+
+  // Memoized columns configuration
+  const columns = useMemo(() => [
+    {
+      key: "name",
+      header: "Kontakt",
+      accessor: (client: typeof clients[0]) => `${client.firstName || ""} ${client.lastName || ""}`.trim() || "-",
+      sortable: true,
+      priority: "always" as const,
+      width: "150px",
+    },
+    {
+      key: "companyName",
+      header: "Agencja",
+      accessor: (client: typeof clients[0]) => getClientDisplayName(client),
+      sortable: true,
+      priority: "always" as const,
+      width: "180px",
+    },
+    {
+      key: "email",
+      header: "Email",
+      accessor: (client: typeof clients[0]) => client.email || "-",
+      sortable: true,
+      priority: "mobile-hidden" as const,
+      width: "200px",
+    },
+    {
+      key: "phone",
+      header: "Telefon",
+      accessor: (client: typeof clients[0]) => client.phone || "-",
+      sortable: true,
+      priority: "optional" as const,
+      width: "120px",
+    },
+    {
+      key: "status",
+      header: "Status",
+      accessor: (client: typeof clients[0]) => (
+        <StatusBadge
+          status={clientStatusLabels[client.status]}
+          variant={
+            client.status === "ACTIVE_CLIENT"
+              ? "success"
+              : client.status === "LOST"
+              ? "error"
+              : client.status === "NEGOTIATION"
+              ? "warning"
+              : "default"
+          }
+          size="sm"
+        />
+      ),
+      sortable: true,
+      priority: "always" as const,
+      width: "130px",
+    },
+    {
+      key: "priority",
+      header: "Priorytet",
+      accessor: (client: typeof clients[0]) =>
+        client.priority ? (
+          <StatusBadge
+            status={clientPriorityLabels[client.priority]}
+            variant={
+              client.priority === "HIGH"
+                ? "error"
+                : client.priority === "MEDIUM"
+                ? "warning"
+                : "info"
+            }
+            size="sm"
+          />
+        ) : (
+          "-"
+        ),
+      sortable: true,
+      priority: "optional" as const,
+      width: "110px",
+    },
+    {
+      key: "assignee",
+      header: "Odpowiedzialny",
+      accessor: (client: typeof clients[0]) => client.assignee?.name || client.assignee?.email || "-",
+      sortable: true,
+      priority: "mobile-hidden" as const,
+      width: "150px",
+    },
+    {
+      key: "actions",
+      header: "Akcje",
+      accessor: (client: typeof clients[0]) => (
+        <Link href={`/clients/${client.id}`}>
+          <Button variant="ghost" size="sm">
+            Szczegóły
+          </Button>
+        </Link>
+      ),
+      sortable: false,
+      priority: "always" as const,
+      width: "100px",
+    },
+  ], [])
 
   return (
     <div className="space-y-6">
@@ -281,107 +389,7 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
         <CardContent className="p-0">
           <DataTable
             data={clients}
-            columns={[
-              {
-                key: "name",
-                header: "Kontakt",
-                accessor: (client) => `${client.firstName || ""} ${client.lastName || ""}`.trim() || "-",
-                sortable: true,
-                priority: "always",
-                width: "15%",
-              },
-              {
-                key: "companyName",
-                header: "Agencja",
-                accessor: (client) => getClientDisplayName(client),
-                sortable: true,
-                priority: "always",
-                width: "15%",
-              },
-              {
-                key: "email",
-                header: "Email",
-                accessor: (client) => client.email || "-",
-                sortable: true,
-                priority: "mobile-hidden",
-                width: "18%",
-              },
-              {
-                key: "phone",
-                header: "Telefon",
-                accessor: (client) => client.phone || "-",
-                sortable: true,
-                priority: "optional",
-                width: "12%",
-              },
-              {
-                key: "status",
-                header: "Status",
-                accessor: (client) => (
-                  <StatusBadge
-                    status={clientStatusLabels[client.status]}
-                    variant={
-                      client.status === "ACTIVE_CLIENT"
-                        ? "success"
-                        : client.status === "LOST"
-                        ? "error"
-                        : client.status === "NEGOTIATION"
-                        ? "warning"
-                        : "default"
-                    }
-                    size="sm"
-                  />
-                ),
-                sortable: true,
-                priority: "always",
-                width: "12%",
-              },
-              {
-                key: "priority",
-                header: "Priorytet",
-                accessor: (client) =>
-                  client.priority ? (
-                    <StatusBadge
-                      status={clientPriorityLabels[client.priority]}
-                      variant={
-                        client.priority === "HIGH"
-                          ? "error"
-                          : client.priority === "MEDIUM"
-                          ? "warning"
-                          : "info"
-                      }
-                      size="sm"
-                    />
-                  ) : (
-                    "-"
-                  ),
-                sortable: true,
-                priority: "optional",
-                width: "10%",
-              },
-              {
-                key: "assignee",
-                header: "Odpowiedzialny",
-                accessor: (client) => client.assignee?.name || client.assignee?.email || "-",
-                sortable: true,
-                priority: "mobile-hidden",
-                width: "13%",
-              },
-              {
-                key: "actions",
-                header: "Akcje",
-                accessor: (client) => (
-                  <Link href={`/clients/${client.id}`}>
-                    <Button variant="ghost" size="sm">
-                      Szczegóły
-                    </Button>
-                  </Link>
-                ),
-                sortable: false,
-                priority: "always",
-                width: "5%",
-              },
-            ]}
+            columns={columns}
             sortable={true}
             sortBy={currentSortBy}
             sortOrder={currentSortOrder}
@@ -488,5 +496,5 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
       </Card>
     </div>
   )
-}
+})
 
