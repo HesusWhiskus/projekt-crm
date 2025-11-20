@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.7-beta',
+    date: '2025-11-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono serializację dat w komponentach klientów, kontaktów i zadań - utworzono helper functions (parseDate, parseOptionalDate) i zaktualizowano wszystkie client components aby poprawnie konwertowały serializowane stringi ISO z powrotem na obiekty Date. Naprawiono błędy "Application error: a client-side exception has occurred"',
+      },
+    ],
+  },
+  {
     version: '0.9.6-beta',
     date: '2025-11-20',
     changes: [
@@ -24,16 +34,6 @@ export const changelog: ChangelogEntry[] = [
       {
         type: 'fixed',
         description: 'Naprawiono wyświetlanie metryk wydajności w health check - sekcja jest teraz zawsze widoczna, nawet jeśli nie ma jeszcze danych',
-      },
-    ],
-  },
-  {
-    version: '0.9.7-beta',
-    date: '2025-01-20',
-    changes: [
-      {
-        type: 'fixed',
-        description: 'Naprawiono komponent Select we wszystkich formularzach i listach - zastąpiono nieprawidłowe użycie HTML select właściwą składnią Radix UI (SelectTrigger, SelectContent, SelectItem, SelectValue). Naprawiono w: clients-list, client-form, contacts-list, contact-form, tasks-list, task-form, calculation-form, policy-form, note-form, preferences-settings, custom-field-form, advanced-filters i innych komponentach',
       },
     ],
   },

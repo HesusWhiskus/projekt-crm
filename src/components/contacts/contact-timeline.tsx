@@ -10,11 +10,12 @@ import { EmptyState } from "@/components/ui/empty-state"
 import Link from "next/link"
 import { format, isToday, isYesterday, isThisWeek, isThisMonth, formatDistanceToNow } from "date-fns"
 import { pl } from "date-fns/locale"
+import { parseDate } from "@/lib/date-utils"
 
 interface Contact {
   id: string
   type: ContactType | null
-  date: Date
+  date: Date | string // Next.js serializes Date as string
   notes: string
   isNote: boolean
   client: {
@@ -85,7 +86,7 @@ const groupContactsByDate = (contacts: Contact[]) => {
   }
 
   contacts.forEach((contact) => {
-    const date = new Date(contact.date)
+    const date = parseDate(contact.date)
     if (isToday(date)) {
       groups.today.push(contact)
     } else if (isYesterday(date)) {
@@ -184,7 +185,7 @@ export function ContactTimeline({
                               )}
                             </div>
                             <div className="text-sm text-muted-foreground mb-2">
-                              {format(new Date(contact.date), "d MMMM yyyy, HH:mm", { locale: pl })}
+                              {format(parseDate(contact.date), "d MMMM yyyy, HH:mm", { locale: pl })}
                             </div>
                             <div className="text-sm mb-2">{contact.notes}</div>
                             <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -231,7 +232,7 @@ export function ContactTimeline({
                               contact={{
                                 id: contact.id,
                                 type: contact.type,
-                                date: contact.date,
+                                date: parseDate(contact.date),
                                 notes: contact.notes,
                                 isNote: contact.isNote,
                                 userId: contact.user.id,

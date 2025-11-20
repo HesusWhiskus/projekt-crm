@@ -15,7 +15,7 @@ import { contactTypeLabels } from "@/lib/status-config"
 interface Contact {
   id: string
   type: ContactType | null // Optional for notes
-  date: Date
+  date: Date | string // Next.js serializes Date as string
   notes: string
   isNote: boolean
   client: {

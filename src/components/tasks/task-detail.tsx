@@ -8,6 +8,7 @@ import { TaskStatus, UserRole } from "@prisma/client"
 import { Edit, Calendar as CalendarIcon } from "lucide-react"
 import { TaskForm } from "./task-form"
 import Link from "next/link"
+import { parseOptionalDate, parseDate } from "@/lib/date-utils"
 
 interface TaskDetailProps {
   task: any
@@ -154,12 +155,16 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
                 </div>
               </div>
             )}
-            {task.dueDate && (
-              <div>
-                <span className="text-sm font-medium">Termin:</span>{" "}
-                {new Date(task.dueDate).toLocaleString("pl-PL")}
-              </div>
-            )}
+            {task.dueDate && (() => {
+              const dueDate = parseOptionalDate(task.dueDate)
+              if (!dueDate) return null
+              return (
+                <div>
+                  <span className="text-sm font-medium">Termin:</span>{" "}
+                  {dueDate.toLocaleString("pl-PL")}
+                </div>
+              )
+            })()}
             <div>
               <span className="text-sm font-medium">Status:</span>{" "}
               <span className="px-2 py-1 rounded text-xs bg-muted text-muted-foreground">
@@ -191,11 +196,11 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
           <CardContent className="space-y-2">
             <div>
               <span className="text-sm font-medium">Data utworzenia:</span>{" "}
-              {new Date(task.createdAt).toLocaleDateString("pl-PL")}
+              {parseDate(task.createdAt).toLocaleDateString("pl-PL")}
             </div>
             <div>
               <span className="text-sm font-medium">Ostatnia aktualizacja:</span>{" "}
-              {new Date(task.updatedAt).toLocaleDateString("pl-PL")}
+              {parseDate(task.updatedAt).toLocaleDateString("pl-PL")}
             </div>
           </CardContent>
         </Card>

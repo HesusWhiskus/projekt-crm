@@ -205,7 +205,7 @@ export function CalculationPipeline({ calculations, onStatusChange }: Calculatio
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-2">
-                          {new Date(calculation.createdAt).toLocaleDateString('pl-PL')}
+                          {parseDate(calculation.createdAt).toLocaleDateString('pl-PL')}
                         </p>
                       </Link>
                     </div>

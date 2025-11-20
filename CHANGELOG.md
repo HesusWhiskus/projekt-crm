@@ -5,21 +5,16 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.7-beta] - 2025-11-20
+
+### Naprawiono
+- **Serializacja dat w komponentach klientów, kontaktów i zadań:** Naprawiono błędy "Application error: a client-side exception has occurred" spowodowane nieprawidłową serializacją obiektów Date z Prisma przez Next.js. Utworzono helper functions (`parseDate`, `parseOptionalDate`) w `src/lib/date-utils.ts` i zaktualizowano wszystkie client components aby poprawnie konwertowały serializowane stringi ISO z powrotem na obiekty Date przed użyciem w funkcjach date-fns. Naprawione komponenty: `contacts-list.tsx`, `contact-timeline.tsx`, `tasks-list.tsx`, `tasks-calendar.tsx`, `tasks-kanban.tsx`, `task-detail.tsx`, `client-detail.tsx`, `dashboard-widgets.tsx`, `calculation-detail.tsx`, `policy-detail.tsx`, `calculation-pipeline.tsx`, `api-keys-list.tsx` oraz wszystkie inne komponenty używające dat.
+
 ## [0.9.6-beta] - 2025-11-20
 
 ### Naprawiono
 - **Synchronizacja package-lock.json:** Naprawiono problem z niespójnością między `package.json` a `package-lock.json` który powodował błędy podczas builda na Railway. Zregenerowano lock file aby usunąć konflikty wersji pakietów (@radix-ui/react-select, @radix-ui/number, @radix-ui/react-slot).
 - **Wyświetlanie metryk wydajności w health check:** Naprawiono wyświetlanie sekcji metryk wydajności w panelu admina - sekcja jest teraz zawsze widoczna, nawet jeśli nie ma jeszcze danych (z odpowiednim komunikatem informującym o braku danych).
-
-## [0.9.7-beta] - 2025-01-20
-
-### Naprawiono
-- **Komponent Select we wszystkich formularzach i listach:** Naprawiono użycie komponentu Select z Radix UI we wszystkich komponentach - zastąpiono nieprawidłowe użycie HTML `<select>` właściwą składnią z `SelectTrigger`, `SelectContent`, `SelectItem` i `SelectValue`. Naprawiono błędy TypeScript związane z właściwościami `id` i `onChange`. Naprawione komponenty: `clients-list.tsx`, `client-form.tsx`, `contacts-list.tsx`, `contact-form.tsx`, `tasks-list.tsx`, `task-form.tsx`, `calculation-form.tsx`, `policy-form.tsx`, `note-form.tsx`, `preferences-settings.tsx`, `custom-field-form.tsx`, `advanced-filters.tsx` oraz inne komponenty używające Select.
-
-## [0.9.6-beta] - 2025-01-20
-
-### Naprawiono
-- **Health check w panelu admina:** Dodano wyświetlanie metryk wydajności (średni czas odpowiedzi, P95, P99, liczba żądań) które były już zbierane przez API, ale nie były wyświetlane w interfejsie.
 
 ## [0.9.5-beta] - 2025-01-20
 

@@ -161,11 +161,14 @@ export const DashboardWidgets = memo(function DashboardWidgets({
           title: task.title,
           description: task.client ? getClientDisplayName(task.client) : undefined,
           href: `/tasks/${task.id}`,
-          metadata: task.dueDate ? (
-            <span className="text-xs">
-              {new Date(task.dueDate).toLocaleDateString("pl-PL")}
-            </span>
-          ) : undefined,
+          metadata: (() => {
+            const dueDate = parseOptionalDate(task.dueDate)
+            return dueDate ? (
+              <span className="text-xs">
+                {dueDate.toLocaleDateString("pl-PL")}
+              </span>
+            ) : undefined
+          })(),
         })),
         emptyState: {
           title: "Brak nadchodzących zadań",
@@ -256,7 +259,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
             href: `/insurance-agent/calculations/${calc.id}`,
             metadata: (
               <span className="text-xs">
-                {new Date(calc.createdAt).toLocaleDateString("pl-PL")}
+                {parseDate(calc.createdAt).toLocaleDateString("pl-PL")}
               </span>
             ),
           })),
@@ -288,7 +291,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
             href: `/insurance-agent/policies/${policy.id}`,
             metadata: (
               <span className="text-xs font-medium text-orange-600">
-                Wygasa: {new Date(policy.validTo).toLocaleDateString("pl-PL")}
+                Wygasa: {parseDate(policy.validTo).toLocaleDateString("pl-PL")}
               </span>
             ),
           })),

@@ -7,12 +7,13 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { CheckSquare, Clock, CheckCircle2 } from "lucide-react"
 import { taskStatusLabels } from "@/lib/status-config"
 import Link from "next/link"
+import { parseOptionalDate } from "@/lib/date-utils"
 
 interface Task {
   id: string
   title: string
   description: string | null
-  dueDate: Date | null
+  dueDate: Date | string | null // Next.js serializes Date as string
   status: TaskStatus
   assignee: {
     id: string
@@ -48,7 +49,9 @@ export function TasksKanban({ tasks }: TasksKanbanProps) {
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    return new Date(task.dueDate) < new Date()
+    const dueDate = parseOptionalDate(task.dueDate)
+    if (!dueDate) return false
+    return dueDate < new Date()
   }
 
   const getClientDisplayName = (client: Task["client"]): string => {
@@ -109,17 +112,21 @@ export function TasksKanban({ tasks }: TasksKanbanProps) {
                                   {task.description}
                                 </p>
                               )}
-                              {task.dueDate && (
-                                <div
-                                  className={`text-xs ${
-                                    overdue
-                                      ? "text-red-600 dark:text-red-400 font-medium"
-                                      : "text-muted-foreground"
-                                  }`}
-                                >
-                                  {new Date(task.dueDate).toLocaleDateString("pl-PL")}
-                                </div>
-                              )}
+                              {task.dueDate && (() => {
+                                const dueDate = parseOptionalDate(task.dueDate)
+                                if (!dueDate) return null
+                                return (
+                                  <div
+                                    className={`text-xs ${
+                                      overdue
+                                        ? "text-red-600 dark:text-red-400 font-medium"
+                                        : "text-muted-foreground"
+                                    }`}
+                                  >
+                                    {dueDate.toLocaleDateString("pl-PL")}
+                                  </div>
+                                )
+                              })()}
                               {task.client && (
                                 <div className="text-xs text-muted-foreground">
                                   Klient: {getClientDisplayName(task.client)}

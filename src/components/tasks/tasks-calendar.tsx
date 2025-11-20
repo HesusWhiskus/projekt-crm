@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from "date-fns"
 import { pl } from "date-fns/locale"
 import { AlertCircle } from "lucide-react"
+import { parseOptionalDate } from "@/lib/date-utils"
 import { TaskStatus, UserRole } from "@prisma/client"
 import { TaskForm } from "./task-form"
 import { ClientForm } from "@/components/clients/client-form"
@@ -14,7 +15,7 @@ interface Task {
   id: string
   title: string
   description: string | null
-  dueDate: Date | null
+  dueDate: Date | string | null // Next.js serializes Date as string
   status: TaskStatus
   assignee: {
     id: string
@@ -60,16 +61,20 @@ export function TasksCalendar({ tasks, users, groups, currentUser }: TasksCalend
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
   const getTasksForDay = (day: Date) => {
-    return tasks.filter(
-      (task) => task.dueDate && isSameDay(new Date(task.dueDate), day)
-    )
+    return tasks.filter((task) => {
+      if (!task.dueDate) return false
+      const dueDate = parseOptionalDate(task.dueDate)
+      return dueDate && isSameDay(dueDate, day)
+    })
   }
 
   const isOverdue = (task: Task): boolean => {
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    return new Date(task.dueDate) < new Date()
+    const dueDate = parseOptionalDate(task.dueDate)
+    if (!dueDate) return false
+    return dueDate < new Date()
   }
 
   const prevMonth = () => {

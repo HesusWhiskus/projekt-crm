@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Key, Copy, Trash2, Calendar, Plus } from "lucide-react"
 import { ApiKeyForm } from "./api-key-form"
+import { parseDate, parseOptionalDate } from "@/lib/date-utils"
 
 interface ApiKey {
   id: string
@@ -102,12 +103,12 @@ export function ApiKeysList() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                <span>Utworzono: {new Date(key.createdAt).toLocaleDateString("pl-PL")}</span>
+                <span>Utworzono: {parseDate(key.createdAt).toLocaleDateString("pl-PL")}</span>
               </div>
               {key.lastUsedAt && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-4 w-4" />
-                  <span>Ostatnie użycie: {new Date(key.lastUsedAt).toLocaleDateString("pl-PL")}</span>
+                  <span>Ostatnie użycie: {parseOptionalDate(key.lastUsedAt)?.toLocaleDateString("pl-PL") || "-"}</span>
                 </div>
               )}
             </div>
