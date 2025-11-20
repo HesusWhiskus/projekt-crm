@@ -187,26 +187,23 @@ export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess,
             </div>
             <div className="space-y-2">
               <Label htmlFor="clientId">Klient (opcjonalnie)</Label>
-              <div className="flex gap-2">
-                <SearchableClientSelect
-                  value={formData.clientId || ""}
-                  onValueChange={(value) => setFormData({ ...formData, clientId: value || "" })}
-                  placeholder="Wyszukaj klienta (opcjonalnie)..."
+              <SearchableClientSelect
+                value={formData.clientId || ""}
+                onValueChange={(value) => setFormData({ ...formData, clientId: value || "" })}
+                placeholder="Wyszukaj klienta (opcjonalnie)..."
+                disabled={isLoading}
+              />
+              {onAddClient && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onAddClient}
                   disabled={isLoading}
-                  className="flex-1"
-                />
-                {onAddClient && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onAddClient}
-                    disabled={isLoading}
-                    className="flex-shrink-0 whitespace-nowrap"
-                  >
-                    + Dodaj klienta
-                  </Button>
-                )}
-              </div>
+                  className="w-full sm:w-auto mt-2"
+                >
+                  + Dodaj klienta
+                </Button>
+              )}
             </div>
           </div>
 

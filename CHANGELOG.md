@@ -5,6 +5,19 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.2-beta] - 2025-01-20
+
+### Naprawiono
+- **Klikalność kalendarza:** Usunięto `pointer-events-none` z kontenera zadań w kalendarzu, który blokował kliknięcia w dni
+- **Margines przycisku:** Dodano odpowiedni margines górny (`mt-2`) do przycisku "Dodaj klienta" w formularzu zadania
+- **Duplikacja logiki nawigacji:** Wyodrębniono logikę `isActive` do funkcji pomocniczej w `InsuranceNavItems` (DRY principle)
+- **System z-indexów:** Utworzono spójny system z-indexów w CSS variables dla lepszego zarządzania warstwami UI
+- **Konfigurowalność DataTable:** Uczyniono hardcoded wartości (`minTableWidth`, `tooltipThreshold`) konfigurowalnymi przez props
+- **Nieużywane props:** Usunięto nieużywany prop `clients` z komponentu `TasksCalendar`
+
+### Zmieniono
+- **Refaktoryzacja kodu:** Poprawiono jakość kodu zgodnie z best practices (DRY, konfigurowalność, spójność)
+
 ## [0.9.1-beta] - 2025-01-20
 
 ### Naprawiono

@@ -20,6 +20,16 @@ interface InsuranceNavItemsProps {
   onItemClick?: () => void
 }
 
+// Helper function to determine if a navigation item is active
+function getIsActive(href: string, pathname: string): boolean {
+  // For "Kalkulacje" use exact match (without sub-paths)
+  // For other items use startsWith (may have sub-routes)
+  if (href === "/insurance-agent/calculations") {
+    return pathname === href
+  }
+  return pathname === href || pathname.startsWith(href + "/")
+}
+
 export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, onItemClick }: InsuranceNavItemsProps) {
   const pathname = usePathname()
   const isMobile = useIsMobile()
@@ -56,9 +66,6 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
     },
   ]
 
-  // Check if any insurance agent page is active
-  const isInsuranceAgentActive = pathname.startsWith("/insurance-agent/")
-
   // Mobile: render as collapsible section
   if (isMobile) {
     return (
@@ -68,7 +75,7 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
           <div className="space-y-1">
             {insuranceNavItems.map((item) => {
               const Icon = item.icon
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+              const isActive = getIsActive(item.href, pathname)
               return (
                 <Link
                   key={item.name}
@@ -97,7 +104,7 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
     <>
       {insuranceNavItems.map((item) => {
         const Icon = item.icon
-        const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+        const isActive = getIsActive(item.href, pathname)
         return (
           <Link
             key={item.name}

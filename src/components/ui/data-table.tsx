@@ -48,6 +48,8 @@ export interface DataTableProps<T> {
   cardView?: {
     renderCard: (row: T) => ReactNode
   }
+  minTableWidth?: string
+  tooltipThreshold?: number
 }
 
 export function DataTable<T extends { id: string }>({
@@ -62,6 +64,8 @@ export function DataTable<T extends { id: string }>({
   onRowClick,
   className,
   cardView,
+  minTableWidth = "800px",
+  tooltipThreshold = 50,
 }: DataTableProps<T>) {
   const isMobile = useIsMobile()
   const [hoveredRow, setHoveredRow] = useState<string | null>(null)
@@ -131,7 +135,7 @@ export function DataTable<T extends { id: string }>({
     <TooltipProvider>
       <div className={cn("w-full", className)}>
         <div className="overflow-x-auto">
-          <table className="w-full divide-y divide-border" style={{ tableLayout: "fixed" }}>
+          <table className="w-full divide-y divide-border" style={{ tableLayout: "auto", minWidth: minTableWidth }}>
             <thead className="bg-muted">
               <tr>
                 {visibleColumns.map((column) => (
@@ -143,7 +147,7 @@ export function DataTable<T extends { id: string }>({
                       "whitespace-nowrap",
                       column.className
                     )}
-                    style={{ width: column.width }}
+                    style={column.width ? { minWidth: column.width } : undefined}
                     onClick={() => column.sortable && handleSort(column.key)}
                     aria-sort={
                       sortBy === column.key
@@ -175,9 +179,9 @@ export function DataTable<T extends { id: string }>({
                         "px-3 py-3 text-sm text-foreground",
                         column.className
                       )}
-                      style={{ width: column.width }}
+                      style={column.width ? { minWidth: column.width } : undefined}
                     >
-                      {contentString.length > 50 ? (
+                      {contentString.length > tooltipThreshold ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="truncate max-w-full" title={contentString}>

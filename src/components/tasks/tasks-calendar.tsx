@@ -37,13 +37,6 @@ interface TasksCalendarProps {
     name: string | null
     email: string
   }>
-  clients?: Array<{
-    id: string
-    firstName: string | null
-    lastName: string | null
-    companyName?: string | null // Temporarily optional - column doesn't exist in production DB yet
-    type: string
-  }>
   groups?: Array<{
     id: string
     name: string
@@ -54,7 +47,7 @@ interface TasksCalendarProps {
   }
 }
 
-export function TasksCalendar({ tasks, users, clients, groups, currentUser }: TasksCalendarProps) {
+export function TasksCalendar({ tasks, users, groups, currentUser }: TasksCalendarProps) {
   const router = useRouter()
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(today)
@@ -141,7 +134,7 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
                   <div className="text-sm font-medium mb-1">
                     {format(day, "d")}
                   </div>
-                  <div className="space-y-1 pointer-events-none">
+                  <div className="space-y-1">
                     {dayTasks.slice(0, 3).map((task) => {
                       const overdue = isOverdue(task)
                       return (
@@ -151,7 +144,7 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
                           e.stopPropagation()
                           handleTaskClick(task.id, e)
                         }}
-                        className={`text-xs p-1 rounded truncate cursor-pointer transition-colors pointer-events-auto ${
+                        className={`text-xs p-1 rounded truncate cursor-pointer transition-colors ${
                           overdue
                             ? "bg-red-500 text-white hover:bg-red-600"
                             : "bg-primary/10 text-primary hover:bg-primary/20"
@@ -164,7 +157,7 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
                       )
                     })}
                     {dayTasks.length > 3 && (
-                      <div className="text-xs text-muted-foreground pointer-events-auto">
+                      <div className="text-xs text-muted-foreground">
                         +{dayTasks.length - 3} więcej
                       </div>
                     )}
@@ -177,7 +170,7 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
       </Card>
 
       {isCreatingClient && users && currentUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ zIndex: 1050 }}>
           <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <ClientForm
               users={users}
@@ -193,7 +186,7 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
       )}
 
       {isCreating && users && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ zIndex: 1040 }}>
           <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <TaskForm
               users={users}

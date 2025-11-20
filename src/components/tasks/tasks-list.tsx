@@ -223,7 +223,14 @@ export function TasksList({
       </Card>
 
       {view === "calendar" ? (
-        <TasksCalendar tasks={filteredTasks} />
+        <div className="w-full">
+          <TasksCalendar 
+            tasks={filteredTasks} 
+            users={users}
+            groups={groups}
+            currentUser={currentUser}
+          />
+        </div>
       ) : view === "kanban" ? (
         <TasksKanban tasks={filteredTasks} />
       ) : (

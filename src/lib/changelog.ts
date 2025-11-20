@@ -14,6 +14,36 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.2-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono klikalność kalendarza - usunięto pointer-events-none który blokował kliknięcia w dni',
+      },
+      {
+        type: 'fixed',
+        description: 'Dodano odpowiedni margines do przycisku "Dodaj klienta" w formularzu zadania',
+      },
+      {
+        type: 'changed',
+        description: 'Refaktoryzacja kodu nawigacji - wyodrębniono logikę isActive do funkcji pomocniczej (DRY)',
+      },
+      {
+        type: 'changed',
+        description: 'Utworzono spójny system z-indexów w CSS variables dla lepszego zarządzania warstwami UI',
+      },
+      {
+        type: 'changed',
+        description: 'Uczyniono DataTable bardziej konfigurowalnym - minTableWidth i tooltipThreshold są teraz props',
+      },
+      {
+        type: 'fixed',
+        description: 'Usunięto nieużywane props z komponentów (clients z TasksCalendar)',
+      },
+    ],
+  },
+  {
     version: '0.9.1-beta',
     date: '2025-01-20',
     changes: [

@@ -88,7 +88,7 @@ export default async function CalendarPage() {
           Przeglądaj zadania w widoku kalendarza
         </p>
       </div>
-      <TasksCalendar tasks={tasks} users={users} clients={clients} groups={groups} currentUser={user} />
+      <TasksCalendar tasks={tasks} users={users} groups={groups} currentUser={user} />
     </div>
   )
 }
