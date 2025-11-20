@@ -17,7 +17,6 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/empty-state"
 import { taskStatusLabels } from "@/lib/status-config"
 import Link from "next/link"
-import { parseOptionalDate } from "@/lib/date-utils"
 
 interface Task {
   id: string
@@ -113,7 +112,7 @@ export function TasksList({
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    const dueDate = parseOptionalDate(task.dueDate)
+    const dueDate = task.dueDate ? new Date(task.dueDate) : null
     if (!dueDate) return false
     return dueDate < new Date()
   }
@@ -310,7 +309,7 @@ export function TasksList({
                   header: "Termin",
                   accessor: (task) => {
                     if (!task.dueDate) return "-"
-                    const dueDate = parseOptionalDate(task.dueDate)
+                    const dueDate = task.dueDate ? new Date(task.dueDate) : null
                     if (!dueDate) return "-"
                     const overdue = isOverdue(task)
                     return (

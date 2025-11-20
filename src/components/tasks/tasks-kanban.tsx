@@ -7,7 +7,6 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { CheckSquare, Clock, CheckCircle2 } from "lucide-react"
 import { taskStatusLabels } from "@/lib/status-config"
 import Link from "next/link"
-import { parseOptionalDate } from "@/lib/date-utils"
 
 interface Task {
   id: string
@@ -49,7 +48,7 @@ export function TasksKanban({ tasks }: TasksKanbanProps) {
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    const dueDate = parseOptionalDate(task.dueDate)
+    const dueDate = task.dueDate ? new Date(task.dueDate) : null
     if (!dueDate) return false
     return dueDate < new Date()
   }
@@ -113,7 +112,7 @@ export function TasksKanban({ tasks }: TasksKanbanProps) {
                                 </p>
                               )}
                               {task.dueDate && (() => {
-                                const dueDate = parseOptionalDate(task.dueDate)
+                                const dueDate = task.dueDate ? new Date(task.dueDate) : null
                                 if (!dueDate) return null
                                 return (
                                   <div

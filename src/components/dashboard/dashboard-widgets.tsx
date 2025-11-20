@@ -4,7 +4,6 @@ import { useMemo, useCallback, memo } from "react"
 import { WidgetRegistry, WidgetConfig } from "./widgets/widget-registry"
 import { Users, FileText, CheckSquare, Clock, AlertCircle, Calendar, Shield, Car, TrendingUp, FileCheck } from "lucide-react"
 import Link from "next/link"
-import { parseOptionalDate, parseDate } from "@/lib/date-utils"
 
 interface DashboardWidgetsProps {
   stats: {
@@ -163,7 +162,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
           description: task.client ? getClientDisplayName(task.client) : undefined,
           href: `/tasks/${task.id}`,
           metadata: (() => {
-            const dueDate = parseOptionalDate(task.dueDate)
+            const dueDate = task.dueDate ? new Date(task.dueDate) : null
             return dueDate ? (
               <span className="text-xs">
                 {dueDate.toLocaleDateString("pl-PL")}
@@ -260,7 +259,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
             href: `/insurance-agent/calculations/${calc.id}`,
             metadata: (
               <span className="text-xs">
-                {parseDate(calc.createdAt).toLocaleDateString("pl-PL")}
+                {new Date(calc.createdAt).toLocaleDateString("pl-PL")}
               </span>
             ),
           })),
@@ -292,7 +291,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
             href: `/insurance-agent/policies/${policy.id}`,
             metadata: (
               <span className="text-xs font-medium text-orange-600">
-                Wygasa: {parseDate(policy.validTo).toLocaleDateString("pl-PL")}
+                Wygasa: {new Date(policy.validTo).toLocaleDateString("pl-PL")}
               </span>
             ),
           })),

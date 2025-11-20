@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Edit, ArrowLeft } from "lucide-react"
 import { CalculationForm } from "./calculation-form"
 import Link from "next/link"
-import { parseDate, parseOptionalDate } from "@/lib/date-utils"
 
 interface CalculationDetailProps {
   calculation: {
@@ -216,7 +215,7 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
               <p className="font-medium">{calculation.hasDrivingLicense ? "Tak" : "Nie"}</p>
             </div>
             {calculation.drivingLicenseDate && (() => {
-              const date = parseOptionalDate(calculation.drivingLicenseDate)
+              const date = calculation.drivingLicenseDate ? new Date(calculation.drivingLicenseDate) : null
               if (!date) return null
               return (
                 <div>
@@ -272,7 +271,7 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
               </div>
             )}
             {calculation.validUntil && (() => {
-              const date = parseOptionalDate(calculation.validUntil)
+              const date = calculation.validUntil ? new Date(calculation.validUntil) : null
               if (!date) return null
               return (
                 <div>
@@ -286,7 +285,7 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
             <div>
               <p className="text-sm text-muted-foreground">Utworzona</p>
               <p className="font-medium">
-                {parseDate(calculation.createdAt).toLocaleDateString("pl-PL")}
+                {new Date(calculation.createdAt).toLocaleDateString("pl-PL")}
               </p>
             </div>
           </CardContent>

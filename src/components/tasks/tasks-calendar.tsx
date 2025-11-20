@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth } from "date-fns"
 import { pl } from "date-fns/locale"
 import { AlertCircle } from "lucide-react"
-import { parseOptionalDate } from "@/lib/date-utils"
 import { TaskStatus, UserRole } from "@prisma/client"
 import { TaskForm } from "./task-form"
 import { ClientForm } from "@/components/clients/client-form"
@@ -63,7 +62,7 @@ export function TasksCalendar({ tasks, users, groups, currentUser }: TasksCalend
   const getTasksForDay = (day: Date) => {
     return tasks.filter((task) => {
       if (!task.dueDate) return false
-      const dueDate = parseOptionalDate(task.dueDate)
+      const dueDate = task.dueDate ? new Date(task.dueDate) : null
       return dueDate && isSameDay(dueDate, day)
     })
   }
@@ -72,7 +71,7 @@ export function TasksCalendar({ tasks, users, groups, currentUser }: TasksCalend
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    const dueDate = parseOptionalDate(task.dueDate)
+    const dueDate = task.dueDate ? new Date(task.dueDate) : null
     if (!dueDate) return false
     return dueDate < new Date()
   }

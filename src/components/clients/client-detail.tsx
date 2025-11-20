@@ -37,7 +37,6 @@ import {
 } from "@/lib/status-config"
 import { ContactType } from "@prisma/client"
 import Link from "next/link"
-import { parseDate, parseOptionalDate } from "@/lib/date-utils"
 
 interface ClientDetailProps {
   client: any
@@ -304,15 +303,15 @@ export function ClientDetail({
                 </div>
                 <div>
                   <span className="text-sm font-medium">Ostatni kontakt:</span>{" "}
-                  {client.lastContactAt ? parseOptionalDate(client.lastContactAt)?.toLocaleDateString("pl-PL") || "Nigdy" : "Nigdy"}
+                  {client.lastContactAt ? (client.lastContactAt ? new Date(client.lastContactAt) : null)?.toLocaleDateString("pl-PL") || "Nigdy" : "Nigdy"}
                 </div>
                 <div>
                   <span className="text-sm font-medium">Następny follow-up:</span>{" "}
-                  {client.nextFollowUpAt ? parseOptionalDate(client.nextFollowUpAt)?.toLocaleDateString("pl-PL") || "-" : "-"}
+                  {client.nextFollowUpAt ? (client.nextFollowUpAt ? new Date(client.nextFollowUpAt) : null)?.toLocaleDateString("pl-PL") || "-" : "-"}
                 </div>
                 <div>
                   <span className="text-sm font-medium">Data utworzenia:</span>{" "}
-                  {parseDate(client.createdAt).toLocaleDateString("pl-PL")}
+                  {new Date(client.createdAt).toLocaleDateString("pl-PL")}
                 </div>
               </CardContent>
             </Card>
@@ -388,7 +387,7 @@ export function ClientDetail({
                             )}
                           </div>
                           <div className="text-sm text-muted-foreground mt-1">
-                            {parseDate(contact.date).toLocaleString("pl-PL")}
+                            {new Date(contact.date).toLocaleString("pl-PL")}
                           </div>
                           <div className="text-sm mt-2">{contact.notes}</div>
                           <div className="text-xs text-muted-foreground mt-2">
@@ -427,7 +426,7 @@ export function ClientDetail({
                             contact={{
                               id: contact.id,
                               type: contact.type,
-                              date: parseDate(contact.date),
+                              date: new Date(contact.date),
                               notes: contact.notes,
                               isNote: contact.isNote,
                               userId: contact.user.id,
@@ -479,7 +478,7 @@ export function ClientDetail({
                               </div>
                             )}
                             {task.dueDate && (() => {
-                              const dueDate = parseOptionalDate(task.dueDate)
+                              const dueDate = task.dueDate ? new Date(task.dueDate) : null
                               if (!dueDate) return null
                               return (
                                 <div className="text-xs text-muted-foreground mt-1">
@@ -644,7 +643,7 @@ export function ClientDetail({
                               )}
                             </div>
                             <span className="text-sm text-muted-foreground">
-                              {parseDate(calculation.createdAt).toLocaleDateString('pl-PL')}
+                              {new Date(calculation.createdAt).toLocaleDateString('pl-PL')}
                             </span>
                           </Link>
                         ))}
@@ -690,7 +689,7 @@ export function ClientDetail({
                                 </p>
                               )}
                               <p className="text-sm text-muted-foreground">
-                                Ważna do: {parseDate(policy.validTo).toLocaleDateString('pl-PL')}
+                                Ważna do: {new Date(policy.validTo).toLocaleDateString('pl-PL')}
                               </p>
                             </div>
                           </Link>

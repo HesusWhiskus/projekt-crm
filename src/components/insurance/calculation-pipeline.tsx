@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
-import { parseDate } from "@/lib/date-utils"
 
 interface Calculation {
   id: string
@@ -206,7 +205,7 @@ export function CalculationPipeline({ calculations, onStatusChange }: Calculatio
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-2">
-                          {parseDate(calculation.createdAt).toLocaleDateString('pl-PL')}
+                          {new Date(calculation.createdAt).toLocaleDateString('pl-PL')}
                         </p>
                       </Link>
                     </div>

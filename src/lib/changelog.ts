@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.8-beta',
+    date: '2025-11-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Rollback zmian serializacji dat - cofnięto wprowadzone wcześniej zmiany (parseDate, parseOptionalDate), które powodowały problemy z nawigacją do stron klientów, kontaktów i zadań. Przywrócono oryginalne użycie new Date() w komponentach.',
+      },
+    ],
+  },
+  {
     version: '0.9.7-beta',
     date: '2025-11-20',
     changes: [

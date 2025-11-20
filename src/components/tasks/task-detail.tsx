@@ -8,7 +8,6 @@ import { TaskStatus, UserRole } from "@prisma/client"
 import { Edit, Calendar as CalendarIcon } from "lucide-react"
 import { TaskForm } from "./task-form"
 import Link from "next/link"
-import { parseOptionalDate, parseDate } from "@/lib/date-utils"
 
 interface TaskDetailProps {
   task: any
@@ -156,7 +155,7 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
               </div>
             )}
             {task.dueDate && (() => {
-              const dueDate = parseOptionalDate(task.dueDate)
+              const dueDate = task.dueDate ? new Date(task.dueDate) : null
               if (!dueDate) return null
               return (
                 <div>
@@ -196,11 +195,11 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
           <CardContent className="space-y-2">
             <div>
               <span className="text-sm font-medium">Data utworzenia:</span>{" "}
-              {parseDate(task.createdAt).toLocaleDateString("pl-PL")}
+              {new Date(task.createdAt).toLocaleDateString("pl-PL")}
             </div>
             <div>
               <span className="text-sm font-medium">Ostatnia aktualizacja:</span>{" "}
-              {parseDate(task.updatedAt).toLocaleDateString("pl-PL")}
+              {new Date(task.updatedAt).toLocaleDateString("pl-PL")}
             </div>
           </CardContent>
         </Card>

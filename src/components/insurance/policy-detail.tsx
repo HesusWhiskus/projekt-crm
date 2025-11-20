@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Edit, ArrowLeft, Download } from "lucide-react"
 import { PolicyForm } from "./policy-form"
 import Link from "next/link"
-import { parseDate } from "@/lib/date-utils"
 
 interface PolicyDetailProps {
   policy: {
@@ -113,7 +112,7 @@ export function PolicyDetail({ policy }: PolicyDetailProps) {
     )
   }
 
-  const validToDate = parseDate(policy.validTo)
+  const validToDate = new Date(policy.validTo)
   const isExpiringSoon =
     policy.status === "ACTIVE" &&
     validToDate <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) &&
@@ -173,21 +172,21 @@ export function PolicyDetail({ policy }: PolicyDetailProps) {
             )}
             <div>
               <p className="text-sm text-muted-foreground">Data wystawienia</p>
-              <p className="font-medium">{parseDate(policy.issueDate).toLocaleDateString("pl-PL")}</p>
+              <p className="font-medium">{new Date(policy.issueDate).toLocaleDateString("pl-PL")}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Ważna od</p>
-              <p className="font-medium">{parseDate(policy.validFrom).toLocaleDateString("pl-PL")}</p>
+              <p className="font-medium">{new Date(policy.validFrom).toLocaleDateString("pl-PL")}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Ważna do</p>
               <p className={`font-medium ${isExpiringSoon ? "text-orange-600" : ""}`}>
-                {parseDate(policy.validTo).toLocaleDateString("pl-PL")}
+                {new Date(policy.validTo).toLocaleDateString("pl-PL")}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Utworzona</p>
-              <p className="font-medium">{parseDate(policy.createdAt).toLocaleDateString("pl-PL")}</p>
+              <p className="font-medium">{new Date(policy.createdAt).toLocaleDateString("pl-PL")}</p>
             </div>
           </CardContent>
         </Card>
@@ -284,7 +283,7 @@ export function PolicyDetail({ policy }: PolicyDetailProps) {
                     <div>
                       <p className="font-medium">{doc.filename}</p>
                       <p className="text-sm text-muted-foreground">
-                        Dodano: {parseDate(doc.createdAt).toLocaleDateString("pl-PL")}
+                        Dodano: {new Date(doc.createdAt).toLocaleDateString("pl-PL")}
                       </p>
                     </div>
                     <Button
