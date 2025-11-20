@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.7-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono komponent Select w filtrach klientów - zastąpiono nieprawidłowe użycie HTML select właściwą składnią Radix UI (SelectTrigger, SelectContent, SelectItem, SelectValue)',
+      },
+    ],
+  },
+  {
     version: '0.9.6-beta',
     date: '2025-01-20',
     changes: [

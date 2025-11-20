@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.7-beta] - 2025-01-20
+
+### Naprawiono
+- **Komponent Select w filtrach klientów:** Naprawiono użycie komponentu Select z Radix UI w `clients-list.tsx` - zastąpiono nieprawidłowe użycie HTML `<select>` właściwą składnią z `SelectTrigger`, `SelectContent`, `SelectItem` i `SelectValue`. Naprawiono błędy TypeScript związane z właściwościami `id` i `onChange`.
+
 ## [0.9.6-beta] - 2025-01-20
 
 ### Naprawiono

@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
 import { Plus, Search, Download, Mail, Phone, Building2 } from "lucide-react"
@@ -322,47 +322,59 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
-                  id="status"
                   value={filters.status}
-                  onChange={(e) => handleFilterChange("status", e.target.value)}
+                  onValueChange={(value) => handleFilterChange("status", value)}
                 >
-                  <option value="">Wszystkie</option>
-                  {Object.entries(clientStatusLabels).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
+                  <SelectTrigger id="status">
+                    <SelectValue placeholder="Wszystkie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Wszystkie</SelectItem>
+                    {Object.entries(clientStatusLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="assignedTo">Odpowiedzialny</Label>
                 <Select
-                  id="assignedTo"
                   value={filters.assignedTo}
-                  onChange={(e) => handleFilterChange("assignedTo", e.target.value)}
+                  onValueChange={(value) => handleFilterChange("assignedTo", value)}
                 >
-                  <option value="">Wszyscy</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name || user.email}
-                    </option>
-                  ))}
+                  <SelectTrigger id="assignedTo">
+                    <SelectValue placeholder="Wszyscy" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Wszyscy</SelectItem>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.name || user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
               {groups && groups.length > 0 && (
                 <div className="space-y-2">
                   <Label htmlFor="groupId">Grupa</Label>
                   <Select
-                    id="groupId"
                     value={filters.groupId}
-                    onChange={(e) => handleFilterChange("groupId", e.target.value)}
+                    onValueChange={(value) => handleFilterChange("groupId", value)}
                   >
-                    <option value="">Wszystkie</option>
-                    {groups.map((group) => (
-                      <option key={group.id} value={group.id}>
-                        {group.name}
-                      </option>
-                    ))}
+                    <SelectTrigger id="groupId">
+                      <SelectValue placeholder="Wszystkie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Wszystkie</SelectItem>
+                      {groups.map((group) => (
+                        <SelectItem key={group.id} value={group.id}>
+                          {group.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
                 </div>
               )}
