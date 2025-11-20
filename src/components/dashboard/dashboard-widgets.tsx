@@ -4,6 +4,7 @@ import { useMemo, useCallback, memo } from "react"
 import { WidgetRegistry, WidgetConfig } from "./widgets/widget-registry"
 import { Users, FileText, CheckSquare, Clock, AlertCircle, Calendar, Shield, Car, TrendingUp, FileCheck } from "lucide-react"
 import Link from "next/link"
+import { parseOptionalDate, parseDate } from "@/lib/date-utils"
 
 interface DashboardWidgetsProps {
   stats: {
