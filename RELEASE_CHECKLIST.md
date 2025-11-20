@@ -20,9 +20,10 @@ Ten plik zawiera listę kroków do wykonania przy każdej poprawce lub dużej ak
 ### 1. Aktualizacja wersjonowania
 
 - [ ] Zaktualizuj wersję w `package.json`:
-  - Dla poprawek błędów: zwiększ ostatnią cyfrę (np. `0.4.3-beta` → `0.4.4-beta`)
-  - Dla nowych funkcjonalności: zwiększ środkową cyfrę (np. `0.4.3-beta` → `0.5.0-beta`)
-  - Dla dużych zmian: zwiększ pierwszą cyfrę (np. `0.4.3-beta` → `1.0.0-beta`)
+  - Dla poprawek błędów: zwiększ ostatnią cyfrę (np. `0.9.4-beta` → `0.9.5-beta`)
+  - Dla nowych funkcjonalności: zwiększ środkową cyfrę (np. `0.9.9-beta` → `0.10.0-beta`)
+  - Dla dużych zmian: zwiększ pierwszą cyfrę (np. `0.99.9-beta` → `1.0.0-beta`)
+  - **Uwaga:** Przejście z `0.9.x` na `0.10.x` jest normalne i poprawne - oznacza nowe funkcjonalności
 
 ### 2. Aktualizacja CHANGELOG.md
 
@@ -100,6 +101,11 @@ Projekt używa [Semantic Versioning](https://semver.org/lang/pl/):
 - `MINOR` - nowe funkcjonalności, kompatybilne wstecz
 - `PATCH` - poprawki błędów, kompatybilne wstecz
 - `-beta` - oznacza wersję beta
+
+**Ważne:** System wersjonowania jest nieograniczony:
+- Po `0.9.9-beta` następuje `0.10.0-beta` (to jest poprawne i standardowe)
+- Można kontynuować: `0.10.x` → `0.11.x` → ... → `0.99.x` → `1.0.0-beta`
+- Przejście z `0.9.x` na `0.10.x` oznacza nowe funkcjonalności (MINOR bump), nie jest błędem
 
 ### Format commitów
 
