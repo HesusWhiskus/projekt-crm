@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.8-beta',
+    date: '2025-11-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono synchronizację package-lock.json - zregenerowano lock file aby usunąć konflikty wersji pakietów i naprawić błędy podczas builda na Railway',
+      },
+    ],
+  },
+  {
     version: '0.9.7-beta',
     date: '2025-01-20',
     changes: [

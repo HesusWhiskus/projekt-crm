@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.8-beta] - 2025-11-20
+
+### Naprawiono
+- **Synchronizacja package-lock.json:** Naprawiono problem z niespójnością między `package.json` a `package-lock.json` który powodował błędy podczas builda na Railway. Zregenerowano lock file aby usunąć konflikty wersji pakietów (@radix-ui/react-select, @radix-ui/number, @radix-ui/react-slot) i zsynchronizować wersję projektu (0.9.7-beta).
+
 ## [0.9.7-beta] - 2025-01-20
 
 ### Naprawiono
