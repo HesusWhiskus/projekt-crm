@@ -99,33 +99,36 @@ export default async function CalculationsPage() {
             <p className="text-sm text-muted-foreground">Brak kalkulacji</p>
           ) : (
             <div className="space-y-2">
-              {calculations.map((calculation) => (
-                <Link
-                  key={calculation.id}
-                  href={`/insurance-agent/calculations/${calculation.id}`}
-                  className="flex items-center justify-between p-4 border rounded hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">
-                        {calculation.client?.type === 'COMPANY'
-                          ? calculation.client.companyName || 'Brak nazwy'
-                          : `${calculation.client?.firstName || ''} ${calculation.client?.lastName || ''}`.trim() || 'Brak nazwy'}
+              {calculations.map((calculation) => {
+                const value = calculation.value ? (typeof calculation.value === "number" ? calculation.value : Number(calculation.value)) : null;
+                return (
+                  <Link
+                    key={calculation.id}
+                    href={`/insurance-agent/calculations/${calculation.id}`}
+                    className="flex items-center justify-between p-4 border rounded hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">
+                          {calculation.client?.type === 'COMPANY'
+                            ? calculation.client.companyName || 'Brak nazwy'
+                            : `${calculation.client?.firstName || ''} ${calculation.client?.lastName || ''}`.trim() || 'Brak nazwy'}
+                        </p>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 text-gray-800'}`}>
+                          {statusLabels[calculation.status] || calculation.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {calculation.vehicle && `Pojazd: ${calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}`}
+                        {value && ` | Wartość: ${value.toFixed(2)} zł`}
                       </p>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 text-gray-800'}`}>
-                        {statusLabels[calculation.status] || calculation.status}
-                      </span>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {calculation.vehicle && `Pojazd: ${calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}`}
-                      {calculation.value && ` | Wartość: ${typeof calculation.value === "number" ? calculation.value.toFixed(2) : Number(calculation.value).toFixed(2)} zł`}
-                    </p>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {new Date(calculation.createdAt).toLocaleDateString('pl-PL')}
-                  </span>
-                </Link>
-              ))}
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(calculation.createdAt).toLocaleDateString('pl-PL')}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </CardContent>

@@ -19,7 +19,7 @@ export const changelog: ChangelogEntry[] = [
     changes: [
       {
         type: 'fixed',
-        description: 'Naprawiono błąd serializacji Decimal w komponentach - naprawiono błąd "e.value.toFixed is not a function" występujący przy nawigacji z kalkulacji/polisy/pojazdu na klienta. Dodano sprawdzenie typu przed wywołaniem .toFixed() w komponentach wyświetlających wartości kalkulacji.',
+        description: 'Naprawiono błąd serializacji Decimal w komponentach - naprawiono błąd "e.value.toFixed is not a function" występujący przy nawigacji z kalkulacji/polisy/pojazdu na klienta. Dodano sprawdzenie typu i konwersję Decimal na number przed wywołaniem .toFixed() w komponentach wyświetlających wartości kalkulacji. Naprawiono również błąd TypeScript "Property toFixed does not exist on type never" w calculations/page.tsx.',
       },
     ],
   },
