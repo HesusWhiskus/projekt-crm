@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.8.1-beta',
+    date: '2025-01-19',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano skrypt generowania danych testowych dla funkcjonalności agencyjnych - generuje 200 klientów, 300 pojazdów, 400 kalkulacji i 200 polis z pełnymi powiązaniami',
+      },
+      {
+        type: 'added',
+        description: 'Nowy skrypt npm: npm run generate:insurance-data - łatwe uruchomienie generowania danych testowych',
+      },
+    ],
+  },
+  {
     version: '0.8.0-beta',
     date: '2025-01-19',
     changes: [

@@ -209,10 +209,14 @@ Projekt implementuje **Domain-Driven Design** z następującymi warstwami:
 - `npm run db:push` - Wypchnij zmiany do bazy (dev)
 - `npm run db:migrate` - Uruchom migracje
 - `npm run db:studio` - Otwórz Prisma Studio (GUI dla bazy danych)
+- `npm run db:seed` - Zasiej towarzystwa ubezpieczeniowe
 - `npm run db:clear` - Wyczyść bazę danych (ostrożnie!)
 
 ### Administracja
 - `npm run admin:create` - Utwórz konto administratora
+
+### Generowanie danych testowych
+- `npm run generate:insurance-data` - Wygeneruj dane testowe dla funkcjonalności agencyjnych (200 klientów, 300 pojazdów, 400 kalkulacji, 200 polis)
 
 ### Git (wrapper)
 - `npm run git:status` - Sprawdź status repozytorium

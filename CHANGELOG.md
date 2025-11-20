@@ -5,6 +5,26 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.8.1-beta] - 2025-01-19
+
+### Dodano
+- **Skrypt generowania danych testowych dla funkcjonalności agencyjnych:**
+  - Nowy skrypt `scripts/generate-insurance-test-data.ts` do generowania danych testowych
+  - Generowanie 200 klientów (osoby fizyczne i firmy) z pełnymi danymi
+  - Generowanie 300 pojazdów z właścicielami (relacja VehicleOwner)
+  - Generowanie 400 kalkulacji powiązanych z klientami i pojazdami
+  - Generowanie 200 polis powiązanych z kalkulacjami, klientami, pojazdami i towarzystwami
+  - Automatyczne sprawdzanie i tworzenie organizacji oraz agentów ubezpieczeniowych jeśli brakuje
+  - Pełne powiązania między wszystkimi encjami (każdy pojazd ma właściciela, każda kalkulacja ma pojazd i klienta, każda polisa ma kalkulację)
+  - Funkcje pomocnicze do generowania poprawnych numerów VIN, numerów rejestracyjnych, PESEL, NIP, REGON i numerów polis
+  - Nowy skrypt npm: `npm run generate:insurance-data` do łatwego uruchomienia generowania
+
+### Uwagi techniczne
+- Skrypt automatycznie sprawdza istniejące organizacje i agentów ubezpieczeniowych
+- Jeśli brakuje organizacji lub agentów, skrypt automatycznie je tworzy
+- Skrypt wymaga wcześniejszego uruchomienia `npm run db:seed` dla towarzystw ubezpieczeniowych
+- Generowane dane mają pełne powiązania zgodnie z wymaganiami funkcjonalności agencyjnych
+
 ## [0.8.0-beta] - 2025-01-19
 
 ### Dodano

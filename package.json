@@ -1,6 +1,6 @@
 {
   "name": "internal-crm",
-  "version": "0.8.0-beta",
+  "version": "0.8.1-beta",
   "description": "Wewnętrzny system CRM do zarządzania relacjami z agencjami ubezpieczeniowymi. Zawiera zarządzanie klientami, kontaktami, zadaniami oraz integrację z Google Calendar.",
   "private": true,
   "author": "Internal CRM Team",
@@ -22,6 +22,7 @@
     "db:seed": "tsx prisma/seed-insurance-companies.ts",
     "db:clear": "npx --yes tsx scripts/clear-db.ts",
     "admin:create": "npx --yes tsx scripts/create-admin.ts",
+    "generate:insurance-data": "npx --yes tsx scripts/generate-insurance-test-data.ts",
     "git:status": "node scripts/git-wrapper.js status",
     "git:add": "node scripts/git-wrapper.js add",
     "git:add:all": "node scripts/git-wrapper.js add .",
