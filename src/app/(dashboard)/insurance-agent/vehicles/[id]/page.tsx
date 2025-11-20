@@ -15,16 +15,19 @@ export default async function VehicleDetailPage({
   }
 
   const hasInsuranceAgents = await checkFeature(user.id, FEATURE_KEYS.INSURANCE_AGENTS)
-  if (!hasInsuranceAgents) {
+  if (!hasInsuranceAgents && user.role !== "ADMIN") {
     redirect("/dashboard")
   }
 
-  const insuranceAgent = await db.insuranceAgent.findUnique({
-    where: { userId: user.id },
-  })
+  // For non-admin users, check if they are active insurance agents
+  if (user.role !== "ADMIN") {
+    const insuranceAgent = await db.insuranceAgent.findUnique({
+      where: { userId: user.id },
+    })
 
-  if (!insuranceAgent || !insuranceAgent.isActive) {
-    redirect("/dashboard")
+    if (!insuranceAgent || !insuranceAgent.isActive) {
+      redirect("/dashboard")
+    }
   }
 
   // Get user with organizationId from database
@@ -33,11 +36,15 @@ export default async function VehicleDetailPage({
     select: { organizationId: true },
   })
 
+  // Build where clause - ADMIN sees all vehicles in organization
+  // For non-admin agents, we need to check if vehicle is accessible through their clients
+  const where: any = {
+    id: params.id,
+    organizationId: userWithOrg?.organizationId || undefined,
+  }
+
   const vehicle = await db.vehicle.findUnique({
-    where: {
-      id: params.id,
-      organizationId: userWithOrg?.organizationId || undefined,
-    },
+    where,
     include: {
       owners: {
         include: {

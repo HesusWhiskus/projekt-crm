@@ -5,6 +5,23 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.5-beta] - 2025-01-20
+
+### Naprawiono
+- **Dostęp do kalkulacji:** ADMIN może teraz widzieć wszystkie kalkulacje w organizacji, nie tylko swoje. Naprawiono filtrowanie po `agentId` dla użytkowników ADMIN.
+- **Dostęp do pojazdów:** ADMIN może teraz widzieć wszystkie pojazdy w organizacji. Usunięto wymaganie `insuranceAgent.isActive` dla użytkowników ADMIN.
+- **Dostęp do klientów z widoków insurance:** Naprawiono sprawdzanie uprawnień dostępu do klientów - insurance agentzy mają teraz dostęp do klientów przez swoje kalkulacje, polisy i pojazdy, nawet jeśli nie są bezpośrednio przypisani do klienta.
+- **Przejścia między widokami:** Sprawdzono i zweryfikowano wszystkie przejścia między widokami (pojazd→klient, kalkulacja→klient, polisa→klient, zadanie→klient, kontakt→klient).
+
+### Dodano
+- **Rozszerzone logi w panelu admina:** Dodano zaawansowany panel logów z:
+  - Filtrowaniem po akcji, typie encji, użytkowniku, dacie
+  - Paginacją (domyślnie 50 wpisów na stronę)
+  - Wyświetlaniem szczegółów (czas odpowiedzi, status HTTP, błędy, metoda, ścieżka)
+  - Eksportem do CSV
+  - Rozwijanymi szczegółami dla każdego wpisu
+- **Komponenty UI:** Dodano komponenty `Badge` i `Table` z shadcn/ui dla lepszej spójności interfejsu.
+
 ## [0.9.4-beta] - 2025-01-20
 
 ### Dodano

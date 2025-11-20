@@ -102,15 +102,52 @@ export default async function ClientDetailPage({
     redirect("/clients")
   }
 
-  // Check access
-  if (
-    user.role !== "ADMIN" &&
-    client.assignedTo !== user.id &&
-    !client.sharedGroups.some((g) =>
+  // Check access - ADMIN has full access
+  if (user.role !== "ADMIN") {
+    const hasDirectAccess = client.assignedTo === user.id
+    const hasGroupAccess = client.sharedGroups.some((g) =>
       g.users.some((ug) => ug.userId === user.id)
     )
-  ) {
-    redirect("/clients")
+    
+    // Check if user has access through insurance features (calculations, policies, vehicles)
+    let hasInsuranceAccess = false
+    const hasInsuranceAgents = await checkFeature(user.id, FEATURE_KEYS.INSURANCE_AGENTS)
+    if (hasInsuranceAgents) {
+      const [hasCalculations, hasPolicies, hasVehicles] = await Promise.all([
+        db.calculation.count({
+          where: {
+            clientId: client.id,
+            agentId: user.id,
+          },
+          take: 1,
+        }),
+        db.policy.count({
+          where: {
+            clientId: client.id,
+            agentId: user.id,
+          },
+          take: 1,
+        }),
+        db.vehicleOwner.count({
+          where: {
+            clientId: client.id,
+            vehicle: {
+              calculations: {
+                some: {
+                  agentId: user.id,
+                },
+              },
+            },
+          },
+          take: 1,
+        }),
+      ])
+      hasInsuranceAccess = hasCalculations > 0 || hasPolicies > 0 || hasVehicles > 0
+    }
+    
+    if (!hasDirectAccess && !hasGroupAccess && !hasInsuranceAccess) {
+      redirect("/clients")
+    }
   }
 
   // Get user with organizationId from database

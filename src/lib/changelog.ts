@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.5-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono dostęp do kalkulacji i pojazdów dla ADMIN - może teraz widzieć wszystkie w organizacji',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono dostęp do klientów z widoków insurance - agentzy mają dostęp przez swoje kalkulacje, polisy i pojazdy',
+      },
+      {
+        type: 'added',
+        description: 'Rozszerzono logi w panelu admina - dodano filtrowanie, paginację, szczegóły i eksport do CSV',
+      },
+    ],
+  },
+  {
     version: '0.9.4-beta',
     date: '2025-01-20',
     changes: [

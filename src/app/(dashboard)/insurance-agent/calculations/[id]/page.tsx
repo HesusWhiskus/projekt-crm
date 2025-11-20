@@ -15,16 +15,19 @@ export default async function CalculationDetailPage({
   }
 
   const hasInsuranceAgents = await checkFeature(user.id, FEATURE_KEYS.INSURANCE_AGENTS)
-  if (!hasInsuranceAgents) {
+  if (!hasInsuranceAgents && user.role !== "ADMIN") {
     redirect("/dashboard")
   }
 
-  const insuranceAgent = await db.insuranceAgent.findUnique({
-    where: { userId: user.id },
-  })
+  // For non-admin users, check if they are active insurance agents
+  if (user.role !== "ADMIN") {
+    const insuranceAgent = await db.insuranceAgent.findUnique({
+      where: { userId: user.id },
+    })
 
-  if (!insuranceAgent || !insuranceAgent.isActive) {
-    redirect("/dashboard")
+    if (!insuranceAgent || !insuranceAgent.isActive) {
+      redirect("/dashboard")
+    }
   }
 
   // Get user with organizationId from database
@@ -33,12 +36,19 @@ export default async function CalculationDetailPage({
     select: { organizationId: true },
   })
 
+  // Build where clause - ADMIN sees all calculations in organization, agents see only their own
+  const where: any = {
+    id: params.id,
+    organizationId: userWithOrg?.organizationId || undefined,
+  }
+  
+  // For non-admin agents, filter by agentId
+  if (user.role !== "ADMIN") {
+    where.agentId = user.id // agentId w Calculation to userId, nie insuranceAgent.id
+  }
+
   const calculation = await db.calculation.findUnique({
-    where: {
-      id: params.id,
-      organizationId: userWithOrg?.organizationId || undefined,
-      agentId: user.id, // agentId w Calculation to userId, nie insuranceAgent.id
-    },
+    where,
     include: {
       client: {
         select: {
