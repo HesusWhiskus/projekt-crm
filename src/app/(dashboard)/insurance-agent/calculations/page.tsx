@@ -118,7 +118,7 @@ export default async function CalculationsPage() {
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {calculation.vehicle && `Pojazd: ${calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}`}
-                      {calculation.value && ` | Wartość: ${calculation.value.toFixed(2)} zł`}
+                      {calculation.value && ` | Wartość: ${typeof calculation.value === "number" ? calculation.value.toFixed(2) : Number(calculation.value).toFixed(2)} zł`}
                     </p>
                   </div>
                   <span className="text-sm text-muted-foreground">

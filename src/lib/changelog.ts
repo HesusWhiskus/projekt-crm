@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.10-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd serializacji Decimal w komponentach - naprawiono błąd "e.value.toFixed is not a function" występujący przy nawigacji z kalkulacji/polisy/pojazdu na klienta. Dodano sprawdzenie typu przed wywołaniem .toFixed() w komponentach wyświetlających wartości kalkulacji.',
+      },
+    ],
+  },
+  {
     version: '0.9.9-beta',
     date: '2025-11-20',
     changes: [

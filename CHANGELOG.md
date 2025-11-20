@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.10-beta] - 2025-01-21
+
+### Naprawiono
+- **Błąd serializacji Decimal w komponentach:** Naprawiono błąd `e.value.toFixed is not a function` występujący przy nawigacji z kalkulacji/polisy/pojazdu na klienta. Problem wynikał z serializacji Prisma Decimal przez Next.js jako string, podczas gdy kod wywoływał `.toFixed()` bez sprawdzenia typu. Dodano sprawdzenie typu przed wywołaniem `.toFixed()` w komponentach: `client-detail.tsx`, `calculation-pipeline.tsx`, `calculations/page.tsx`. Użyto tego samego wzorca co w już działających komponentach (`calculation-detail.tsx`, `policy-detail.tsx`).
+
 ## [0.9.9-beta] - 2025-11-20
 
 ### Naprawiono

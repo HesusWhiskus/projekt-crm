@@ -201,7 +201,7 @@ export function CalculationPipeline({ calculations, onStatusChange }: Calculatio
                         </div>
                         {calculation.value && (
                           <p className="text-sm font-semibold text-green-600">
-                            {calculation.value.toFixed(2)} zł
+                            {typeof calculation.value === "number" ? calculation.value.toFixed(2) : Number(calculation.value).toFixed(2)} zł
                           </p>
                         )}
                         <p className="text-xs text-muted-foreground mt-2">

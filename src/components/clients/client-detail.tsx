@@ -634,7 +634,7 @@ export function ClientDetail({
                               )}
                               {calculation.value && (
                                 <p className="text-sm text-muted-foreground">
-                                  Wartość: {calculation.value.toFixed(2)} zł
+                                  Wartość: {typeof calculation.value === "number" ? calculation.value.toFixed(2) : Number(calculation.value).toFixed(2)} zł
                                 </p>
                               )}
                             </div>
