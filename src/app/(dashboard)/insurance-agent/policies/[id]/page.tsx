@@ -37,7 +37,7 @@ export default async function PolicyDetailPage({
     where: {
       id: params.id,
       organizationId: userWithOrg?.organizationId || undefined,
-      agentId: insuranceAgent.id,
+      agentId: user.id, // agentId w Policy to userId, nie insuranceAgent.id
     },
     include: {
       client: {

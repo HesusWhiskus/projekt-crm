@@ -35,7 +35,7 @@ export default async function CalculationsPage() {
   const calculations = await db.calculation.findMany({
     where: {
       organizationId: userWithOrg?.organizationId || undefined,
-      agentId: insuranceAgent.id,
+      agentId: user.id, // agentId w Calculation to userId, nie insuranceAgent.id
     },
     orderBy: { createdAt: 'desc' },
     take: 50,

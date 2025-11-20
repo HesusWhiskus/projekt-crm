@@ -45,7 +45,7 @@ export default async function InsuranceAgentDashboardPage() {
   // Build where clause for access control
   const where = {
     organizationId: userWithOrg?.organizationId || undefined,
-    agentId: insuranceAgent.id,
+    agentId: user.id, // agentId w Calculation/Policy to userId, nie insuranceAgent.id
   }
 
   // Get statistics

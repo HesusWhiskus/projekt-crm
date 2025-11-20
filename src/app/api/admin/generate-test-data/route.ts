@@ -232,6 +232,7 @@ async function setupEnvironment() {
       agentUserIds.push(user.id)
     }
   } else {
+    // Używamy userId, nie insuranceAgent.id - zgodnie ze schematem Prisma
     agentUserIds = existingAgents.map(a => a.userId)
   }
   

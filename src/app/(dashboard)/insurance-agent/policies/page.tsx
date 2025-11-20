@@ -35,7 +35,7 @@ export default async function PoliciesPage() {
   const policies = await db.policy.findMany({
     where: {
       organizationId: userWithOrg?.organizationId || undefined,
-      agentId: insuranceAgent.id,
+      agentId: user.id, // agentId w Policy to userId, nie insuranceAgent.id
     },
     orderBy: { createdAt: 'desc' },
     take: 50,

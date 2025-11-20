@@ -37,7 +37,7 @@ export default async function CalculationDetailPage({
     where: {
       id: params.id,
       organizationId: userWithOrg?.organizationId || undefined,
-      agentId: insuranceAgent.id,
+      agentId: user.id, // agentId w Calculation to userId, nie insuranceAgent.id
     },
     include: {
       client: {
@@ -67,4 +67,5 @@ export default async function CalculationDetailPage({
 
   return <CalculationDetail calculation={calculation} />
 }
+
 
