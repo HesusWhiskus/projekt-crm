@@ -5,7 +5,7 @@ const options: Options = {
     openapi: '3.0.0',
     info: {
       title: 'Internal CRM API',
-      version: '0.4.3-beta',
+      version: '0.9.3-beta',
       description: 'API dla systemu CRM do zarządzania relacjami z agencjami ubezpieczeniowymi. Wszystkie endpointy wymagają autoryzacji poprzez NextAuth.js.',
       contact: {
         name: 'Internal CRM Team',
@@ -209,6 +209,37 @@ const options: Options = {
             },
           },
           required: ['id', 'title', 'status', 'createdAt', 'updatedAt'],
+        },
+        PaginationMeta: {
+          type: 'object',
+          properties: {
+            page: {
+              type: 'integer',
+              description: 'Aktualna strona',
+              minimum: 1,
+            },
+            limit: {
+              type: 'integer',
+              description: 'Liczba wyników na stronę',
+              minimum: 1,
+              maximum: 100,
+            },
+            total: {
+              type: 'integer',
+              description: 'Całkowita liczba wyników',
+              minimum: 0,
+            },
+            totalPages: {
+              type: 'integer',
+              description: 'Całkowita liczba stron',
+              minimum: 0,
+            },
+            hasMore: {
+              type: 'boolean',
+              description: 'Czy istnieją kolejne strony',
+            },
+          },
+          required: ['page', 'limit', 'total', 'totalPages', 'hasMore'],
         },
       },
     },

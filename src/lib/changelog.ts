@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.4-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'added',
+        description: 'Zaktualizowano dokumentację Swagger - dodano dokumentację paginacji (page, limit) dla endpointów API',
+      },
+      {
+        type: 'added',
+        description: 'Dodano logowanie czasu odpowiedzi - wszystkie główne endpointy API logują czas odpowiedzi i dodają nagłówek X-Response-Time',
+      },
+      {
+        type: 'added',
+        description: 'Rozszerzono health check o metryki wydajności - średni czas odpowiedzi, p95, p99, liczba żądań z ostatnich 24h',
+      },
+    ],
+  },
+  {
     version: '0.9.3-beta',
     date: '2025-01-20',
     changes: [

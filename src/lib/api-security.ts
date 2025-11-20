@@ -61,7 +61,8 @@ export async function logApiActivity(
   entityType: string,
   entityId: string | null = null,
   details: Record<string, any> = {},
-  request: Request
+  request: Request,
+  responseTime?: number
 ): Promise<void> {
   const logger = new ActivityLogger()
   const metadata = extractRequestMetadata(request)
@@ -75,11 +76,13 @@ export async function logApiActivity(
       ...details,
       method: metadata.method,
       path: metadata.path,
+      ...(responseTime !== undefined && { responseTimeMs: responseTime }),
     },
     ipAddress: metadata.ipAddress,
     userAgent: metadata.userAgent,
   })
 }
+
 
 /**
  * Helper function to sanitize string input

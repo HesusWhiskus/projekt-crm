@@ -233,18 +233,44 @@ export async function POST(request: Request) {
  *           type: string
  *           enum: ["true"]
  *         description: 'true jako string. Filtruje klientów z follow-up dzisiaj'
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Numer strony (paginacja)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 50
+ *         description: Liczba wyników na stronę (max 100)
  *     responses:
  *       200:
- *         description: Lista klientów
+ *         description: Lista klientów (z paginacją jeśli podano page/limit, w przeciwnym razie wszyscy klienci)
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 clients:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Client'
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Client'
+ *                     pagination:
+ *                       $ref: '#/components/schemas/PaginationMeta'
+ *                   description: Odpowiedź z paginacją (gdy podano page/limit)
+ *                 - type: object
+ *                   properties:
+ *                     clients:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Client'
+ *                   description: Wszyscy klienci (gdy nie podano page/limit - backward compatible)
  *       400:
  *         description: Błąd walidacji
  *         content:

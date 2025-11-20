@@ -30,6 +30,13 @@ export async function GET() {
       api: { status: string; message: string }
       googleCalendar?: { status: string; message: string }
     }
+    performance?: {
+      averageResponseTime: number
+      p95ResponseTime: number
+      p99ResponseTime: number
+      totalRequests: number
+      requestsLastHour: number
+    }
   } = {
     status: "ok",
     timestamp: new Date().toISOString(),
@@ -64,6 +71,64 @@ export async function GET() {
       status: "configured",
       message: "Google Calendar credentials configured",
     }
+  }
+
+  // Calculate performance metrics from activity logs
+  try {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000)
+    
+    // Get recent API activity logs
+    const recentLogs = await db.activityLog.findMany({
+      where: {
+        createdAt: { gte: last24Hours },
+      },
+      select: {
+        details: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 1000, // Limit to last 1000 requests for performance
+    })
+
+    if (recentLogs.length > 0) {
+      // Filter logs that have responseTimeMs in details
+      const logsWithResponseTime = recentLogs.filter((log) => {
+        const details = log.details as any
+        return details?.responseTimeMs && typeof details.responseTimeMs === 'number' && details.responseTimeMs > 0
+      })
+
+      if (logsWithResponseTime.length > 0) {
+        const responseTimes = logsWithResponseTime
+          .map((log) => {
+            const details = log.details as any
+            return details.responseTimeMs as number
+          })
+          .sort((a, b) => a - b)
+
+      if (responseTimes.length > 0) {
+        const total = responseTimes.reduce((sum, time) => sum + time, 0)
+        const average = Math.round(total / responseTimes.length)
+        const p95Index = Math.floor(responseTimes.length * 0.95)
+        const p99Index = Math.floor(responseTimes.length * 0.99)
+        
+        const requestsLastHour = logsWithResponseTime.filter(
+          (log) => log.createdAt >= oneHourAgo
+        ).length
+
+        health.performance = {
+          averageResponseTime: average,
+          p95ResponseTime: responseTimes[p95Index] || average,
+          p99ResponseTime: responseTimes[p99Index] || average,
+          totalRequests: logsWithResponseTime.length,
+          requestsLastHour,
+        }
+      }
+    }
+  }
+  } catch (error) {
+    console.error("[Health Endpoint] Error calculating performance metrics:", error)
+    // Don't fail health check if performance metrics fail
   }
 
   return NextResponse.json(health, { 

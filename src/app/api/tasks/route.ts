@@ -232,18 +232,44 @@ export async function POST(request: Request) {
  *         schema:
  *           type: string
  *         description: CUID klienta
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Numer strony (paginacja)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 50
+ *         description: Liczba wyników na stronę (max 100)
  *     responses:
  *       200:
- *         description: Lista zadań
+ *         description: Lista zadań (z paginacją jeśli podano page/limit, w przeciwnym razie wszystkie zadania)
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 tasks:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Task'
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
+ *                     pagination:
+ *                       $ref: '#/components/schemas/PaginationMeta'
+ *                   description: Odpowiedź z paginacją (gdy podano page/limit)
+ *                 - type: object
+ *                   properties:
+ *                     tasks:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
+ *                   description: Wszystkie zadania (gdy nie podano page/limit - backward compatible)
  *       400:
  *         description: Błąd walidacji
  *         content:
@@ -264,6 +290,7 @@ export async function POST(request: Request) {
  *               $ref: '#/components/schemas/Error'
  */
 export async function GET(request: Request) {
+  const startTime = Date.now()
   try {
     // Rate limiting
     const rateLimitResponse = await applyRateLimit(request, "api")
@@ -271,7 +298,8 @@ export async function GET(request: Request) {
 
     const user = await getCurrentUser()
     if (!user) {
-      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Task", null, {}, request)
+      const responseTime = Date.now() - startTime
+      await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Task", null, {}, request, responseTime)
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })
     }
 

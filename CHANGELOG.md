@@ -5,6 +5,21 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.4-beta] - 2025-01-20
+
+### Dodano
+- **Aktualizacja dokumentacji Swagger:** Dodano dokumentację paginacji (parametry `page` i `limit`) dla endpointów `/api/tasks`, `/api/contacts` i `/api/clients`. Dodano schemat `PaginationMeta` do Swagger.
+- **Logowanie czasu odpowiedzi:** Wszystkie główne endpointy API logują teraz czas odpowiedzi w `activityLog.details.responseTimeMs` oraz dodają nagłówek `X-Response-Time` do odpowiedzi.
+- **Metryki wydajności w health check:** Endpoint `/api/admin/health` pokazuje teraz metryki wydajności z ostatnich 24 godzin:
+  - Średni czas odpowiedzi (`averageResponseTime`)
+  - Percentyl 95 (`p95ResponseTime`)
+  - Percentyl 99 (`p99ResponseTime`)
+  - Całkowita liczba żądań (`totalRequests`)
+  - Liczba żądań z ostatniej godziny (`requestsLastHour`)
+
+### Zmieniono
+- **Wersja Swagger:** Zaktualizowano wersję dokumentacji Swagger z `0.4.3-beta` na `0.9.3-beta` dla zgodności z wersją aplikacji.
+
 ## [0.9.3-beta] - 2025-01-20
 
 ### Dodano

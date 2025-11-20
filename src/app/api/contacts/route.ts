@@ -327,33 +327,59 @@ export async function POST(request: Request) {
  *       - cookieAuth: []
  *     parameters:
  *       - in: query
+ *         name: clientId
+ *         schema:
+ *           type: string
+ *         description: CUID klienta
+ *       - in: query
  *         name: type
  *         schema:
  *           type: string
  *           enum: [PHONE_CALL, MEETING, EMAIL, LINKEDIN_MESSAGE, OTHER]
  *         description: Filtr typu kontaktu
  *       - in: query
- *         name: clientId
- *         schema:
- *           type: string
- *         description: CUID klienta
- *       - in: query
  *         name: userId
  *         schema:
  *           type: string
  *         description: CUID użytkownika
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Numer strony (paginacja)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 50
+ *         description: Liczba wyników na stronę (max 100)
  *     responses:
  *       200:
- *         description: Lista kontaktów
+ *         description: Lista kontaktów (z paginacją jeśli podano page/limit, w przeciwnym razie wszystkie kontakty)
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 contacts:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Contact'
+ *               oneOf:
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Contact'
+ *                     pagination:
+ *                       $ref: '#/components/schemas/PaginationMeta'
+ *                   description: Odpowiedź z paginacją (gdy podano page/limit)
+ *                 - type: object
+ *                   properties:
+ *                     contacts:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Contact'
+ *                   description: Wszystkie kontakty (gdy nie podano page/limit - backward compatible)
  *       400:
  *         description: Błąd walidacji
  *         content:
