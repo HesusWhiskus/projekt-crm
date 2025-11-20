@@ -11,5 +11,9 @@ export interface CreatePolicyDTO {
   agentId?: string | null
   organizationId?: string | null
   externalId?: string | null
+  configurationType?: 'STANDARD' | 'LEASING' | 'CREDIT' | null
+  leasingCompany?: string | null
+  creditProvider?: string | null
+  contractNumber?: string | null
 }
 

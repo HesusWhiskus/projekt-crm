@@ -24,6 +24,10 @@ const createPolicySchema = z.object({
   agentId: z.string().optional().nullable(),
   organizationId: z.string().optional().nullable(),
   externalId: z.string().optional().nullable(),
+  configurationType: z.enum(['STANDARD', 'LEASING', 'CREDIT']).optional().nullable(),
+  leasingCompany: z.string().optional().nullable(),
+  creditProvider: z.string().optional().nullable(),
+  contractNumber: z.string().optional().nullable(),
 })
 
 export async function POST(request: Request) {
@@ -54,6 +58,10 @@ export async function POST(request: Request) {
       agentId: validatedData.agentId || undefined,
       organizationId: validatedData.organizationId || user.organizationId || undefined,
       externalId: validatedData.externalId || undefined,
+      configurationType: validatedData.configurationType || undefined,
+      leasingCompany: validatedData.leasingCompany || undefined,
+      creditProvider: validatedData.creditProvider || undefined,
+      contractNumber: validatedData.contractNumber || undefined,
     }
 
     const policy = await createPolicyUseCase.execute(dto, user)

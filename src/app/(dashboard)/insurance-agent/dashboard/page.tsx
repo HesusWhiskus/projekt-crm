@@ -264,9 +264,9 @@ export default async function InsuranceAgentDashboardPage() {
                 >
                   <div>
                     <p className="font-medium">
-                      {calculation.client?.type === 'COMPANY'
-                        ? calculation.client.companyName || 'Brak nazwy'
-                        : `${calculation.client?.firstName || ''} ${calculation.client?.lastName || ''}`.trim() || 'Brak nazwy'}
+                      {calculation.client?.type === 'PERSON'
+                        ? `${calculation.client?.firstName || ''} ${calculation.client?.lastName || ''}`.trim() || 'Brak nazwy'
+                        : calculation.client?.companyName || 'Brak nazwy'}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Status: {calculation.status} | 
@@ -301,9 +301,9 @@ export default async function InsuranceAgentDashboardPage() {
                 >
                   <div>
                     <p className="font-medium">
-                      {policy.client?.type === 'COMPANY'
-                        ? policy.client.companyName || 'Brak nazwy'
-                        : `${policy.client?.firstName || ''} ${policy.client?.lastName || ''}`.trim() || 'Brak nazwy'}
+                      {policy.client?.type === 'PERSON'
+                        ? `${policy.client?.firstName || ''} ${policy.client?.lastName || ''}`.trim() || 'Brak nazwy'
+                        : policy.client?.companyName || 'Brak nazwy'}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Polisa: {policy.policyNumber} | 

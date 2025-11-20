@@ -56,6 +56,21 @@ export default async function CalculationsPage() {
           registrationNumber: true,
         },
       },
+      offers: {
+        include: {
+          insuranceCompany: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          price: 'asc', // Najtańsza oferta pierwsza
+        },
+        take: 1, // Tylko najtańsza oferta dla listy
+      },
     },
   })
 
@@ -110,9 +125,9 @@ export default async function CalculationsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium">
-                          {calculation.client?.type === 'COMPANY'
-                            ? calculation.client.companyName || 'Brak nazwy'
-                            : `${calculation.client?.firstName || ''} ${calculation.client?.lastName || ''}`.trim() || 'Brak nazwy'}
+                          {calculation.client?.type === 'PERSON'
+                            ? `${calculation.client?.firstName || ''} ${calculation.client?.lastName || ''}`.trim() || 'Brak nazwy'
+                            : calculation.client?.companyName || 'Brak nazwy'}
                         </p>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 text-gray-800'}`}>
                           {statusLabels[calculation.status] || calculation.status}
@@ -121,6 +136,11 @@ export default async function CalculationsPage() {
                       <p className="text-sm text-muted-foreground mt-1">
                         {calculation.vehicle && `Pojazd: ${calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}`}
                         {value && ` | Wartość: ${value.toFixed(2)} zł`}
+                        {calculation.offers && calculation.offers.length > 0 && (() => {
+                          const cheapestOffer = calculation.offers[0];
+                          const offerPrice = typeof cheapestOffer.price === "number" ? cheapestOffer.price : Number(cheapestOffer.price);
+                          return ` | Najtańsza oferta: ${cheapestOffer.insuranceCompany.name} - ${offerPrice.toFixed(2)} zł`;
+                        })()}
                       </p>
                     </div>
                     <span className="text-sm text-muted-foreground">

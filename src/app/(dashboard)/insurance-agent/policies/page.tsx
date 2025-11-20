@@ -120,9 +120,9 @@ export default async function PoliciesPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium">
-                          {policy.client?.type === 'COMPANY'
-                            ? policy.client.companyName || 'Brak nazwy'
-                            : `${policy.client?.firstName || ''} ${policy.client?.lastName || ''}`.trim() || 'Brak nazwy'}
+                          {policy.client?.type === 'PERSON'
+                            ? `${policy.client?.firstName || ''} ${policy.client?.lastName || ''}`.trim() || 'Brak nazwy'
+                            : policy.client?.companyName || 'Brak nazwy'}
                         </p>
                         <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[policy.status] || 'bg-gray-100 text-gray-800'}`}>
                           {statusLabels[policy.status] || policy.status}

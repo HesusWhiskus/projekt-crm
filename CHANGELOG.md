@@ -5,6 +5,20 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.0-beta] - 2025-01-21
+
+### Dodano
+- **Integracja z iBooster - rozszerzenie typów klientów:** Dodano obsługę nowych typów klientów: JDG (SOLE_PROPRIETORSHIP), sp. z o.o. (LIMITED_LIABILITY_COMPANY), spółka akcyjna (JOINT_STOCK_COMPANY), spółka cywilna (CIVIL_PARTNERSHIP). Zaktualizowano formularz klienta i wszystkie komponenty wyświetlające typ klienta.
+- **Model Offer (Oferty):** Utworzono nowy model `Offer` do przechowywania ofert z różnych towarzystw ubezpieczeniowych dla każdej kalkulacji. Oferty zawierają: cenę, typ pakietu, zakresy ubezpieczenia, opcje dodatkowe, raty, status wyboru, dane z systemu zewnętrznego (iBooster).
+- **Rozszerzenie zakresów ubezpieczenia:** Dodano nowe zakresy: SZYBY, OC_DISCOUNT_PROTECTION, ASSISTANCE_ACCIDENT, ASSISTANCE_BREAKDOWN, AC_MINI, AC_ACCIDENT. Zaktualizowano formularz kalkulacji o dodatkowe opcje ubezpieczenia.
+- **Pole raty w kalkulacjach:** Dodano pola `installments` i `installmentAmount` do modelu Calculation, umożliwiające wybór liczby rat (1, 2, 3, 4, 6, 12).
+- **Konfiguracja polis:** Dodano obsługę różnych konfiguracji polis: STANDARD, LEASING, CREDIT. Pola: `configurationType`, `leasingCompany`, `creditProvider`, `contractNumber`, `configurationMetadata`.
+- **Komponenty ofert:** Utworzono `offer-card.tsx` i `offers-list.tsx` do wyświetlania ofert z filtrowaniem i sortowaniem. Lista kalkulacji wyświetla najtańszą ofertę, szczegóły kalkulacji pokazują wszystkie oferty.
+- **API dla ofert:** Utworzono endpointy: `GET/POST /api/calculations/[id]/offers` (pobieranie i import ofert), `PUT /api/offers/[id]/select` (wybór oferty).
+
+### Zmieniono
+- **Kolorystyka zgodna z iBooster:** Zmieniono główny kolor z niebieskiego na pomarańczowy (#f97316) i kolor destructive na czerwony (#dc2626) zgodnie z kolorystyką systemu iBooster. Zaktualizowano wszystkie komponenty UI używające primary color.
+
 ## [0.9.10-beta] - 2025-01-21
 
 ### Naprawiono

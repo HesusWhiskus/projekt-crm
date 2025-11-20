@@ -47,6 +47,10 @@ enum ClientPriority {
 enum ClientType {
   PERSON
   COMPANY
+  SOLE_PROPRIETORSHIP // JDG - Jednoosobowa działalność gospodarcza
+  LIMITED_LIABILITY_COMPANY // sp. z o.o.
+  JOINT_STOCK_COMPANY // SA - Spółka akcyjna
+  CIVIL_PARTNERSHIP // spółka cywilna
 }
 
 enum PlanType {
@@ -65,6 +69,12 @@ enum InsuranceScope {
   AC
   NNW
   ASS
+  SZYBY // Szyby pojazdu
+  OC_DISCOUNT_PROTECTION // Ochrona zniżki OC
+  ASSISTANCE_ACCIDENT // Assistance w razie wypadku
+  ASSISTANCE_BREAKDOWN // Assistance w razie awarii
+  AC_MINI // AC Mini
+  AC_ACCIDENT // AC w razie wypadku
 }
 
 enum CalculationStatus {
@@ -529,6 +539,8 @@ model Calculation {
   status                CalculationStatus @default(DRAFT)
   value                 Decimal?          @db.Decimal(10, 2) // Wartość kalkulacji
   validUntil            DateTime? // Data ważności
+  installments          Int? // Liczba rat (1 = płatność jednorazowa)
+  installmentAmount     Decimal?          @db.Decimal(10, 2) // Kwota raty
   // Dane z formularza ubezpieczenia
   variant               InsuranceVariant? // Wariant ubezpieczenia
   scopes                InsuranceScope[] // Zakres ubezpieczenia (array)
@@ -545,6 +557,7 @@ model Calculation {
   organization Organization?        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   history      CalculationHistory[]
   policies     Policy[] // Relacja zwrotna do Policy
+  offers       Offer[] // Oferty z różnych towarzystw
 
   @@index([clientId])
   @@index([vehicleId])
@@ -554,6 +567,36 @@ model Calculation {
   @@index([createdAt])
   @@index([clientId, status])
   @@map("calculations")
+}
+
+// Offer Model (Oferta z towarzystwa ubezpieczeniowego)
+model Offer {
+  id                 String            @id @default(cuid())
+  calculationId      String // Relacja do Calculation - jedna kalkulacja może mieć wiele ofert
+  insuranceCompanyId String // Relacja do InsuranceCompany
+  price              Decimal           @db.Decimal(10, 2) // Cena oferty
+  packageType        String? // Typ pakietu (np. "pakiet OC", "OC")
+  scopes             InsuranceScope[] // Zakresy w ofercie
+  additionalOptions  Json? // Dodatkowe opcje (ochrona zniżki, assistance, etc.)
+  installments       Int? // Liczba rat (null = płatność jednorazowa)
+  installmentAmount  Decimal?          @db.Decimal(10, 2) // Kwota raty
+  validUntil         DateTime? // Ważność oferty
+  status             String? // Status oferty (dostępna, wybrana, wygasła)
+  isSelected         Boolean           @default(false) // Czy oferta została wybrana
+  externalId         String? // ID w systemie zewnętrznym (iBooster)
+  metadata           Json? // Dodatkowe dane z systemu zewnętrznego
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  // Relations
+  calculation      Calculation        @relation(fields: [calculationId], references: [id], onDelete: Cascade)
+  insuranceCompany InsuranceCompany   @relation(fields: [insuranceCompanyId], references: [id], onDelete: Restrict)
+
+  @@index([calculationId])
+  @@index([insuranceCompanyId])
+  @@index([calculationId, price]) // Dla szybkiego sortowania najtańszych ofert
+  @@index([isSelected])
+  @@map("offers")
 }
 
 // InsuranceCompany Model (Towarzystwo Ubezpieczeniowe)
@@ -569,6 +612,7 @@ model InsuranceCompany {
 
   // Relations
   policies Policy[]
+  offers   Offer[]
 
   @@index([code])
   @@map("insurance_companies")
@@ -594,6 +638,13 @@ model Policy {
   syncedAt           DateTime?
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
+
+  // Konfiguracja polisy
+  configurationType String? // STANDARD, LEASING, CREDIT
+  leasingCompany    String? // Firma leasingowa (jeśli leasing)
+  creditProvider    String? // Dostawca kredytu (jeśli kredyt)
+  contractNumber    String? // Numer umowy leasingu/kredytu
+  configurationMetadata Json? // Dodatkowe dane konfiguracji
 
   // Relations
   calculation      Calculation?     @relation(fields: [calculationId], references: [id], onDelete: SetNull)

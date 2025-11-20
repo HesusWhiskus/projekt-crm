@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.0-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'added',
+        description: 'Integracja z iBooster - dodano obsługę nowych typów klientów (JDG, sp. z o.o., SA, spółka cywilna), model ofert z różnych towarzystw, rozszerzone zakresy ubezpieczenia (SZYBY, assistance, AC Mini, etc.), pole raty w kalkulacjach oraz konfiguracje polis (leasing, kredyt). Zmieniono kolorystykę na pomarańczowo-czerwoną zgodnie z iBooster.',
+      },
+    ],
+  },
+  {
     version: '0.9.10-beta',
     date: '2025-01-21',
     changes: [

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Edit, ArrowLeft } from "lucide-react"
 import { CalculationForm } from "./calculation-form"
+import { OffersList } from "./offers-list"
 import Link from "next/link"
 
 interface CalculationDetailProps {
@@ -32,6 +33,23 @@ interface CalculationDetailProps {
     validUntil: Date | null
     variant: string | null
     scopes: string[]
+    installments: number | null
+    offers?: Array<{
+      id: string
+      insuranceCompany: {
+        id: string
+        name: string
+        logoUrl: string | null
+      }
+      price: number | string
+      packageType: string | null
+      scopes: string[]
+      installments: number | null
+      installmentAmount: number | string | null
+      validUntil: Date | string | null
+      isSelected: boolean
+      status?: string | null
+    }>
     client: {
       id: string
       firstName: string | null
@@ -295,9 +313,9 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
               >
                 <div>
                   <p className="font-medium">
-                    {calculation.client.type === "COMPANY"
-                      ? calculation.client.companyName || "Brak nazwy"
-                      : `${calculation.client.firstName || ""} ${calculation.client.lastName || ""}`.trim() || "Brak nazwy"}
+                    {calculation.client.type === "PERSON"
+                      ? `${calculation.client.firstName || ""} ${calculation.client.lastName || ""}`.trim() || "Brak nazwy"
+                      : calculation.client.companyName || "Brak nazwy"}
                   </p>
                   {calculation.client.email && (
                     <p className="text-sm text-muted-foreground">{calculation.client.email}</p>
@@ -331,6 +349,24 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
           </Card>
         )}
       </div>
+
+      {calculation.offers && calculation.offers.length > 0 && (
+        <div className="mt-6">
+          <OffersList
+            offers={calculation.offers}
+            showSelectButton={true}
+            onSelectOffer={async (offerId) => {
+              // TODO: Implementacja wyboru oferty
+              const response = await fetch(`/api/offers/${offerId}/select`, {
+                method: "PUT",
+              })
+              if (response.ok) {
+                router.refresh()
+              }
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

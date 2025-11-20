@@ -13,6 +13,11 @@ export interface PolicyDTO {
   organizationId: string | null
   externalId: string | null
   syncedAt: Date | null
+  configurationType: string | null
+  leasingCompany: string | null
+  creditProvider: string | null
+  contractNumber: string | null
+  configurationMetadata: Record<string, any> | null
   createdAt: Date
   updatedAt: Date
   // Relations (optional, populated when included)

@@ -76,6 +76,11 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       organizationId: policyData.organizationId,
       externalId: policyData.externalId,
       syncedAt: policyData.syncedAt,
+      configurationType: policyData.configurationType,
+      leasingCompany: policyData.leasingCompany,
+      creditProvider: policyData.creditProvider,
+      contractNumber: policyData.contractNumber,
+      configurationMetadata: policyData.configurationMetadata,
       createdAt: policyData.createdAt,
       updatedAt: policyData.updatedAt,
     })
@@ -108,6 +113,11 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       organizationId: policyData.organizationId,
       externalId: policyData.externalId,
       syncedAt: policyData.syncedAt,
+      configurationType: policyData.configurationType,
+      leasingCompany: policyData.leasingCompany,
+      creditProvider: policyData.creditProvider,
+      contractNumber: policyData.contractNumber,
+      configurationMetadata: policyData.configurationMetadata,
       createdAt: policyData.createdAt,
       updatedAt: policyData.updatedAt,
     })
@@ -197,6 +207,11 @@ export class PrismaPolicyRepository implements IPolicyRepository {
         organizationId: data.organizationId,
         externalId: data.externalId,
         syncedAt: data.syncedAt,
+        configurationType: data.configurationType,
+        leasingCompany: data.leasingCompany,
+        creditProvider: data.creditProvider,
+        contractNumber: data.contractNumber,
+        configurationMetadata: data.configurationMetadata,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       })
@@ -249,6 +264,11 @@ export class PrismaPolicyRepository implements IPolicyRepository {
         organizationId: data.organizationId,
         externalId: data.externalId,
         syncedAt: data.syncedAt,
+        configurationType: data.configurationType,
+        leasingCompany: data.leasingCompany,
+        creditProvider: data.creditProvider,
+        contractNumber: data.contractNumber,
+        configurationMetadata: data.configurationMetadata,
       },
     })
 
@@ -267,6 +287,11 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       organizationId: created.organizationId,
       externalId: created.externalId,
       syncedAt: created.syncedAt,
+      configurationType: created.configurationType,
+      leasingCompany: created.leasingCompany,
+      creditProvider: created.creditProvider,
+      contractNumber: created.contractNumber,
+      configurationMetadata: created.configurationMetadata,
       createdAt: created.createdAt,
       updatedAt: created.updatedAt,
     })
@@ -291,6 +316,11 @@ export class PrismaPolicyRepository implements IPolicyRepository {
         organizationId: data.organizationId,
         externalId: data.externalId,
         syncedAt: data.syncedAt,
+        configurationType: data.configurationType,
+        leasingCompany: data.leasingCompany,
+        creditProvider: data.creditProvider,
+        contractNumber: data.contractNumber,
+        configurationMetadata: data.configurationMetadata,
       },
     })
 
@@ -309,6 +339,11 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       organizationId: updated.organizationId,
       externalId: updated.externalId,
       syncedAt: updated.syncedAt,
+      configurationType: updated.configurationType,
+      leasingCompany: updated.leasingCompany,
+      creditProvider: updated.creditProvider,
+      contractNumber: updated.contractNumber,
+      configurationMetadata: updated.configurationMetadata,
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
     })

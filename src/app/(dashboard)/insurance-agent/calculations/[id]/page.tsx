@@ -68,6 +68,20 @@ export default async function CalculationDetailPage({
           registrationNumber: true,
         },
       },
+      offers: {
+        include: {
+          insuranceCompany: {
+            select: {
+              id: true,
+              name: true,
+              logoUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          price: 'asc', // Sortuj od najtańszej
+        },
+      },
     },
   })
 

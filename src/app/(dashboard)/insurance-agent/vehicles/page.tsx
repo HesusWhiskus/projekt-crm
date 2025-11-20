@@ -101,9 +101,9 @@ export default async function VehiclesPage() {
                     <p className="text-sm text-muted-foreground mt-1">
                       Właściciele: {vehicle.owners.length > 0 
                         ? vehicle.owners.map(owner => 
-                            owner.client.type === 'COMPANY'
-                              ? owner.client.companyName || 'Brak nazwy'
-                              : `${owner.client.firstName || ''} ${owner.client.lastName || ''}`.trim() || 'Brak nazwy'
+                            owner.client.type === 'PERSON'
+                              ? `${owner.client.firstName || ''} ${owner.client.lastName || ''}`.trim() || 'Brak nazwy'
+                              : owner.client.companyName || 'Brak nazwy'
                           ).join(', ')
                         : 'Brak'}
                     </p>

@@ -45,6 +45,7 @@ export function CalculationForm({ calculation, clientId, vehicleId, onClose, onS
     status: calculation?.status || "DRAFT",
     value: calculation?.value?.toString() || "",
     validUntil: calculation?.validUntil ? new Date(calculation.validUntil).toISOString().split('T')[0] : "",
+    installments: calculation?.installments?.toString() || "1",
     // Insurance form data
     variant: calculation?.variant || "none",
     scopes: calculation?.scopes || [] as string[],
@@ -91,6 +92,7 @@ export function CalculationForm({ calculation, clientId, vehicleId, onClose, onS
         status: formData.status,
         value: formData.value ? parseFloat(formData.value) : null,
         validUntil: formData.validUntil ? new Date(formData.validUntil).toISOString() : null,
+        installments: formData.installments ? parseInt(formData.installments) : null,
         variant: formData.variant === "none" ? null : formData.variant || null,
         scopes: formData.scopes,
       }
@@ -344,23 +346,71 @@ export function CalculationForm({ calculation, clientId, vehicleId, onClose, onS
                   onChange={(e) => setFormData({ ...formData, validUntil: e.target.value })}
                 />
               </div>
+              <div>
+                <Label htmlFor="installments">Liczba rat</Label>
+                <Select
+                  value={formData.installments}
+                  onValueChange={(value) => setFormData({ ...formData, installments: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Wybierz liczbę rat" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Płatność jednorazowa (1 rata)</SelectItem>
+                    <SelectItem value="2">2 raty</SelectItem>
+                    <SelectItem value="3">3 raty</SelectItem>
+                    <SelectItem value="4">4 raty</SelectItem>
+                    <SelectItem value="6">6 rat</SelectItem>
+                    <SelectItem value="12">12 rat</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="mt-4">
               <Label>Zakres ubezpieczenia</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                {['OC', 'AC', 'NNW', 'ASS'].map((scope) => (
-                  <div key={scope} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`scope-${scope}`}
-                      checked={formData.scopes.includes(scope)}
-                      onCheckedChange={(checked) => handleScopeChange(scope, checked === true)}
-                    />
-                    <Label htmlFor={`scope-${scope}`} className="cursor-pointer">
-                      {scope}
-                    </Label>
+              <div className="space-y-4 mt-2">
+                <div>
+                  <p className="text-sm font-medium mb-2">Podstawowe:</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {['OC', 'AC', 'NNW', 'ASS'].map((scope) => (
+                      <div key={scope} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`scope-${scope}`}
+                          checked={formData.scopes.includes(scope)}
+                          onCheckedChange={(checked) => handleScopeChange(scope, checked === true)}
+                        />
+                        <Label htmlFor={`scope-${scope}`} className="cursor-pointer">
+                          {scope}
+                        </Label>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-2">Dodatkowe opcje:</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {[
+                      { value: 'SZYBY', label: 'Szyby pojazdu' },
+                      { value: 'OC_DISCOUNT_PROTECTION', label: 'Ochrona zniżki OC' },
+                      { value: 'ASSISTANCE_ACCIDENT', label: 'Assistance - wypadek' },
+                      { value: 'ASSISTANCE_BREAKDOWN', label: 'Assistance - awaria' },
+                      { value: 'AC_MINI', label: 'AC Mini' },
+                      { value: 'AC_ACCIDENT', label: 'AC - wypadek' },
+                    ].map((scope) => (
+                      <div key={scope.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`scope-${scope.value}`}
+                          checked={formData.scopes.includes(scope.value)}
+                          onCheckedChange={(checked) => handleScopeChange(scope.value, checked === true)}
+                        />
+                        <Label htmlFor={`scope-${scope.value}`} className="cursor-pointer text-sm">
+                          {scope.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

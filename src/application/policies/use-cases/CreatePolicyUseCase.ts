@@ -33,6 +33,10 @@ export class CreatePolicyUseCase {
       agentId: dto.agentId || user.id || null,
       organizationId: dto.organizationId || user.organizationId || null,
       externalId: dto.externalId || null,
+      configurationType: dto.configurationType || null,
+      leasingCompany: dto.leasingCompany || null,
+      creditProvider: dto.creditProvider || null,
+      contractNumber: dto.contractNumber || null,
     })
 
     // Save policy
@@ -72,6 +76,11 @@ export class CreatePolicyUseCase {
       organizationId: data.organizationId,
       externalId: data.externalId,
       syncedAt: data.syncedAt,
+      configurationType: data.configurationType,
+      leasingCompany: data.leasingCompany,
+      creditProvider: data.creditProvider,
+      contractNumber: data.contractNumber,
+      configurationMetadata: data.configurationMetadata,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     }

@@ -23,6 +23,12 @@ export class Policy {
     // External system data
     private externalId: string | null,
     private syncedAt: Date | null,
+    // Configuration
+    private configurationType: string | null,
+    private leasingCompany: string | null,
+    private creditProvider: string | null,
+    private contractNumber: string | null,
+    private configurationMetadata: Record<string, any> | null,
     private readonly createdAt: Date,
     private updatedAt: Date
   ) {}
@@ -45,6 +51,11 @@ export class Policy {
     organizationId?: string | null
     externalId?: string | null
     syncedAt?: Date | null
+    configurationType?: string | null
+    leasingCompany?: string | null
+    creditProvider?: string | null
+    contractNumber?: string | null
+    configurationMetadata?: Record<string, any> | null
     createdAt?: Date
     updatedAt?: Date
   }): Policy {
@@ -72,6 +83,11 @@ export class Policy {
       params.organizationId || null,
       params.externalId || null,
       params.syncedAt || null,
+      params.configurationType || null,
+      params.leasingCompany || null,
+      params.creditProvider || null,
+      params.contractNumber || null,
+      params.configurationMetadata || null,
       params.createdAt || new Date(),
       params.updatedAt || new Date()
     )
@@ -95,6 +111,11 @@ export class Policy {
     organizationId: string | null
     externalId: string | null
     syncedAt: Date | null
+    configurationType: string | null
+    leasingCompany: string | null
+    creditProvider: string | null
+    contractNumber: string | null
+    configurationMetadata: Record<string, any> | null
     createdAt: Date
     updatedAt: Date
   }): Policy {
@@ -113,6 +134,11 @@ export class Policy {
       data.organizationId,
       data.externalId,
       data.syncedAt,
+      data.configurationType || null,
+      data.leasingCompany || null,
+      data.creditProvider || null,
+      data.contractNumber || null,
+      data.configurationMetadata || null,
       data.createdAt,
       data.updatedAt
     )
@@ -173,6 +199,26 @@ export class Policy {
 
   getSyncedAt(): Date | null {
     return this.syncedAt
+  }
+
+  getConfigurationType(): string | null {
+    return this.configurationType
+  }
+
+  getLeasingCompany(): string | null {
+    return this.leasingCompany
+  }
+
+  getCreditProvider(): string | null {
+    return this.creditProvider
+  }
+
+  getContractNumber(): string | null {
+    return this.contractNumber
+  }
+
+  getConfigurationMetadata(): Record<string, any> | null {
+    return this.configurationMetadata
   }
 
   getCreatedAt(): Date {
@@ -248,6 +294,11 @@ export class Policy {
     organizationId: string | null
     externalId: string | null
     syncedAt: Date | null
+    configurationType: string | null
+    leasingCompany: string | null
+    creditProvider: string | null
+    contractNumber: string | null
+    configurationMetadata: Record<string, any> | null
     createdAt: Date
     updatedAt: Date
   } {
@@ -266,6 +317,11 @@ export class Policy {
       organizationId: this.organizationId,
       externalId: this.externalId,
       syncedAt: this.syncedAt,
+      configurationType: this.configurationType,
+      leasingCompany: this.leasingCompany,
+      creditProvider: this.creditProvider,
+      contractNumber: this.contractNumber,
+      configurationMetadata: this.configurationMetadata,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     }

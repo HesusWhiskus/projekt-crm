@@ -119,7 +119,9 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
         bodyData.firstName = formData.firstName || undefined
         bodyData.lastName = formData.lastName || undefined
         bodyData.pesel = formData.pesel || undefined
-      } else if (formData.type === "COMPANY") {
+      } else if (formData.type === "COMPANY" || formData.type === "SOLE_PROPRIETORSHIP" || 
+                 formData.type === "LIMITED_LIABILITY_COMPANY" || formData.type === "JOINT_STOCK_COMPANY" ||
+                 formData.type === "CIVIL_PARTNERSHIP") {
         bodyData.companyName = formData.companyName || undefined
         bodyData.taxId = formData.taxId || undefined
         bodyData.regon = formData.regon || undefined
@@ -175,7 +177,11 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="PERSON">Osoba fizyczna</SelectItem>
-                <SelectItem value="COMPANY">Firma</SelectItem>
+                <SelectItem value="SOLE_PROPRIETORSHIP">JDG - Jednoosobowa działalność gospodarcza</SelectItem>
+                <SelectItem value="LIMITED_LIABILITY_COMPANY">Spółka z ograniczoną odpowiedzialnością (sp. z o.o.)</SelectItem>
+                <SelectItem value="JOINT_STOCK_COMPANY">Spółka akcyjna (SA)</SelectItem>
+                <SelectItem value="CIVIL_PARTNERSHIP">Spółka cywilna</SelectItem>
+                <SelectItem value="COMPANY">Firma (ogólne)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -217,7 +223,13 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="companyName">Nazwa firmy *</Label>
+                <Label htmlFor="companyName">
+                  {formData.type === "SOLE_PROPRIETORSHIP" ? "Nazwa działalności *" :
+                   formData.type === "LIMITED_LIABILITY_COMPANY" ? "Nazwa spółki z o.o. *" :
+                   formData.type === "JOINT_STOCK_COMPANY" ? "Nazwa spółki akcyjnej *" :
+                   formData.type === "CIVIL_PARTNERSHIP" ? "Nazwa spółki cywilnej *" :
+                   "Nazwa firmy *"}
+                </Label>
                 <Input
                   id="companyName"
                   value={formData.companyName}

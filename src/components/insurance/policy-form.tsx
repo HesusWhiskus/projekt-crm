@@ -28,6 +28,10 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
     clientId: policy?.clientId || clientId || "",
     vehicleId: policy?.vehicleId || vehicleId || "",
     insuranceCompanyId: policy?.insuranceCompanyId || "none",
+    configurationType: policy?.configurationType || "STANDARD",
+    leasingCompany: policy?.leasingCompany || "",
+    creditProvider: policy?.creditProvider || "",
+    contractNumber: policy?.contractNumber || "",
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -73,6 +77,10 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
         clientId: formData.clientId || null,
         vehicleId: formData.vehicleId || null,
         insuranceCompanyId: formData.insuranceCompanyId,
+        configurationType: formData.configurationType === "STANDARD" ? null : formData.configurationType,
+        leasingCompany: formData.configurationType === "LEASING" ? formData.leasingCompany || null : null,
+        creditProvider: formData.configurationType === "CREDIT" ? formData.creditProvider || null : null,
+        contractNumber: formData.contractNumber || null,
       }
 
       const response = await fetch(url, {
@@ -192,6 +200,71 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
                 required
               />
             </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="configurationType">Typ konfiguracji</Label>
+              <Select
+                value={formData.configurationType}
+                onValueChange={(value) => setFormData({ ...formData, configurationType: value })}
+              >
+                <SelectTrigger id="configurationType">
+                  <SelectValue placeholder="Wybierz typ konfiguracji" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="STANDARD">Standard</SelectItem>
+                  <SelectItem value="LEASING">Leasing</SelectItem>
+                  <SelectItem value="CREDIT">Kredyt</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.configurationType === "LEASING" && (
+              <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+                <div>
+                  <Label htmlFor="leasingCompany">Firma leasingowa</Label>
+                  <Input
+                    id="leasingCompany"
+                    value={formData.leasingCompany}
+                    onChange={(e) => setFormData({ ...formData, leasingCompany: e.target.value })}
+                    placeholder="Nazwa firmy leasingowej"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contractNumber">Numer umowy leasingu</Label>
+                  <Input
+                    id="contractNumber"
+                    value={formData.contractNumber}
+                    onChange={(e) => setFormData({ ...formData, contractNumber: e.target.value })}
+                    placeholder="Numer umowy"
+                  />
+                </div>
+              </div>
+            )}
+
+            {formData.configurationType === "CREDIT" && (
+              <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+                <div>
+                  <Label htmlFor="creditProvider">Dostawca kredytu</Label>
+                  <Input
+                    id="creditProvider"
+                    value={formData.creditProvider}
+                    onChange={(e) => setFormData({ ...formData, creditProvider: e.target.value })}
+                    placeholder="Nazwa banku/dostawcy kredytu"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="contractNumber">Numer umowy kredytu</Label>
+                  <Input
+                    id="contractNumber"
+                    value={formData.contractNumber}
+                    onChange={(e) => setFormData({ ...formData, contractNumber: e.target.value })}
+                    placeholder="Numer umowy"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end space-x-2">
