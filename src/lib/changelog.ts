@@ -14,12 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
-    version: '0.9.8-beta',
+    version: '0.9.6-beta',
     date: '2025-11-20',
     changes: [
       {
         type: 'fixed',
         description: 'Naprawiono synchronizację package-lock.json - zregenerowano lock file aby usunąć konflikty wersji pakietów i naprawić błędy podczas builda na Railway',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono wyświetlanie metryk wydajności w health check - sekcja jest teraz zawsze widoczna, nawet jeśli nie ma jeszcze danych',
       },
     ],
   },

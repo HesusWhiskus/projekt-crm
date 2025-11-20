@@ -100,7 +100,7 @@ export default async function AdminHealthPage() {
             ))}
           </div>
 
-          {/* Performance Metrics */}
+          {/* Performance Metrics - Always show, even if no data */}
           {health.performance && (
             <Card>
               <CardHeader>
@@ -113,78 +113,89 @@ export default async function AdminHealthPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>Średni czas</span>
+                {health.performance.totalRequests > 0 ? (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>Średni czas</span>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {health.performance.averageResponseTime}ms
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Średnia z {health.performance.totalRequests} żądań
+                      </div>
                     </div>
-                    <div className="text-2xl font-bold">
-                      {health.performance.averageResponseTime}ms
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Średnia z {health.performance.totalRequests} żądań
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <TrendingUp className="h-4 w-4" />
-                      <span>P95</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <TrendingUp className="h-4 w-4" />
+                        <span>P95</span>
+                      </div>
+                      <div className={`text-2xl font-bold ${
+                        health.performance.p95ResponseTime > 2000 ? "text-red-600" :
+                        health.performance.p95ResponseTime > 1000 ? "text-orange-600" : ""
+                      }`}>
+                        {health.performance.p95ResponseTime}ms
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        95% żądań poniżej
+                      </div>
                     </div>
-                    <div className={`text-2xl font-bold ${
-                      health.performance.p95ResponseTime > 1000 ? "text-orange-600" : 
-                      health.performance.p95ResponseTime > 2000 ? "text-red-600" : ""
-                    }`}>
-                      {health.performance.p95ResponseTime}ms
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      95% żądań poniżej
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <TrendingUp className="h-4 w-4" />
-                      <span>P99</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <TrendingUp className="h-4 w-4" />
+                        <span>P99</span>
+                      </div>
+                      <div className={`text-2xl font-bold ${
+                        health.performance.p99ResponseTime > 2000 ? "text-red-600" : 
+                        health.performance.p99ResponseTime > 1000 ? "text-orange-600" : ""
+                      }`}>
+                        {health.performance.p99ResponseTime}ms
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        99% żądań poniżej
+                      </div>
                     </div>
-                    <div className={`text-2xl font-bold ${
-                      health.performance.p99ResponseTime > 2000 ? "text-red-600" : 
-                      health.performance.p99ResponseTime > 1000 ? "text-orange-600" : ""
-                    }`}>
-                      {health.performance.p99ResponseTime}ms
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      99% żądań poniżej
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <Activity className="h-4 w-4" />
-                      <span>Łącznie</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <Activity className="h-4 w-4" />
+                        <span>Łącznie</span>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {health.performance.totalRequests}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Żądań (24h)
+                      </div>
                     </div>
-                    <div className="text-2xl font-bold">
-                      {health.performance.totalRequests}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Żądań (24h)
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                      <Zap className="h-4 w-4" />
-                      <span>Ostatnia godzina</span>
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {health.performance.requestsLastHour}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Żądań w ostatniej godzinie
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                        <Zap className="h-4 w-4" />
+                        <span>Ostatnia godzina</span>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {health.performance.requestsLastHour}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Żądań w ostatniej godzinie
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      Brak danych o wydajności. Metryki będą dostępne po zebraniu logów aktywności z pomiarami czasu odpowiedzi.
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Metryki są zbierane automatycznie dla żądań API z pomiarem czasu odpowiedzi.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
