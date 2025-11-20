@@ -14,7 +14,7 @@ import { pl } from "date-fns/locale"
 interface Contact {
   id: string
   type: ContactType | null
-  date: Date
+  date: Date | string // Next.js serializes Date as string
   notes: string
   isNote: boolean
   client: {
