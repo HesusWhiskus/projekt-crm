@@ -18,6 +18,7 @@ i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
 ### Zmieniono
 - **Kolorystyka zgodna z iBooster:** Zmieniono główny kolor z niebieskiego na pomarańczowy (#f97316) i kolor destructive na czerwony (#dc2626) zgodnie z kolorystyką systemu iBooster. Zaktualizowano wszystkie komponenty UI używające primary color.
+- **Czyszczenie projektu:** Usunięto zbędne pliki z repozytorium (screeny PNG, pliki historii Cursora, pliki testowe, przestarzałe plany i analizy). Zaktualizowano dokumentację instalacji i wdrożenia (wersje Node.js 20+, informacje o automatycznych migracjach na Railway). Zaktualizowano README.md (wersja 0.10.0-beta). Dodano reguły do .gitignore dla plików PNG, cursor_*.md i test-*.xlsx.
 
 ## [0.9.10-beta] - 2025-01-21
 

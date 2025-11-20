@@ -163,7 +163,9 @@ GOOGLE_CLIENT_SECRET=<twój-google-client-secret>
 
 ## Krok 7: Migracja bazy danych
 
-Po pierwszym udanym deploy:
+**Migracje są automatycznie wykonywane przy starcie aplikacji** przez Dockerfile (start.sh).
+
+Jeśli migracje nie zostały wykonane automatycznie (sprawdź logi w Railway), możesz je uruchomić ręcznie:
 
 1. **W Railway, otwórz swoją aplikację**
 2. **Kliknij zakładkę "Deployments"**
@@ -173,12 +175,6 @@ Po pierwszym udanym deploy:
 
 ```bash
 npx prisma migrate deploy
-```
-
-Lub jeśli migracje nie działają:
-
-```bash
-npx prisma db push
 ```
 
 ---

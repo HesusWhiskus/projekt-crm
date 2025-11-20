@@ -71,10 +71,10 @@ Ten przewodnik opisuje różne opcje wdrożenia aplikacji Internal CRM do środo
    - Po zakończeniu, kliknij "Generate Domain" dla darmowej domeny
 
 9. **Migracja bazy danych:**
-   Po pierwszym deploy, uruchom migracje:
+   Migracje są automatycznie wykonywane przy starcie aplikacji przez Dockerfile (start.sh).
+   Jeśli migracje nie zostały wykonane automatycznie, możesz je uruchomić ręcznie:
    - W Railway, otwórz terminal dla aplikacji
    - Uruchom: `npx prisma migrate deploy`
-   - Lub: `npx prisma db push`
 
 10. **Utwórz konto administratora:**
    - W terminalu Railway: `npm run admin:create`

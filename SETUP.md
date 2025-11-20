@@ -6,7 +6,7 @@
 
 ## Wymagania wstępne
 
-1. **Node.js 18+** - Pobierz i zainstaluj z [nodejs.org](https://nodejs.org/)
+1. **Node.js 20+** - Pobierz i zainstaluj z [nodejs.org](https://nodejs.org/)
 2. **Docker Desktop** (opcjonalnie, jeśli chcesz użyć Docker Compose dla PostgreSQL)
    - Lub zainstaluj PostgreSQL lokalnie
 

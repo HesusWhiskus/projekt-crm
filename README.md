@@ -276,5 +276,5 @@ W przypadku pytań lub problemów:
 
 ---
 
-**Wersja:** 1.0.0  
-**Ostatnia aktualizacja:** 2024
+**Wersja:** 0.10.0-beta  
+**Ostatnia aktualizacja:** 2025

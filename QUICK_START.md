@@ -2,7 +2,7 @@
 
 ## Krok 1: Zainstaluj Node.js
 
-1. Pobierz Node.js 18+ z https://nodejs.org/
+1. Pobierz Node.js 20+ z https://nodejs.org/
 2. Zainstaluj Node.js (zaznacz opcję "Add to PATH" podczas instalacji)
 3. Zrestartuj terminal/PowerShell
 

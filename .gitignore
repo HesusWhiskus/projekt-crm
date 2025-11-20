@@ -8,3 +8,12 @@ obj/
 *.log
 *.cache
 .next/
+
+# Screeny i pliki graficzne
+*.png
+
+# Pliki historii Cursora
+cursor_*.md
+
+# Pliki testowe Excel
+test-*.xlsx

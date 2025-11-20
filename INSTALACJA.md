@@ -4,7 +4,7 @@
 
 Przed rozpoczęciem instalacji upewnij się, że masz zainstalowane:
 
-1. **Node.js 18+** - Pobierz z: https://nodejs.org/
+1. **Node.js 20+** - Pobierz z: https://nodejs.org/
    - Podczas instalacji zaznacz opcję "Add to PATH"
 
 2. **PostgreSQL** (jedna z opcji):
