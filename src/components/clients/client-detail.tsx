@@ -303,11 +303,11 @@ export function ClientDetail({
                 </div>
                 <div>
                   <span className="text-sm font-medium">Ostatni kontakt:</span>{" "}
-                  {client.lastContactAt ? (client.lastContactAt ? new Date(client.lastContactAt) : null)?.toLocaleDateString("pl-PL") || "Nigdy" : "Nigdy"}
+                  {client.lastContactAt ? new Date(client.lastContactAt).toLocaleDateString("pl-PL") : "Nigdy"}
                 </div>
                 <div>
                   <span className="text-sm font-medium">Następny follow-up:</span>{" "}
-                  {client.nextFollowUpAt ? (client.nextFollowUpAt ? new Date(client.nextFollowUpAt) : null)?.toLocaleDateString("pl-PL") || "-" : "-"}
+                  {client.nextFollowUpAt ? new Date(client.nextFollowUpAt).toLocaleDateString("pl-PL") : "-"}
                 </div>
                 <div>
                   <span className="text-sm font-medium">Data utworzenia:</span>{" "}
@@ -426,7 +426,7 @@ export function ClientDetail({
                             contact={{
                               id: contact.id,
                               type: contact.type,
-                              date: new Date(contact.date),
+                              date: contact.date,
                               notes: contact.notes,
                               isNote: contact.isNote,
                               userId: contact.user.id,
@@ -477,15 +477,11 @@ export function ClientDetail({
                                 {task.description}
                               </div>
                             )}
-                            {task.dueDate && (() => {
-                              const dueDate = task.dueDate ? new Date(task.dueDate) : null
-                              if (!dueDate) return null
-                              return (
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  Termin: {dueDate.toLocaleDateString("pl-PL")}
-                                </div>
-                              )
-                            })()}
+                            {task.dueDate && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                Termin: {new Date(task.dueDate).toLocaleDateString("pl-PL")}
+                              </div>
+                            )}
                           </div>
                           <div className="text-sm">
                             {task.assignee?.name || task.assignee?.email || "Nieprzypisane"}

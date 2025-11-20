@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.9-beta',
+    date: '2025-11-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd SelectItem z pustym value - zastąpiono wszystkie value="" specjalnymi wartościami (all/none/unassigned) w 25 miejscach w kodzie. Naprawiono błąd "A <Select.Item /> must have a value prop that is not an empty string" który blokował dostęp do stron klientów, kontaktów i zadań.',
+      },
+    ],
+  },
+  {
     version: '0.9.8-beta',
     date: '2025-11-20',
     changes: [

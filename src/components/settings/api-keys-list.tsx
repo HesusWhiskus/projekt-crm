@@ -107,7 +107,7 @@ export function ApiKeysList() {
               {key.lastUsedAt && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-4 w-4" />
-                  <span>Ostatnie użycie: {(key.lastUsedAt ? new Date(key.lastUsedAt) : null)?.toLocaleDateString("pl-PL") || "-"}</span>
+                  <span>Ostatnie użycie: {new Date(key.lastUsedAt).toLocaleDateString("pl-PL")}</span>
                 </div>
               )}
             </div>

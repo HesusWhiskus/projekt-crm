@@ -161,14 +161,11 @@ export const DashboardWidgets = memo(function DashboardWidgets({
           title: task.title,
           description: task.client ? getClientDisplayName(task.client) : undefined,
           href: `/tasks/${task.id}`,
-          metadata: (() => {
-            const dueDate = task.dueDate ? new Date(task.dueDate) : null
-            return dueDate ? (
-              <span className="text-xs">
-                {dueDate.toLocaleDateString("pl-PL")}
-              </span>
-            ) : undefined
-          })(),
+          metadata: task.dueDate ? (
+            <span className="text-xs">
+              {new Date(task.dueDate).toLocaleDateString("pl-PL")}
+            </span>
+          ) : undefined,
         })),
         emptyState: {
           title: "Brak nadchodzących zadań",

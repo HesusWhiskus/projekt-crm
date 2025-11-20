@@ -82,8 +82,8 @@ export function AdminLogsClient({
   
   const [localFilters, setLocalFilters] = useState({
     action: initialFilters.action || "",
-    entityType: initialFilters.entityType || "",
-    userId: initialFilters.userId || "",
+    entityType: initialFilters.entityType || "all",
+    userId: initialFilters.userId || "all",
     dateFrom: initialFilters.dateFrom || "",
     dateTo: initialFilters.dateTo || "",
   })
@@ -93,8 +93,8 @@ export function AdminLogsClient({
   const applyFilters = () => {
     const params = new URLSearchParams()
     if (localFilters.action) params.set("action", localFilters.action)
-    if (localFilters.entityType) params.set("entityType", localFilters.entityType)
-    if (localFilters.userId) params.set("userId", localFilters.userId)
+    if (localFilters.entityType && localFilters.entityType !== "all") params.set("entityType", localFilters.entityType)
+    if (localFilters.userId && localFilters.userId !== "all") params.set("userId", localFilters.userId)
     if (localFilters.dateFrom) params.set("dateFrom", localFilters.dateFrom)
     if (localFilters.dateTo) params.set("dateTo", localFilters.dateTo)
     params.set("page", "1")
@@ -217,7 +217,7 @@ export function AdminLogsClient({
                       <SelectValue placeholder="Wszystkie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Wszystkie</SelectItem>
+                      <SelectItem value="all">Wszystkie</SelectItem>
                       <SelectItem value="Client">Klient</SelectItem>
                       <SelectItem value="Task">Zadanie</SelectItem>
                       <SelectItem value="Contact">Kontakt</SelectItem>
@@ -237,7 +237,7 @@ export function AdminLogsClient({
                       <SelectValue placeholder="Wszyscy" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Wszyscy</SelectItem>
+                      <SelectItem value="all">Wszyscy</SelectItem>
                       {users.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
                           {user.name || user.email}

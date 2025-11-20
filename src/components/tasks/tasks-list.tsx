@@ -22,7 +22,7 @@ interface Task {
   id: string
   title: string
   description: string | null
-  dueDate: Date | string | null // Next.js serializes Date as string
+  dueDate: Date | null
   status: TaskStatus
   assignee: {
     id: string
@@ -80,8 +80,8 @@ export function TasksList({
   const [isCreating, setIsCreating] = useState(false)
   const [isCreatingClient, setIsCreatingClient] = useState(false)
   const [filters, setFilters] = useState({
-    status: searchParams.get("status") || "",
-    assignedTo: searchParams.get("assignedTo") || "",
+    status: searchParams.get("status") || "all",
+    assignedTo: searchParams.get("assignedTo") || "all",
   })
 
   const handleFilterChange = (key: string, value: string) => {
@@ -89,7 +89,7 @@ export function TasksList({
     setFilters(newFilters)
     const params = new URLSearchParams()
     Object.entries(newFilters).forEach(([k, v]) => {
-      if (v) params.set(k, v)
+      if (v && v !== "all") params.set(k, v)
     })
     params.set("view", view)
     router.push(`/tasks?${params.toString()}`)
@@ -103,8 +103,8 @@ export function TasksList({
   }
 
   const filteredTasks = tasks.filter((task) => {
-    if (filters.status && task.status !== filters.status) return false
-    if (filters.assignedTo && task.assignee?.id !== filters.assignedTo) return false
+    if (filters.status && filters.status !== "all" && task.status !== filters.status) return false
+    if (filters.assignedTo && filters.assignedTo !== "all" && task.assignee?.id !== filters.assignedTo) return false
     return true
   })
 
@@ -112,9 +112,7 @@ export function TasksList({
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    const dueDate = task.dueDate ? new Date(task.dueDate) : null
-    if (!dueDate) return false
-    return dueDate < new Date()
+    return new Date(task.dueDate) < new Date()
   }
 
   return (
@@ -200,7 +198,7 @@ export function TasksList({
                   <SelectValue placeholder="Wszystkie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszystkie</SelectItem>
+                  <SelectItem value="all">Wszystkie</SelectItem>
                   {Object.entries(taskStatusLabels).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
@@ -219,7 +217,7 @@ export function TasksList({
                   <SelectValue placeholder="Wszyscy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszyscy</SelectItem>
+                  <SelectItem value="all">Wszyscy</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.name || user.email}
@@ -309,12 +307,10 @@ export function TasksList({
                   header: "Termin",
                   accessor: (task) => {
                     if (!task.dueDate) return "-"
-                    const dueDate = task.dueDate ? new Date(task.dueDate) : null
-                    if (!dueDate) return "-"
                     const overdue = isOverdue(task)
                     return (
                       <span className={overdue ? "text-red-600 dark:text-red-400 font-medium" : ""}>
-                        {dueDate.toLocaleDateString("pl-PL")}
+                        {new Date(task.dueDate).toLocaleDateString("pl-PL")}
                       </span>
                     )
                   },

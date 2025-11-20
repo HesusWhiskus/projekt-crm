@@ -154,16 +154,12 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
                 </div>
               </div>
             )}
-            {task.dueDate && (() => {
-              const dueDate = task.dueDate ? new Date(task.dueDate) : null
-              if (!dueDate) return null
-              return (
-                <div>
-                  <span className="text-sm font-medium">Termin:</span>{" "}
-                  {dueDate.toLocaleString("pl-PL")}
-                </div>
-              )
-            })()}
+            {task.dueDate && (
+              <div>
+                <span className="text-sm font-medium">Termin:</span>{" "}
+                {new Date(task.dueDate).toLocaleString("pl-PL")}
+              </div>
+            )}
             <div>
               <span className="text-sm font-medium">Status:</span>{" "}
               <span className="px-2 py-1 rounded text-xs bg-muted text-muted-foreground">

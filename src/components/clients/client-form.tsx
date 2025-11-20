@@ -308,15 +308,15 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
             <div className="space-y-2">
               <Label htmlFor="priority">Priorytet</Label>
               <Select
-                value={formData.priority || ""}
-                onValueChange={(value) => setFormData({ ...formData, priority: value ? (value as ClientPriority) : null })}
+                value={formData.priority || "none"}
+                onValueChange={(value) => setFormData({ ...formData, priority: value === "none" ? null : (value as ClientPriority) })}
                 disabled={isLoading}
               >
                 <SelectTrigger id="priority">
                   <SelectValue placeholder="Brak priorytetu" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Brak priorytetu</SelectItem>
+                  <SelectItem value="none">Brak priorytetu</SelectItem>
                   {Object.entries(priorityOptions).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
@@ -359,15 +359,15 @@ export function ClientForm({ users, groups, currentUser, insuranceAgentsEnabled 
             <div className="space-y-2">
               <Label htmlFor="assignedTo">Odpowiedzialny</Label>
               <Select
-                value={formData.assignedTo ?? ""}
-                onValueChange={(value) => setFormData({ ...formData, assignedTo: value === "" ? null : value })}
+                value={formData.assignedTo ?? "none"}
+                onValueChange={(value) => setFormData({ ...formData, assignedTo: value === "none" ? null : value })}
                 disabled={isLoading}
               >
                 <SelectTrigger id="assignedTo">
                   <SelectValue placeholder="Brak przypisania" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Brak przypisania</SelectItem>
+                  <SelectItem value="none">Brak przypisania</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.name || user.email}

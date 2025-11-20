@@ -63,7 +63,7 @@ export function ContactForm({ clientId, users, groups, currentUser, contact, onC
       : utcDateToLocalDateTime(new Date()),
     notes: contact?.notes || "",
     isNote: isNoteMode || false,
-    userId: contact?.userId || currentUser?.id || "",
+    userId: contact?.userId || currentUser?.id || "none",
     clientId: initialClientId,
     sharedGroupIds: contact?.sharedGroups?.map((g) => g.id) || [] as string[],
   })
@@ -98,6 +98,9 @@ export function ContactForm({ clientId, users, groups, currentUser, contact, onC
       formDataToSend.append("date", new Date(formData.date).toISOString())
       formDataToSend.append("notes", formData.notes)
       formDataToSend.append("isNote", formData.isNote ? "true" : "false")
+      if (formData.userId === "none" || !formData.userId) {
+        throw new Error("Użytkownik jest wymagany. Proszę wybrać użytkownika.")
+      }
       formDataToSend.append("userId", formData.userId)
       // Upewnij się, że clientId jest zawsze ustawiony - użyj formData.clientId lub fallback do clientId z props
       const finalClientId = formData.clientId || clientId || ""
@@ -258,7 +261,7 @@ export function ContactForm({ clientId, users, groups, currentUser, contact, onC
                 <SelectValue placeholder="Wybierz użytkownika" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Wybierz użytkownika</SelectItem>
+                <SelectItem value="none">Wybierz użytkownika</SelectItem>
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.name || user.email}

@@ -45,7 +45,7 @@ export function NoteForm({ clientId, users, groups, currentUser, note, onClose, 
       ? utcDateToLocalDateTime(note.date)
       : utcDateToLocalDateTime(new Date()),
     notes: note?.notes || "",
-    userId: note?.userId || currentUser?.id || "",
+    userId: note?.userId || currentUser?.id || "none",
     clientId: note?.clientId || clientId || "",
     sharedGroupIds: note?.sharedGroups?.map((g) => g.id) || [] as string[],
   })
@@ -75,6 +75,9 @@ export function NoteForm({ clientId, users, groups, currentUser, note, onClose, 
       const formDataToSend = new FormData()
       formDataToSend.append("date", new Date(formData.date).toISOString())
       formDataToSend.append("notes", formData.notes)
+      if (formData.userId === "none" || !formData.userId) {
+        throw new Error("Użytkownik jest wymagany. Proszę wybrać użytkownika.")
+      }
       formDataToSend.append("userId", formData.userId)
       
       // Upewnij się, że clientId jest zawsze ustawiony
@@ -166,7 +169,7 @@ export function NoteForm({ clientId, users, groups, currentUser, note, onClose, 
                 <SelectValue placeholder="Wybierz użytkownika" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Wybierz użytkownika</SelectItem>
+                <SelectItem value="none">Wybierz użytkownika</SelectItem>
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.name || user.email}

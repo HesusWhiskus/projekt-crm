@@ -27,7 +27,7 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
     calculationId: policy?.calculationId || calculationId || "",
     clientId: policy?.clientId || clientId || "",
     vehicleId: policy?.vehicleId || vehicleId || "",
-    insuranceCompanyId: policy?.insuranceCompanyId || "",
+    insuranceCompanyId: policy?.insuranceCompanyId || "none",
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -56,7 +56,7 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
       if (!formData.policyNumber) {
         throw new Error("Numer polisy jest wymagany")
       }
-      if (!formData.insuranceCompanyId) {
+      if (!formData.insuranceCompanyId || formData.insuranceCompanyId === "none") {
         throw new Error("Towarzystwo Ubezpieczeniowe jest wymagane")
       }
 
@@ -132,7 +132,7 @@ export function PolicyForm({ policy, calculationId, clientId, vehicleId, onClose
                   <SelectValue placeholder="Wybierz TU" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wybierz TU</SelectItem>
+                  <SelectItem value="none">Wybierz TU</SelectItem>
                   {insuranceCompanies.map((company) => (
                     <SelectItem key={company.id} value={company.id}>
                       {company.name}

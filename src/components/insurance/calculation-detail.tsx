@@ -23,13 +23,13 @@ interface CalculationDetailProps {
     houseNumber: string | null
     apartmentNumber: string | null
     hasDrivingLicense: boolean | null
-    drivingLicenseDate: Date | string | null // Next.js serializes Date as string
+    drivingLicenseDate: Date | null
     occupation: string | null
     maritalStatus: string | null
     hasChildUnder26: boolean | null
     status: string
     value: any
-    validUntil: Date | string | null // Next.js serializes Date as string
+    validUntil: Date | null
     variant: string | null
     scopes: string[]
     client: {
@@ -214,18 +214,14 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
               <p className="text-sm text-muted-foreground">Prawo jazdy</p>
               <p className="font-medium">{calculation.hasDrivingLicense ? "Tak" : "Nie"}</p>
             </div>
-            {calculation.drivingLicenseDate && (() => {
-              const date = calculation.drivingLicenseDate ? new Date(calculation.drivingLicenseDate) : null
-              if (!date) return null
-              return (
-                <div>
-                  <p className="text-sm text-muted-foreground">Data uzyskania prawa jazdy</p>
-                  <p className="font-medium">
-                    {date.toLocaleDateString("pl-PL")}
-                  </p>
-                </div>
-              )
-            })()}
+            {calculation.drivingLicenseDate && (
+              <div>
+                <p className="text-sm text-muted-foreground">Data uzyskania prawa jazdy</p>
+                <p className="font-medium">
+                  {new Date(calculation.drivingLicenseDate).toLocaleDateString("pl-PL")}
+                </p>
+              </div>
+            )}
             <div>
               <p className="text-sm text-muted-foreground">Dziecko poniżej 26 lat</p>
               <p className="font-medium">{calculation.hasChildUnder26 ? "Tak" : "Nie"}</p>
@@ -270,18 +266,14 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
                 </p>
               </div>
             )}
-            {calculation.validUntil && (() => {
-              const date = calculation.validUntil ? new Date(calculation.validUntil) : null
-              if (!date) return null
-              return (
-                <div>
-                  <p className="text-sm text-muted-foreground">Ważna do</p>
-                  <p className="font-medium">
-                    {date.toLocaleDateString("pl-PL")}
-                  </p>
-                </div>
-              )
-            })()}
+            {calculation.validUntil && (
+              <div>
+                <p className="text-sm text-muted-foreground">Ważna do</p>
+                <p className="font-medium">
+                  {new Date(calculation.validUntil).toLocaleDateString("pl-PL")}
+                </p>
+              </div>
+            )}
             <div>
               <p className="text-sm text-muted-foreground">Utworzona</p>
               <p className="font-medium">

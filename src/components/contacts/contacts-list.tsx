@@ -79,9 +79,9 @@ export function ContactsList({
   const [editingContactId, setEditingContactId] = useState<string | null>(null)
   const [selectedClientId, setSelectedClientId] = useState<string>("")
   const [filters, setFilters] = useState({
-    type: searchParams.get("type") || "",
-    clientId: searchParams.get("clientId") || "",
-    userId: searchParams.get("userId") || "",
+    type: searchParams.get("type") || "all",
+    clientId: searchParams.get("clientId") || "all",
+    userId: searchParams.get("userId") || "all",
   })
 
   const handleFilterChange = (key: string, value: string) => {
@@ -89,7 +89,7 @@ export function ContactsList({
     setFilters(newFilters)
     const params = new URLSearchParams()
     Object.entries(newFilters).forEach(([k, v]) => {
-      if (v) params.set(k, v)
+      if (v && v !== "all") params.set(k, v)
     })
     router.push(`/contacts?${params.toString()}`)
   }
@@ -152,7 +152,7 @@ export function ContactsList({
                   <SelectValue placeholder="Wszystkie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszystkie</SelectItem>
+                  <SelectItem value="all">Wszystkie</SelectItem>
                   {Object.entries(contactTypeLabels).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
@@ -171,7 +171,7 @@ export function ContactsList({
                   <SelectValue placeholder="Wszyscy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszyscy</SelectItem>
+                  <SelectItem value="all">Wszyscy</SelectItem>
                   {clients.map((client) => (
                     <SelectItem key={client.id} value={client.id}>
                       {client.type === "COMPANY" ? (client.companyName || "Brak nazwy firmy") : `${client.firstName} ${client.lastName}`.trim() || "Brak nazwy"}
@@ -190,7 +190,7 @@ export function ContactsList({
                   <SelectValue placeholder="Wszyscy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszyscy</SelectItem>
+                  <SelectItem value="all">Wszyscy</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.name || user.email}

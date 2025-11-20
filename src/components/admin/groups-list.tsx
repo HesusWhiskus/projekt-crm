@@ -233,14 +233,14 @@ export function GroupsList({ groups: initialGroups, users }: GroupsListProps) {
                       {addingUserToGroup === group.id && (
                         <div className="flex gap-2 mb-3">
                           <Select
-                            value={selectedUserId || ""}
-                            onValueChange={(value) => setSelectedUserId(value)}
+                            value={selectedUserId || "none"}
+                            onValueChange={(value) => setSelectedUserId(value === "none" ? "" : value)}
                           >
                             <SelectTrigger className="flex-1">
                               <SelectValue placeholder="Wybierz użytkownika" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">Wybierz użytkownika</SelectItem>
+                              <SelectItem value="none">Wybierz użytkownika</SelectItem>
                               {users
                                 .filter(
                                   (u) => !group.users.some((ug) => ug.user.id === u.id)
@@ -255,7 +255,7 @@ export function GroupsList({ groups: initialGroups, users }: GroupsListProps) {
                           <Button
                             type="button"
                             onClick={() => handleAddUserToGroup(group.id)}
-                            disabled={!selectedUserId}
+                            disabled={!selectedUserId || selectedUserId === "none"}
                           >
                             Dodaj
                           </Button>

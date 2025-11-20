@@ -344,11 +344,11 @@ export function UsersList({ users }: UsersListProps) {
                 <div className="space-y-2">
                   <Label htmlFor="edit-organization">Organizacja</Label>
                   <Select
-                    value={editFormData.organizationId || ""}
+                    value={editFormData.organizationId || "none"}
                     onValueChange={(value) =>
                       setEditFormData({
                         ...editFormData,
-                        organizationId: value,
+                        organizationId: value === "none" ? null : value,
                       })
                     }
                     disabled={isLoading}
@@ -357,7 +357,7 @@ export function UsersList({ users }: UsersListProps) {
                       <SelectValue placeholder="Brak organizacji" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Brak organizacji</SelectItem>
+                      <SelectItem value="none">Brak organizacji</SelectItem>
                       {organizations.map((org) => (
                         <SelectItem key={org.id} value={org.id}>
                           {org.name}

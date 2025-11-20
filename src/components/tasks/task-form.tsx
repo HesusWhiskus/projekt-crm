@@ -60,7 +60,7 @@ export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess,
       ? utcDateToLocalDateTime(initialDueDate)
       : "",
     status: (task?.status || "TODO") as TaskStatus,
-    assignedTo: task?.assignedTo || currentUser?.id || "",
+    assignedTo: task?.assignedTo || currentUser?.id || "unassigned",
     clientId: task?.clientId || "",
     sharedGroupIds: task?.sharedGroups?.map(g => g.id) || [] as string[],
   })
@@ -83,7 +83,8 @@ export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess,
       }
       
       if (formData.dueDate) bodyData.dueDate = formData.dueDate
-      if (formData.assignedTo) bodyData.assignedTo = formData.assignedTo
+      if (formData.assignedTo && formData.assignedTo !== "unassigned") bodyData.assignedTo = formData.assignedTo
+      else if (formData.assignedTo === "unassigned") bodyData.assignedTo = null
       if (formData.clientId) bodyData.clientId = formData.clientId
       if (formData.sharedGroupIds.length > 0) bodyData.sharedGroupIds = formData.sharedGroupIds
       
@@ -184,7 +185,7 @@ export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess,
                   <SelectValue placeholder="Nieprzypisane" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Nieprzypisane</SelectItem>
+                  <SelectItem value="unassigned">Nieprzypisane</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.name || user.email}

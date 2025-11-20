@@ -46,7 +46,7 @@ export function CalculationForm({ calculation, clientId, vehicleId, onClose, onS
     value: calculation?.value?.toString() || "",
     validUntil: calculation?.validUntil ? new Date(calculation.validUntil).toISOString().split('T')[0] : "",
     // Insurance form data
-    variant: calculation?.variant || "",
+    variant: calculation?.variant || "none",
     scopes: calculation?.scopes || [] as string[],
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -91,7 +91,7 @@ export function CalculationForm({ calculation, clientId, vehicleId, onClose, onS
         status: formData.status,
         value: formData.value ? parseFloat(formData.value) : null,
         validUntil: formData.validUntil ? new Date(formData.validUntil).toISOString() : null,
-        variant: formData.variant || null,
+        variant: formData.variant === "none" ? null : formData.variant || null,
         scopes: formData.scopes,
       }
 
@@ -317,7 +317,7 @@ export function CalculationForm({ calculation, clientId, vehicleId, onClose, onS
                     <SelectValue placeholder="Wybierz wariant" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Wybierz wariant</SelectItem>
+                    <SelectItem value="none">Wybierz wariant</SelectItem>
                     <SelectItem value="MINIMAL">Minimalny</SelectItem>
                     <SelectItem value="OPTIMAL">Optymalny</SelectItem>
                     <SelectItem value="MAXIMAL">Maksymalny</SelectItem>

@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.9-beta] - 2025-11-20
+
+### Naprawiono
+- **Błąd SelectItem z pustym value:** Naprawiono błąd "A <Select.Item /> must have a value prop that is not an empty string" występujący w 25 miejscach w kodzie. Zastąpiono wszystkie `value=""` specjalnymi wartościami (`"all"` dla filtrów, `"none"` dla braku wyboru, `"unassigned"` dla braku przypisania) i zaktualizowano logikę filtrowania/wyboru w komponentach. Naprawione komponenty: `tasks-list.tsx`, `contacts-list.tsx`, `clients-list.tsx`, `advanced-filters.tsx`, `task-form.tsx`, `client-form.tsx`, `contact-form.tsx`, `note-form.tsx`, `policy-form.tsx`, `calculation-form.tsx`, `signup-form.tsx`, `bulk-assign-clients.tsx`, `users-list.tsx`, `groups-list.tsx`, `admin-logs-client.tsx`.
+
 ## [0.9.8-beta] - 2025-11-20
 
 ### Naprawiono

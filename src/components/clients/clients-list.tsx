@@ -90,11 +90,11 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
   const [isCreating, setIsCreating] = useState(false)
   
   const [filters, setFilters] = useState({
-    status: searchParams.get("status") || "",
+    status: searchParams.get("status") || "all",
     search: searchParams.get("search") || "",
-    assignedTo: searchParams.get("assignedTo") || "",
+    assignedTo: searchParams.get("assignedTo") || "all",
     source: searchParams.get("source") || "",
-    groupId: searchParams.get("groupId") || "",
+    groupId: searchParams.get("groupId") || "all",
   })
 
   // Odczytaj aktualne sortowanie z URL
@@ -114,7 +114,7 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
     setFilters(newFilters)
     const params = new URLSearchParams()
     Object.entries(newFilters).forEach(([k, v]) => {
-      if (v) params.set(k, v)
+      if (v && v !== "all") params.set(k, v)
     })
     // Resetuj stronę do 1 przy zmianie filtrów
     params.delete("page")
@@ -329,7 +329,7 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
                     <SelectValue placeholder="Wszystkie" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Wszystkie</SelectItem>
+                    <SelectItem value="all">Wszystkie</SelectItem>
                     {Object.entries(clientStatusLabels).map(([value, label]) => (
                       <SelectItem key={value} value={value}>
                         {label}
@@ -348,7 +348,7 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
                     <SelectValue placeholder="Wszyscy" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Wszyscy</SelectItem>
+                    <SelectItem value="all">Wszyscy</SelectItem>
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id}>
                         {user.name || user.email}
@@ -368,7 +368,7 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
                       <SelectValue placeholder="Wszystkie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Wszystkie</SelectItem>
+                      <SelectItem value="all">Wszystkie</SelectItem>
                       {groups.map((group) => (
                         <SelectItem key={group.id} value={group.id}>
                           {group.name}

@@ -12,7 +12,7 @@ interface Task {
   id: string
   title: string
   description: string | null
-  dueDate: Date | string | null // Next.js serializes Date as string
+  dueDate: Date | null
   status: TaskStatus
   assignee: {
     id: string
@@ -48,9 +48,7 @@ export function TasksKanban({ tasks }: TasksKanbanProps) {
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    const dueDate = task.dueDate ? new Date(task.dueDate) : null
-    if (!dueDate) return false
-    return dueDate < new Date()
+    return new Date(task.dueDate) < new Date()
   }
 
   const getClientDisplayName = (client: Task["client"]): string => {
@@ -111,21 +109,17 @@ export function TasksKanban({ tasks }: TasksKanbanProps) {
                                   {task.description}
                                 </p>
                               )}
-                              {task.dueDate && (() => {
-                                const dueDate = task.dueDate ? new Date(task.dueDate) : null
-                                if (!dueDate) return null
-                                return (
-                                  <div
-                                    className={`text-xs ${
-                                      overdue
-                                        ? "text-red-600 dark:text-red-400 font-medium"
-                                        : "text-muted-foreground"
-                                    }`}
-                                  >
-                                    {dueDate.toLocaleDateString("pl-PL")}
-                                  </div>
-                                )
-                              })()}
+                              {task.dueDate && (
+                                <div
+                                  className={`text-xs ${
+                                    overdue
+                                      ? "text-red-600 dark:text-red-400 font-medium"
+                                      : "text-muted-foreground"
+                                  }`}
+                                >
+                                  {new Date(task.dueDate).toLocaleDateString("pl-PL")}
+                                </div>
+                              )}
                               {task.client && (
                                 <div className="text-xs text-muted-foreground">
                                   Klient: {getClientDisplayName(task.client)}

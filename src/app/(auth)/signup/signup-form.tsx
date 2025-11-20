@@ -135,15 +135,15 @@ export default function SignUpForm() {
         <div className="space-y-2">
           <Label htmlFor="organizationId">Organizacja (opcjonalnie)</Label>
           <Select
-            value={formData.organizationId || ""}
-            onValueChange={(value) => setFormData({ ...formData, organizationId: value || "" })}
+            value={formData.organizationId || "none"}
+            onValueChange={(value) => setFormData({ ...formData, organizationId: value === "none" ? "" : value })}
             disabled={isLoading || organizations.length === 0}
           >
             <SelectTrigger id="organizationId">
               <SelectValue placeholder={organizations.length === 0 ? "Brak dostępnych organizacji" : "Brak organizacji"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">{organizations.length === 0 ? "Brak dostępnych organizacji" : "Brak organizacji"}</SelectItem>
+              <SelectItem value="none">{organizations.length === 0 ? "Brak dostępnych organizacji" : "Brak organizacji"}</SelectItem>
               {organizations.map((org) => (
                 <SelectItem key={org.id} value={org.id}>
                   {org.name}

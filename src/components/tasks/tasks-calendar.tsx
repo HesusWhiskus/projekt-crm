@@ -14,7 +14,7 @@ interface Task {
   id: string
   title: string
   description: string | null
-  dueDate: Date | string | null // Next.js serializes Date as string
+  dueDate: Date | null
   status: TaskStatus
   assignee: {
     id: string
@@ -60,20 +60,16 @@ export function TasksCalendar({ tasks, users, groups, currentUser }: TasksCalend
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
   const getTasksForDay = (day: Date) => {
-    return tasks.filter((task) => {
-      if (!task.dueDate) return false
-      const dueDate = task.dueDate ? new Date(task.dueDate) : null
-      return dueDate && isSameDay(dueDate, day)
-    })
+    return tasks.filter(
+      (task) => task.dueDate && isSameDay(new Date(task.dueDate), day)
+    )
   }
 
   const isOverdue = (task: Task): boolean => {
     if (!task.dueDate || task.status === "COMPLETED") {
       return false
     }
-    const dueDate = task.dueDate ? new Date(task.dueDate) : null
-    if (!dueDate) return false
-    return dueDate < new Date()
+    return new Date(task.dueDate) < new Date()
   }
 
   const prevMonth = () => {

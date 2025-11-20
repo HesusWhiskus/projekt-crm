@@ -12,9 +12,9 @@ interface PolicyDetailProps {
   policy: {
     id: string
     policyNumber: string
-    issueDate: Date | string // Next.js serializes Date as string
-    validFrom: Date | string // Next.js serializes Date as string
-    validTo: Date | string // Next.js serializes Date as string
+    issueDate: Date
+    validFrom: Date
+    validTo: Date
     status: string
     client: {
       id: string
@@ -44,9 +44,9 @@ interface PolicyDetailProps {
       id: string
       filename: string
       path: string
-      createdAt: Date | string // Next.js serializes Date as string
+      createdAt: Date
     }>
-    createdAt: Date | string // Next.js serializes Date as string
+    createdAt: Date
   }
 }
 
@@ -112,11 +112,10 @@ export function PolicyDetail({ policy }: PolicyDetailProps) {
     )
   }
 
-  const validToDate = new Date(policy.validTo)
   const isExpiringSoon =
     policy.status === "ACTIVE" &&
-    validToDate <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) &&
-    validToDate >= new Date()
+    new Date(policy.validTo) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) &&
+    new Date(policy.validTo) >= new Date()
 
   return (
     <div className="space-y-6">

@@ -14,7 +14,7 @@ import { pl } from "date-fns/locale"
 interface Contact {
   id: string
   type: ContactType | null
-  date: Date | string // Next.js serializes Date as string
+  date: Date
   notes: string
   isNote: boolean
   client: {
@@ -231,7 +231,7 @@ export function ContactTimeline({
                               contact={{
                                 id: contact.id,
                                 type: contact.type,
-                                date: new Date(contact.date),
+                                date: contact.date,
                                 notes: contact.notes,
                                 isNote: contact.isNote,
                                 userId: contact.user.id,

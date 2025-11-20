@@ -52,15 +52,15 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
   const router = useRouter()
   const [clients, setClients] = useState<Client[]>(initialClients)
   const [selectedClientIds, setSelectedClientIds] = useState<Set<string>>(new Set())
-  const [assignedTo, setAssignedTo] = useState<string>("")
+  const [assignedTo, setAssignedTo] = useState<string>("none")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [filters, setFilters] = useState({
     search: "",
-    status: "",
-    assignedTo: "",
+    status: "all",
+    assignedTo: "all",
   })
 
   // Filter clients
@@ -75,11 +75,11 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
       if (!matchesSearch) return false
     }
 
-    if (filters.status && client.status !== filters.status) {
+    if (filters.status && filters.status !== "all" && client.status !== filters.status) {
       return false
     }
 
-    if (filters.assignedTo) {
+    if (filters.assignedTo && filters.assignedTo !== "all") {
       if (filters.assignedTo === "unassigned") {
         if (client.assignedTo !== null) return false
       } else {
@@ -125,7 +125,7 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
       return
     }
 
-    if (!assignedTo) {
+    if (!assignedTo || assignedTo === "none") {
       setError("Wybierz użytkownika do przypisania")
       return
     }
@@ -212,7 +212,7 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
-                value={filters.status || ""}
+                value={filters.status || "all"}
                 onValueChange={(value) => {
                   setFilters({ ...filters, status: value })
                   setCurrentPage(1)
@@ -222,7 +222,7 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
                   <SelectValue placeholder="Wszystkie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszystkie</SelectItem>
+                  <SelectItem value="all">Wszystkie</SelectItem>
                   {Object.entries(statusLabels).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
@@ -235,7 +235,7 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
             <div className="space-y-2">
               <Label htmlFor="filterAssignedTo">Przypisany do</Label>
               <Select
-                value={filters.assignedTo || ""}
+                value={filters.assignedTo || "all"}
                 onValueChange={(value) => {
                   setFilters({ ...filters, assignedTo: value })
                   setCurrentPage(1)
@@ -245,7 +245,7 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
                   <SelectValue placeholder="Wszyscy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Wszyscy</SelectItem>
+                  <SelectItem value="all">Wszyscy</SelectItem>
                   <SelectItem value="unassigned">Nieprzypisani</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
@@ -279,14 +279,14 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
                 <div className="space-y-2">
                   <Label htmlFor="assignTo">Przypisz do</Label>
                   <Select
-                    value={assignedTo || ""}
+                    value={assignedTo || "none"}
                     onValueChange={(value) => setAssignedTo(value)}
                   >
                     <SelectTrigger id="assignTo" className="w-48">
                       <SelectValue placeholder="Wybierz użytkownika" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Wybierz użytkownika</SelectItem>
+                      <SelectItem value="none">Wybierz użytkownika</SelectItem>
                       {users.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
                           {user.name || user.email}

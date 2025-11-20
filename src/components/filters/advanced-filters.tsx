@@ -39,7 +39,7 @@ export function AdvancedFilters({
   const [localValues, setLocalValues] = useState<Record<string, any>>(values)
 
   const activeFiltersCount = Object.values(localValues).filter(
-    (v) => v !== undefined && v !== null && v !== ""
+    (v) => v !== undefined && v !== null && v !== "" && v !== "all"
   ).length
 
   const handleChange = (id: string, value: any) => {
@@ -95,7 +95,7 @@ export function AdvancedFilters({
                 <div className="flex flex-wrap gap-2 pb-4 border-b">
                   {filters.map((filter) => {
                     const value = localValues[filter.id]
-                    if (value === undefined || value === null || value === "") return null
+                    if (value === undefined || value === null || value === "" || value === "all") return null
 
                     const displayValue =
                       filter.type === "select"
@@ -146,14 +146,14 @@ export function AdvancedFilters({
                         <div key={filter.id} className="space-y-2">
                           <Label htmlFor={filter.id}>{filter.label}</Label>
                           <Select
-                            value={localValues[filter.id] || ""}
-                            onValueChange={(value) => handleChange(filter.id, value)}
+                            value={localValues[filter.id] || "all"}
+                            onValueChange={(value) => handleChange(filter.id, value === "all" ? undefined : value)}
                           >
                             <SelectTrigger id={filter.id}>
                               <SelectValue placeholder="Wszystkie" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">Wszystkie</SelectItem>
+                              <SelectItem value="all">Wszystkie</SelectItem>
                               {filter.options?.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
                                   {option.label}
@@ -198,11 +198,11 @@ export function AdvancedFilters({
                         <div key={filter.id} className="space-y-2">
                           <Label htmlFor={filter.id}>{filter.label}</Label>
                           <Select
-                            value={localValues[filter.id] === undefined ? "" : String(localValues[filter.id])}
+                            value={localValues[filter.id] === undefined ? "all" : String(localValues[filter.id])}
                             onValueChange={(value) =>
                               handleChange(
                                 filter.id,
-                                value === "" ? undefined : value === "true"
+                                value === "all" ? undefined : value === "true"
                               )
                             }
                           >
@@ -210,7 +210,7 @@ export function AdvancedFilters({
                               <SelectValue placeholder="Wszystkie" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">Wszystkie</SelectItem>
+                              <SelectItem value="all">Wszystkie</SelectItem>
                               <SelectItem value="true">Tak</SelectItem>
                               <SelectItem value="false">Nie</SelectItem>
                             </SelectContent>
