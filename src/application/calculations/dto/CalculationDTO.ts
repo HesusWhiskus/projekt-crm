@@ -1,3 +1,5 @@
+import { InsuranceScope } from '@prisma/client'
+
 export interface CalculationDTO {
   id: string
   pesel: string | null
@@ -25,7 +27,7 @@ export interface CalculationDTO {
   value: number | null
   validUntil: Date | null
   variant: 'MINIMAL' | 'OPTIMAL' | 'MAXIMAL' | null
-  scopes: ('OC' | 'AC' | 'NNW' | 'ASS')[]
+  scopes: InsuranceScope[]
   externalId: string | null
   syncedAt: Date | null
   createdAt: Date

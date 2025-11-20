@@ -17,13 +17,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { ClientType } from "@prisma/client"
+import { getClientDisplayName } from "@/lib/client-utils"
 
 interface Client {
   id: string
   firstName: string | null
   lastName: string | null
   companyName: string | null
-  type: "PERSON" | "COMPANY"
+  type: ClientType
   email: string | null
 }
 
@@ -118,9 +120,7 @@ export function SearchableClientSelect({
   }
 
   const displayValue = selectedClient
-    ? selectedClient.type === "COMPANY"
-      ? selectedClient.companyName || "Brak nazwy firmy"
-      : `${selectedClient.firstName || ""} ${selectedClient.lastName || ""}`.trim() || "Brak nazwy"
+    ? getClientDisplayName(selectedClient)
     : placeholder
 
   return (
@@ -160,10 +160,7 @@ export function SearchableClientSelect({
             </CommandEmpty>
             <CommandGroup>
               {clients.map((client) => {
-                const clientName =
-                  client.type === "COMPANY"
-                    ? client.companyName || "Brak nazwy firmy"
-                    : `${client.firstName || ""} ${client.lastName || ""}`.trim() || "Brak nazwy"
+                const clientName = getClientDisplayName(client)
 
                 return (
                   <CommandItem

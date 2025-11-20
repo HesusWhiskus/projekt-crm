@@ -5,6 +5,20 @@ import {
   FindPoliciesOptions,
 } from '@/domain/policies/repositories/IPolicyRepository'
 import { db } from '@/lib/db'
+import { Prisma } from '@prisma/client'
+
+/**
+ * Helper to convert Prisma JsonValue to Record<string, any> | null
+ */
+function convertJsonValueToRecord(value: Prisma.JsonValue | null): Record<string, any> | null {
+  if (value === null || value === undefined) {
+    return null
+  }
+  if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    return value as Record<string, any>
+  }
+  return null
+}
 
 /**
  * Prisma implementation of IPolicyRepository
@@ -80,7 +94,7 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       leasingCompany: policyData.leasingCompany,
       creditProvider: policyData.creditProvider,
       contractNumber: policyData.contractNumber,
-      configurationMetadata: policyData.configurationMetadata,
+      configurationMetadata: convertJsonValueToRecord(policyData.configurationMetadata),
       createdAt: policyData.createdAt,
       updatedAt: policyData.updatedAt,
     })
@@ -117,7 +131,7 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       leasingCompany: policyData.leasingCompany,
       creditProvider: policyData.creditProvider,
       contractNumber: policyData.contractNumber,
-      configurationMetadata: policyData.configurationMetadata,
+      configurationMetadata: convertJsonValueToRecord(policyData.configurationMetadata),
       createdAt: policyData.createdAt,
       updatedAt: policyData.updatedAt,
     })
@@ -211,7 +225,7 @@ export class PrismaPolicyRepository implements IPolicyRepository {
         leasingCompany: data.leasingCompany,
         creditProvider: data.creditProvider,
         contractNumber: data.contractNumber,
-        configurationMetadata: data.configurationMetadata,
+        configurationMetadata: convertJsonValueToRecord(data.configurationMetadata),
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       })
@@ -268,7 +282,9 @@ export class PrismaPolicyRepository implements IPolicyRepository {
         leasingCompany: data.leasingCompany,
         creditProvider: data.creditProvider,
         contractNumber: data.contractNumber,
-        configurationMetadata: data.configurationMetadata,
+        configurationMetadata: data.configurationMetadata 
+          ? (data.configurationMetadata as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
       },
     })
 
@@ -291,7 +307,7 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       leasingCompany: created.leasingCompany,
       creditProvider: created.creditProvider,
       contractNumber: created.contractNumber,
-      configurationMetadata: created.configurationMetadata,
+      configurationMetadata: convertJsonValueToRecord(created.configurationMetadata),
       createdAt: created.createdAt,
       updatedAt: created.updatedAt,
     })
@@ -320,7 +336,9 @@ export class PrismaPolicyRepository implements IPolicyRepository {
         leasingCompany: data.leasingCompany,
         creditProvider: data.creditProvider,
         contractNumber: data.contractNumber,
-        configurationMetadata: data.configurationMetadata,
+        configurationMetadata: data.configurationMetadata 
+          ? (data.configurationMetadata as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
       },
     })
 
@@ -343,7 +361,7 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       leasingCompany: updated.leasingCompany,
       creditProvider: updated.creditProvider,
       contractNumber: updated.contractNumber,
-      configurationMetadata: updated.configurationMetadata,
+      configurationMetadata: convertJsonValueToRecord(updated.configurationMetadata),
       createdAt: updated.createdAt,
       updatedAt: updated.updatedAt,
     })

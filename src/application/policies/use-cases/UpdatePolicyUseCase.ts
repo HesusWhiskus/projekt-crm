@@ -86,6 +86,11 @@ export class UpdatePolicyUseCase {
       organizationId: data.organizationId,
       externalId: data.externalId,
       syncedAt: data.syncedAt,
+      configurationType: data.configurationType,
+      leasingCompany: data.leasingCompany,
+      creditProvider: data.creditProvider,
+      contractNumber: data.contractNumber,
+      configurationMetadata: data.configurationMetadata,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     }

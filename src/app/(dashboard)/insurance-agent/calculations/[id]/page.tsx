@@ -89,7 +89,28 @@ export default async function CalculationDetailPage({
     notFound()
   }
 
-  return <CalculationDetail calculation={calculation} />
+  // Convert Decimal to number and ensure proper types for offers
+  const calculationWithConvertedOffers = {
+    ...calculation,
+    offers: calculation.offers.map((offer) => ({
+      ...offer,
+      price: typeof offer.price === 'object' && 'toNumber' in offer.price 
+        ? offer.price.toNumber() 
+        : typeof offer.price === 'string' 
+        ? parseFloat(offer.price) 
+        : offer.price,
+      installmentAmount: offer.installmentAmount 
+        ? (typeof offer.installmentAmount === 'object' && 'toNumber' in offer.installmentAmount
+          ? offer.installmentAmount.toNumber()
+          : typeof offer.installmentAmount === 'string'
+          ? parseFloat(offer.installmentAmount)
+          : offer.installmentAmount)
+        : null,
+      scopes: offer.scopes as any, // scopes is already InsuranceScope[] from Prisma
+    })),
+  }
+
+  return <CalculationDetail calculation={calculationWithConvertedOffers} />
 }
 
 

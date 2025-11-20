@@ -1,10 +1,10 @@
-import { ClientStatus, ClientPriority } from '@prisma/client'
+import { ClientStatus, ClientPriority, ClientType } from '@prisma/client'
 
 /**
  * Data Transfer Object for updating a client
  */
 export interface UpdateClientDTO {
-  type?: "PERSON" | "COMPANY"
+  type?: ClientType
   firstName?: string
   lastName?: string
   pesel?: string | null

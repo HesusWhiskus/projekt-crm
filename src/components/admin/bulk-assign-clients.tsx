@@ -7,16 +7,17 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ClientStatus } from "@prisma/client"
+import { ClientStatus, ClientType } from "@prisma/client"
 import { useRouter } from "next/navigation"
 import { Search, UserCheck, AlertCircle } from "lucide-react"
+import { getClientDisplayName } from "@/lib/client-utils"
 
 interface Client {
   id: string
   firstName: string | null
   lastName: string | null
   companyName: string | null
-  type: "PERSON" | "COMPANY"
+  type: ClientType
   status: ClientStatus
   assignedTo: string | null
   assignee: {
@@ -329,11 +330,7 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
                       </tr>
                     ) : (
                       paginatedClients.map((client) => {
-                        const clientName =
-                          client.type === "COMPANY"
-                            ? client.companyName || "Brak nazwy firmy"
-                            : `${client.firstName || ""} ${client.lastName || ""}`.trim() ||
-                              "Brak nazwy"
+                        const clientName = getClientDisplayName(client)
 
                         return (
                           <tr

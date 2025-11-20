@@ -8,6 +8,7 @@ import { Edit, ArrowLeft } from "lucide-react"
 import { CalculationForm } from "./calculation-form"
 import { OffersList } from "./offers-list"
 import Link from "next/link"
+import { InsuranceScope } from "@prisma/client"
 
 interface CalculationDetailProps {
   calculation: {
@@ -43,7 +44,7 @@ interface CalculationDetailProps {
       }
       price: number | string
       packageType: string | null
-      scopes: string[]
+      scopes: InsuranceScope[]
       installments: number | null
       installmentAmount: number | string | null
       validUntil: Date | string | null

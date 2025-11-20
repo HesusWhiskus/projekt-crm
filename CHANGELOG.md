@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.1-beta] - 2025-01-21
+
+### Naprawiono
+- **Błąd TypeScript - typy klientów:** Naprawiono błąd kompilacji TypeScript spowodowany nieaktualnymi typami klientów w komponentach. Zaktualizowano interfejsy `Client` w `bulk-assign-clients.tsx` i `client-select.tsx` aby używały `ClientType` z Prisma zamiast hardcoded `"PERSON" | "COMPANY"`. Utworzono helper `client-utils.ts` z funkcjami `isCompanyType` i `getClientDisplayName` do obsługi wszystkich typów klientów (PERSON, COMPANY, SOLE_PROPRIETORSHIP, LIMITED_LIABILITY_COMPANY, JOINT_STOCK_COMPANY, CIVIL_PARTNERSHIP). Zaktualizowano DTO (`CreateClientDTO`, `UpdateClientDTO`) i naprawiono błędy TypeScript w `CalculationDTO`, `PolicyDTO` oraz komponentach związanych z ofertami i polisami.
+
 ## [0.10.0-beta] - 2025-01-21
 
 ### Dodano

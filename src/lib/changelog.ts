@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.1-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd TypeScript - typy klientów - zaktualizowano interfejsy Client w komponentach aby używały ClientType z Prisma, utworzono helper client-utils.ts do obsługi wszystkich typów klientów (JDG, sp. z o.o., SA, spółka cywilna). Naprawiono również błędy TypeScript w CalculationDTO, PolicyDTO i komponentach związanych z ofertami.',
+      },
+    ],
+  },
+  {
     version: '0.10.0-beta',
     date: '2025-01-21',
     changes: [
