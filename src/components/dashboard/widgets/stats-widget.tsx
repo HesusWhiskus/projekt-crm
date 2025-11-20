@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import Link from "next/link"
 
 export interface StatsWidgetProps {
   title: string
@@ -17,6 +18,8 @@ export interface StatsWidgetProps {
   description?: string
   className?: string
   isLoading?: boolean
+  href?: string
+  onClick?: () => void
 }
 
 export function StatsWidget({
@@ -27,26 +30,18 @@ export function StatsWidget({
   description,
   className,
   isLoading = false,
+  href,
+  onClick,
 }: StatsWidgetProps) {
-  if (isLoading) {
-    return (
-      <Card className={className}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            <Skeleton className="h-4 w-24" />
-          </CardTitle>
-          {Icon && <Skeleton className="h-4 w-4 rounded" />}
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-8 w-32 mb-2" />
-          {description && <Skeleton className="h-4 w-full" />}
-        </CardContent>
-      </Card>
-    )
-  }
+  const isClickable = !!href || !!onClick
+  const cardClassName = cn(
+    "hover:shadow-md transition-shadow",
+    isClickable && "cursor-pointer",
+    className
+  )
 
-  return (
-    <Card className={cn("hover:shadow-md transition-shadow", className)}>
+  const cardContent = (
+    <Card className={cardClassName} onClick={onClick}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
@@ -75,5 +70,32 @@ export function StatsWidget({
       </CardContent>
     </Card>
   )
+
+  if (isLoading) {
+    return (
+      <Card className={className}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            <Skeleton className="h-4 w-24" />
+          </CardTitle>
+          {Icon && <Skeleton className="h-4 w-4 rounded" />}
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-8 w-32 mb-2" />
+          {description && <Skeleton className="h-4 w-full" />}
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (href) {
+    return (
+      <Link href={href} className="block">
+        {cardContent}
+      </Link>
+    )
+  }
+
+  return cardContent
 }
 

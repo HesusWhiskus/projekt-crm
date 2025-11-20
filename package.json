@@ -1,6 +1,6 @@
 {
   "name": "internal-crm",
-  "version": "0.9.0-beta",
+  "version": "0.9.1-beta",
   "description": "Wewnętrzny system CRM do zarządzania relacjami z agencjami ubezpieczeniowymi. Zawiera zarządzanie klientami, kontaktami, zadaniami oraz integrację z Google Calendar.",
   "private": true,
   "author": "Internal CRM Team",
@@ -35,6 +35,9 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.6.0",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.19.0",
     "@radix-ui/react-checkbox": "^1.3.3",

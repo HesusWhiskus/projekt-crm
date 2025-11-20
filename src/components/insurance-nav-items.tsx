@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Shield, FileText, Car, ChevronDown } from "lucide-react"
+import { Shield, FileText, Car, ChevronDown, Workflow } from "lucide-react"
 import { FEATURE_KEYS } from "@/lib/feature-flags"
 import { useIsMobile } from "@/hooks/use-media-query"
 import {
@@ -38,6 +38,11 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
       name: "Kalkulacje",
       href: "/insurance-agent/calculations",
       icon: FileText,
+    },
+    {
+      name: "Pipeline",
+      href: "/insurance-agent/calculations/pipeline",
+      icon: Workflow,
     },
     {
       name: "Polisy",

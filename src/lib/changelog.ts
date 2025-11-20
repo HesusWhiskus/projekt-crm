@@ -14,6 +14,44 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.1-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono klikalność widgetów na dashboardzie - wszystkie widgety prowadzą teraz do odpowiednich widoków',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono klikalność kalendarza zadań - zadania nie blokują już kliknięcia w dzień',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono z-index formularzy - formularz dodawania klienta jest teraz widoczny nad formularzem zadania',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono ucięty przycisk "Dodaj klienta" w formularzu zadania',
+      },
+      {
+        type: 'fixed',
+        description: 'Power Admin widzi teraz wszystkie kalkulacje i polisy w organizacji na dashboardzie',
+      },
+      {
+        type: 'added',
+        description: 'Dodano drag & drop dla widgetów na dashboardzie - można zmieniać kolejność widgetów',
+      },
+      {
+        type: 'added',
+        description: 'Dodano link "Pipeline" do nawigacji ubezpieczeniowej',
+      },
+      {
+        type: 'added',
+        description: 'Zaimplementowano pełną stronę raportów sprzedażowych z SalesFunnel i rzeczywistymi danymi',
+      },
+    ],
+  },
+  {
     version: '0.9.0-beta',
     date: '2025-01-20',
     changes: [

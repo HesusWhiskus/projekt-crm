@@ -5,6 +5,21 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.9.1-beta] - 2025-01-20
+
+### Naprawiono
+- **Klikalność widgetów na dashboardzie:** Wszystkie widgety statystyk są teraz klikalne i prowadzą do odpowiednich widoków (klienci, kontakty, zadania, kalkulacje, polisy, pojazdy)
+- **Klikalność kalendarza zadań:** Poprawiono obsługę kliknięć w dni kalendarza - zadania nie blokują już kliknięcia w dzień
+- **Formularze w kalendarzu:** Naprawiono z-index formularzy - formularz dodawania klienta jest teraz widoczny nad formularzem zadania
+- **Przycisk "Dodaj klienta":** Naprawiono ucięty przycisk w formularzu zadania - dodano odpowiednie klasy CSS
+- **Widoczność danych dla adminów:** Power Admin widzi teraz wszystkie kalkulacje i polisy w organizacji na dashboardzie (bez filtrowania po agentId)
+- **Pipeline w nawigacji:** Dodano link "Pipeline" do nawigacji ubezpieczeniowej z ikoną Workflow
+- **Raporty sprzedażowe:** Zaimplementowano pełną stronę raportów z SalesFunnel i ReportsDashboard z rzeczywistymi danymi z bazy
+
+### Dodano
+- **Drag & Drop dla widgetów:** Widgety na dashboardzie można teraz przeciągać i zmieniać ich kolejność (zapis w localStorage)
+- **Pełna implementacja raportów:** Strona `/reports/sales` wyświetla teraz pełne raporty z lejkiem sprzedażowym i metrykami
+
 ## [0.9.0-beta] - 2025-01-20
 
 ### Dodano

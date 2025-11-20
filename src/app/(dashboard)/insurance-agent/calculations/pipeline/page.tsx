@@ -19,7 +19,8 @@ export default async function CalculationPipelinePage() {
     where: { userId: user.id },
   })
 
-  if (!insuranceAgent || !insuranceAgent.isActive) {
+  // Allow access for active agents or admins
+  if (!insuranceAgent?.isActive && user.role !== "ADMIN") {
     redirect("/dashboard")
   }
 
@@ -29,11 +30,18 @@ export default async function CalculationPipelinePage() {
     select: { organizationId: true },
   })
 
+  // For admin, show all calculations in organization; for agents, filter by agentId
+  const where = user.role === "ADMIN"
+    ? {
+        organizationId: userWithOrg?.organizationId || undefined,
+      }
+    : {
+        organizationId: userWithOrg?.organizationId || undefined,
+        agentId: user.id, // agentId w Calculation to userId, nie insuranceAgent.id
+      }
+
   const calculationsData = await db.calculation.findMany({
-    where: {
-      organizationId: userWithOrg?.organizationId || undefined,
-      agentId: user.id, // agentId w Calculation to userId, nie insuranceAgent.id
-    },
+    where,
     orderBy: { createdAt: 'desc' },
     include: {
       client: {

@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { TrendingUp, AlertCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { ReportsDashboard } from "@/components/reports/reports-dashboard"
+import { db } from "@/lib/db"
+import { ClientStatus } from "@prisma/client"
 
 export default async function SalesReportPage() {
   const user = await getCurrentUser()
@@ -40,31 +43,78 @@ export default async function SalesReportPage() {
     )
   }
 
+  // Build where clause for client access
+  const clientWhere = user.role === "ADMIN"
+    ? {}
+    : {
+        OR: [
+          { assignedTo: user.id },
+          { sharedGroups: { some: { users: { some: { userId: user.id } } } } },
+        ],
+      }
+
+  // Get user with organizationId
+  const userWithOrg = await db.user.findUnique({
+    where: { id: user.id },
+    select: { organizationId: true },
+  })
+
+  // Get clients grouped by status
+  const statusCounts = await Promise.all([
+    db.client.count({ where: { ...clientWhere, status: "NEW_LEAD" } }),
+    db.client.count({ where: { ...clientWhere, status: "IN_CONTACT" } }),
+    db.client.count({ where: { ...clientWhere, status: "DEMO_SENT" } }),
+    db.client.count({ where: { ...clientWhere, status: "NEGOTIATION" } }),
+    db.client.count({ where: { ...clientWhere, status: "ACTIVE_CLIENT" } }),
+    db.client.count({ where: { ...clientWhere, status: "LOST" } }),
+  ])
+
+  const totalClients = statusCounts.reduce((sum, count) => sum + count, 0)
+  const activeClients = statusCounts[4] // ACTIVE_CLIENT
+  const newLeads = statusCounts[0] // NEW_LEAD
+
+  // Calculate conversion rate (NEW_LEAD -> ACTIVE_CLIENT)
+  const conversionRate = newLeads > 0 ? (activeClients / newLeads) * 100 : 0
+
+  // Calculate average deal value (placeholder - would need actual deal values)
+  const averageDealValue = 0 // TODO: Calculate from actual deals/transactions
+
+  const salesFunnelData = [
+    {
+      status: "NEW_LEAD" as ClientStatus,
+      count: statusCounts[0],
+      percentage: totalClients > 0 ? (statusCounts[0] / totalClients) * 100 : 0,
+    },
+    {
+      status: "IN_CONTACT" as ClientStatus,
+      count: statusCounts[1],
+      percentage: totalClients > 0 ? (statusCounts[1] / totalClients) * 100 : 0,
+    },
+    {
+      status: "DEMO_SENT" as ClientStatus,
+      count: statusCounts[2],
+      percentage: totalClients > 0 ? (statusCounts[2] / totalClients) * 100 : 0,
+    },
+    {
+      status: "NEGOTIATION" as ClientStatus,
+      count: statusCounts[3],
+      percentage: totalClients > 0 ? (statusCounts[3] / totalClients) * 100 : 0,
+    },
+    {
+      status: "ACTIVE_CLIENT" as ClientStatus,
+      count: statusCounts[4],
+      percentage: totalClients > 0 ? (statusCounts[4] / totalClients) * 100 : 0,
+    },
+  ]
+
   return (
     <div className="space-y-8">
-      <div>
-        <div className="flex items-center gap-2 mb-2">
-          <TrendingUp className="h-8 w-8 text-blue-600" />
-          <h1 className="text-3xl font-bold">Raport sprzedażowy</h1>
-        </div>
-        <p className="text-muted-foreground">
-          Analiza pipeline, konwersji i przychodów
-        </p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Raport sprzedażowy</CardTitle>
-          <CardDescription>
-            Szczegółowa analiza sprzedaży i konwersji
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Raport sprzedażowy jest w trakcie implementacji. Wkrótce będzie dostępna szczegółowa analiza pipeline, konwersji i przychodów.
-          </p>
-        </CardContent>
-      </Card>
+      <ReportsDashboard
+        salesFunnelData={salesFunnelData}
+        totalClients={totalClients}
+        conversionRate={conversionRate}
+        averageDealValue={averageDealValue}
+      />
     </div>
   )
 }

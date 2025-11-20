@@ -141,14 +141,17 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
                   <div className="text-sm font-medium mb-1">
                     {format(day, "d")}
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1 pointer-events-none">
                     {dayTasks.slice(0, 3).map((task) => {
                       const overdue = isOverdue(task)
                       return (
                       <div
                         key={task.id}
-                        onClick={(e) => handleTaskClick(task.id, e)}
-                        className={`text-xs p-1 rounded truncate cursor-pointer transition-colors ${
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleTaskClick(task.id, e)
+                        }}
+                        className={`text-xs p-1 rounded truncate cursor-pointer transition-colors pointer-events-auto ${
                           overdue
                             ? "bg-red-500 text-white hover:bg-red-600"
                             : "bg-primary/10 text-primary hover:bg-primary/20"
@@ -161,7 +164,7 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
                       )
                     })}
                     {dayTasks.length > 3 && (
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-muted-foreground pointer-events-auto">
                         +{dayTasks.length - 3} więcej
                       </div>
                     )}
@@ -174,7 +177,7 @@ export function TasksCalendar({ tasks, users, clients, groups, currentUser }: Ta
       </Card>
 
       {isCreatingClient && users && currentUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
           <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <ClientForm
               users={users}

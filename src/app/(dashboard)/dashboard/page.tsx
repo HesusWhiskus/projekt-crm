@@ -18,7 +18,7 @@ export default async function DashboardPage() {
         ],
       }
 
-  // Check if insurance agents feature is enabled and user is an active agent
+  // Check if insurance agents feature is enabled and user is an active agent or admin
   const hasInsuranceAgents = await checkFeature(user.id, FEATURE_KEYS.INSURANCE_AGENTS)
   let insuranceAgent = null
   let insuranceStats = null
@@ -29,16 +29,26 @@ export default async function DashboardPage() {
       select: { id: true, isActive: true },
     })
     
-    if (insuranceAgent?.isActive) {
-      const userWithOrg = await db.user.findUnique({
-        where: { id: user.id },
-        select: { organizationId: true },
-      })
-      
-      const where = {
-        organizationId: userWithOrg?.organizationId || undefined,
-        agentId: insuranceAgent.id,
-      }
+    const userWithOrg = await db.user.findUnique({
+      where: { id: user.id },
+      select: { organizationId: true },
+    })
+    
+    // Show insurance stats for active agents or admins
+    if (insuranceAgent?.isActive || user.role === "ADMIN") {
+      // For admin, don't filter by agentId - show all calculations/policies in organization
+      const where = user.role === "ADMIN"
+        ? {
+            organizationId: userWithOrg?.organizationId || undefined,
+          }
+        : insuranceAgent?.id
+        ? {
+            organizationId: userWithOrg?.organizationId || undefined,
+            agentId: insuranceAgent.id,
+          }
+        : {
+            organizationId: userWithOrg?.organizationId || undefined,
+          }
       
       const [
         calculationsCount,
@@ -73,6 +83,16 @@ export default async function DashboardPage() {
         db.vehicle.count({
           where: {
             organizationId: userWithOrg?.organizationId || undefined,
+            ...(user.role !== "ADMIN" && insuranceAgent?.id ? { 
+              // For non-admin agents, filter vehicles by agent's clients
+              client: {
+                calculations: {
+                  some: {
+                    agentId: insuranceAgent.id,
+                  },
+                },
+              },
+            } : {}),
           },
         }),
         db.calculation.findMany({

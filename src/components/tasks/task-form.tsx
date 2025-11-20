@@ -201,6 +201,7 @@ export function TaskForm({ users, groups, currentUser, task, onClose, onSuccess,
                     variant="outline"
                     onClick={onAddClient}
                     disabled={isLoading}
+                    className="flex-shrink-0 whitespace-nowrap"
                   >
                     + Dodaj klienta
                   </Button>

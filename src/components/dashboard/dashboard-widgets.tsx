@@ -68,6 +68,7 @@ export function DashboardWidgets({
         value: stats.clientsCount,
         icon: Users,
         description: "Łączna liczba klientów",
+        href: "/clients",
       },
     },
     {
@@ -81,6 +82,7 @@ export function DashboardWidgets({
         value: stats.contactsCount,
         icon: FileText,
         description: "Twoje interakcje",
+        href: "/contacts",
       },
     },
     {
@@ -94,6 +96,7 @@ export function DashboardWidgets({
         value: stats.tasksCount,
         icon: CheckSquare,
         description: "Wszystkie zadania",
+        href: "/tasks",
       },
     },
     // Lead management stats
@@ -108,6 +111,7 @@ export function DashboardWidgets({
         value: stats.noContact7Days,
         icon: Clock,
         description: "Wymagają kontaktu",
+        href: "/clients?filter=noContact7Days",
       },
     },
     {
@@ -121,6 +125,7 @@ export function DashboardWidgets({
         value: stats.noContact30Days,
         icon: AlertCircle,
         description: "Wymagają pilnego kontaktu",
+        href: "/clients?filter=noContact30Days",
       },
     },
     {
@@ -134,6 +139,7 @@ export function DashboardWidgets({
         value: stats.followUpToday,
         icon: Calendar,
         description: "Zaplanowane na dziś",
+        href: "/clients?filter=followUpToday",
       },
     },
     // Upcoming tasks list
@@ -182,6 +188,7 @@ export function DashboardWidgets({
           value: insuranceStats.calculationsCount,
           icon: FileText,
           description: "Łączna liczba kalkulacji",
+          href: "/insurance-agent/calculations",
         },
       },
       {
@@ -195,6 +202,7 @@ export function DashboardWidgets({
           value: insuranceStats.policiesCount,
           icon: Shield,
           description: "Wystawione polisy",
+          href: "/insurance-agent/policies",
         },
       },
       {
@@ -208,6 +216,7 @@ export function DashboardWidgets({
           value: insuranceStats.vehiclesCount,
           icon: Car,
           description: "Zarządzane pojazdy",
+          href: "/insurance-agent/vehicles",
         },
       },
       {
@@ -221,6 +230,7 @@ export function DashboardWidgets({
           value: insuranceStats.calculationsAccepted,
           icon: TrendingUp,
           description: "Zaakceptowane kalkulacje",
+          href: "/insurance-agent/calculations?status=ACCEPTED",
         },
       },
       {
