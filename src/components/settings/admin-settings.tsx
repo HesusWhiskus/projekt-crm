@@ -26,8 +26,8 @@ export function AdminSettings({
     primaryColor?: string
     themeName: string
   }>({
-    primaryColor: initialDefaultColorScheme?.primaryColor || "#3b82f6",
-    themeName: initialDefaultColorScheme?.themeName || "blue",
+    primaryColor: initialDefaultColorScheme?.primaryColor || "#f97316",
+    themeName: initialDefaultColorScheme?.themeName || "orange",
   })
   const [isSavingColorScheme, setIsSavingColorScheme] = useState(false)
   const [error, setError] = useState<string | null>(null)

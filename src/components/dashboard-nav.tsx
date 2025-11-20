@@ -89,12 +89,12 @@ export function DashboardNav({
   useEffect(() => {
     if (typeof window === "undefined") return
 
-    const themeName = userColorScheme?.themeName || defaultColorScheme?.themeName || "blue"
+    const themeName = userColorScheme?.themeName || defaultColorScheme?.themeName || "orange"
     const primaryColor =
       themeName === "system"
-        ? defaultColorScheme?.primaryColor || "#3b82f6"
+        ? defaultColorScheme?.primaryColor || "#f97316"
         : themeName === "custom"
-        ? userColorScheme?.primaryColor || "#3b82f6"
+        ? userColorScheme?.primaryColor || "#f97316"
         : null
 
     if (primaryColor) {

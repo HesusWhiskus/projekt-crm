@@ -5,6 +5,15 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.2-beta] - 2025-01-21
+
+### Dodano
+- **Generowanie ofert w skrypcie testowym:** Dodano funkcję `generateOffers()` w `scripts/generate-insurance-test-data.ts` generującą 2-5 ofert dla każdej kalkulacji z różnych towarzystw ubezpieczeniowych. Oferty zawierają różne ceny (±20% wariacji), zakresy ubezpieczenia, opcje rat i szczegóły. Funkcja zintegrowana z głównym skryptem generowania danych testowych.
+
+### Zmieniono
+- **Domyślny motyw na pomarańczowy (iBooster):** Zmieniono domyślny motyw z "blue" (#3b82f6) na "orange" (#f97316) we wszystkich komponentach ustawień i preferencji. Dodano motyw "orange" jako pierwszy w predefiniowanych motywach w `color-scheme-picker.tsx`. Zaktualizowano domyślne wartości w `preferences-settings.tsx`, `admin-settings.tsx`, `dashboard-nav.tsx` oraz walidację w `api/admin/settings/route.ts`. Teraz domyślny motyw systemowy jest zgodny z kolorystyką iBooster.
+- **Rozszerzenie zakresów ubezpieczenia w skrypcie testowym:** Zaktualizowano `generateCalculations()` aby używało pełnego zakresu `InsuranceScope` (OC, AC, NNW, ASS, SZYBY, OC_DISCOUNT_PROTECTION, ASSISTANCE_ACCIDENT, ASSISTANCE_BREAKDOWN, AC_MINI, AC_ACCIDENT). OC jest zawsze dodawane jako podstawowy zakres.
+
 ## [0.10.1-beta] - 2025-01-21
 
 ### Naprawiono

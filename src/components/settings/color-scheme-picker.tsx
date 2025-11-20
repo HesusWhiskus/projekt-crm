@@ -20,6 +20,7 @@ interface ColorSchemePickerProps {
 }
 
 const predefinedThemes = [
+  { name: "orange", label: "Pomarańczowy", color: "#f97316" },
   { name: "blue", label: "Niebieski", color: "#3b82f6" },
   { name: "green", label: "Zielony", color: "#10b981" },
   { name: "purple", label: "Fioletowy", color: "#8b5cf6" },
@@ -33,10 +34,10 @@ export function ColorSchemePicker({
   showSystemOption = false,
 }: ColorSchemePickerProps) {
   const [selectedTheme, setSelectedTheme] = useState<string>(
-    value?.themeName || defaultColorScheme?.themeName || "blue"
+    value?.themeName || defaultColorScheme?.themeName || "orange"
   )
   const [customColor, setCustomColor] = useState<string>(
-    value?.primaryColor || defaultColorScheme?.primaryColor || "#3b82f6"
+    value?.primaryColor || defaultColorScheme?.primaryColor || "#f97316"
   )
 
   useEffect(() => {
@@ -63,7 +64,7 @@ export function ColorSchemePicker({
     setSelectedTheme("system")
     onChange({
       themeName: "system",
-      primaryColor: defaultColorScheme?.primaryColor || "#3b82f6",
+      primaryColor: defaultColorScheme?.primaryColor || "#f97316",
     })
   }
 
@@ -71,8 +72,8 @@ export function ColorSchemePicker({
     selectedTheme === "custom"
       ? customColor
       : selectedTheme === "system"
-      ? defaultColorScheme?.primaryColor || "#3b82f6"
-      : predefinedThemes.find((t) => t.name === selectedTheme)?.color || "#3b82f6"
+      ? defaultColorScheme?.primaryColor || "#f97316"
+      : predefinedThemes.find((t) => t.name === selectedTheme)?.color || "#f97316"
 
   return (
     <div className="space-y-6">
@@ -115,7 +116,7 @@ export function ColorSchemePicker({
             <div
               className="w-8 h-8 rounded-full mr-3"
               style={{
-                backgroundColor: defaultColorScheme.primaryColor || "#3b82f6",
+                backgroundColor: defaultColorScheme.primaryColor || "#f97316",
               }}
             />
             <span className="font-medium">Użyj domyślnej kolorystyki systemu</span>

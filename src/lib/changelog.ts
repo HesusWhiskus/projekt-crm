@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.2-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano generowanie ofert w skrypcie testowym - funkcja generateOffers() tworzy 2-5 ofert dla każdej kalkulacji z różnych towarzystw, różnymi cenami, zakresami i opcjami rat.',
+      },
+      {
+        type: 'changed',
+        description: 'Zmieniono domyślny motyw na pomarańczowy (iBooster) - domyślny motyw systemowy to teraz "orange" (#f97316) zamiast "blue", dodano motyw "orange" jako pierwszy w predefiniowanych motywach. Zaktualizowano wszystkie komponenty ustawień i preferencji.',
+      },
+      {
+        type: 'changed',
+        description: 'Rozszerzono zakresy ubezpieczenia w skrypcie testowym - generateCalculations() używa teraz pełnego zakresu InsuranceScope (wszystkie 10 zakresów), OC jest zawsze podstawowym zakresem.',
+      },
+    ],
+  },
+  {
     version: '0.10.1-beta',
     date: '2025-01-21',
     changes: [

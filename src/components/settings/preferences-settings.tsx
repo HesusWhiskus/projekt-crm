@@ -37,8 +37,8 @@ export function PreferencesSettings({
     primaryColor?: string
     themeName: string
   }>({
-    primaryColor: preferences?.primaryColor || defaultColorScheme?.primaryColor || "#3b82f6",
-    themeName: preferences?.themeName || defaultColorScheme?.themeName || "blue",
+    primaryColor: preferences?.primaryColor || defaultColorScheme?.primaryColor || "#f97316",
+    themeName: preferences?.themeName || defaultColorScheme?.themeName || "orange",
   })
   const [currentTheme, setCurrentTheme] = useState<string>(preferences?.theme || theme || "light")
   const [timezone, setTimezone] = useState<string>(
@@ -62,12 +62,12 @@ export function PreferencesSettings({
     if (colorScheme.themeName === "system" && defaultColorScheme) {
       document.documentElement.style.setProperty(
         "--color-primary",
-        defaultColorScheme.primaryColor || "#3b82f6"
+        defaultColorScheme.primaryColor || "#f97316"
       )
     } else {
       document.documentElement.style.setProperty(
         "--color-primary",
-        colorScheme.primaryColor || "#3b82f6"
+        colorScheme.primaryColor || "#f97316"
       )
     }
     document.documentElement.setAttribute("data-theme", colorScheme.themeName)
