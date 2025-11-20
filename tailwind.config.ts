@@ -20,6 +20,14 @@ const config = {
       },
     },
     extend: {
+      screens: {
+        xs: "480px",
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1536px",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -54,6 +62,59 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        error: {
+          DEFAULT: "hsl(var(--error))",
+          foreground: "hsl(var(--error-foreground))",
+        },
+      },
+      spacing: {
+        xs: "var(--spacing-xs)",
+        sm: "var(--spacing-sm)",
+        md: "var(--spacing-md)",
+        lg: "var(--spacing-lg)",
+        xl: "var(--spacing-xl)",
+        "2xl": "var(--spacing-2xl)",
+        "3xl": "var(--spacing-3xl)",
+      },
+      boxShadow: {
+        sm: "var(--shadow-sm)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
+        xl: "var(--shadow-xl)",
+        "2xl": "var(--shadow-2xl)",
+      },
+      fontSize: {
+        xs: ["var(--font-size-xs)", { lineHeight: "var(--line-height-normal)" }],
+        sm: ["var(--font-size-sm)", { lineHeight: "var(--line-height-normal)" }],
+        base: ["var(--font-size-base)", { lineHeight: "var(--line-height-normal)" }],
+        lg: ["var(--font-size-lg)", { lineHeight: "var(--line-height-normal)" }],
+        xl: ["var(--font-size-xl)", { lineHeight: "var(--line-height-tight)" }],
+        "2xl": ["var(--font-size-2xl)", { lineHeight: "var(--line-height-tight)" }],
+        "3xl": ["var(--font-size-3xl)", { lineHeight: "var(--line-height-tight)" }],
+        "4xl": ["var(--font-size-4xl)", { lineHeight: "var(--line-height-tight)" }],
+      },
+      fontWeight: {
+        normal: "var(--font-weight-normal)",
+        medium: "var(--font-weight-medium)",
+        semibold: "var(--font-weight-semibold)",
+        bold: "var(--font-weight-bold)",
+      },
+      lineHeight: {
+        tight: "var(--line-height-tight)",
+        normal: "var(--line-height-normal)",
+        relaxed: "var(--line-height-relaxed)",
       },
       borderRadius: {
         lg: "var(--radius)",

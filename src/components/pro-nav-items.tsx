@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { BarChart3, Key, Webhook, Settings, Sparkles } from "lucide-react"
 import { FEATURE_KEYS } from "@/lib/feature-flags"
 import { useIsMobile } from "@/hooks/use-media-query"
+import { cn } from "@/lib/utils"
 
 interface ProNavItemsProps {
   enabledFeatures: string[]
@@ -41,7 +42,7 @@ export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) 
 
   const baseClasses = isMobile
     ? "flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-colors min-h-[44px]"
-    : "flex items-center space-x-2 px-2 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
+    : "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors"
 
   return (
     <>
@@ -57,11 +58,12 @@ export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) 
             className={`${baseClasses} ${
               isActive
                 ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
+                : "text-foreground hover:bg-muted hover:text-foreground"
             }`}
+            aria-current={isActive ? "page" : undefined}
           >
-            <Icon className={isMobile ? "h-5 w-5" : "h-4 w-4"} />
-            <span>{item.name}</span>
+            <Icon className={cn("h-5 w-5 flex-shrink-0", !isMobile && "mr-3")} aria-hidden="true" />
+            {!isMobile && <span>{item.name}</span>}
           </Link>
         )
       })}

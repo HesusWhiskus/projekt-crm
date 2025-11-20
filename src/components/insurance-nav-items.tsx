@@ -87,47 +87,32 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
     )
   }
 
-  // Desktop: render as dropdown menu
+  // Desktop: render as list items (for sidebar)
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className={cn(
-            "flex items-center space-x-2 px-2 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap",
-            isInsuranceAgentActive
-              ? "bg-primary text-primary-foreground"
-              : "text-foreground hover:bg-muted"
-          )}
-        >
-          <Shield className="h-4 w-4" />
-          <span>Agenci ubezpieczeniowi</span>
-          <ChevronDown className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
-        {insuranceNavItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-          return (
-            <DropdownMenuItem key={item.name} asChild>
-              <Link
-                href={item.href}
-                prefetch={true}
-                onClick={onItemClick}
-                className={cn(
-                  "flex items-center space-x-2 cursor-pointer",
-                  isActive && "bg-accent"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                <span>{item.name}</span>
-              </Link>
-            </DropdownMenuItem>
-          )
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      {insuranceNavItems.map((item) => {
+        const Icon = item.icon
+        const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+        return (
+          <Link
+            key={item.name}
+            href={item.href}
+            prefetch={true}
+            onClick={onItemClick}
+            className={cn(
+              "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              isActive
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-muted hover:text-foreground"
+            )}
+            aria-current={isActive ? "page" : undefined}
+          >
+            <Icon className="h-5 w-5 flex-shrink-0 mr-3" aria-hidden="true" />
+            <span>{item.name}</span>
+          </Link>
+        )
+      })}
+    </>
   )
 }
 

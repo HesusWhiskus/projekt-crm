@@ -14,6 +14,60 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.9.0-beta',
+    date: '2025-01-20',
+    changes: [
+      {
+        type: 'added',
+        description: 'Kompleksowa refaktoryzacja UI/UX - nowy design system, system widgetów, uniwersalne komponenty (DataTable, StatusBadge, EmptyState, Tabs, Breadcrumbs i inne)',
+      },
+      {
+        type: 'added',
+        description: 'AppLayout z sidebar - lepsza nawigacja na desktop/tablet z możliwością zwijania',
+      },
+      {
+        type: 'added',
+        description: 'Widok klientów z zakładkami - Ogólne, Kontakty, Zadania, Historia, Ubezpieczenia',
+      },
+      {
+        type: 'added',
+        description: 'Widok zadań z trzema opcjami - lista, kanban, kalendarz',
+      },
+      {
+        type: 'added',
+        description: 'Timeline view dla kontaktów z grupowaniem po datach (dzisiaj, wczoraj, ten tydzień, ten miesiąc, starsze)',
+      },
+      {
+        type: 'added',
+        description: 'System widgetów na dashboardzie - StatsWidget, ChartWidget, ListWidget z modułową architekturą',
+      },
+      {
+        type: 'added',
+        description: 'Zaawansowane filtry z możliwością zwijania i zarządzania aktywnymi filtrami',
+      },
+      {
+        type: 'added',
+        description: 'SalesFunnel - wizualizacja lejka sprzedażowego',
+      },
+      {
+        type: 'added',
+        description: 'ReportsDashboard - dashboard raportów z zakładkami',
+      },
+      {
+        type: 'changed',
+        description: 'Pełna responsywność wszystkich widoków - płynne skalowanie na różnych rozdzielczościach (320px-1920px)',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawiony kontrast kolorów zgodnie z WCAG 2.1 AA dla lepszej dostępności',
+      },
+      {
+        type: 'fixed',
+        description: 'Dodane aria-labels i obsługa klawiatury w interaktywnych elementach',
+      },
+    ],
+  },
+  {
     version: '0.8.1-beta',
     date: '2025-01-19',
     changes: [

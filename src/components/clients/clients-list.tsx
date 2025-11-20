@@ -8,11 +8,15 @@ import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
-import { Plus, Search, Download, ArrowUpDown, ArrowUp, ArrowDown, Mail, Phone, Building2 } from "lucide-react"
+import { Plus, Search, Download, Mail, Phone, Building2 } from "lucide-react"
 import Link from "next/link"
 import { ClientForm } from "./client-form"
-import { useIsMobile } from "@/hooks/use-media-query"
-import { Pagination } from "@/components/ui/pagination"
+import { DataTable } from "@/components/ui/data-table"
+import { StatusBadge } from "@/components/ui/status-badge"
+import {
+  clientStatusLabels,
+  clientPriorityLabels,
+} from "@/lib/status-config"
 
 interface Client {
   id: string
@@ -62,35 +66,6 @@ interface ClientsListProps {
   totalPages: number
 }
 
-const statusLabels: Record<ClientStatus, string> = {
-  NEW_LEAD: "Nowy lead",
-  IN_CONTACT: "W kontakcie",
-  DEMO_SENT: "Demo wysłane",
-  NEGOTIATION: "Negocjacje",
-  ACTIVE_CLIENT: "Klient aktywny",
-  LOST: "Utracony",
-}
-
-const statusColors: Record<ClientStatus, string> = {
-  NEW_LEAD: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
-  IN_CONTACT: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
-  DEMO_SENT: "bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200",
-  NEGOTIATION: "bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200",
-  ACTIVE_CLIENT: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200",
-  LOST: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
-}
-
-const priorityLabels: Record<ClientPriority, string> = {
-  LOW: "Niski",
-  MEDIUM: "Średni",
-  HIGH: "Wysoki",
-}
-
-const priorityColors: Record<ClientPriority, string> = {
-  LOW: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200",
-  MEDIUM: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200",
-  HIGH: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200",
-}
 
 type SortField = "firstName" | "lastName" | "companyName" | "email" | "phone" | "status" | "priority" | "assignee" | null
 
@@ -105,7 +80,6 @@ function getClientDisplayName(client: Client): string {
 type SortDirection = "asc" | "desc" | null
 
 export function ClientsList({ clients, users, groups, currentUser, insuranceAgentsEnabled = false, total, page, limit, totalPages }: ClientsListProps) {
-  const isMobile = useIsMobile()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isCreating, setIsCreating] = useState(false)
@@ -120,42 +94,14 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
 
   // Odczytaj aktualne sortowanie z URL
   const currentSortBy = searchParams.get("sortBy") || "updatedAt"
-  const currentSortOrder = searchParams.get("sortOrder") || "desc"
+  const currentSortOrder = (searchParams.get("sortOrder") || "desc") as "asc" | "desc"
 
-  const handleSort = (field: SortField) => {
-    if (!field) return
-    
+  const handleSort = (field: string, order: "asc" | "desc") => {
     const params = new URLSearchParams(searchParams.toString())
-    
-    // Jeśli kliknięto w to samo pole, zmień kierunek lub usuń sortowanie
-    if (currentSortBy === field) {
-      if (currentSortOrder === "asc") {
-        params.set("sortOrder", "desc")
-      } else if (currentSortOrder === "desc") {
-        // Usuń sortowanie (wróć do domyślnego)
-        params.delete("sortBy")
-        params.delete("sortOrder")
-      }
-    } else {
-      // Nowe pole - ustaw asc
-      params.set("sortBy", field)
-      params.set("sortOrder", "asc")
-    }
-    
-    // Resetuj stronę do 1 przy zmianie sortowania
+    params.set("sortBy", field)
+    params.set("sortOrder", order)
     params.delete("page")
-    
     router.push(`/clients?${params.toString()}`)
-  }
-
-  const getSortIcon = (field: SortField) => {
-    if (currentSortBy !== field) {
-      return <ArrowUpDown className="h-4 w-4 ml-1 text-muted-foreground" />
-    }
-    if (currentSortOrder === "asc") {
-      return <ArrowUp className="h-4 w-4 ml-1" />
-    }
-    return <ArrowDown className="h-4 w-4 ml-1" />
   }
 
   const handleFilterChange = (key: string, value: string) => {
@@ -192,7 +138,7 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
           c.lastName,
           c.email || "",
           c.phone || "",
-          statusLabels[c.status],
+          clientStatusLabels[c.status],
           c.assignee?.name || c.assignee?.email || "",
         ].map((v) => `"${v}"`).join(",")
       ),
@@ -273,7 +219,7 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
                   onChange={(e) => handleFilterChange("status", e.target.value)}
                 >
                   <option value="">Wszystkie</option>
-                  {Object.entries(statusLabels).map(([value, label]) => (
+                  {Object.entries(clientStatusLabels).map(([value, label]) => (
                     <option key={value} value={value}>
                       {label}
                     </option>
@@ -332,17 +278,131 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
             Lista klientów ({clients.length} z {total})
           </CardTitle>
         </CardHeader>
-        {clients.length === 0 ? (
-          <CardContent>
-            <p className="text-center text-muted-foreground py-8">
-              Brak klientów spełniających kryteria
-            </p>
-          </CardContent>
-        ) : isMobile ? (
-          <CardContent>
-            {/* Mobile: Card view */}
-            <div className="space-y-4">
-              {clients.map((client) => (
+        <CardContent className="p-0">
+          <DataTable
+            data={clients}
+            columns={[
+              {
+                key: "name",
+                header: "Kontakt",
+                accessor: (client) => `${client.firstName || ""} ${client.lastName || ""}`.trim() || "-",
+                sortable: true,
+                priority: "always",
+                width: "15%",
+              },
+              {
+                key: "companyName",
+                header: "Agencja",
+                accessor: (client) => getClientDisplayName(client),
+                sortable: true,
+                priority: "always",
+                width: "15%",
+              },
+              {
+                key: "email",
+                header: "Email",
+                accessor: (client) => client.email || "-",
+                sortable: true,
+                priority: "mobile-hidden",
+                width: "18%",
+              },
+              {
+                key: "phone",
+                header: "Telefon",
+                accessor: (client) => client.phone || "-",
+                sortable: true,
+                priority: "optional",
+                width: "12%",
+              },
+              {
+                key: "status",
+                header: "Status",
+                accessor: (client) => (
+                  <StatusBadge
+                    status={clientStatusLabels[client.status]}
+                    variant={
+                      client.status === "ACTIVE_CLIENT"
+                        ? "success"
+                        : client.status === "LOST"
+                        ? "error"
+                        : client.status === "NEGOTIATION"
+                        ? "warning"
+                        : "default"
+                    }
+                    size="sm"
+                  />
+                ),
+                sortable: true,
+                priority: "always",
+                width: "12%",
+              },
+              {
+                key: "priority",
+                header: "Priorytet",
+                accessor: (client) =>
+                  client.priority ? (
+                    <StatusBadge
+                      status={clientPriorityLabels[client.priority]}
+                      variant={
+                        client.priority === "HIGH"
+                          ? "error"
+                          : client.priority === "MEDIUM"
+                          ? "warning"
+                          : "info"
+                      }
+                      size="sm"
+                    />
+                  ) : (
+                    "-"
+                  ),
+                sortable: true,
+                priority: "optional",
+                width: "10%",
+              },
+              {
+                key: "assignee",
+                header: "Odpowiedzialny",
+                accessor: (client) => client.assignee?.name || client.assignee?.email || "-",
+                sortable: true,
+                priority: "mobile-hidden",
+                width: "13%",
+              },
+              {
+                key: "actions",
+                header: "Akcje",
+                accessor: (client) => (
+                  <Link href={`/clients/${client.id}`}>
+                    <Button variant="ghost" size="sm">
+                      Szczegóły
+                    </Button>
+                  </Link>
+                ),
+                sortable: false,
+                priority: "always",
+                width: "5%",
+              },
+            ]}
+            sortable={true}
+            sortBy={currentSortBy}
+            sortOrder={currentSortOrder}
+            onSort={handleSort}
+            pagination={{
+              currentPage: page,
+              totalPages,
+              total,
+              limit,
+            }}
+            emptyState={{
+              title: "Brak klientów spełniających kryteria",
+              description: "Spróbuj zmienić filtry lub dodaj nowego klienta",
+              action: {
+                label: "Dodaj klienta",
+                onClick: () => setIsCreating(true),
+              },
+            }}
+            onRowClick={(client) => router.push(`/clients/${client.id}`)}
+            cardView={{
+              renderCard: (client) => (
                 <Card key={client.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="space-y-3">
@@ -381,13 +441,31 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 pt-2 border-t">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusColors[client.status]}`}>
-                          {statusLabels[client.status]}
-                        </span>
+                        <StatusBadge
+                          status={clientStatusLabels[client.status]}
+                          variant={
+                            client.status === "ACTIVE_CLIENT"
+                              ? "success"
+                              : client.status === "LOST"
+                              ? "error"
+                              : client.status === "NEGOTIATION"
+                              ? "warning"
+                              : "default"
+                          }
+                          size="sm"
+                        />
                         {client.priority && (
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${priorityColors[client.priority]}`}>
-                            {priorityLabels[client.priority]}
-                          </span>
+                          <StatusBadge
+                            status={clientPriorityLabels[client.priority]}
+                            variant={
+                              client.priority === "HIGH"
+                                ? "error"
+                                : client.priority === "MEDIUM"
+                                ? "warning"
+                                : "info"
+                            }
+                            size="sm"
+                          />
                         )}
                         {client.assignee && (
                           <span className="text-xs text-muted-foreground">
@@ -403,157 +481,10 @@ export function ClientsList({ clients, users, groups, currentUser, insuranceAgen
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-            <Pagination 
-              currentPage={page}
-              totalPages={totalPages}
-              total={total}
-              limit={limit}
-            />
-          </CardContent>
-        ) : (
-          // Desktop: Table view
-          <CardContent className="p-0">
-            <div className="overflow-x-auto w-full">
-              <table className="w-full divide-y divide-border" style={{ tableLayout: 'fixed' }}>
-                <thead className="bg-muted">
-                  <tr>
-                    <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      style={{ width: '15%' }}
-                      onClick={() => handleSort("firstName")}
-                    >
-                      <div className="flex items-center">
-                        Kontakt
-                        {getSortIcon("firstName")}
-                      </div>
-                    </th>
-                    <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      style={{ width: '15%' }}
-                      onClick={() => handleSort("companyName")}
-                    >
-                      <div className="flex items-center">
-                        Agencja
-                        {getSortIcon("companyName")}
-                      </div>
-                    </th>
-                    <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      style={{ width: '18%' }}
-                      onClick={() => handleSort("email")}
-                    >
-                      <div className="flex items-center">
-                        Email
-                        {getSortIcon("email")}
-                      </div>
-                    </th>
-                    <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      style={{ width: '12%' }}
-                      onClick={() => handleSort("phone")}
-                    >
-                      <div className="flex items-center">
-                        Telefon
-                        {getSortIcon("phone")}
-                      </div>
-                    </th>
-                    <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      style={{ width: '12%' }}
-                      onClick={() => handleSort("status")}
-                    >
-                      <div className="flex items-center">
-                        Status
-                        {getSortIcon("status")}
-                      </div>
-                    </th>
-                    <th
-                      className="px-2 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      style={{ width: '10%' }}
-                      onClick={() => handleSort("priority")}
-                    >
-                      <div className="flex items-center">
-                        Priorytet
-                        {getSortIcon("priority")}
-                      </div>
-                    </th>
-                    <th
-                      className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/80 whitespace-nowrap"
-                      style={{ width: '13%' }}
-                      onClick={() => handleSort("assignee")}
-                    >
-                      <div className="flex items-center">
-                        Odpowiedzialny
-                        {getSortIcon("assignee")}
-                      </div>
-                    </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap" style={{ width: '5%' }}>
-                      Akcje
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-card divide-y divide-border">
-                  {clients.map((client) => (
-                    <tr key={client.id} className="hover:bg-muted/50">
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        <div className="font-medium text-foreground">
-                          {client.firstName} {client.lastName}
-                        </div>
-                      </td>
-                      <td className="px-3 py-3">
-                        <div className="text-sm text-foreground truncate max-w-[200px]" title={getClientDisplayName(client)}>
-                          {getClientDisplayName(client)}
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        <div className="text-sm text-foreground truncate max-w-[200px]" title={client.email || undefined}>
-                          {client.email || "-"}
-                        </div>
-                      </td>
-                      <td className="px-2 py-3 whitespace-nowrap text-sm text-foreground">
-                        {client.phone || "-"}
-                      </td>
-                      <td className="px-2 py-3 whitespace-nowrap">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full min-w-[120px] justify-center ${statusColors[client.status]}`}>
-                          {statusLabels[client.status]}
-                        </span>
-                      </td>
-                      <td className="px-2 py-3 whitespace-nowrap">
-                        {client.priority ? (
-                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full min-w-[100px] justify-center ${priorityColors[client.priority]}`}>
-                            {priorityLabels[client.priority]}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">-</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-sm text-foreground">
-                        <div className="truncate max-w-[150px]" title={client.assignee?.name || client.assignee?.email || undefined}>
-                          {client.assignee?.name || client.assignee?.email || "-"}
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 whitespace-nowrap text-sm font-medium">
-                        <Link href={`/clients/${client.id}`}>
-                          <Button variant="ghost" size="sm">
-                            Szczegóły
-                          </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <Pagination 
-              currentPage={page}
-              totalPages={totalPages}
-              total={total}
-              limit={limit}
-            />
-          </CardContent>
-        )}
+              ),
+            }}
+          />
+        </CardContent>
       </Card>
     </div>
   )

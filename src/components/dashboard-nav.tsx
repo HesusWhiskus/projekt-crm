@@ -104,77 +104,58 @@ export function DashboardNav({
   }, [userColorScheme, defaultColorScheme])
 
   return (
-    <nav className="bg-card border-b border-border">
-      <div className="max-w-[98%] mx-auto px-4">
-        <div className="flex items-center justify-between h-16 gap-4">
-          <div className="flex items-center space-x-4 md:space-x-6 flex-shrink-0">
-            <Link
-              href="/dashboard"
-              className="flex flex-col items-center space-y-1"
-              style={{ color: "var(--color-primary, #3b82f6)" }}
-            >
-              {systemLogo && systemLogo.trim() !== "" ? (
-                <div className="relative w-56 h-16 flex items-center justify-start overflow-hidden">
-                  {systemLogo.startsWith("http") ? (
-                    <Image
-                      src={systemLogo}
-                      alt="Logo"
-                      width={224}
-                      height={64}
-                      className="w-full h-full object-contain object-left logo-theme-adapt"
-                      unoptimized
-                    />
-                  ) : (
-                    <img
-                      src={systemLogo}
-                      alt="Logo"
-                      className="w-full h-full object-contain object-left logo-theme-adapt"
-                    />
-                  )}
-                </div>
-              ) : (
-                <span className="text-xl font-bold">{systemName}</span>
+    <>
+      {/* Desktop/Tablet: Header z logo i user menu */}
+      <nav className="bg-card border-b border-border">
+        <div className="max-w-[98%] mx-auto px-4">
+          <div className="flex items-center justify-between h-16 gap-4">
+            <div className="flex items-center space-x-4 flex-shrink-0">
+              <Link
+                href="/dashboard"
+                className="flex items-center"
+                style={{ color: "var(--color-primary, #3b82f6)" }}
+                aria-label="Strona główna"
+              >
+                {systemLogo && systemLogo.trim() !== "" ? (
+                  <div className="relative h-12 flex items-center overflow-hidden">
+                    {systemLogo.startsWith("http") ? (
+                      <Image
+                        src={systemLogo}
+                        alt="Logo"
+                        width={180}
+                        height={48}
+                        className="h-full w-auto object-contain object-left logo-theme-adapt"
+                        unoptimized
+                      />
+                    ) : (
+                      <img
+                        src={systemLogo}
+                        alt="Logo"
+                        className="h-full w-auto object-contain object-left logo-theme-adapt"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-xl font-bold">{systemName}</span>
+                )}
+              </Link>
+            </div>
+            <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
+              {!isMobile && <WhatsNewButton />}
+              <UserMenu user={user} enabledFeatures={enabledFeatures} isPro={isPro} />
+              {isMobile && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="min-w-[44px] min-h-[44px]"
+                  aria-label={mobileMenuOpen ? "Zamknij menu" : "Otwórz menu"}
+                >
+                  {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </Button>
               )}
-            </Link>
-            <div className="hidden md:flex items-center space-x-1 flex-1 overflow-x-auto">
-              {navigation.map((item) => {
-                const Icon = item.icon
-                const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    prefetch={true}
-                    className={`flex items-center space-x-2 px-2 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.name}</span>
-                  </Link>
-                )
-              })}
-              <ProNavItems enabledFeatures={enabledFeatures} />
-              <InsuranceNavItems enabledFeatures={enabledFeatures} isInsuranceAgent={isInsuranceAgent} />
             </div>
           </div>
-          <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
-            {!isMobile && <WhatsNewButton />}
-            <UserMenu user={user} enabledFeatures={enabledFeatures} isPro={isPro} />
-            {isMobile && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="min-w-[44px] min-h-[44px]"
-              >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            )}
-          </div>
-        </div>
         {/* Mobile menu */}
         {isMobile && mobileMenuOpen && (
           <div className="md:hidden border-t border-border">
@@ -282,6 +263,7 @@ export function DashboardNav({
         )}
       </div>
     </nav>
+    </>
   )
 }
 

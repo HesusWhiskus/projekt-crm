@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
 import { DashboardNav } from "@/components/dashboard-nav"
+import { AppLayout } from "@/components/layout/app-layout"
+import { SidebarNav } from "@/components/layout/sidebar-nav"
 import { db } from "@/lib/db"
 import { getEnabledFeatures, isProPlan } from "@/lib/feature-flags"
 
@@ -80,7 +82,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <DashboardNav
         user={user}
         systemName={systemName?.value || "Internal CRM"}
@@ -91,7 +93,18 @@ export default async function DashboardLayout({
         isPro={isPro}
         isInsuranceAgent={isInsuranceAgent}
       />
-      <main className="max-w-[98%] mx-auto px-4 py-6">{children}</main>
+      <div className="flex-1 flex overflow-hidden">
+        <AppLayout
+          sidebar={
+            <SidebarNav
+              enabledFeatures={enabledFeatures}
+              isInsuranceAgent={isInsuranceAgent}
+            />
+          }
+        >
+          <div className="max-w-[98%] mx-auto px-4 py-6 w-full">{children}</div>
+        </AppLayout>
+      </div>
     </div>
   )
 }
