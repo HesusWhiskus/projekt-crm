@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Edit, ArrowLeft } from "lucide-react"
 import { CalculationForm } from "./calculation-form"
 import Link from "next/link"
-import { parseDate } from "@/lib/date-utils"
+import { parseDate, parseOptionalDate } from "@/lib/date-utils"
 
 interface CalculationDetailProps {
   calculation: {
