@@ -12,7 +12,7 @@ const updatePreferencesSchema = z.object({
     .object({
       primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
       themeName: z
-        .enum(["blue", "green", "purple", "red", "custom", "system"])
+        .enum(["orange", "blue", "green", "purple", "red", "custom", "system"])
         .optional(),
     })
     .optional(),
@@ -65,7 +65,7 @@ const updatePreferencesSchema = z.object({
  *                       nullable: true
  *                     themeName:
  *                       type: string
- *                       enum: [blue, green, purple, red, custom, system]
+ *                       enum: [orange, blue, green, purple, red, custom, system]
  *                       nullable: true
  *                     emailTasks:
  *                       type: boolean
@@ -155,7 +155,7 @@ export async function GET(request: Request) {
  *                     description: Hex color (np. "#3b82f6")
  *                   themeName:
  *                     type: string
- *                     enum: [blue, green, purple, red, custom, system]
+ *                     enum: [orange, blue, green, purple, red, custom, system]
  *               notifications:
  *                 type: object
  *                 properties:

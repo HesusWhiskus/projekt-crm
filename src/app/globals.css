@@ -10,19 +10,19 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 24.6 95% 53.1%; /* Orange-500: #f97316 - główny kolor iBooster */
-    --primary-foreground: 0 0% 100%; /* Biały tekst na pomarańczowym */
+    --primary: 24.6 95% 53.1%; /* Orange-500: #f97316 - domyślny kolor (iBooster), aktualizowany przez JavaScript */
+    --primary-foreground: 0 0% 100%; /* Biały tekst na primary */
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 24.6 95% 53.1%; /* Pomarańczowy jako accent */
+    --accent: 24.6 95% 53.1%; /* Domyślny accent, aktualizowany przez JavaScript */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72.2% 50.6%; /* Red-600: #dc2626 - czerwony z iBooster */
     --destructive-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 24.6 95% 53.1%; /* Pomarańczowy ring dla focus */
+    --ring: 24.6 95% 53.1%; /* Domyślny ring dla focus, aktualizowany przez JavaScript */
     --radius: 0.5rem;
     
     /* Dynamic color scheme - default orange (iBooster style) */
@@ -85,33 +85,50 @@
     --z-toast: 1080;
   }
 
-  /* Predefined color themes */
+  /* Predefined color themes - wartości HSL dla SSR, aktualizowane przez JavaScript */
   [data-theme="orange"] {
     --color-primary: #f97316; /* iBooster orange */
+    --primary: 24.6 95% 53.1%; /* Orange-500 HSL */
+    --accent: 24.6 95% 53.1%;
+    --ring: 24.6 95% 53.1%;
   }
 
   [data-theme="blue"] {
     --color-primary: #3b82f6;
+    --primary: 217.2 91.2% 59.8%; /* Blue-500 HSL */
+    --accent: 217.2 91.2% 59.8%;
+    --ring: 217.2 91.2% 59.8%;
   }
 
   [data-theme="green"] {
     --color-primary: #10b981;
+    --primary: 160.1 84.1% 39.4%; /* Green-500 HSL */
+    --accent: 160.1 84.1% 39.4%;
+    --ring: 160.1 84.1% 39.4%;
   }
 
   [data-theme="purple"] {
     --color-primary: #8b5cf6;
+    --primary: 258.3 89.5% 66.3%; /* Purple-500 HSL */
+    --accent: 258.3 89.5% 66.3%;
+    --ring: 258.3 89.5% 66.3%;
   }
 
   [data-theme="red"] {
-    --color-primary: #dc2626; /* iBooster red */
+    --color-primary: #ef4444;
+    --primary: 0 84.2% 60.2%; /* Red-500 HSL */
+    --accent: 0 84.2% 60.2%;
+    --ring: 0 84.2% 60.2%;
   }
 
   [data-theme="custom"] {
     --color-primary: var(--user-primary-color, #f97316);
+    /* --primary, --accent, --ring aktualizowane przez JavaScript z --user-primary-color */
   }
 
   [data-theme="system"] {
     --color-primary: var(--system-primary-color, #f97316);
+    /* --primary, --accent, --ring aktualizowane przez JavaScript z --system-primary-color */
   }
 
   .dark {
@@ -121,19 +138,19 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 24.6 95% 53.1%; /* Pomarańczowy w dark mode */
+    --primary: 24.6 95% 53.1%; /* Domyślny primary w dark mode, aktualizowany przez JavaScript */
     --primary-foreground: 0 0% 100%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 24.6 95% 53.1%; /* Pomarańczowy accent w dark mode */
+    --accent: 24.6 95% 53.1%; /* Domyślny accent w dark mode, aktualizowany przez JavaScript */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72.2% 50.6%; /* Czerwony w dark mode */
     --destructive-foreground: 0 0% 100%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 24.6 95% 53.1%; /* Pomarańczowy ring w dark mode */
+    --ring: 24.6 95% 53.1%; /* Domyślny ring w dark mode, aktualizowany przez JavaScript */
     
     /* Semantic colors - dark mode - WCAG 2.1 AA compliant */
     --success: 142 71% 45%;

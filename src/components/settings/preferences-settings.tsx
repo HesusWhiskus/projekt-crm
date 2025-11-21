@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ColorSchemePicker } from "./color-scheme-picker"
 import { COMMON_TIMEZONES, getUserTimezone } from "@/lib/timezone"
+import { applyColorScheme, getThemeColor, type Theme } from "@/lib/color-utils"
 
 interface PreferencesSettingsProps {
   preferences: {
@@ -59,18 +60,26 @@ export function PreferencesSettings({
     // Apply color scheme to document (only on client)
     if (typeof window === "undefined") return
 
+    const predefinedThemes: Theme[] = [
+      { name: "orange", label: "Pomarańczowy", color: "#f97316" },
+      { name: "blue", label: "Niebieski", color: "#3b82f6" },
+      { name: "green", label: "Zielony", color: "#10b981" },
+      { name: "purple", label: "Fioletowy", color: "#8b5cf6" },
+      { name: "red", label: "Czerwony", color: "#ef4444" },
+    ]
+
+    let primaryColor: string
+
     if (colorScheme.themeName === "system" && defaultColorScheme) {
-      document.documentElement.style.setProperty(
-        "--color-primary",
-        defaultColorScheme.primaryColor || "#f97316"
-      )
+      primaryColor = defaultColorScheme.primaryColor || "#f97316"
+    } else if (colorScheme.themeName === "custom") {
+      primaryColor = colorScheme.primaryColor || "#f97316"
     } else {
-      document.documentElement.style.setProperty(
-        "--color-primary",
-        colorScheme.primaryColor || "#f97316"
-      )
+      // Predefined theme
+      primaryColor = getThemeColor(colorScheme.themeName, predefinedThemes)
     }
-    document.documentElement.setAttribute("data-theme", colorScheme.themeName)
+
+    applyColorScheme(primaryColor, colorScheme.themeName)
   }, [colorScheme, defaultColorScheme])
 
   const handleSave = async () => {

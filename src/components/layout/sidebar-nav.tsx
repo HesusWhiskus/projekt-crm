@@ -12,6 +12,8 @@ import {
 } from "lucide-react"
 import { ProNavItems } from "@/components/pro-nav-items"
 import { InsuranceNavItems } from "@/components/insurance-nav-items"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useSidebar } from "./sidebar-context"
 
 interface SidebarNavProps {
   enabledFeatures?: string[]
@@ -30,16 +32,18 @@ const navigation = [
 export function SidebarNav({
   enabledFeatures = [],
   isInsuranceAgent = false,
-  collapsed = false,
+  collapsed: propCollapsed,
 }: SidebarNavProps) {
   const pathname = usePathname()
+  const { collapsed: contextCollapsed } = useSidebar()
+  const collapsed = propCollapsed !== undefined ? propCollapsed : contextCollapsed
 
   return (
     <nav className="space-y-1" aria-label="Sidebar navigation">
       {navigation.map((item) => {
         const Icon = item.icon
         const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-        return (
+        const linkContent = (
           <Link
             key={item.name}
             href={item.href}
@@ -58,18 +62,31 @@ export function SidebarNav({
             {!collapsed && <span>{item.name}</span>}
           </Link>
         )
+
+        if (collapsed) {
+          return (
+            <TooltipProvider key={item.name}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {linkContent}
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{item.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )
+        }
+
+        return linkContent
       })}
-      {!collapsed && (
-        <>
-          <div className="border-t border-border my-2" />
-          <div className="space-y-1">
-            <ProNavItems enabledFeatures={enabledFeatures} />
-          </div>
-          <div className="space-y-1">
-            <InsuranceNavItems enabledFeatures={enabledFeatures} isInsuranceAgent={isInsuranceAgent} />
-          </div>
-        </>
-      )}
+      {!collapsed && <div className="border-t border-border my-2" />}
+      <div className="space-y-1">
+        <ProNavItems enabledFeatures={enabledFeatures} collapsed={collapsed} />
+      </div>
+      <div className="space-y-1">
+        <InsuranceNavItems enabledFeatures={enabledFeatures} isInsuranceAgent={isInsuranceAgent} collapsed={collapsed} />
+      </div>
     </nav>
   )
 }

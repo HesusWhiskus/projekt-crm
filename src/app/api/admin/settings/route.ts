@@ -9,7 +9,7 @@ const updateSettingsSchema = z.object({
     .object({
       primaryColor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
       themeName: z
-        .enum(["orange", "blue", "green", "purple", "red", "custom"])
+        .enum(["orange", "blue", "green", "purple", "red", "custom", "system"])
         .optional(),
     })
     .optional(),

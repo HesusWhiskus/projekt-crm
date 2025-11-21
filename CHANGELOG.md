@@ -5,6 +5,22 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.3-beta] - 2025-01-21
+
+### Naprawiono
+- **System motywów kolorystycznych:** Naprawiono problem z nieprawidłowym działaniem systemu motywów - wybór niebieskiego motywu nie zmieniał kolorów interfejsu. Dodano funkcje konwersji kolorów (hexToHsl) i aplikowania motywów (applyColorScheme) w `color-utils.ts`. Zaktualizowano `preferences-settings.tsx` i `dashboard-nav.tsx` aby dynamicznie aktualizowały zmienne CSS `--primary`, `--accent`, `--ring` na podstawie wybranego koloru. Zaktualizowano `globals.css` aby zawierał wartości HSL dla wszystkich motywów w selektorach `[data-theme]`.
+- **Enum w API:** Dodano brakujące wartości "orange" i "system" do enum w `api/users/preferences/route.ts` oraz "system" do enum w `api/admin/settings/route.ts`. Zaktualizowano dokumentację Swagger w obu plikach.
+- **Przycisk zwijania sidebaru:** Naprawiono problem z przyciskiem zwijania sidebaru, który był poza zasięgiem widoku przy scrollowaniu. Przycisk jest teraz zawsze widoczny dzięki `sticky bottom-0` positioning z odpowiednim tłem i cieniem.
+- **Widok zwinięty sidebaru:** Naprawiono nieestetyczny widok zwinięty sidebaru - teraz pokazuje uproszczony widok z ikonami i tooltipami zamiast uciętego oryginalnego widoku. Dodano wsparcie dla collapsed state w `ProNavItems` i `InsuranceNavItems` z tooltipami. Wszystkie elementy nawigacji są teraz widoczne w widoku zwiniętym.
+
+### Zmieniono
+- **Dynamiczne motywy kolorystyczne:** Zmieniono hardcoded wartości `--primary`, `--accent`, `--ring` w CSS na dynamiczne, aktualizowane przez JavaScript. Domyślne wartości pozostają pomarańczowe (iBooster), ale użytkownik może zmienić motyw na dowolny (blue, green, purple, red, custom, system). Wszystkie komponenty używają zmiennych CSS zamiast hardcoded wartości.
+
+### Uwagi techniczne
+- Utworzono `src/lib/color-utils.ts` z funkcjami konwersji kolorów i aplikowania motywów
+- Utworzono `src/components/layout/sidebar-context.tsx` dla zarządzania stanem collapsed sidebaru
+- Wszystkie komponenty UI używają zmiennych CSS zgodnie z design systemem
+
 ## [0.10.2-beta] - 2025-01-21
 
 ### Dodano

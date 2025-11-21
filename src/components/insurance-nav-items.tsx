@@ -13,11 +13,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useSidebar } from "@/components/layout/sidebar-context"
 
 interface InsuranceNavItemsProps {
   enabledFeatures: string[]
   isInsuranceAgent?: boolean
   onItemClick?: () => void
+  collapsed?: boolean
 }
 
 // Helper function to determine if a navigation item is active
@@ -30,9 +33,11 @@ function getIsActive(href: string, pathname: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
 }
 
-export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, onItemClick }: InsuranceNavItemsProps) {
+export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, onItemClick, collapsed: propCollapsed }: InsuranceNavItemsProps) {
   const pathname = usePathname()
   const isMobile = useIsMobile()
+  const { collapsed: contextCollapsed } = useSidebar()
+  const collapsed = propCollapsed !== undefined ? propCollapsed : contextCollapsed
 
   // Check if insurance agents feature is enabled and user is an insurance agent
   if (!enabledFeatures.includes(FEATURE_KEYS.INSURANCE_AGENTS) || !isInsuranceAgent) {
@@ -105,7 +110,7 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
       {insuranceNavItems.map((item) => {
         const Icon = item.icon
         const isActive = getIsActive(item.href, pathname)
-        return (
+        const linkContent = (
           <Link
             key={item.name}
             href={item.href}
@@ -113,16 +118,38 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
             onClick={onItemClick}
             className={cn(
               "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              collapsed ? "justify-center" : "justify-start",
               isActive
                 ? "bg-primary text-primary-foreground"
                 : "text-foreground hover:bg-muted hover:text-foreground"
             )}
             aria-current={isActive ? "page" : undefined}
+            title={collapsed ? item.name : undefined}
           >
-            <Icon className="h-5 w-5 flex-shrink-0 mr-3" aria-hidden="true" />
-            <span>{item.name}</span>
+            <Icon
+              className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")}
+              aria-hidden="true"
+            />
+            {!collapsed && <span>{item.name}</span>}
           </Link>
         )
+
+        if (collapsed) {
+          return (
+            <TooltipProvider key={item.name}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {linkContent}
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{item.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )
+        }
+
+        return linkContent
       })}
     </>
   )

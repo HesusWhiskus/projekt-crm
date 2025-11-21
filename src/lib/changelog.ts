@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.3-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono system motywów kolorystycznych - wybór niebieskiego motywu teraz poprawnie zmienia kolory interfejsu. Dodano funkcje konwersji kolorów (hexToHsl) i aplikowania motywów (applyColorScheme). Wszystkie motywy (orange, blue, green, purple, red, custom, system) działają poprawnie.',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono przycisk zwijania sidebaru - jest teraz zawsze widoczny nawet przy scrollowaniu dzięki sticky positioning. Naprawiono widok zwinięty sidebaru - pokazuje uproszczony widok z ikonami i tooltipami zamiast uciętego oryginalnego widoku.',
+      },
+      {
+        type: 'changed',
+        description: 'Zaktualizowano system motywów - kolory są teraz dynamicznie aktualizowane przez JavaScript zamiast hardcoded w CSS. Domyślny motyw to pomarańczowy (iBooster), ale użytkownik może zmienić na dowolny motyw. Dodano brakujące wartości "orange" i "system" do enum w API.',
+      },
+    ],
+  },
+  {
     version: '0.10.2-beta',
     date: '2025-01-21',
     changes: [

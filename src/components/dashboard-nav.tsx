@@ -27,6 +27,7 @@ import { ProNavItems } from "@/components/pro-nav-items"
 import { InsuranceNavItems } from "@/components/insurance-nav-items"
 import { UserMenu } from "@/components/user-menu"
 import { FEATURE_KEYS } from "@/lib/feature-flags"
+import { applyColorScheme, getThemeColor, type Theme } from "@/lib/color-utils"
 
 interface DashboardNavProps {
   user: {
@@ -89,18 +90,27 @@ export function DashboardNav({
   useEffect(() => {
     if (typeof window === "undefined") return
 
-    const themeName = userColorScheme?.themeName || defaultColorScheme?.themeName || "orange"
-    const primaryColor =
-      themeName === "system"
-        ? defaultColorScheme?.primaryColor || "#f97316"
-        : themeName === "custom"
-        ? userColorScheme?.primaryColor || "#f97316"
-        : null
+    const predefinedThemes: Theme[] = [
+      { name: "orange", label: "Pomarańczowy", color: "#f97316" },
+      { name: "blue", label: "Niebieski", color: "#3b82f6" },
+      { name: "green", label: "Zielony", color: "#10b981" },
+      { name: "purple", label: "Fioletowy", color: "#8b5cf6" },
+      { name: "red", label: "Czerwony", color: "#ef4444" },
+    ]
 
-    if (primaryColor) {
-      document.documentElement.style.setProperty("--color-primary", primaryColor)
+    const themeName = userColorScheme?.themeName || defaultColorScheme?.themeName || "orange"
+    let primaryColor: string
+
+    if (themeName === "system" && defaultColorScheme) {
+      primaryColor = defaultColorScheme.primaryColor || "#f97316"
+    } else if (themeName === "custom") {
+      primaryColor = userColorScheme?.primaryColor || "#f97316"
+    } else {
+      // Predefined theme
+      primaryColor = getThemeColor(themeName, predefinedThemes)
     }
-    document.documentElement.setAttribute("data-theme", themeName)
+
+    applyColorScheme(primaryColor, themeName)
   }, [userColorScheme, defaultColorScheme])
 
   return (

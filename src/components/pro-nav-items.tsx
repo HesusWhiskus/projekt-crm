@@ -6,15 +6,20 @@ import { BarChart3, Key, Webhook, Settings, Sparkles } from "lucide-react"
 import { FEATURE_KEYS } from "@/lib/feature-flags"
 import { useIsMobile } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useSidebar } from "@/components/layout/sidebar-context"
 
 interface ProNavItemsProps {
   enabledFeatures: string[]
   onItemClick?: () => void
+  collapsed?: boolean
 }
 
-export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) {
+export function ProNavItems({ enabledFeatures, onItemClick, collapsed: propCollapsed }: ProNavItemsProps) {
   const pathname = usePathname()
   const isMobile = useIsMobile()
+  const { collapsed: contextCollapsed } = useSidebar()
+  const collapsed = propCollapsed !== undefined ? propCollapsed : contextCollapsed
 
   const proNavItems: Array<{
     name: string
@@ -42,14 +47,16 @@ export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) 
 
   const baseClasses = isMobile
     ? "flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-colors min-h-[44px]"
+    : collapsed
+    ? "flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors"
     : "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors"
 
-  return (
+  const content = (
     <>
       {visibleItems.map((item) => {
         const Icon = item.icon
         const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-        return (
+        const linkContent = (
           <Link
             key={item.name}
             href={item.href}
@@ -61,12 +68,38 @@ export function ProNavItems({ enabledFeatures, onItemClick }: ProNavItemsProps) 
                 : "text-foreground hover:bg-muted hover:text-foreground"
             }`}
             aria-current={isActive ? "page" : undefined}
+            title={collapsed ? item.name : undefined}
           >
-            <Icon className={cn("h-5 w-5 flex-shrink-0", !isMobile && "mr-3")} aria-hidden="true" />
-            {!isMobile && <span>{item.name}</span>}
+            <Icon
+              className={cn(
+                "h-5 w-5 flex-shrink-0",
+                !isMobile && !collapsed && "mr-3"
+              )}
+              aria-hidden="true"
+            />
+            {!isMobile && !collapsed && <span>{item.name}</span>}
           </Link>
         )
+
+        if (collapsed && !isMobile) {
+          return (
+            <TooltipProvider key={item.name}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {linkContent}
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{item.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )
+        }
+
+        return linkContent
       })}
     </>
   )
+
+  return content
 }

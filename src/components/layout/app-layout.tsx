@@ -5,6 +5,7 @@ import { useIsMobile } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { SidebarContext } from "./sidebar-context"
 
 export interface AppLayoutProps {
   children: ReactNode
@@ -36,41 +37,43 @@ export function AppLayout({
   const showSidebar = !isMobile && sidebar
 
   return (
-    <div className={cn("flex flex-1 overflow-hidden", className)}>
-      {showSidebar && (
-        <aside
-          className={cn(
-            "border-r border-border bg-card transition-all duration-300 flex flex-col flex-shrink-0",
-            collapsed ? "w-16" : "w-64"
-          )}
-          aria-label="Sidebar navigation"
-        >
-          <div className="flex-1 overflow-y-auto p-4">
-            {sidebar}
-          </div>
-          {!isMobile && (
-            <div className="border-t border-border p-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setCollapsed(!collapsed)}
-                className="w-full"
-                aria-label={collapsed ? "Rozwiń sidebar" : "Zwiń sidebar"}
-              >
-                {collapsed ? (
-                  <ChevronRight className="h-4 w-4" />
-                ) : (
-                  <ChevronLeft className="h-4 w-4" />
-                )}
-              </Button>
+    <SidebarContext.Provider value={{ collapsed }}>
+      <div className={cn("flex flex-1 overflow-hidden", className)}>
+        {showSidebar && (
+          <aside
+            className={cn(
+              "border-r border-border bg-card transition-all duration-300 flex flex-col flex-shrink-0",
+              collapsed ? "w-16" : "w-64"
+            )}
+            aria-label="Sidebar navigation"
+          >
+            <div className={cn("flex-1 overflow-y-auto", collapsed ? "p-2" : "p-4")}>
+              {sidebar}
             </div>
-          )}
-        </aside>
-      )}
-      <main className="flex-1 overflow-y-auto min-w-0">
-        {children}
-      </main>
-    </div>
+            {!isMobile && (
+              <div className="sticky bottom-0 border-t border-border bg-card p-2 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/_0.1)]">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setCollapsed(!collapsed)}
+                  className="w-full"
+                  aria-label={collapsed ? "Rozwiń sidebar" : "Zwiń sidebar"}
+                >
+                  {collapsed ? (
+                    <ChevronRight className="h-4 w-4" />
+                  ) : (
+                    <ChevronLeft className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            )}
+          </aside>
+        )}
+        <main className="flex-1 overflow-y-auto min-w-0">
+          {children}
+        </main>
+      </div>
+    </SidebarContext.Provider>
   )
 }
 
