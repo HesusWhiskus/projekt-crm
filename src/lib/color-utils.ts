@@ -84,6 +84,7 @@ export function applyColorScheme(primaryColor: string, themeName: string): void 
   document.documentElement.style.setProperty("--primary", hsl)
   document.documentElement.style.setProperty("--accent", hsl)
   document.documentElement.style.setProperty("--ring", hsl)
+  document.documentElement.style.setProperty("--border-primary", hsl) // Aktualizacja obramowań zgodnie z motywem
 
   // Also update --color-primary for compatibility
   document.documentElement.style.setProperty("--color-primary", primaryColor)

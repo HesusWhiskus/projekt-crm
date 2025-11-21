@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 40% 98%; /* Przyjazny jasnoszary jak w iBooster zamiast rażącej bieli */
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
+    --card: 0 0% 100%; /* Białe karty dla kontrastu na jasnoszarym tle */
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
@@ -20,8 +20,9 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72.2% 50.6%; /* Red-600: #dc2626 - czerwony z iBooster */
     --destructive-foreground: 0 0% 100%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 214.3 31.8% 85%; /* Bardziej widoczny szary zamiast prawie białego */
+    --border-primary: 24.6 95% 53.1%; /* Pomarańczowy akcent dla ważnych obramowań (iBooster) */
+    --input: 214.3 31.8% 85%; /* Zgodny z border */
     --ring: 24.6 95% 53.1%; /* Domyślny ring dla focus, aktualizowany przez JavaScript */
     --radius: 0.5rem;
     
@@ -91,6 +92,7 @@
     --primary: 24.6 95% 53.1%; /* Orange-500 HSL */
     --accent: 24.6 95% 53.1%;
     --ring: 24.6 95% 53.1%;
+    --border-primary: 24.6 95% 53.1%; /* Pomarańczowy akcent dla obramowań */
   }
 
   [data-theme="blue"] {
@@ -98,6 +100,7 @@
     --primary: 217.2 91.2% 59.8%; /* Blue-500 HSL */
     --accent: 217.2 91.2% 59.8%;
     --ring: 217.2 91.2% 59.8%;
+    --border-primary: 217.2 91.2% 59.8%; /* Niebieski akcent dla obramowań */
   }
 
   [data-theme="green"] {
@@ -105,6 +108,7 @@
     --primary: 160.1 84.1% 39.4%; /* Green-500 HSL */
     --accent: 160.1 84.1% 39.4%;
     --ring: 160.1 84.1% 39.4%;
+    --border-primary: 160.1 84.1% 39.4%; /* Zielony akcent dla obramowań */
   }
 
   [data-theme="purple"] {
@@ -112,6 +116,7 @@
     --primary: 258.3 89.5% 66.3%; /* Purple-500 HSL */
     --accent: 258.3 89.5% 66.3%;
     --ring: 258.3 89.5% 66.3%;
+    --border-primary: 258.3 89.5% 66.3%; /* Fioletowy akcent dla obramowań */
   }
 
   [data-theme="red"] {
@@ -119,6 +124,7 @@
     --primary: 0 84.2% 60.2%; /* Red-500 HSL */
     --accent: 0 84.2% 60.2%;
     --ring: 0 84.2% 60.2%;
+    --border-primary: 0 84.2% 60.2%; /* Czerwony akcent dla obramowań */
   }
 
   [data-theme="custom"] {
@@ -149,6 +155,7 @@
     --destructive: 0 72.2% 50.6%; /* Czerwony w dark mode */
     --destructive-foreground: 0 0% 100%;
     --border: 217.2 32.6% 17.5%;
+    --border-primary: 24.6 95% 53.1%; /* Pomarańczowy akcent dla obramowań w dark mode */
     --input: 217.2 32.6% 17.5%;
     --ring: 24.6 95% 53.1%; /* Domyślny ring w dark mode, aktualizowany przez JavaScript */
     

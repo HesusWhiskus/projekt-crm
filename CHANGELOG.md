@@ -5,6 +5,23 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.6-beta] - 2025-01-21
+
+### Zmieniono
+- **Kolorystyka UI zgodna z iBooster:** Zmieniono tło aplikacji z czystej bieli (`0 0% 100%`) na przyjazny jasnoszary (`210 40% 98%`) zgodnie z designem iBooster, co eliminuje rażenie oczu. Zaktualizowano wszystkie obramowania tabelek, widgetów i kart - są teraz bardziej widoczne z subtelnym pomarańczowym akcentem (`border-primary/20` dla kart i widgetów, `border-primary/10` dla tabel) zgodnie z kolorystyką iBooster.
+- **Obramowania komponentów:** Wszystkie komponenty UI (Card, Table, DataTable, Dialog, Select, Popover, ListWidget) mają teraz obramowania z akcentem primary zgodnie z designem iBooster. Dodano nową zmienną CSS `--border-primary` która jest dynamicznie aktualizowana przy zmianie motywu kolorystycznego.
+
+### Dodano
+- **Zmienna CSS border-primary:** Dodano nową zmienną CSS `--border-primary` dla obramowań z akcentem kolorystycznym, która jest aktualizowana automatycznie przy zmianie motywu kolorystycznego przez funkcję `applyColorScheme` w `color-utils.ts`.
+- **Kolor border-primary w Tailwind:** Dodano `border-primary` do palety kolorów Tailwind w `tailwind.config.ts` umożliwiając użycie `border-primary` w klasach Tailwind.
+
+### Uwagi techniczne
+- Tło aplikacji zmienione na bardziej przyjazny jasnoszary zgodnie z designem iBooster
+- Wszystkie obramowania mają teraz subtelny akcent primary (pomarańczowy domyślnie)
+- Zmienna `--border` zmieniona z `214.3 31.8% 91.4%` na `214.3 31.8% 85%` dla lepszej widoczności
+- Wszystkie motywy kolorystyczne (orange, blue, green, purple, red) mają teraz odpowiednie wartości `--border-primary`
+- Funkcja `applyColorScheme` aktualizuje również `--border-primary` przy zmianie motywu
+
 ## [0.10.5-beta] - 2025-01-21
 
 ### Naprawiono

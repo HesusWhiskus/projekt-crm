@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.6-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'changed',
+        description: 'Refaktoryzacja kolorystyki UI zgodna z iBooster - zmieniono tło z czystej bieli na przyjazny jasnoszary, wszystkie obramowania mają teraz subtelny pomarańczowy akcent zgodnie z designem iBooster. Tabele, widgety i karty są teraz bardziej czytelne i przyjazne dla oczu.',
+      },
+      {
+        type: 'added',
+        description: 'Dodano zmienną CSS border-primary dla obramowań z akcentem kolorystycznym, która jest automatycznie aktualizowana przy zmianie motywu kolorystycznego.',
+      },
+    ],
+  },
+  {
     version: '0.10.5-beta',
     date: '2025-01-21',
     changes: [

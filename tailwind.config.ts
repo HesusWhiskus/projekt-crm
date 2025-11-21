@@ -30,6 +30,7 @@ const config = {
       },
       colors: {
         border: "hsl(var(--border))",
+        "border-primary": "hsl(var(--border-primary))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
