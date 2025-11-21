@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.9-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono problem z rozjeżdżaniem się tabeli zadań - zmieniono tableLayout na fixed i dodano proporcjonalne szerokości kolumn. Tabela zawsze mieści się w kontenerze, a długie treści są skracane z tooltipem.',
+      },
+    ],
+  },
+  {
     version: '0.10.8-beta',
     date: '2025-01-21',
     changes: [

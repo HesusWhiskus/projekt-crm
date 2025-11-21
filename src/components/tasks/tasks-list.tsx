@@ -272,6 +272,7 @@ export function TasksList({
                   },
                   sortable: true,
                   priority: "always",
+                  width: "20%",
                 },
                 {
                   key: "description",
@@ -279,6 +280,7 @@ export function TasksList({
                   accessor: (task) => task.description || "-",
                   sortable: false,
                   priority: "mobile-hidden",
+                  width: "25%",
                 },
                 {
                   key: "status",
@@ -298,6 +300,7 @@ export function TasksList({
                   ),
                   sortable: true,
                   priority: "always",
+                  width: "12%",
                 },
                 {
                   key: "dueDate",
@@ -313,6 +316,7 @@ export function TasksList({
                   },
                   sortable: true,
                   priority: "always",
+                  width: "12%",
                 },
                 {
                   key: "assignee",
@@ -320,6 +324,7 @@ export function TasksList({
                   accessor: (task) => task.assignee?.name || task.assignee?.email || "Nieprzypisane",
                   sortable: true,
                   priority: "optional",
+                  width: "15%",
                 },
                 {
                   key: "client",
@@ -332,6 +337,7 @@ export function TasksList({
                   },
                   sortable: false,
                   priority: "mobile-hidden",
+                  width: "16%",
                 },
               ]}
               emptyState={{

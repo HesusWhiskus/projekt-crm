@@ -5,6 +5,14 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.9-beta] - 2025-01-21
+
+### Naprawiono
+- **Responsywność tabeli zadań:** Naprawiono problem z rozjeżdżaniem się tabeli zadań spowodowany kolumną "Opis" - zmieniono `tableLayout` na `fixed` i dodano proporcjonalne szerokości kolumn (Tytuł: 20%, Opis: 25%, Status: 12%, Termin: 12%, Przypisane do: 15%, Klient: 16%). Tabela teraz zawsze mieści się w kontenerze, a długie treści są skracane z ellipsis i pokazywane w tooltipie.
+
+### Zmieniono
+- **DataTable:** Zmieniono `tableLayout` z `auto` na `fixed` aby wymusić proporcjonalne rozłożenie kolumn. Zastosowano truncate zawsze dla wszystkich komórek zamiast tylko dla długich treści, zapewniając że tabela nigdy nie wychodzi poza kontener.
+
 ## [0.10.8-beta] - 2025-01-21
 
 ### Naprawiono

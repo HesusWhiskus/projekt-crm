@@ -135,7 +135,7 @@ export function DataTable<T extends { id: string }>({
     <TooltipProvider>
       <div className={cn("w-full", className)}>
         <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-          <table className="w-full divide-y divide-primary/10 dark:divide-primary/30" style={{ tableLayout: "auto", width: "100%", maxWidth: "100%" }}>
+          <table className="w-full divide-y divide-primary/10 dark:divide-primary/30" style={{ tableLayout: "fixed", width: "100%", maxWidth: "100%" }}>
             <thead className="bg-muted">
               <tr>
                 {visibleColumns.map((column) => (
@@ -147,7 +147,7 @@ export function DataTable<T extends { id: string }>({
                       "whitespace-nowrap",
                       column.className
                     )}
-                    style={column.width ? { minWidth: column.width } : undefined}
+                    style={column.width ? { width: column.width } : undefined}
                     onClick={() => column.sortable && handleSort(column.key)}
                     aria-sort={
                       sortBy === column.key
@@ -179,12 +179,12 @@ export function DataTable<T extends { id: string }>({
                         "px-3 py-3 text-sm text-foreground",
                         column.className
                       )}
-                      style={column.width ? { width: column.width, minWidth: column.width } : undefined}
+                      style={column.width ? { width: column.width } : undefined}
                     >
                       {contentString.length > tooltipThreshold ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="truncate max-w-full" title={contentString}>
+                            <div className="truncate max-w-full overflow-hidden" title={contentString}>
                               {content}
                             </div>
                           </TooltipTrigger>
@@ -193,7 +193,7 @@ export function DataTable<T extends { id: string }>({
                           </TooltipContent>
                         </Tooltip>
                       ) : (
-                        <div className="truncate max-w-full">{content}</div>
+                        <div className="truncate max-w-full overflow-hidden">{content}</div>
                       )}
                     </td>
                   )
