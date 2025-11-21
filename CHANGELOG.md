@@ -5,6 +5,19 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.4-beta] - 2025-01-21
+
+### Naprawiono
+- **Przycisk zwijania sidebaru:** Naprawiono problem z przyciskiem zwijania sidebaru, który był niewidoczny przy długim kontencie (widgety wydłużające ekran). Zmieniono strukturę sidebaru z `sticky bottom-0` na `mt-auto` w flexbox, co zapewnia że przycisk jest zawsze widoczny na dole sidebaru niezależnie od długości kontentu.
+- **Aktywny element w sidebarze:** Dodano klasę CSS `sidebar-active-ibooster` która wymusza pomarańczowe tło (#f97316) dla aktywnego elementu w sidebarze zgodnie z designem iBooster, niezależnie od motywu użytkownika. Zaktualizowano `sidebar-nav.tsx`, `pro-nav-items.tsx` i `insurance-nav-items.tsx` aby używały tej klasy.
+
+### Zmieniono
+- **Design zgodny z iBooster:** Aktywny element w sidebarze ma teraz pomarańczowe tło z białym tekstem zgodnie z designem iBooster, niezależnie od wybranego motywu kolorystycznego użytkownika.
+
+### Uwagi techniczne
+- Dodano klasę CSS `.sidebar-active-ibooster` w `globals.css` z pomarańczowym kolorem iBooster (#f97316)
+- Zmieniono strukturę sidebaru w `app-layout.tsx` - użyto `h-full` i `mt-auto` dla lepszego pozycjonowania przycisku
+
 ## [0.10.3-beta] - 2025-01-21
 
 ### Naprawiono

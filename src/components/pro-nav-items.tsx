@@ -62,11 +62,12 @@ export function ProNavItems({ enabledFeatures, onItemClick, collapsed: propColla
             href={item.href}
             prefetch={true}
             onClick={onItemClick}
-            className={`${baseClasses} ${
+            className={cn(
+              baseClasses,
               isActive
-                ? "bg-primary text-primary-foreground"
+                ? "sidebar-active-ibooster"
                 : "text-foreground hover:bg-muted hover:text-foreground"
-            }`}
+            )}
             aria-current={isActive ? "page" : undefined}
             title={collapsed ? item.name : undefined}
           >

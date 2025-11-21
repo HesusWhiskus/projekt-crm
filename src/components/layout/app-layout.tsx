@@ -42,7 +42,7 @@ export function AppLayout({
         {showSidebar && (
           <aside
             className={cn(
-              "border-r border-border bg-card transition-all duration-300 flex flex-col flex-shrink-0",
+              "border-r border-border bg-card transition-all duration-300 flex flex-col flex-shrink-0 h-full",
               collapsed ? "w-16" : "w-64"
             )}
             aria-label="Sidebar navigation"
@@ -51,7 +51,7 @@ export function AppLayout({
               {sidebar}
             </div>
             {!isMobile && (
-              <div className="sticky bottom-0 border-t border-border bg-card p-2 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/_0.1)]">
+              <div className="mt-auto border-t border-border bg-card p-2 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/_0.1)] flex-shrink-0">
                 <Button
                   variant="ghost"
                   size="icon"

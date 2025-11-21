@@ -182,5 +182,15 @@
     /* In dark mode: keep original logo (already has dark background, fits dark theme) */
     filter: none;
   }
+  
+  /* iBooster active sidebar item - pomarańczowy kolor niezależnie od motywu użytkownika */
+  .sidebar-active-ibooster {
+    background-color: #f97316 !important; /* Orange-500 iBooster */
+    color: #ffffff !important; /* Biały tekst */
+  }
+  
+  .sidebar-active-ibooster:hover {
+    background-color: #ea580c !important; /* Orange-600 dla hover */
+  }
 }
 

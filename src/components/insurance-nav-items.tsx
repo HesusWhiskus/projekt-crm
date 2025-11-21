@@ -120,7 +120,7 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
               "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
               collapsed ? "justify-center" : "justify-start",
               isActive
-                ? "bg-primary text-primary-foreground"
+                ? "sidebar-active-ibooster"
                 : "text-foreground hover:bg-muted hover:text-foreground"
             )}
             aria-current={isActive ? "page" : undefined}

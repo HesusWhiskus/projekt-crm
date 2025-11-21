@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.4-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono przycisk zwijania sidebaru - jest teraz zawsze widoczny nawet przy długim kontencie dzięki zmianie struktury z sticky na mt-auto w flexbox. Naprawiono aktywny element w sidebarze - ma teraz pomarańczowe tło zgodnie z designem iBooster niezależnie od motywu użytkownika.',
+      },
+      {
+        type: 'changed',
+        description: 'Wprowadzono zmiany wizualne zgodne z iBooster - aktywny element w sidebarze ma pomarańczowe tło (#f97316) z białym tekstem, zgodnie z designem iBooster. Dodano klasę CSS sidebar-active-ibooster która wymusza pomarańczowy kolor niezależnie od motywu użytkownika.',
+      },
+    ],
+  },
+  {
     version: '0.10.3-beta',
     date: '2025-01-21',
     changes: [
