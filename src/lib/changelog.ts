@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.8-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono responsywność tabel - tabela w zadaniach teraz płynnie zwęża się i rozszerza w zależności od rozdzielczości, ale nigdy nie wychodzi poza kontener.',
+      },
+    ],
+  },
+  {
     version: '0.10.7-beta',
     date: '2025-01-21',
     changes: [

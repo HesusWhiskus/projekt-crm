@@ -5,6 +5,14 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.8-beta] - 2025-01-21
+
+### Naprawiono
+- **Responsywność tabel:** Naprawiono problem z rozjeżdżaniem się tabel w zadaniach - tabela teraz płynnie zwęża się i rozszerza w zależności od rozdzielczości, ale nigdy nie wychodzi poza kontener dzięki `maxWidth: 100%` i `tableLayout: auto`.
+
+### Zmieniono
+- **DataTable:** Zaktualizowano komponent DataTable aby używał `width: 100%` i `maxWidth: 100%` zamiast sztywnych minimalnych szerokości, zapewniając pełną responsywność przy zachowaniu czytelności.
+
 ## [0.10.7-beta] - 2025-01-21
 
 ### Naprawiono
