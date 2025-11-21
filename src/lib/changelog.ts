@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.10-beta',
+    date: '2025-11-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd serwera przy próbie wejścia w pojazdy - dodano brakujące kolumny (brand, model, productionYear, eurotaxId, infoEkspertId) do tabeli vehicles w bazie danych.',
+      },
+    ],
+  },
+  {
     version: '0.10.9-beta',
     date: '2025-01-21',
     changes: [

@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.10-beta] - 2025-11-21
+
+### Naprawiono
+- **Błąd strony pojazdów:** Naprawiono błąd serwera przy próbie wejścia w pojazdy - dodano brakujące kolumny (brand, model, productionYear, eurotaxId, infoEkspertId) do tabeli vehicles w bazie danych. Kolumny były zdefiniowane w schema.prisma ale brakowało ich w migracji.
+
 ## [0.10.9-beta] - 2025-01-21
 
 ### Naprawiono
