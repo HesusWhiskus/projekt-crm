@@ -56,6 +56,16 @@ export function PreferencesSettings({
     }
   }, [preferences?.theme, setTheme])
 
+  // Synchronize colorScheme with preferences when preferences change
+  useEffect(() => {
+    if (preferences) {
+      setColorScheme({
+        primaryColor: preferences.primaryColor || undefined,
+        themeName: preferences.themeName || defaultColorScheme?.themeName || "orange",
+      })
+    }
+  }, [preferences, defaultColorScheme])
+
   useEffect(() => {
     // Apply color scheme to document (only on client)
     if (typeof window === "undefined") return

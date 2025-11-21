@@ -58,7 +58,11 @@ export function SidebarNav({
             aria-current={isActive ? "page" : undefined}
             title={collapsed ? item.name : undefined}
           >
-            <Icon className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")} aria-hidden="true" />
+            <Icon className={cn(
+              "h-5 w-5 flex-shrink-0",
+              !collapsed && "mr-3",
+              isActive ? "text-white" : "text-muted-foreground"
+            )} aria-hidden="true" />
             {!collapsed && <span>{item.name}</span>}
           </Link>
         )
@@ -80,10 +84,25 @@ export function SidebarNav({
 
         return linkContent
       })}
-      {!collapsed && <div className="border-t border-border my-2" />}
+      {!collapsed && (
+        <>
+          <div className="border-t border-border my-2" />
+          <div className="px-3 py-2">
+            <div className="text-xs font-semibold text-muted-foreground uppercase">Funkcje PRO</div>
+          </div>
+        </>
+      )}
       <div className="space-y-1">
         <ProNavItems enabledFeatures={enabledFeatures} collapsed={collapsed} />
       </div>
+      {!collapsed && enabledFeatures.includes("insurance_agents") && isInsuranceAgent && (
+        <>
+          <div className="border-t border-border my-2" />
+          <div className="px-3 py-2">
+            <div className="text-xs font-semibold text-muted-foreground uppercase">Agenci ubezpieczeniowi</div>
+          </div>
+        </>
+      )}
       <div className="space-y-1">
         <InsuranceNavItems enabledFeatures={enabledFeatures} isInsuranceAgent={isInsuranceAgent} collapsed={collapsed} />
       </div>

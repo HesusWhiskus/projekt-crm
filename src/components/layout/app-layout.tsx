@@ -38,7 +38,7 @@ export function AppLayout({
 
   return (
     <SidebarContext.Provider value={{ collapsed }}>
-      <div className={cn("flex flex-1 overflow-hidden", className)}>
+      <div className={cn("flex flex-1 overflow-hidden min-h-0", className)}>
         {showSidebar && (
           <aside
             className={cn(
@@ -47,11 +47,11 @@ export function AppLayout({
             )}
             aria-label="Sidebar navigation"
           >
-            <div className={cn("flex-1 overflow-y-auto", collapsed ? "p-2" : "p-4")}>
+            <div className={cn("flex-1 overflow-y-auto min-h-0", collapsed ? "p-2" : "p-4")}>
               {sidebar}
             </div>
             {!isMobile && (
-              <div className="mt-auto border-t border-border bg-card p-2 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/_0.1)] flex-shrink-0">
+              <div className="sticky bottom-0 border-t border-border bg-card p-2 shadow-[0_-4px_6px_-1px_rgb(0_0_0_/_0.1)] flex-shrink-0 z-10">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -69,7 +69,7 @@ export function AppLayout({
             )}
           </aside>
         )}
-        <main className="flex-1 overflow-y-auto min-w-0">
+        <main className="flex-1 overflow-y-auto min-w-0 min-h-0">
           {children}
         </main>
       </div>

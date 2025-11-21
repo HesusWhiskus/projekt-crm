@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { AppLayout } from "@/components/layout/app-layout"
 import { SidebarNav } from "@/components/layout/sidebar-nav"
+import { ColorSchemeApplier } from "@/components/color-scheme-applier"
 import { db } from "@/lib/db"
 import { getEnabledFeatures, isProPlan } from "@/lib/feature-flags"
 
@@ -82,7 +83,11 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
+      <ColorSchemeApplier
+        userColorScheme={userPreferences}
+        defaultColorScheme={parsedDefaultColorScheme}
+      />
       <DashboardNav
         user={user}
         systemName={systemName?.value || "Internal CRM"}
@@ -93,7 +98,7 @@ export default async function DashboardLayout({
         isPro={isPro}
         isInsuranceAgent={isInsuranceAgent}
       />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         <AppLayout
           sidebar={
             <SidebarNav

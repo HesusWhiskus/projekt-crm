@@ -127,7 +127,11 @@ export function InsuranceNavItems({ enabledFeatures, isInsuranceAgent = false, o
             title={collapsed ? item.name : undefined}
           >
             <Icon
-              className={cn("h-5 w-5 flex-shrink-0", !collapsed && "mr-3")}
+              className={cn(
+                "h-5 w-5 flex-shrink-0",
+                !collapsed && "mr-3",
+                isActive ? "text-white" : "text-muted-foreground"
+              )}
               aria-hidden="true"
             />
             {!collapsed && <span>{item.name}</span>}

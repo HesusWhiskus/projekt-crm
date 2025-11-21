@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.5-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono system motywów kolorystycznych - usunięto hardcoded niebieski kolor w dashboard-nav, dodano ColorSchemeApplier dla synchronizacji kolorów przed hydracją React. Naprawiono synchronizację preferencji kolorów w ustawieniach.',
+      },
+      {
+        type: 'changed',
+        description: 'Poprawiono sidebar - przycisk zwijania jest teraz sticky i zawsze widoczny. Separatory i nagłówki sekcji są ukryte w widoku zwiniętym. Ikony mają poprawne kolory - szare domyślnie, białe przy aktywności zgodnie z designem iBooster.',
+      },
+      {
+        type: 'added',
+        description: 'Dodano komponent ColorSchemeApplier który aplikuje kolory przed hydracją React, zapewniając poprawną synchronizację kolorów z preferencjami użytkownika.',
+      },
+    ],
+  },
+  {
     version: '0.10.4-beta',
     date: '2025-01-21',
     changes: [

@@ -74,7 +74,8 @@ export function ProNavItems({ enabledFeatures, onItemClick, collapsed: propColla
             <Icon
               className={cn(
                 "h-5 w-5 flex-shrink-0",
-                !isMobile && !collapsed && "mr-3"
+                !isMobile && !collapsed && "mr-3",
+                isActive ? "text-white" : "text-muted-foreground"
               )}
               aria-hidden="true"
             />

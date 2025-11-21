@@ -5,6 +5,26 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.5-beta] - 2025-01-21
+
+### Naprawiono
+- **System motywów kolorystycznych:** Naprawiono problem z hardcoded niebieskim kolorem w `dashboard-nav.tsx` - zmieniono fallback z `#3b82f6` na `#f97316` (pomarańczowy iBooster). Dodano komponent `ColorSchemeApplier` który aplikuje kolory przed hydracją React, eliminując problem z synchronizacją między stanem w bazie danych a wyświetlanymi kolorami.
+- **Synchronizacja preferencji kolorów:** Naprawiono problem z synchronizacją `colorScheme` z `preferences` w `preferences-settings.tsx` - dodano `useEffect` który synchronizuje stan po zmianie preferencji z bazy danych.
+
+### Zmieniono
+- **Sidebar - przycisk zwijania:** Zmieniono pozycjonowanie przycisku zwijania z `mt-auto` na `sticky bottom-0` aby był zawsze widoczny nawet przy scrollowaniu w dół. Dodano odpowiednie tło i cień dla lepszej widoczności.
+- **Sidebar - separatory i nagłówki:** Poprawiono widok zwinięty sidebaru - separatory i nagłówki sekcji są teraz ukryte w widoku zwiniętym, a widoczne tylko w widoku rozwiniętym. Dodano nagłówki sekcji "Funkcje PRO" i "Agenci ubezpieczeniowi" w widoku rozwiniętym.
+- **Ikony w sidebarze:** Zmieniono kolory ikon w sidebarze - nieaktywne ikony są teraz szare (`text-muted-foreground`), a aktywne białe (`text-white`) zgodnie z designem iBooster. Zaktualizowano `sidebar-nav.tsx`, `pro-nav-items.tsx` i `insurance-nav-items.tsx`.
+
+### Dodano
+- **Komponent ColorSchemeApplier:** Utworzono nowy komponent `src/components/color-scheme-applier.tsx` który aplikuje kolory przed hydracją React, zapewniając poprawną synchronizację kolorów z preferencjami użytkownika.
+
+### Uwagi techniczne
+- Wszystkie zmiany są zgodne z design system iBooster
+- Kolory są dynamicznie aktualizowane przez JavaScript przed hydracją React
+- Sidebar ma teraz lepszą strukturę z sticky przyciskiem zwijania
+- Ikony mają poprawne kolory zgodne z designem iBooster
+
 ## [0.10.4-beta] - 2025-01-21
 
 ### Naprawiono

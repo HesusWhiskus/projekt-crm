@@ -123,7 +123,7 @@ export function DashboardNav({
               <Link
                 href="/dashboard"
                 className="flex items-center"
-                style={{ color: "var(--color-primary, #3b82f6)" }}
+                style={{ color: "var(--color-primary, #f97316)" }}
                 aria-label="Strona główna"
               >
                 {systemLogo && systemLogo.trim() !== "" ? (
