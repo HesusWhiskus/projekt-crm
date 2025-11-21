@@ -421,7 +421,7 @@ async function generateCalculations(
   const calculations: string[] = []
   const statuses = ['DRAFT', 'SENT', 'ACCEPTED', 'REJECTED'] as const
   const variants = ['MINIMAL', 'OPTIMAL', 'MAXIMAL'] as const
-  const scopes = ['OC', 'AC', 'NNW', 'ASS'] as const
+  const scopes = ['OC', 'AC', 'NNW', 'ASS', 'SZYBY', 'OC_DISCOUNT_PROTECTION', 'ASSISTANCE_ACCIDENT', 'ASSISTANCE_BREAKDOWN', 'AC_MINI', 'AC_ACCIDENT'] as const
   
   for (let i = 0; i < count; i++) {
     const vehicle = vehicles[Math.floor(Math.random() * vehicles.length)]
@@ -431,11 +431,15 @@ async function generateCalculations(
     const client = await db.client.findUnique({ where: { id: clientId } })
     if (!client) continue
     
-    const selectedScopes: string[] = []
-    const scopeCount = Math.floor(Math.random() * 4) + 1
-    const shuffledScopes = [...scopes].sort(() => Math.random() - 0.5)
+    // Wygeneruj zakresy ubezpieczenia (1-6, zawsze OC jako podstawowy)
+    const selectedScopes: string[] = ['OC'] // OC zawsze jest wymagane
+    const scopeCount = Math.floor(Math.random() * 5) + 1 // 1-5 dodatkowych zakresów
+    const additionalScopes = scopes.filter(s => s !== 'OC')
+    const shuffledScopes = [...additionalScopes].sort(() => Math.random() - 0.5)
     for (let j = 0; j < scopeCount && j < shuffledScopes.length; j++) {
-      selectedScopes.push(shuffledScopes[j])
+      if (!selectedScopes.includes(shuffledScopes[j])) {
+        selectedScopes.push(shuffledScopes[j])
+      }
     }
     
     const address = generateAddress()
@@ -543,6 +547,117 @@ async function generatePolicies(
   return policies
 }
 
+// Generowanie ofert dla kalkulacji
+async function generateOffers(
+  calculationIds: string[]
+) {
+  const insuranceCompanies = await db.insuranceCompany.findMany()
+  if (insuranceCompanies.length === 0) {
+    return []
+  }
+  
+  const offers: string[] = []
+  const packageTypes = ['OC', 'OC+AC', 'OC+AC+NNW', 'OC+AC+NNW+ASS', 'Pakiet Premium'] as const
+  const allScopes = ['OC', 'AC', 'NNW', 'ASS', 'SZYBY', 'OC_DISCOUNT_PROTECTION', 'ASSISTANCE_ACCIDENT', 'ASSISTANCE_BREAKDOWN', 'AC_MINI', 'AC_ACCIDENT'] as const
+  
+  // Pobierz wszystkie kalkulacje z ich zakresami
+  const calculations = await db.calculation.findMany({
+    where: { id: { in: calculationIds } },
+    select: { id: true, scopes: true, value: true }
+  })
+  
+  for (const calculation of calculations) {
+    // Generuj 2-5 ofert dla każdej kalkulacji
+    const offerCount = Math.floor(Math.random() * 4) + 2 // 2-5 ofert
+    
+    // Wybierz losowe towarzystwa (mogą się powtarzać, ale różne ceny)
+    const selectedCompanies: typeof insuranceCompanies = []
+    for (let i = 0; i < offerCount; i++) {
+      const company = insuranceCompanies[Math.floor(Math.random() * insuranceCompanies.length)]
+      selectedCompanies.push(company)
+    }
+    
+    for (let i = 0; i < offerCount; i++) {
+      const company = selectedCompanies[i]
+      const packageType = packageTypes[Math.floor(Math.random() * packageTypes.length)]
+      
+      // Cena bazowa z kalkulacji, z wariacją ±20%
+      const baseValue = typeof calculation.value === 'number' ? calculation.value : Number(calculation.value)
+      const variation = (Math.random() * 0.4 - 0.2) // -20% do +20%
+      const offerPrice = Math.max(300, Math.floor(baseValue * (1 + variation)))
+      
+      // Użyj zakresów z kalkulacji lub dodaj/lub usuń niektóre
+      const calculationScopes = Array.isArray(calculation.scopes) ? calculation.scopes : []
+      const selectedScopes: string[] = [...calculationScopes]
+      
+      // Losowo dodaj lub usuń zakresy (30% szansy na zmianę)
+      if (Math.random() < 0.3) {
+        if (Math.random() > 0.5 && selectedScopes.length < allScopes.length) {
+          // Dodaj losowy zakres
+          const availableScopes = allScopes.filter(s => !selectedScopes.includes(s))
+          if (availableScopes.length > 0) {
+            selectedScopes.push(availableScopes[Math.floor(Math.random() * availableScopes.length)])
+          }
+        } else if (selectedScopes.length > 1) {
+          // Usuń losowy zakres (ale nie OC)
+          const removableScopes = selectedScopes.filter(s => s !== 'OC')
+          if (removableScopes.length > 0) {
+            const index = selectedScopes.indexOf(removableScopes[Math.floor(Math.random() * removableScopes.length)])
+            if (index > -1) {
+              selectedScopes.splice(index, 1)
+            }
+          }
+        }
+      }
+      
+      // Opcje rat (30% szansy na raty)
+      const hasInstallments = Math.random() < 0.3
+      const installments = hasInstallments ? Math.floor(Math.random() * 10) + 2 : null // 2-12 rat
+      const installmentAmount = hasInstallments && installments 
+        ? offerPrice / installments 
+        : null
+      
+      // Dodatkowe opcje (JSON)
+      const additionalOptions = {
+        coverage: {
+          basic: selectedScopes.includes('OC'),
+          comprehensive: selectedScopes.includes('AC'),
+          personal: selectedScopes.includes('NNW'),
+          assistance: selectedScopes.includes('ASS'),
+          glass: selectedScopes.includes('SZYBY'),
+          discountProtection: selectedScopes.includes('OC_DISCOUNT_PROTECTION'),
+        },
+        discounts: Math.random() > 0.7 ? ['LOYALTY', 'MULTI_CAR'] : [],
+        notes: `Oferta ${packageType} z ${company.name}`,
+      }
+      
+      // Ważność oferty (30-90 dni od teraz)
+      const validUntil = new Date()
+      validUntil.setDate(validUntil.getDate() + Math.floor(Math.random() * 60) + 30)
+      
+      const offer = await db.offer.create({
+        data: {
+          calculationId: calculation.id,
+          insuranceCompanyId: company.id,
+          price: offerPrice,
+          packageType,
+          scopes: selectedScopes as any,
+          additionalOptions: additionalOptions as any,
+          installments,
+          installmentAmount: installmentAmount ? installmentAmount : null,
+          validUntil,
+          status: 'PENDING',
+          isSelected: i === 0 && Math.random() > 0.7, // Pierwsza oferta ma 30% szansy na wybór
+        }
+      })
+      
+      offers.push(offer.id)
+    }
+  }
+  
+  return offers
+}
+
 export async function POST() {
   try {
     const user = await getCurrentUser()
@@ -556,6 +671,7 @@ export async function POST() {
     const clients = await generateClients(organizationId, 200)
     const vehicles = await generateVehicles(organizationId, clients, 300)
     const calculations = await generateCalculations(organizationId, agentUserIds, vehicles, 400)
+    const offers = await generateOffers(calculations)
     const policies = await generatePolicies(organizationId, agentUserIds, calculations, vehicles, 200)
     
     return NextResponse.json({ 
@@ -564,6 +680,7 @@ export async function POST() {
         clients: clients.length,
         vehicles: vehicles.length,
         calculations: calculations.length,
+        offers: offers.length,
         policies: policies.length
       }
     }, { status: 200 })
