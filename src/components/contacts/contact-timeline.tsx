@@ -55,7 +55,7 @@ interface ContactTimelineProps {
     id: string
     role: string
   }
-  onEdit?: (contactId: string) => void
+  onEdit?: (contactId: string | null) => void
   editingContactId?: string | null
 }
 
@@ -241,7 +241,7 @@ export function ContactTimeline({
                               users={users}
                               groups={groups}
                               currentUser={currentUser}
-                              onClose={() => onEdit?.(contact.id)}
+                              onClose={() => onEdit?.(null)}
                               onSuccess={() => {
                                 onEdit?.(contact.id)
                               }}

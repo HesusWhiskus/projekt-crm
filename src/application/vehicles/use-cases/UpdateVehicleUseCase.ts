@@ -79,6 +79,26 @@ export class UpdateVehicleUseCase {
       vehicle.updatePurchaseYear(dto.purchaseYear)
     }
 
+    if (dto.brand !== undefined) {
+      vehicle.updateBrand(dto.brand)
+    }
+
+    if (dto.model !== undefined) {
+      vehicle.updateModel(dto.model)
+    }
+
+    if (dto.productionYear !== undefined) {
+      vehicle.updateProductionYear(dto.productionYear)
+    }
+
+    if (dto.infoEkspertId !== undefined) {
+      vehicle.updateInfoEkspertId(dto.infoEkspertId)
+    }
+
+    if (dto.eurotaxId !== undefined) {
+      vehicle.updateEurotaxId(dto.eurotaxId)
+    }
+
     // Save updated vehicle
     const updatedVehicle = await this.vehicleRepository.update(vehicle)
 
@@ -101,6 +121,11 @@ export class UpdateVehicleUseCase {
       vin: vehicle.getVIN()?.getValue() || null,
       registrationNumber: vehicle.getRegistrationNumber()?.getValue() || null,
       firstRegistrationDate: vehicle.getFirstRegistrationDate(),
+      brand: vehicle.getBrand(),
+      model: vehicle.getModel(),
+      productionYear: vehicle.getProductionYear(),
+      infoEkspertId: vehicle.getInfoEkspertId(),
+      eurotaxId: vehicle.getEurotaxId(),
       eurotaxData: vehicle.getEurotaxData(),
       infoEkspertData: vehicle.getInfoEkspertData(),
       importedFromAbroad: vehicle.getImportedFromAbroad(),

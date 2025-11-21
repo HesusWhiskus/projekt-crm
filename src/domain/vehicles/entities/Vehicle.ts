@@ -10,6 +10,11 @@ export class Vehicle {
     private vin: VIN | null,
     private registrationNumber: RegistrationNumber | null,
     private firstRegistrationDate: Date | null,
+    private brand: string | null,
+    private model: string | null,
+    private productionYear: number | null,
+    private infoEkspertId: string | null,
+    private eurotaxId: string | null,
     private eurotaxData: Record<string, any> | null,
     private infoEkspertData: Record<string, any> | null,
     private importedFromAbroad: boolean,
@@ -30,6 +35,11 @@ export class Vehicle {
     vin: VIN | null
     registrationNumber: RegistrationNumber | null
     firstRegistrationDate: Date | null
+    brand?: string | null
+    model?: string | null
+    productionYear?: number | null
+    infoEkspertId?: string | null
+    eurotaxId?: string | null
     eurotaxData?: Record<string, any> | null
     infoEkspertData?: Record<string, any> | null
     importedFromAbroad?: boolean
@@ -46,6 +56,11 @@ export class Vehicle {
       params.vin,
       params.registrationNumber,
       params.firstRegistrationDate,
+      params.brand || null,
+      params.model || null,
+      params.productionYear || null,
+      params.infoEkspertId || null,
+      params.eurotaxId || null,
       params.eurotaxData || null,
       params.infoEkspertData || null,
       params.importedFromAbroad ?? false,
@@ -67,6 +82,11 @@ export class Vehicle {
     vin: string | null
     registrationNumber: string | null
     firstRegistrationDate: Date | null
+    brand: string | null
+    model: string | null
+    productionYear: number | null
+    infoEkspertId: string | null
+    eurotaxId: string | null
     eurotaxData: Record<string, any> | null
     infoEkspertData: Record<string, any> | null
     importedFromAbroad: boolean
@@ -83,6 +103,11 @@ export class Vehicle {
       data.vin ? VIN.fromValidated(data.vin) : null,
       data.registrationNumber ? RegistrationNumber.fromValidated(data.registrationNumber) : null,
       data.firstRegistrationDate,
+      data.brand,
+      data.model,
+      data.productionYear,
+      data.infoEkspertId,
+      data.eurotaxId,
       data.eurotaxData,
       data.infoEkspertData,
       data.importedFromAbroad,
@@ -139,6 +164,26 @@ export class Vehicle {
 
   getCurrentMileage(): number | null {
     return this.currentMileage
+  }
+
+  getBrand(): string | null {
+    return this.brand
+  }
+
+  getModel(): string | null {
+    return this.model
+  }
+
+  getProductionYear(): number | null {
+    return this.productionYear
+  }
+
+  getInfoEkspertId(): string | null {
+    return this.infoEkspertId
+  }
+
+  getEurotaxId(): string | null {
+    return this.eurotaxId
   }
 
   getOrganizationId(): string | null {
@@ -208,6 +253,37 @@ export class Vehicle {
     this.updatedAt = new Date()
   }
 
+  updateBrand(brand: string | null): void {
+    this.brand = brand
+    this.updatedAt = new Date()
+  }
+
+  updateModel(model: string | null): void {
+    this.model = model
+    this.updatedAt = new Date()
+  }
+
+  updateProductionYear(year: number | null): void {
+    if (year !== null) {
+      const currentYear = new Date().getFullYear()
+      if (year < 1900 || year > currentYear + 1) {
+        throw new Error(`Rok produkcji musi być między 1900 a ${currentYear + 1}`)
+      }
+    }
+    this.productionYear = year
+    this.updatedAt = new Date()
+  }
+
+  updateInfoEkspertId(id: string | null): void {
+    this.infoEkspertId = id
+    this.updatedAt = new Date()
+  }
+
+  updateEurotaxId(id: string | null): void {
+    this.eurotaxId = id
+    this.updatedAt = new Date()
+  }
+
   /**
    * Converts entity to persistence format
    */
@@ -216,6 +292,11 @@ export class Vehicle {
     vin: string | null
     registrationNumber: string | null
     firstRegistrationDate: Date | null
+    brand: string | null
+    model: string | null
+    productionYear: number | null
+    infoEkspertId: string | null
+    eurotaxId: string | null
     eurotaxData: Record<string, any> | null
     infoEkspertData: Record<string, any> | null
     importedFromAbroad: boolean
@@ -232,6 +313,11 @@ export class Vehicle {
       vin: this.vin?.getValue() || null,
       registrationNumber: this.registrationNumber?.getValue() || null,
       firstRegistrationDate: this.firstRegistrationDate,
+      brand: this.brand,
+      model: this.model,
+      productionYear: this.productionYear,
+      infoEkspertId: this.infoEkspertId,
+      eurotaxId: this.eurotaxId,
       eurotaxData: this.eurotaxData,
       infoEkspertData: this.infoEkspertData,
       importedFromAbroad: this.importedFromAbroad,

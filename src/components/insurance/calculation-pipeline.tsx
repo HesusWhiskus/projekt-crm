@@ -32,10 +32,10 @@ interface CalculationPipelineProps {
 }
 
 const statusColumns: Array<{ status: 'DRAFT' | 'SENT' | 'ACCEPTED' | 'REJECTED'; label: string; color: string }> = [
-  { status: 'DRAFT', label: 'Szkice', color: 'bg-gray-100' },
-  { status: 'SENT', label: 'Wysłane', color: 'bg-blue-100' },
-  { status: 'ACCEPTED', label: 'Zaakceptowane', color: 'bg-green-100' },
-  { status: 'REJECTED', label: 'Odrzucone', color: 'bg-red-100' },
+  { status: 'DRAFT', label: 'Szkice', color: 'bg-gray-100 dark:bg-gray-800' },
+  { status: 'SENT', label: 'Wysłane', color: 'bg-blue-100 dark:bg-blue-900' },
+  { status: 'ACCEPTED', label: 'Zaakceptowane', color: 'bg-green-100 dark:bg-green-900' },
+  { status: 'REJECTED', label: 'Odrzucone', color: 'bg-red-100 dark:bg-red-900' },
 ]
 
 export function CalculationPipeline({ calculations, onStatusChange }: CalculationPipelineProps) {
@@ -117,17 +117,17 @@ export function CalculationPipeline({ calculations, onStatusChange }: Calculatio
   }
 
   const statusColors: Record<string, string> = {
-    DRAFT: 'bg-gray-100 text-gray-800',
-    SENT: 'bg-blue-100 text-blue-800',
-    ACCEPTED: 'bg-green-100 text-green-800',
-    REJECTED: 'bg-red-100 text-red-800',
+    DRAFT: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+    SENT: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
+    ACCEPTED: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
+    REJECTED: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200',
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Pipeline kalkulacji</h2>
+          <h2 className="text-2xl font-bold text-foreground">Pipeline kalkulacji</h2>
           <p className="text-muted-foreground mt-1">
             Przeciągnij kalkulacje między kolumnami, aby zmienić ich status
           </p>
@@ -154,7 +154,7 @@ export function CalculationPipeline({ calculations, onStatusChange }: Calculatio
               onDrop={(e) => handleDrop(e, column.status)}
             >
               <CardHeader className={`${column.color} rounded-t-lg`}>
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-sm font-medium text-foreground">
                   {column.label} ({columnCalculations.length})
                 </CardTitle>
               </CardHeader>
@@ -195,12 +195,12 @@ export function CalculationPipeline({ calculations, onStatusChange }: Calculatio
                               </p>
                             )}
                           </div>
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 text-gray-800'}`}>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>
                             {calculation.status}
                           </span>
                         </div>
                         {calculation.value && (
-                          <p className="text-sm font-semibold text-green-600">
+                          <p className="text-sm font-semibold text-green-600 dark:text-green-400">
                             {typeof calculation.value === "number" ? calculation.value.toFixed(2) : Number(calculation.value).toFixed(2)} zł
                           </p>
                         )}

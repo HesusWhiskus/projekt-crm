@@ -87,7 +87,7 @@ export function ListWidget({
               const content = (
                 <div
                   className={cn(
-                    "flex items-start justify-between p-3 rounded-md border border-primary/20 transition-colors",
+                    "flex items-start justify-between p-3 rounded-md border border-primary/20 dark:border-primary/40 transition-colors",
                     (item.href || item.onClick) && "hover:bg-muted/50 cursor-pointer"
                   )}
                   onClick={item.onClick}
@@ -119,7 +119,7 @@ export function ListWidget({
               return <div key={item.id}>{content}</div>
             })}
             {showViewAll && items.length > maxItems && viewAllHref && (
-              <div className="pt-2 border-t border-primary/20">
+              <div className="pt-2 border-t border-primary/20 dark:border-primary/40">
                 <Link href={viewAllHref}>
                   <Button variant="ghost" size="sm" className="w-full">
                     Zobacz wszystkie ({items.length})

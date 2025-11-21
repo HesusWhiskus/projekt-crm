@@ -134,8 +134,8 @@ export function DataTable<T extends { id: string }>({
   return (
     <TooltipProvider>
       <div className={cn("w-full", className)}>
-        <div className="overflow-x-auto">
-          <table className="w-full divide-y divide-primary/10" style={{ tableLayout: "auto", minWidth: minTableWidth }}>
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <table className="w-full divide-y divide-primary/10 dark:divide-primary/30" style={{ tableLayout: "auto", minWidth: minTableWidth }}>
             <thead className="bg-muted">
               <tr>
                 {visibleColumns.map((column) => (
@@ -165,7 +165,7 @@ export function DataTable<T extends { id: string }>({
                 ))}
               </tr>
             </thead>
-            <tbody className="bg-card divide-y divide-primary/10">
+            <tbody className="bg-card divide-y divide-primary/10 dark:divide-primary/30">
               {data.map((row) => {
                 const rowContent = visibleColumns.map((column) => {
                   const content = column.accessor(row)

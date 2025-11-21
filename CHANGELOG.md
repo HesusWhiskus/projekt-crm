@@ -5,6 +5,23 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.7-beta] - 2025-01-21
+
+### Naprawiono
+- **Dark mode - obramowania:** Naprawiono zanikające akcenty obramowań w dark mode - zwiększono przezroczystość obramowań (border-primary/40 dla kart, border-primary/30 dla tabel) aby były lepiej widoczne w trybie ciemnym.
+- **Dark mode - calculation pipeline:** Naprawiono niewidoczne tytuły i kolory w calculation-pipeline dla dark mode - dodano dark mode variants dla wszystkich kolorów statusów (DRAFT, SENT, ACCEPTED, REJECTED) oraz tytułów.
+- **Dark mode - co nowego:** Naprawiono niewidoczne wpisy w komponencie "Co nowego" dla dark mode - zmieniono `bg-white` na `bg-card` i dodano dark mode variants dla wszystkich badge'ów zmian.
+- **Dark mode - skalowanie tabel:** Naprawiono problemy ze skalowaniem tabel w dark mode - poprawiono zarządzanie overflow w DataTable dla lepszej responsywności.
+- **Przycisk Anuluj w edycji kontaktu:** Naprawiono działanie przycisku Anuluj w edycji kontaktu - zmieniono typ `onEdit` z `(contactId: string)` na `(contactId: string | null)` aby poprawnie zamykał formularz.
+
+### Dodano
+- **Nowe pola w schemacie Vehicle:** Dodano pola `brand` (marka), `model` (model), `productionYear` (rok produkcji), `infoEkspertId` (ID ze słownika Info-Ekspert), `eurotaxId` (ID ze słownika Eurotax) do schematu pojazdu w bazie danych.
+- **Nowe pola w formularzu pojazdu:** Dodano możliwość wprowadzania marki, modelu, roku produkcji oraz ID ze słowników Info-Ekspert i Eurotax w formularzu pojazdu.
+- **Wyświetlanie nowych pól pojazdu:** Dodano wyświetlanie nowych pól pojazdu (marka, model, rok produkcji, ID słowników) w szczegółach pojazdu.
+
+### Zmieniono
+- **API endpoint pojazdów:** Zaktualizowano wszystkie warstwy API pojazdów (DTO, use case'y, entity, repository) aby obsługiwały nowe pola pojazdu.
+
 ## [0.10.6-beta] - 2025-01-21
 
 ### Zmieniono

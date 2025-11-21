@@ -14,6 +14,11 @@ interface VehicleDetailProps {
     vin: string | null
     registrationNumber: string | null
     firstRegistrationDate: Date | null
+    brand: string | null
+    model: string | null
+    productionYear: number | null
+    infoEkspertId: string | null
+    eurotaxId: string | null
     importedFromAbroad: boolean | null
     hasValidInspection: boolean | null
     hasLpgInstallation: boolean | null
@@ -89,6 +94,24 @@ export function VehicleDetail({ vehicle }: VehicleDetailProps) {
             <CardTitle>Podstawowe informacje</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {vehicle.brand && (
+              <div>
+                <p className="text-sm text-muted-foreground">Marka</p>
+                <p className="font-medium">{vehicle.brand}</p>
+              </div>
+            )}
+            {vehicle.model && (
+              <div>
+                <p className="text-sm text-muted-foreground">Model</p>
+                <p className="font-medium">{vehicle.model}</p>
+              </div>
+            )}
+            {vehicle.productionYear && (
+              <div>
+                <p className="text-sm text-muted-foreground">Rok produkcji</p>
+                <p className="font-medium">{vehicle.productionYear}</p>
+              </div>
+            )}
             <div>
               <p className="text-sm text-muted-foreground">Numer rejestracyjny</p>
               <p className="font-medium">{vehicle.registrationNumber || "-"}</p>
@@ -125,6 +148,18 @@ export function VehicleDetail({ vehicle }: VehicleDetailProps) {
             <CardTitle>Dodatkowe informacje</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {vehicle.infoEkspertId && (
+              <div>
+                <p className="text-sm text-muted-foreground">ID Info-Ekspert</p>
+                <p className="font-medium">{vehicle.infoEkspertId}</p>
+              </div>
+            )}
+            {vehicle.eurotaxId && (
+              <div>
+                <p className="text-sm text-muted-foreground">ID Eurotax</p>
+                <p className="font-medium">{vehicle.eurotaxId}</p>
+              </div>
+            )}
             <div>
               <p className="text-sm text-muted-foreground">Sprowadzony z zagranicy</p>
               <p className="font-medium">{vehicle.importedFromAbroad ? "Tak" : "Nie"}</p>

@@ -56,10 +56,10 @@ export function WhatsNewButton() {
 
   const getChangeTypeLabel = (type: string) => {
     const labels: Record<string, { text: string; color: string }> = {
-      added: { text: "Dodano", color: "bg-green-100 text-green-800" },
-      changed: { text: "Zmieniono", color: "bg-blue-100 text-blue-800" },
-      fixed: { text: "Naprawiono", color: "bg-yellow-100 text-yellow-800" },
-      security: { text: "Bezpieczeństwo", color: "bg-red-100 text-red-800" },
+      added: { text: "Dodano", color: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" },
+      changed: { text: "Zmieniono", color: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200" },
+      fixed: { text: "Naprawiono", color: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200" },
+      security: { text: "Bezpieczeństwo", color: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200" },
     }
     return labels[type] || { text: type, color: "bg-muted text-muted-foreground" }
   }
@@ -76,17 +76,17 @@ export function WhatsNewButton() {
         <Sparkles className="h-4 w-4 mr-2" />
         Co nowego
         {!isLoading && hasNewVersion && (
-          <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></span>
+          <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-background"></span>
         )}
       </Button>
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b">
               <div>
-                <h2 className="text-2xl font-bold flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
                   <Sparkles className="h-6 w-6" />
                   Co nowego
                 </h2>
@@ -109,7 +109,7 @@ export function WhatsNewButton() {
               {changelog.map((entry: ChangelogEntry) => (
                 <div key={entry.version} className="mb-8 last:mb-0">
                   <div className="flex items-center gap-3 mb-4">
-                    <h3 className="text-lg font-semibold">v{entry.version}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">v{entry.version}</h3>
                     <span className="text-sm text-muted-foreground">{entry.date}</span>
                   </div>
                   <div className="space-y-3">

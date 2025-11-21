@@ -14,6 +14,11 @@ interface VehicleFormProps {
     vin: string | null
     registrationNumber: string | null
     firstRegistrationDate: Date | null
+    brand: string | null
+    model: string | null
+    productionYear: number | null
+    infoEkspertId: string | null
+    eurotaxId: string | null
     importedFromAbroad: boolean | null
     hasValidInspection: boolean | null
     hasLpgInstallation: boolean | null
@@ -30,6 +35,11 @@ export function VehicleForm({ vehicle, clientIds = [], onClose, onSuccess }: Veh
     vin: vehicle?.vin || "",
     registrationNumber: vehicle?.registrationNumber || "",
     firstRegistrationDate: vehicle?.firstRegistrationDate ? new Date(vehicle.firstRegistrationDate).toISOString().split('T')[0] : "",
+    brand: vehicle?.brand || "",
+    model: vehicle?.model || "",
+    productionYear: vehicle?.productionYear?.toString() || "",
+    infoEkspertId: vehicle?.infoEkspertId || "",
+    eurotaxId: vehicle?.eurotaxId || "",
     importedFromAbroad: vehicle?.importedFromAbroad || false,
     hasValidInspection: vehicle?.hasValidInspection || false,
     hasLpgInstallation: vehicle?.hasLpgInstallation || false,
@@ -57,6 +67,11 @@ export function VehicleForm({ vehicle, clientIds = [], onClose, onSuccess }: Veh
         vin: formData.vin || null,
         registrationNumber: formData.registrationNumber || null,
         firstRegistrationDate: formData.firstRegistrationDate ? new Date(formData.firstRegistrationDate).toISOString() : null,
+        brand: formData.brand || null,
+        model: formData.model || null,
+        productionYear: formData.productionYear ? parseInt(formData.productionYear, 10) : null,
+        infoEkspertId: formData.infoEkspertId || null,
+        eurotaxId: formData.eurotaxId || null,
         importedFromAbroad: formData.importedFromAbroad,
         hasValidInspection: formData.hasValidInspection,
         hasLpgInstallation: formData.hasLpgInstallation,
@@ -122,6 +137,39 @@ export function VehicleForm({ vehicle, clientIds = [], onClose, onSuccess }: Veh
             </div>
 
             <div>
+              <Label htmlFor="brand">Marka</Label>
+              <Input
+                id="brand"
+                value={formData.brand}
+                onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                placeholder="np. Toyota"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="model">Model</Label>
+              <Input
+                id="model"
+                value={formData.model}
+                onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                placeholder="np. Corolla"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="productionYear">Rok produkcji</Label>
+              <Input
+                id="productionYear"
+                type="number"
+                min="1900"
+                max="2100"
+                value={formData.productionYear}
+                onChange={(e) => setFormData({ ...formData, productionYear: e.target.value })}
+                placeholder="np. 2020"
+              />
+            </div>
+
+            <div>
               <Label htmlFor="firstRegistrationDate">Data pierwszej rejestracji</Label>
               <Input
                 id="firstRegistrationDate"
@@ -141,6 +189,26 @@ export function VehicleForm({ vehicle, clientIds = [], onClose, onSuccess }: Veh
                 value={formData.purchaseYear}
                 onChange={(e) => setFormData({ ...formData, purchaseYear: e.target.value })}
                 placeholder="np. 2020"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="infoEkspertId">ID Info-Ekspert</Label>
+              <Input
+                id="infoEkspertId"
+                value={formData.infoEkspertId}
+                onChange={(e) => setFormData({ ...formData, infoEkspertId: e.target.value })}
+                placeholder="ID ze słownika Info-Ekspert"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="eurotaxId">ID Eurotax</Label>
+              <Input
+                id="eurotaxId"
+                value={formData.eurotaxId}
+                onChange={(e) => setFormData({ ...formData, eurotaxId: e.target.value })}
+                placeholder="ID ze słownika Eurotax"
               />
             </div>
 

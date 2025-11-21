@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.7-beta',
+    date: '2025-01-21',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono problemy z dark mode - obramowania, kolory w calculation pipeline, wpisy w "Co nowego" oraz skalowanie tabel są teraz poprawnie widoczne w trybie ciemnym.',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono działanie przycisku Anuluj w edycji kontaktu - teraz poprawnie zamyka formularz.',
+      },
+      {
+        type: 'added',
+        description: 'Dodano nowe pola do pojazdów: marka, model, rok produkcji oraz ID ze słowników Info-Ekspert i Eurotax. Pola są dostępne w formularzu i szczegółach pojazdu.',
+      },
+    ],
+  },
+  {
     version: '0.10.6-beta',
     date: '2025-01-21',
     changes: [

@@ -463,9 +463,15 @@ model Vehicle {
   vin                   String?   @unique // Vehicle Identification Number
   registrationNumber    String? // Numer rejestracyjny
   firstRegistrationDate DateTime? // Data pierwszej rejestracji
+  // Podstawowe dane pojazdu
+  brand                 String? // Marka pojazdu
+  model                 String? // Model pojazdu
+  productionYear        Int? // Rok produkcji pojazdu
   // Dane z Eurotax/Info-Ekspert (JSON)
   eurotaxData           Json? // Dane z Eurotax
   infoEkspertData       Json? // Dane z Info-Ekspert
+  eurotaxId             String? // ID ze słownika Eurotax
+  infoEkspertId         String? // ID ze słownika Info-Ekspert
   // Dodatkowe informacje
   importedFromAbroad    Boolean   @default(false) // Sprowadzony z zagranicy
   hasValidInspection    Boolean? // Czy jest ważne badanie techniczne

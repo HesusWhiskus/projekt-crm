@@ -3,6 +3,11 @@ export interface VehicleDTO {
   vin: string | null
   registrationNumber: string | null
   firstRegistrationDate: Date | null
+  brand: string | null
+  model: string | null
+  productionYear: number | null
+  infoEkspertId: string | null
+  eurotaxId: string | null
   eurotaxData: Record<string, any> | null
   infoEkspertData: Record<string, any> | null
   importedFromAbroad: boolean
