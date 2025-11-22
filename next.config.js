@@ -5,6 +5,7 @@ const nextConfig = {
   ...(process.env.DOCKER_BUILD === 'true' && { output: 'standalone' }),
   // Optimize build
   swcMinify: true,
+  // Test files are excluded via tsconfig.json exclude array
   images: {
     domains: ['lh3.googleusercontent.com'],
     remotePatterns: [

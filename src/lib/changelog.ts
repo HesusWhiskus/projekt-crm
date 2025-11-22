@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.11-beta',
+    date: '2025-01-22',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono problem z buildem na Railway poprzez wykluczenie plików testowych z kompilacji produkcyjnej.',
+      },
+    ],
+  },
+  {
     version: '0.10.10-beta',
     date: '2025-11-21',
     changes: [

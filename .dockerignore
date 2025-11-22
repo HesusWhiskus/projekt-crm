@@ -38,6 +38,20 @@ logs
 # Testing
 coverage
 .nyc_output
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+**/e2e/**
+**/tests/**
+vitest.config.ts
+playwright.config.ts
+k6.config.js
+test-results/
+playwright-report/
+playwright/.cache/
+k6-results/
 
 # Documentation
 *.md

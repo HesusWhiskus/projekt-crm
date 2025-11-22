@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.11-beta] - 2025-01-22
+
+### Naprawiono
+- **Build Railway:** Naprawiono problem z buildem na Railway poprzez wykluczenie plików testowych z kompilacji produkcyjnej. Pliki testowe są teraz wykluczone w `tsconfig.json` i `.dockerignore`, co zapobiega problemom podczas builda produkcyjnego.
+
 ## [0.10.10-beta] - 2025-11-21
 
 ### Naprawiono
