@@ -83,7 +83,8 @@
     "tailwind-merge": "^2.5.0",
     "tailwindcss-animate": "^1.0.7",
     "xlsx": "^0.18.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "prisma": "^5.19.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
@@ -105,7 +106,6 @@
     "msw": "^2.0.0",
     "playwright": "^1.40.0",
     "postcss": "^8.4.39",
-    "prisma": "^5.19.0",
     "supertest": "^6.3.0",
     "tailwindcss": "^3.4.6",
     "tsx": "^4.16.0",

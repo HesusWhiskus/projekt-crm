@@ -6,21 +6,24 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 # Cache this layer - only rebuilds when package files change
+# Install only production dependencies (omit test frameworks)
+# Prisma is now in dependencies, so it will be available
 COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts && \
+RUN npm ci --omit=dev --ignore-scripts && \
     npm cache clean --force
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 
-# Copy dependencies (cached layer)
+# Copy dependencies (cached layer) - only production dependencies
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy Prisma schema first (for better caching)
 COPY prisma ./prisma
 
 # Generate Prisma Client (cached if schema doesn't change)
+# Prisma is in dependencies, so it's available
 RUN npx prisma generate
 
 # Copy source code (this layer will be invalidated when code changes)
