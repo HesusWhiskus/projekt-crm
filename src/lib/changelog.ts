@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.15-beta',
+    date: '2025-01-22',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Usunięto duplikację tekstowej nazwy systemu na stronie logowania gdy jest logo. Zmieniono tło strony logowania na adaptacyjne, które działa lepiej w trybie ciemnym.',
+      },
+    ],
+  },
+  {
     version: '0.10.14-beta',
     date: '2025-01-22',
     changes: [

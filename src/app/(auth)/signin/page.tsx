@@ -51,7 +51,7 @@ export default async function SignInPage() {
   console.log("[SignInPage] Final values - systemName:", systemName, "systemLogo:", systemLogo ? "exists" : "null")
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
           <AuthHeader systemName={systemName} systemLogo={systemLogo} />

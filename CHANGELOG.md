@@ -5,6 +5,12 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.15-beta] - 2025-01-22
+
+### Naprawiono
+- **Strona logowania:** Usunięto duplikację tekstowej nazwy systemu gdy jest dostępne logo - teraz wyświetla się tylko logo bez dodatkowego tekstu.
+- **Tło strony logowania:** Zmieniono tło strony logowania i rejestracji z jasnego szarego (`bg-gray-50`) na adaptacyjne tło (`bg-background`), które automatycznie dostosowuje się do trybu jasnego i ciemnego, eliminując rażącą biel w trybie ciemnym.
+
 ## [0.10.14-beta] - 2025-01-22
 
 ### Dodano
