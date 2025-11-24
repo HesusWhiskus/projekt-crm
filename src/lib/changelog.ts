@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.16-beta',
+    date: '2025-01-22',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono drag & drop widgetów na dashboardzie - dodano wizualne wskaźniki drop zones (obramowanie + placeholder), automatyczne przesuwanie widgetów podczas przeciągania oraz DragOverlay pokazujący przeciągany element.',
+      },
+    ],
+  },
+  {
     version: '0.10.15-beta',
     date: '2025-01-22',
     changes: [

@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.16-beta] - 2025-01-22
+
+### Naprawiono
+- **Drag & drop na dashboardzie:** Naprawiono funkcjonalność przeciągania widgetów na dashboardzie. Dodano wizualne wskaźniki drop zones (obramowanie + placeholder) pokazujące gdzie widget zostanie upuszczony. Widgety automatycznie przesuwają się podczas przeciągania (jak w Google Keep). Dodano DragOverlay pokazujący przeciągany widget oraz obsługę anulowania przeciągania z przywróceniem oryginalnej kolejności.
+
 ## [0.10.15-beta] - 2025-01-22
 
 ### Naprawiono

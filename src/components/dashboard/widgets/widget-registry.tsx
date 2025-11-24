@@ -13,6 +13,10 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverEvent,
+  DragCancelEvent,
+  DragOverlay,
 } from "@dnd-kit/core"
 import {
   arrayMove,
@@ -71,18 +75,25 @@ const widgetComponents = {
 function SortableWidget({
   widget,
   Component,
+  activeId,
+  overId,
 }: {
   widget: WidgetConfig
   Component: React.ComponentType<any>
+  activeId: string | null
+  overId: string | null
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: widget.id,
   })
 
+  const isOver = overId === widget.id && activeId !== widget.id
+  const isActive = activeId === widget.id
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isActive ? 0.3 : 1,
   }
 
   const gridColsClass = `
@@ -94,7 +105,10 @@ function SortableWidget({
 
   return (
     <div ref={setNodeRef} style={style} className={gridColsClass}>
-      <div className="relative group">
+      {isOver && !isActive && (
+        <div className="min-h-[200px] border-2 border-dashed border-primary rounded-lg bg-primary/5 transition-all animate-pulse" />
+      )}
+      <div className={`relative group ${isOver && !isActive ? "ring-2 ring-primary ring-offset-2 rounded-lg transition-all" : ""}`}>
         <div
           {...attributes}
           {...listeners}
@@ -116,6 +130,10 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     return enabledWidgets
   })
 
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
+  const [originalItems, setOriginalItems] = useState<WidgetConfig[]>([])
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -123,14 +141,52 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     })
   )
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string)
+    setOriginalItems([...items])
+  }
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event
+
+    if (!over || active.id === over.id) {
+      setOverId(null)
+      return
+    }
+
+    setOverId(over.id as string)
+
+    setItems((currentItems) => {
+      const oldIndex = currentItems.findIndex((item) => item.id === active.id)
+      const newIndex = currentItems.findIndex((item) => item.id === over.id)
+
+      if (oldIndex !== newIndex && newIndex !== -1) {
+        return arrayMove(currentItems, oldIndex, newIndex)
+      }
+
+      return currentItems
+    })
+  }
+
+  const handleDragCancel = () => {
+    setItems(originalItems)
+    setActiveId(null)
+    setOverId(null)
+    setOriginalItems([])
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
 
+    setActiveId(null)
+    setOverId(null)
+    setOriginalItems([])
+
     if (over && active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id)
-        const newIndex = items.findIndex((item) => item.id === over.id)
-        const newItems = arrayMove(items, oldIndex, newIndex)
+      setItems((currentItems) => {
+        const oldIndex = currentItems.findIndex((item) => item.id === active.id)
+        const newIndex = currentItems.findIndex((item) => item.id === over.id)
+        const newItems = arrayMove(currentItems, oldIndex, newIndex)
 
         // Update order for each widget
         const updatedItems = newItems.map((item, index) => ({
@@ -156,12 +212,77 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     }
   }
 
+  const getActiveWidget = () => {
+    if (!activeId) return null
+    return items.find((widget) => widget.id === activeId) || null
+  }
+
+  const renderWidget = (widget: WidgetConfig) => {
+    if (widget.type === "stats") {
+      return (
+        <SortableWidget
+          key={widget.id}
+          widget={widget}
+          Component={widgetComponents.stats}
+          activeId={activeId}
+          overId={overId}
+        />
+      )
+    }
+    if (widget.type === "chart") {
+      return (
+        <SortableWidget
+          key={widget.id}
+          widget={widget}
+          Component={widgetComponents.chart}
+          activeId={activeId}
+          overId={overId}
+        />
+      )
+    }
+    if (widget.type === "list") {
+      return (
+        <SortableWidget
+          key={widget.id}
+          widget={widget}
+          Component={widgetComponents.list}
+          activeId={activeId}
+          overId={overId}
+        />
+      )
+    }
+    return null
+  }
+
+  const renderDragOverlay = () => {
+    const activeWidget = getActiveWidget()
+    if (!activeWidget) return null
+
+    if (activeWidget.type === "stats") {
+      return <widgetComponents.stats {...(activeWidget as any).props} />
+    }
+    if (activeWidget.type === "chart") {
+      return <widgetComponents.chart {...(activeWidget as any).props} />
+    }
+    if (activeWidget.type === "list") {
+      return <widgetComponents.list {...(activeWidget as any).props} />
+    }
+    return null
+  }
+
   if (items.length === 0) {
     return null
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
       <SortableContext items={items.map((w) => w.id)} strategy={rectSortingStrategy}>
         <ResponsiveGrid
           columns={{
@@ -172,38 +293,16 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
           }}
           gap="md"
         >
-          {items.map((widget) => {
-            if (widget.type === "stats") {
-              return (
-                <SortableWidget
-                  key={widget.id}
-                  widget={widget}
-                  Component={widgetComponents.stats}
-                />
-              )
-            }
-            if (widget.type === "chart") {
-              return (
-                <SortableWidget
-                  key={widget.id}
-                  widget={widget}
-                  Component={widgetComponents.chart}
-                />
-              )
-            }
-            if (widget.type === "list") {
-              return (
-                <SortableWidget
-                  key={widget.id}
-                  widget={widget}
-                  Component={widgetComponents.list}
-                />
-              )
-            }
-            return null
-          })}
+          {items.map((widget) => renderWidget(widget))}
         </ResponsiveGrid>
       </SortableContext>
+      <DragOverlay>
+        {activeId ? (
+          <div className="opacity-90 rotate-2 shadow-lg">
+            {renderDragOverlay()}
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   )
 }
