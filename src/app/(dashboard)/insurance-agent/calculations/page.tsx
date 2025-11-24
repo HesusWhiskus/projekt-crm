@@ -95,6 +95,27 @@ export default async function CalculationsPage({
 
   const totalPages = Math.ceil(total / limit)
 
+  // Convert Decimal to number and Date to string for calculations
+  const calculationsWithConvertedValues = calculationsData.map((calculation) => ({
+    ...calculation,
+    value: calculation.value 
+      ? (typeof calculation.value === 'object' && 'toNumber' in calculation.value
+        ? calculation.value.toNumber()
+        : typeof calculation.value === 'string'
+        ? parseFloat(calculation.value)
+        : calculation.value)
+      : null,
+    createdAt: calculation.createdAt.toISOString(),
+    offers: calculation.offers.map((offer) => ({
+      ...offer,
+      price: typeof offer.price === 'object' && 'toNumber' in offer.price 
+        ? offer.price.toNumber() 
+        : typeof offer.price === 'string' 
+        ? parseFloat(offer.price) 
+        : offer.price,
+    })),
+  }))
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -113,7 +134,7 @@ export default async function CalculationsPage({
       </div>
 
       <CalculationsList
-        calculations={calculationsData}
+        calculations={calculationsWithConvertedValues}
         total={total}
         page={page}
         limit={limit}

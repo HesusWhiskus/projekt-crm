@@ -87,6 +87,14 @@ export default async function PoliciesPage({
 
   const totalPages = Math.ceil(total / limit)
 
+  // Convert Date to string for policies
+  const policiesWithConvertedDates = policiesData.map((policy) => ({
+    ...policy,
+    createdAt: policy.createdAt.toISOString(),
+    validFrom: policy.validFrom.toISOString(),
+    validTo: policy.validTo.toISOString(),
+  }))
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -105,7 +113,7 @@ export default async function PoliciesPage({
       </div>
 
       <PoliciesList
-        policies={policiesData}
+        policies={policiesWithConvertedDates}
         total={total}
         page={page}
         limit={limit}
