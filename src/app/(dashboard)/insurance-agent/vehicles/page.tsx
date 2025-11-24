@@ -6,8 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
+import { VehicleSearchInput } from "@/components/insurance/vehicle-search-input"
 
-export default async function VehiclesPage() {
+export default async function VehiclesPage({
+  searchParams,
+}: {
+  searchParams: { search?: string }
+}) {
   const user = await getCurrentUser()
   if (!user) {
     redirect("/signin")
@@ -32,10 +37,33 @@ export default async function VehiclesPage() {
     select: { organizationId: true },
   })
 
+  // Build where clause with search filter
+  const where: any = {
+    organizationId: userWithOrg?.organizationId || undefined,
+  }
+
+  if (searchParams.search) {
+    where.OR = [
+      { vin: { contains: searchParams.search, mode: 'insensitive' } },
+      { registrationNumber: { contains: searchParams.search, mode: 'insensitive' } },
+      {
+        owners: {
+          some: {
+            client: {
+              OR: [
+                { firstName: { contains: searchParams.search, mode: 'insensitive' } },
+                { lastName: { contains: searchParams.search, mode: 'insensitive' } },
+                { companyName: { contains: searchParams.search, mode: 'insensitive' } },
+              ]
+            }
+          }
+        }
+      },
+    ]
+  }
+
   const vehicles = await db.vehicle.findMany({
-    where: {
-      organizationId: userWithOrg?.organizationId || undefined,
-    },
+    where,
     orderBy: { createdAt: 'desc' },
     take: 50,
     include: {
@@ -77,6 +105,9 @@ export default async function VehiclesPage() {
           <CardTitle>Lista pojazdów</CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="space-y-4 mb-4">
+            <VehicleSearchInput />
+          </div>
           {vehicles.length === 0 ? (
             <p className="text-sm text-muted-foreground">Brak pojazdów</p>
           ) : (

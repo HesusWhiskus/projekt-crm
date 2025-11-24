@@ -180,18 +180,53 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       where.status = 'ACTIVE'
     }
 
+    // Handle expired filter and search filter - combine them if both exist
+    const orConditions: any[] = []
+    
     if (filter.expired) {
       const now = new Date()
-      where.OR = [
+      orConditions.push(
         { validTo: { lt: now } },
-        { status: 'EXPIRED' },
-      ]
+        { status: 'EXPIRED' }
+      )
     }
 
     if (filter.search) {
-      where.OR = [
+      const searchConditions: any[] = [
         { policyNumber: { contains: filter.search, mode: 'insensitive' } },
       ]
+      
+      // Add search through relations
+      searchConditions.push(
+        {
+          client: {
+            OR: [
+              { firstName: { contains: filter.search, mode: 'insensitive' } },
+              { lastName: { contains: filter.search, mode: 'insensitive' } },
+              { companyName: { contains: filter.search, mode: 'insensitive' } },
+            ]
+          }
+        },
+        {
+          vehicle: {
+            OR: [
+              { registrationNumber: { contains: filter.search, mode: 'insensitive' } },
+              { vin: { contains: filter.search, mode: 'insensitive' } },
+            ]
+          }
+        },
+        {
+          insuranceCompany: {
+            name: { contains: filter.search, mode: 'insensitive' }
+          }
+        }
+      )
+      
+      orConditions.push(...searchConditions)
+    }
+
+    if (orConditions.length > 0) {
+      where.OR = orConditions
     }
 
     const orderBy: any = {}

@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.14-beta',
+    date: '2025-01-22',
+    changes: [
+      {
+        type: 'added',
+        description: 'Dodano wyszukiwanie po stronie serwera w listach polis, kalkulacji i pojazdów z rozszerzonymi polami wyszukiwania (numer polisy, klient, pojazd, TU, właściciel).',
+      },
+    ],
+  },
+  {
     version: '0.10.13-beta',
     date: '2025-01-22',
     changes: [

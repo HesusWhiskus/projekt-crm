@@ -10,7 +10,7 @@ import { CalculationsList } from "@/components/insurance/calculations-list"
 export default async function CalculationsPage({
   searchParams,
 }: {
-  searchParams: { page?: string; limit?: string; view?: string }
+  searchParams: { page?: string; limit?: string; view?: string; search?: string }
 }) {
   const user = await getCurrentUser()
   if (!user) {
@@ -41,13 +41,33 @@ export default async function CalculationsPage({
   const limit = parseInt(searchParams.limit || '50')
   const skip = (page - 1) * limit
 
+  // Build where clause with search filter
+  const where: any = {
+    organizationId: userWithOrg?.organizationId || undefined,
+    agentId: user.id,
+  }
+
+  if (searchParams.search) {
+    where.OR = [
+      { firstName: { contains: searchParams.search, mode: 'insensitive' } },
+      { lastName: { contains: searchParams.search, mode: 'insensitive' } },
+      { pesel: { contains: searchParams.search } },
+      { email: { contains: searchParams.search, mode: 'insensitive' } },
+      {
+        vehicle: {
+          OR: [
+            { registrationNumber: { contains: searchParams.search, mode: 'insensitive' } },
+            { vin: { contains: searchParams.search, mode: 'insensitive' } },
+          ]
+        }
+      },
+    ]
+  }
+
   // Fetch calculations and total count in parallel
   const [calculationsData, total] = await Promise.all([
     db.calculation.findMany({
-      where: {
-        organizationId: userWithOrg?.organizationId || undefined,
-        agentId: user.id,
-      },
+      where,
       orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
@@ -85,12 +105,7 @@ export default async function CalculationsPage({
         },
       },
     }),
-    db.calculation.count({
-      where: {
-        organizationId: userWithOrg?.organizationId || undefined,
-        agentId: user.id,
-      },
-    }),
+    db.calculation.count({ where }),
   ])
 
   const totalPages = Math.ceil(total / limit)

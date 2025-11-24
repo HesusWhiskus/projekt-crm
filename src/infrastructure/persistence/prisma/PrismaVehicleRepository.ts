@@ -161,6 +161,19 @@ export class PrismaVehicleRepository implements IVehicleRepository {
       where.OR = [
         { vin: { contains: filter.search, mode: 'insensitive' } },
         { registrationNumber: { contains: filter.search, mode: 'insensitive' } },
+        {
+          owners: {
+            some: {
+              client: {
+                OR: [
+                  { firstName: { contains: filter.search, mode: 'insensitive' } },
+                  { lastName: { contains: filter.search, mode: 'insensitive' } },
+                  { companyName: { contains: filter.search, mode: 'insensitive' } },
+                ]
+              }
+            }
+          }
+        },
       ]
     }
 

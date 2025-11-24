@@ -3,7 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Pagination } from "@/components/ui/pagination"
 import { Button } from "@/components/ui/button"
-import { List, Clock } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { List, Clock, Search } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { CalculationsTimeline } from "./calculations-timeline"
@@ -69,6 +70,18 @@ export function CalculationsList({ calculations, total, page, limit, totalPages,
     router.push(`/insurance-agent/calculations?${params.toString()}`)
   }
 
+  const handleSearchChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (value) {
+      params.set('search', value)
+    } else {
+      params.delete('search')
+    }
+    // Reset page to 1 when searching
+    params.delete('page')
+    router.push(`/insurance-agent/calculations?${params.toString()}`)
+  }
+
   const pagination = totalPages > 1 ? {
     page,
     limit,
@@ -105,6 +118,22 @@ export function CalculationsList({ calculations, total, page, limit, totalPages,
         </div>
       </CardHeader>
       <CardContent>
+        <div className="space-y-4 mb-4">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Klient, pojazd, email..."
+              defaultValue={searchParams.get("search") || ""}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearchChange(e.currentTarget.value)
+                }
+              }}
+              onBlur={(e) => handleSearchChange(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+        </div>
         {calculations.length === 0 ? (
           <p className="text-sm text-muted-foreground">Brak kalkulacji</p>
         ) : view === "timeline" ? (

@@ -5,6 +5,15 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.14-beta] - 2025-01-22
+
+### Dodano
+- **Wyszukiwanie w listach polis, kalkulacji i pojazdów:** Dodano funkcjonalność wyszukiwania po stronie serwera dla wszystkich trzech list. Wyszukiwanie obejmuje rozszerzone pola:
+  - **Polisy:** numer polisy, nazwa klienta (imię, nazwisko, nazwa firmy), numer rejestracyjny pojazdu, VIN, nazwa TU
+  - **Kalkulacje:** dane klienta (imię, nazwisko, PESEL, email), numer rejestracyjny pojazdu, VIN
+  - **Pojazdy:** numer rejestracyjny, VIN, nazwa właściciela (imię, nazwisko, nazwa firmy)
+- **Pola wyszukiwania w UI:** Dodano pola wyszukiwania z ikoną wizualną w wszystkich trzech listach z automatycznym resetowaniem paginacji przy zmianie wyszukiwania.
+
 ## [0.10.13-beta] - 2025-01-22
 
 ### Naprawiono

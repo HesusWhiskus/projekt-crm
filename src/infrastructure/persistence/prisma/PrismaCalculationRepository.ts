@@ -125,6 +125,14 @@ export class PrismaCalculationRepository implements ICalculationRepository {
         { lastName: { contains: filter.search, mode: 'insensitive' } },
         { pesel: { contains: filter.search } },
         { email: { contains: filter.search, mode: 'insensitive' } },
+        {
+          vehicle: {
+            OR: [
+              { registrationNumber: { contains: filter.search, mode: 'insensitive' } },
+              { vin: { contains: filter.search, mode: 'insensitive' } },
+            ]
+          }
+        },
       ]
     }
 
