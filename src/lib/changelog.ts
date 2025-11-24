@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.13-beta',
+    date: '2025-01-22',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błędy kompilacji TypeScript w widokach timeline dla polis i kalkulacji.',
+      },
+    ],
+  },
+  {
     version: '0.10.12-beta',
     date: '2025-01-22',
     changes: [

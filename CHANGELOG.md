@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.13-beta] - 2025-01-22
+
+### Naprawiono
+- **Błędy kompilacji w timeline components:** Naprawiono błędy składniowe TypeScript w komponentach `policies-timeline.tsx` i `calculations-timeline.tsx` związane z niepoprawną strukturą nawiasów w ternary operatorze z map. Problem został rozwiązany przez opakowanie map w fragment (`<>...</>`), co poprawia parsowanie JSX przez TypeScript.
+
 ## [0.10.12-beta] - 2025-01-22
 
 ### Naprawiono

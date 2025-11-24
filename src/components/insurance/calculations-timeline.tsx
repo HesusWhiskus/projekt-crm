@@ -1,10 +1,12 @@
 "use client"
 
+import { useState, useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
-import { FileCheck } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { FileCheck, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
-import { format, isToday, isYesterday, isThisWeek, isThisMonth } from "date-fns"
+import { format, isToday, isYesterday, isThisWeek, isThisMonth, startOfWeek, endOfWeek, startOfMonth, endOfMonth, addWeeks, subWeeks, addMonths, subMonths, isWithinInterval } from "date-fns"
 import { pl } from "date-fns/locale"
 
 interface Calculation {
@@ -53,7 +55,7 @@ const statusLabels: Record<string, string> = {
   REJECTED: 'Odrzucone',
 }
 
-const groupCalculationsByDate = (calculations: Calculation[]) => {
+const groupCalculationsByDate = (calculations: Calculation[], filterType: 'week' | 'month' | null, filterDate: Date | null) => {
   const groups: Record<string, Calculation[]> = {
     today: [],
     yesterday: [],
@@ -62,7 +64,28 @@ const groupCalculationsByDate = (calculations: Calculation[]) => {
     older: [],
   }
 
-  calculations.forEach((calculation) => {
+  let filteredCalculations = calculations
+
+  // Apply date filter if selected
+  if (filterType && filterDate) {
+    if (filterType === 'week') {
+      const weekStart = startOfWeek(filterDate, { weekStartsOn: 1 })
+      const weekEnd = endOfWeek(filterDate, { weekStartsOn: 1 })
+      filteredCalculations = calculations.filter((calculation) => {
+        const date = new Date(calculation.createdAt)
+        return isWithinInterval(date, { start: weekStart, end: weekEnd })
+      })
+    } else if (filterType === 'month') {
+      const monthStart = startOfMonth(filterDate)
+      const monthEnd = endOfMonth(filterDate)
+      filteredCalculations = calculations.filter((calculation) => {
+        const date = new Date(calculation.createdAt)
+        return isWithinInterval(date, { start: monthStart, end: monthEnd })
+      })
+    }
+  }
+
+  filteredCalculations.forEach((calculation) => {
     const date = new Date(calculation.createdAt)
     if (isToday(date)) {
       groups.today.push(calculation)
@@ -98,7 +121,12 @@ const getGroupLabel = (group: string): string => {
 }
 
 export function CalculationsTimeline({ calculations }: CalculationsTimelineProps) {
-  const groupedCalculations = groupCalculationsByDate(calculations)
+  const [filterType, setFilterType] = useState<'week' | 'month' | null>(null)
+  const [filterDate, setFilterDate] = useState<Date>(new Date())
+
+  const groupedCalculations = useMemo(() => {
+    return groupCalculationsByDate(calculations, filterType, filterDate)
+  }, [calculations, filterType, filterDate])
 
   const getClientDisplayName = (client: Calculation["client"]): string => {
     if (!client) return "Brak klienta"
@@ -108,6 +136,37 @@ export function CalculationsTimeline({ calculations }: CalculationsTimelineProps
     const name = [client.firstName, client.lastName].filter(Boolean).join(" ")
     return name || "Brak nazwy"
   }
+
+  const handlePrevious = () => {
+    if (filterType === 'week') {
+      setFilterDate(subWeeks(filterDate, 1))
+    } else if (filterType === 'month') {
+      setFilterDate(subMonths(filterDate, 1))
+    }
+  }
+
+  const handleNext = () => {
+    if (filterType === 'week') {
+      setFilterDate(addWeeks(filterDate, 1))
+    } else if (filterType === 'month') {
+      setFilterDate(addMonths(filterDate, 1))
+    }
+  }
+
+  const getFilterLabel = () => {
+    if (filterType === 'week') {
+      const weekStart = startOfWeek(filterDate, { weekStartsOn: 1 })
+      const weekEnd = endOfWeek(filterDate, { weekStartsOn: 1 })
+      return `${format(weekStart, "d MMM", { locale: pl })} - ${format(weekEnd, "d MMM yyyy", { locale: pl })}`
+    } else if (filterType === 'month') {
+      return format(filterDate, "MMMM yyyy", { locale: pl })
+    }
+    return null
+  }
+
+  const filteredCalculationsCount = useMemo(() => {
+    return Object.values(groupedCalculations).flat().length
+  }, [groupedCalculations])
 
   if (calculations.length === 0) {
     return (
@@ -121,82 +180,153 @@ export function CalculationsTimeline({ calculations }: CalculationsTimelineProps
 
   return (
     <div className="space-y-6">
-      {Object.entries(groupedCalculations).map(([group, groupCalculations]) => {
-        if (groupCalculations.length === 0) return null
-
-        return (
-          <div key={group}>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wide">
-              {getGroupLabel(group)}
-            </h3>
-            <div className="space-y-4">
-              {groupCalculations.map((calculation) => {
-                const value = calculation.value ? (typeof calculation.value === "number" ? calculation.value : Number(calculation.value)) : null
-
-                return (
-                  <div key={calculation.id} className="relative pl-8">
-                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-border" />
-                    <div className="absolute left-0 top-2 w-4 h-4 rounded-full bg-primary border-2 border-background" />
-                    <Card className="ml-4">
-                      <CardContent className="p-4">
-                        <Link
-                          href={`/insurance-agent/calculations/${calculation.id}`}
-                          className="block hover:opacity-80 transition-opacity"
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <FileCheck className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium">
-                                  Kalkulacja #{calculation.id.slice(-8)}
-                                </span>
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 text-gray-800'}`}>
-                                  {statusLabels[calculation.status] || calculation.status}
-                                </span>
-                              </div>
-                              <div className="text-sm text-muted-foreground mb-2">
-                                Utworzona: {format(new Date(calculation.createdAt), "d MMMM yyyy, HH:mm", { locale: pl })}
-                              </div>
-                              <div className="text-sm mb-2">
-                                <div className="flex items-center gap-4">
-                                  <span className="text-muted-foreground">Klient:</span>
-                                  <span className="font-medium">{getClientDisplayName(calculation.client)}</span>
-                                </div>
-                                {calculation.vehicle && (
-                                  <div className="flex items-center gap-4 mt-1">
-                                    <span className="text-muted-foreground">Pojazd:</span>
-                                    <span>{calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}</span>
-                                  </div>
-                                )}
-                                {value && (
-                                  <div className="flex items-center gap-4 mt-1">
-                                    <span className="text-muted-foreground">Wartość:</span>
-                                    <span className="font-medium">{value.toFixed(2)} zł</span>
-                                  </div>
-                                )}
-                                {calculation.offers && calculation.offers.length > 0 && (() => {
-                                  const cheapestOffer = calculation.offers[0];
-                                  const offerPrice = typeof cheapestOffer.price === "number" ? cheapestOffer.price : Number(cheapestOffer.price);
-                                  return (
-                                    <div className="flex items-center gap-4 mt-1">
-                                      <span className="text-muted-foreground">Najtańsza oferta:</span>
-                                      <span>{cheapestOffer.insuranceCompany.name} - {offerPrice.toFixed(2)} zł</span>
-                                    </div>
-                                  );
-                                })()}
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )
-              })}
-            </div>
+      {/* Filter Controls */}
+      <div className="flex items-center justify-between gap-4 pb-4 border-b">
+        <div className="flex items-center gap-2">
+          <Button
+            variant={filterType === 'week' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => {
+              setFilterType('week')
+              setFilterDate(new Date())
+            }}
+          >
+            Ten tydzień
+          </Button>
+          <Button
+            variant={filterType === 'month' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => {
+              setFilterType('month')
+              setFilterDate(new Date())
+            }}
+          >
+            Ten miesiąc
+          </Button>
+          {filterType && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setFilterType(null)
+                setFilterDate(new Date())
+              }}
+            >
+              Wszystkie
+            </Button>
+          )}
+        </div>
+        {filterType && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrevious}
+              aria-label="Poprzedni okres"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm font-medium min-w-[150px] text-center">
+              {getFilterLabel() || ''}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNext}
+              aria-label="Następny okres"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
-        )
-      })}
+        )}
+      </div>
+
+      {filteredCalculationsCount === 0 ? (
+        <EmptyState
+          icon={FileCheck}
+          title="Brak kalkulacji w wybranym okresie"
+          description="Wybierz inny okres lub zobacz wszystkie kalkulacje"
+        />
+      ) : (
+        <>
+          {Object.entries(groupedCalculations).map(([group, groupCalculations]) => {
+            if (groupCalculations.length === 0) return null
+
+            return (
+              <div key={group}>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wide">
+                  {getGroupLabel(group)}
+                </h3>
+                <div className="space-y-4">
+                  {groupCalculations.map((calculation) => {
+                    const value = calculation.value ? (typeof calculation.value === "number" ? calculation.value : Number(calculation.value)) : null
+
+                    return (
+                      <div key={calculation.id} className="relative pl-8">
+                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-border" />
+                        <div className="absolute left-0 top-2 w-4 h-4 rounded-full bg-primary border-2 border-background" />
+                        <Card className="ml-4">
+                          <CardContent className="p-4">
+                            <Link
+                              href={`/insurance-agent/calculations/${calculation.id}`}
+                              className="block hover:opacity-80 transition-opacity"
+                            >
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <FileCheck className="h-4 w-4 text-muted-foreground" />
+                                    <span className="font-medium">
+                                      Kalkulacja #{calculation.id.slice(-8)}
+                                    </span>
+                                    <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 text-gray-800'}`}>
+                                      {statusLabels[calculation.status] || calculation.status}
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground mb-2">
+                                    Utworzona: {format(new Date(calculation.createdAt), "d MMMM yyyy, HH:mm", { locale: pl })}
+                                  </div>
+                                  <div className="text-sm mb-2">
+                                    <div className="flex items-center gap-4">
+                                      <span className="text-muted-foreground">Klient:</span>
+                                      <span className="font-medium">{getClientDisplayName(calculation.client)}</span>
+                                    </div>
+                                    {calculation.vehicle && (
+                                      <div className="flex items-center gap-4 mt-1">
+                                        <span className="text-muted-foreground">Pojazd:</span>
+                                        <span>{calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}</span>
+                                      </div>
+                                    )}
+                                    {value && (
+                                      <div className="flex items-center gap-4 mt-1">
+                                        <span className="text-muted-foreground">Wartość:</span>
+                                        <span className="font-medium">{value.toFixed(2)} zł</span>
+                                      </div>
+                                    )}
+                                    {calculation.offers && calculation.offers.length > 0 && (() => {
+                                      const cheapestOffer = calculation.offers[0];
+                                      const offerPrice = typeof cheapestOffer.price === "number" ? cheapestOffer.price : Number(cheapestOffer.price);
+                                      return (
+                                        <div className="flex items-center gap-4 mt-1">
+                                          <span className="text-muted-foreground">Najtańsza oferta:</span>
+                                          <span>{cheapestOffer.insuranceCompany.name} - {offerPrice.toFixed(2)} zł</span>
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </>
+      )}
     </div>
   )
 }
