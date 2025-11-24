@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.17-beta',
+    date: '2025-01-22',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd React #185 podczas przeciągania widgetów - zoptymalizowano renderowanie placeholder i aktualizacje stanu.',
+      },
+    ],
+  },
+  {
     version: '0.10.16-beta',
     date: '2025-01-22',
     changes: [

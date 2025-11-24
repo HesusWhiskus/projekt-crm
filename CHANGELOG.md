@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.17-beta] - 2025-01-22
+
+### Naprawiono
+- **Błąd React #185 w drag & drop:** Naprawiono błąd React #185 występujący podczas przeciągania widgetów na dashboardzie. Problem był spowodowany przez zmianę struktury DOM przez placeholder oraz zbyt częste aktualizacje stanu. Placeholder został przeniesiony do overlay z absolute positioning, zoptymalizowano `handleDragOver` używając `useCallback` i dodano stabilne klucze dla DragOverlay używając `useMemo`.
+
 ## [0.10.16-beta] - 2025-01-22
 
 ### Naprawiono

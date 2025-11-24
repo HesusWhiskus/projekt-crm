@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useState } from "react"
+import { ReactNode, useState, useCallback, useMemo } from "react"
 import { ResponsiveGrid } from "@/components/ui/responsive-grid"
 import { StatsWidget, StatsWidgetProps } from "./stats-widget"
 import { ChartWidget, ChartWidgetProps } from "./chart-widget"
@@ -104,9 +104,9 @@ function SortableWidget({
   `
 
   return (
-    <div ref={setNodeRef} style={style} className={gridColsClass}>
+    <div ref={setNodeRef} style={style} className={`relative ${gridColsClass}`}>
       {isOver && !isActive && (
-        <div className="min-h-[200px] border-2 border-dashed border-primary rounded-lg bg-primary/5 transition-all animate-pulse" />
+        <div className="absolute inset-0 border-2 border-dashed border-primary rounded-lg bg-primary/5 transition-all animate-pulse z-10 pointer-events-none" />
       )}
       <div className={`relative group ${isOver && !isActive ? "ring-2 ring-primary ring-offset-2 rounded-lg transition-all" : ""}`}>
         <div
@@ -146,7 +146,7 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     setOriginalItems([...items])
   }
 
-  const handleDragOver = (event: DragOverEvent) => {
+  const handleDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event
 
     if (!over || active.id === over.id) {
@@ -154,19 +154,25 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
       return
     }
 
-    setOverId(over.id as string)
+    const newOverId = over.id as string
+    setOverId((currentOverId) => {
+      // Only update if changed to avoid unnecessary re-renders
+      if (currentOverId === newOverId) return currentOverId
+      return newOverId
+    })
 
     setItems((currentItems) => {
       const oldIndex = currentItems.findIndex((item) => item.id === active.id)
       const newIndex = currentItems.findIndex((item) => item.id === over.id)
 
-      if (oldIndex !== newIndex && newIndex !== -1) {
+      // Only update if indices actually changed
+      if (oldIndex !== newIndex && newIndex !== -1 && oldIndex !== -1) {
         return arrayMove(currentItems, oldIndex, newIndex)
       }
 
       return currentItems
     })
-  }
+  }, [])
 
   const handleDragCancel = () => {
     setItems(originalItems)
@@ -212,10 +218,6 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     }
   }
 
-  const getActiveWidget = () => {
-    if (!activeId) return null
-    return items.find((widget) => widget.id === activeId) || null
-  }
 
   const renderWidget = (widget: WidgetConfig) => {
     if (widget.type === "stats") {
@@ -254,21 +256,22 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     return null
   }
 
-  const renderDragOverlay = () => {
-    const activeWidget = getActiveWidget()
+  const dragOverlayContent = useMemo(() => {
+    if (!activeId) return null
+    const activeWidget = items.find((widget) => widget.id === activeId)
     if (!activeWidget) return null
 
     if (activeWidget.type === "stats") {
-      return <widgetComponents.stats {...(activeWidget as any).props} />
+      return <widgetComponents.stats key={activeWidget.id} {...(activeWidget as any).props} />
     }
     if (activeWidget.type === "chart") {
-      return <widgetComponents.chart {...(activeWidget as any).props} />
+      return <widgetComponents.chart key={activeWidget.id} {...(activeWidget as any).props} />
     }
     if (activeWidget.type === "list") {
-      return <widgetComponents.list {...(activeWidget as any).props} />
+      return <widgetComponents.list key={activeWidget.id} {...(activeWidget as any).props} />
     }
     return null
-  }
+  }, [activeId, items])
 
   if (items.length === 0) {
     return null
@@ -297,9 +300,9 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
         </ResponsiveGrid>
       </SortableContext>
       <DragOverlay>
-        {activeId ? (
-          <div className="opacity-90 rotate-2 shadow-lg">
-            {renderDragOverlay()}
+        {dragOverlayContent ? (
+          <div key={`overlay-${activeId}`} className="opacity-90 rotate-2 shadow-lg">
+            {dragOverlayContent}
           </div>
         ) : null}
       </DragOverlay>
