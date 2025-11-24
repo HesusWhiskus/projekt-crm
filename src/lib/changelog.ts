@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.12-beta',
+    date: '2025-01-22',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono problem z niepełnymi listami polis i kalkulacji - dodano pełną paginację na poziomie bazy danych.',
+      },
+      {
+        type: 'added',
+        description: 'Dodano widoki timeline dla polis i kalkulacji z grupowaniem po datach oraz przełącznik widoków (lista/timeline).',
+      },
+      {
+        type: 'changed',
+        description: 'Zmieniono architekturę pobierania danych na Server Components (SSR) dla lepszej wydajności.',
+      },
+    ],
+  },
+  {
     version: '0.10.11-beta',
     date: '2025-01-22',
     changes: [

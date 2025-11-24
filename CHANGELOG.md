@@ -5,6 +5,19 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.12-beta] - 2025-01-22
+
+### Naprawiono
+- **Paginacja polis i kalkulacji:** Naprawiono problem z niepełnymi listami polis i kalkulacji - dodano pełną paginację na poziomie bazy danych zamiast pobierania wszystkich rekordów. Listy teraz pokazują wszystkie dostępne rekordy z prawidłową paginacją.
+
+### Dodano
+- **Paginacja dla polis i kalkulacji:** Dodano pełną obsługę paginacji w API endpoints (`/api/policies` i `/api/calculations`) z parametrami `page` i `limit`. Paginacja działa na poziomie bazy danych (skip/take) dla optymalnej wydajności.
+- **Widoki timeline:** Dodano alternatywne widoki timeline dla polis i kalkulacji z grupowaniem po datach (dzisiaj, wczoraj, ten tydzień, ten miesiąc, starsze). Użytkownicy mogą przełączać się między widokiem listy a timeline.
+- **Przełącznik widoków:** Dodano przełącznik widoków (lista/timeline) w listach polis i kalkulacji dla lepszej wizualizacji danych.
+
+### Zmieniono
+- **Architektura pobierania danych:** Zmieniono architekturę z client-side fetching na Server Components (SSR) - dane są teraz pobierane bezpośrednio z bazy danych w Server Components i przekazywane jako props do Client Components, co znacznie poprawia wydajność i SEO.
+
 ## [0.10.11-beta] - 2025-01-22
 
 ### Naprawiono

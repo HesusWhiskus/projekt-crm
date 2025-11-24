@@ -4,6 +4,8 @@ import {
   CalculationFilter,
 } from '@/domain/calculations/repositories/ICalculationRepository'
 import { CalculationDTO, CalculationFilterDTO } from '../dto'
+import { PaginatedResponse, PaginationMeta, calculatePagination } from '@/lib/types/pagination'
+import { db } from '@/lib/db'
 
 /**
  * Use case for listing calculations
@@ -11,7 +13,7 @@ import { CalculationDTO, CalculationFilterDTO } from '../dto'
 export class ListCalculationsUseCase {
   constructor(private readonly calculationRepository: ICalculationRepository) {}
 
-  async execute(filter: CalculationFilterDTO): Promise<CalculationDTO[]> {
+  async execute(filter: CalculationFilterDTO): Promise<CalculationDTO[] | PaginatedResponse<CalculationDTO>> {
     const domainFilter: CalculationFilter = {
       status: filter.status,
       clientId: filter.clientId,
@@ -25,6 +27,66 @@ export class ListCalculationsUseCase {
             to: filter.validUntil.to ? new Date(filter.validUntil.to) : undefined,
           }
         : undefined,
+    }
+
+    // Build where clause for count
+    const where: any = {}
+    if (domainFilter.status) where.status = domainFilter.status
+    if (domainFilter.clientId) where.clientId = domainFilter.clientId
+    if (domainFilter.vehicleId) where.vehicleId = domainFilter.vehicleId
+    if (domainFilter.agentId) where.agentId = domainFilter.agentId
+    if (domainFilter.organizationId) where.organizationId = domainFilter.organizationId
+    if (domainFilter.validUntil) {
+      if (domainFilter.validUntil.from) {
+        where.validUntil = { ...where.validUntil, gte: domainFilter.validUntil.from }
+      }
+      if (domainFilter.validUntil.to) {
+        where.validUntil = { ...where.validUntil, lte: domainFilter.validUntil.to }
+      }
+    }
+    if (domainFilter.search) {
+      where.OR = [
+        { firstName: { contains: domainFilter.search, mode: 'insensitive' } },
+        { lastName: { contains: domainFilter.search, mode: 'insensitive' } },
+        { pesel: { contains: domainFilter.search } },
+        { email: { contains: domainFilter.search, mode: 'insensitive' } },
+      ]
+    }
+
+    // Fetch calculations and total count in parallel if pagination is used
+    const usePagination = filter.pagination !== undefined
+
+    if (usePagination && filter.pagination) {
+      const [calculations, total] = await Promise.all([
+        this.calculationRepository.findMany(domainFilter, {
+          include: {
+            client: true,
+            vehicle: true,
+            agent: true,
+          },
+          pagination: filter.pagination,
+        }),
+        db.calculation.count({ where }),
+      ])
+
+      const { page: validPage, limit: validLimit } = calculatePagination(
+        filter.pagination.page,
+        filter.pagination.limit,
+        50
+      )
+      const totalPages = Math.ceil(total / validLimit)
+      const pagination: PaginationMeta = {
+        page: validPage,
+        limit: validLimit,
+        total,
+        totalPages,
+        hasMore: validPage * validLimit < total,
+      }
+
+      return {
+        data: calculations.map((calculation) => this.toDTO(calculation)),
+        pagination,
+      }
     }
 
     const calculations = await this.calculationRepository.findMany(domainFilter, {

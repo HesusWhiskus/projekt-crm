@@ -1,5 +1,6 @@
 import { Policy } from '../entities/Policy'
 import { PolicyStatus } from '@prisma/client'
+import { PaginationParams } from '@/lib/types/pagination'
 
 /**
  * Filter criteria for finding policies
@@ -33,6 +34,7 @@ export interface FindPoliciesOptions {
     field: 'updatedAt' | 'createdAt' | 'validTo' | 'issueDate'
     direction: 'asc' | 'desc'
   }
+  pagination?: PaginationParams
 }
 
 /**

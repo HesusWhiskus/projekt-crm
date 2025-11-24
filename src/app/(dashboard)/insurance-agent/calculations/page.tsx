@@ -1,13 +1,17 @@
 import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
-import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
+import { CalculationsList } from "@/components/insurance/calculations-list"
 
-export default async function CalculationsPage() {
+export default async function CalculationsPage({
+  searchParams,
+}: {
+  searchParams: { page?: string; limit?: string; view?: string }
+}) {
   const user = await getCurrentUser()
   if (!user) {
     redirect("/signin")
@@ -32,61 +36,64 @@ export default async function CalculationsPage() {
     select: { organizationId: true },
   })
 
-  const calculations = await db.calculation.findMany({
-    where: {
-      organizationId: userWithOrg?.organizationId || undefined,
-      agentId: user.id, // agentId w Calculation to userId, nie insuranceAgent.id
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-    include: {
-      client: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          companyName: true,
-          type: true,
-        },
+  // Pagination
+  const page = parseInt(searchParams.page || '1')
+  const limit = parseInt(searchParams.limit || '50')
+  const skip = (page - 1) * limit
+
+  // Fetch calculations and total count in parallel
+  const [calculationsData, total] = await Promise.all([
+    db.calculation.findMany({
+      where: {
+        organizationId: userWithOrg?.organizationId || undefined,
+        agentId: user.id,
       },
-      vehicle: {
-        select: {
-          id: true,
-          vin: true,
-          registrationNumber: true,
-        },
-      },
-      offers: {
-        include: {
-          insuranceCompany: {
-            select: {
-              id: true,
-              name: true,
-              logoUrl: true,
-            },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+      include: {
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            companyName: true,
+            type: true,
           },
         },
-        orderBy: {
-          price: 'asc', // Najtańsza oferta pierwsza
+        vehicle: {
+          select: {
+            id: true,
+            vin: true,
+            registrationNumber: true,
+          },
         },
-        take: 1, // Tylko najtańsza oferta dla listy
+        offers: {
+          include: {
+            insuranceCompany: {
+              select: {
+                id: true,
+                name: true,
+                logoUrl: true,
+              },
+            },
+          },
+          orderBy: {
+            price: 'asc',
+          },
+          take: 1,
+        },
       },
-    },
-  })
+    }),
+    db.calculation.count({
+      where: {
+        organizationId: userWithOrg?.organizationId || undefined,
+        agentId: user.id,
+      },
+    }),
+  ])
 
-  const statusColors: Record<string, string> = {
-    DRAFT: 'bg-gray-100 text-gray-800',
-    SENT: 'bg-blue-100 text-blue-800',
-    ACCEPTED: 'bg-green-100 text-green-800',
-    REJECTED: 'bg-red-100 text-red-800',
-  }
-
-  const statusLabels: Record<string, string> = {
-    DRAFT: 'Szkic',
-    SENT: 'Wysłane',
-    ACCEPTED: 'Zaakceptowane',
-    REJECTED: 'Odrzucone',
-  }
+  const totalPages = Math.ceil(total / limit)
 
   return (
     <div className="space-y-6">
@@ -105,54 +112,14 @@ export default async function CalculationsPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lista kalkulacji</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {calculations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Brak kalkulacji</p>
-          ) : (
-            <div className="space-y-2">
-              {calculations.map((calculation) => {
-                const value = calculation.value ? (typeof calculation.value === "number" ? calculation.value : Number(calculation.value)) : null;
-                return (
-                  <Link
-                    key={calculation.id}
-                    href={`/insurance-agent/calculations/${calculation.id}`}
-                    className="flex items-center justify-between p-4 border rounded hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">
-                          {calculation.client?.type === 'PERSON'
-                            ? `${calculation.client?.firstName || ''} ${calculation.client?.lastName || ''}`.trim() || 'Brak nazwy'
-                            : calculation.client?.companyName || 'Brak nazwy'}
-                        </p>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[calculation.status] || 'bg-gray-100 text-gray-800'}`}>
-                          {statusLabels[calculation.status] || calculation.status}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {calculation.vehicle && `Pojazd: ${calculation.vehicle.registrationNumber || calculation.vehicle.vin || 'Brak'}`}
-                        {value && ` | Wartość: ${value.toFixed(2)} zł`}
-                        {calculation.offers && calculation.offers.length > 0 && (() => {
-                          const cheapestOffer = calculation.offers[0];
-                          const offerPrice = typeof cheapestOffer.price === "number" ? cheapestOffer.price : Number(cheapestOffer.price);
-                          return ` | Najtańsza oferta: ${cheapestOffer.insuranceCompany.name} - ${offerPrice.toFixed(2)} zł`;
-                        })()}
-                      </p>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(calculation.createdAt).toLocaleDateString('pl-PL')}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <CalculationsList
+        calculations={calculationsData}
+        total={total}
+        page={page}
+        limit={limit}
+        totalPages={totalPages}
+        view={searchParams.view || 'list'}
+      />
     </div>
   )
 }

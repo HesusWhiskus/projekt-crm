@@ -6,6 +6,7 @@ import {
 } from '@/domain/policies/repositories/IPolicyRepository'
 import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
+import { calculatePagination } from '@/lib/types/pagination'
 
 /**
  * Helper to convert Prisma JsonValue to Record<string, any> | null
@@ -200,9 +201,25 @@ export class PrismaPolicyRepository implements IPolicyRepository {
       orderBy.updatedAt = 'desc'
     }
 
+    // Handle pagination
+    const usePagination = options?.pagination !== undefined
+    let skip: number | undefined
+    let take: number | undefined
+
+    if (usePagination && options.pagination) {
+      const { skip: calculatedSkip, limit } = calculatePagination(
+        options.pagination.page,
+        options.pagination.limit,
+        50
+      )
+      skip = calculatedSkip
+      take = limit
+    }
+
     const policyDataList = await db.policy.findMany({
       where,
       orderBy,
+      ...(usePagination && { skip, take }),
     })
 
     return policyDataList.map((data) =>

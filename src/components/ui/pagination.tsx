@@ -9,11 +9,14 @@ interface PaginationProps {
   totalPages: number
   total: number
   limit: number
+  basePath?: string // Optional base path, defaults to current pathname
 }
 
-export function Pagination({ currentPage, totalPages, total, limit }: PaginationProps) {
+export function Pagination({ currentPage, totalPages, total, limit, basePath }: PaginationProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '/clients'
+  const path = basePath || pathname
 
   const handlePageChange = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -22,7 +25,7 @@ export function Pagination({ currentPage, totalPages, total, limit }: Pagination
     } else {
       params.set('page', page.toString())
     }
-    router.push(`/clients?${params.toString()}`)
+    router.push(`${path}?${params.toString()}`)
   }
 
   const startItem = (currentPage - 1) * limit + 1

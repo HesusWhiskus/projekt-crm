@@ -1,13 +1,17 @@
 import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
-import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
+import { PoliciesList } from "@/components/insurance/policies-list"
 
-export default async function PoliciesPage() {
+export default async function PoliciesPage({
+  searchParams,
+}: {
+  searchParams: { page?: string; limit?: string; view?: string }
+}) {
   const user = await getCurrentUser()
   if (!user) {
     redirect("/signin")
@@ -32,53 +36,56 @@ export default async function PoliciesPage() {
     select: { organizationId: true },
   })
 
-  const policies = await db.policy.findMany({
-    where: {
-      organizationId: userWithOrg?.organizationId || undefined,
-      agentId: user.id, // agentId w Policy to userId, nie insuranceAgent.id
-    },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-    include: {
-      client: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          companyName: true,
-          type: true,
-        },
-      },
-      vehicle: {
-        select: {
-          id: true,
-          vin: true,
-          registrationNumber: true,
-        },
-      },
-      insuranceCompany: {
-        select: {
-          id: true,
-          name: true,
-          logoUrl: true,
-        },
-      },
-    },
-  })
+  // Pagination
+  const page = parseInt(searchParams.page || '1')
+  const limit = parseInt(searchParams.limit || '50')
+  const skip = (page - 1) * limit
 
-  const statusColors: Record<string, string> = {
-    ACTIVE: 'bg-green-100 text-green-800',
-    EXPIRED: 'bg-gray-100 text-gray-800',
-    CANCELLED: 'bg-red-100 text-red-800',
-    RENEWED: 'bg-blue-100 text-blue-800',
-  }
+  // Fetch policies and total count in parallel
+  const [policiesData, total] = await Promise.all([
+    db.policy.findMany({
+      where: {
+        organizationId: userWithOrg?.organizationId || undefined,
+        agentId: user.id,
+      },
+      orderBy: { createdAt: 'desc' },
+      skip,
+      take: limit,
+      include: {
+        client: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            companyName: true,
+            type: true,
+          },
+        },
+        vehicle: {
+          select: {
+            id: true,
+            vin: true,
+            registrationNumber: true,
+          },
+        },
+        insuranceCompany: {
+          select: {
+            id: true,
+            name: true,
+            logoUrl: true,
+          },
+        },
+      },
+    }),
+    db.policy.count({
+      where: {
+        organizationId: userWithOrg?.organizationId || undefined,
+        agentId: user.id,
+      },
+    }),
+  ])
 
-  const statusLabels: Record<string, string> = {
-    ACTIVE: 'Aktywna',
-    EXPIRED: 'Wygasła',
-    CANCELLED: 'Anulowana',
-    RENEWED: 'Odnowiona',
-  }
+  const totalPages = Math.ceil(total / limit)
 
   return (
     <div className="space-y-6">
@@ -97,58 +104,14 @@ export default async function PoliciesPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lista polis</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {policies.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Brak polis</p>
-          ) : (
-            <div className="space-y-2">
-              {policies.map((policy) => {
-                const isExpiringSoon = policy.status === 'ACTIVE' && 
-                  new Date(policy.validTo) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) &&
-                  new Date(policy.validTo) >= new Date()
-
-                return (
-                  <Link
-                    key={policy.id}
-                    href={`/insurance-agent/policies/${policy.id}`}
-                    className="flex items-center justify-between p-4 border rounded hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">
-                          {policy.client?.type === 'PERSON'
-                            ? `${policy.client?.firstName || ''} ${policy.client?.lastName || ''}`.trim() || 'Brak nazwy'
-                            : policy.client?.companyName || 'Brak nazwy'}
-                        </p>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[policy.status] || 'bg-gray-100 text-gray-800'}`}>
-                          {statusLabels[policy.status] || policy.status}
-                        </span>
-                        {isExpiringSoon && (
-                          <span className="px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
-                            Wygasa wkrótce
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Polisa: {policy.policyNumber}
-                        {policy.insuranceCompany && ` | TU: ${policy.insuranceCompany.name}`}
-                        {policy.vehicle && ` | Pojazd: ${policy.vehicle.registrationNumber || policy.vehicle.vin || 'Brak'}`}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Ważna od: {new Date(policy.validFrom).toLocaleDateString('pl-PL')} do: {new Date(policy.validTo).toLocaleDateString('pl-PL')}
-                      </p>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <PoliciesList
+        policies={policiesData}
+        total={total}
+        page={page}
+        limit={limit}
+        totalPages={totalPages}
+        view={searchParams.view || 'list'}
+      />
     </div>
   )
 }

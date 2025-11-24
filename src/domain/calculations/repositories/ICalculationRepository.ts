@@ -1,5 +1,6 @@
 import { Calculation } from '../entities/Calculation'
 import { CalculationStatus } from '@prisma/client'
+import { PaginationParams } from '@/lib/types/pagination'
 
 /**
  * Filter criteria for finding calculations
@@ -31,6 +32,7 @@ export interface FindCalculationsOptions {
     field: 'updatedAt' | 'createdAt' | 'validUntil' | 'value'
     direction: 'asc' | 'desc'
   }
+  pagination?: PaginationParams
 }
 
 /**

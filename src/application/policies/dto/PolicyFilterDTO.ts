@@ -1,3 +1,5 @@
+import { PaginationParams } from '@/lib/types/pagination'
+
 export interface PolicyFilterDTO {
   status?: 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'RENEWED'
   clientId?: string
@@ -9,5 +11,6 @@ export interface PolicyFilterDTO {
   expiresSoon?: number // Days until expiry
   expired?: boolean
   search?: string
+  pagination?: PaginationParams
 }
 

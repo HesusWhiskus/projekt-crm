@@ -107,6 +107,13 @@ export async function GET(request: Request) {
     })
 
     const { searchParams } = new URL(request.url)
+    
+    // Parse pagination parameters
+    const pageParam = searchParams.get('page')
+    const limitParam = searchParams.get('limit')
+    const page = pageParam ? parseInt(pageParam, 10) : undefined
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined
+
     const filter: PolicyFilterDTO = {
       status: searchParams.get('status') as any || undefined,
       clientId: searchParams.get('clientId') || undefined,
@@ -114,11 +121,30 @@ export async function GET(request: Request) {
       insuranceCompanyId: searchParams.get('insuranceCompanyId') || undefined,
       agentId: searchParams.get('agentId') || undefined,
       organizationId: userWithOrg?.organizationId || undefined,
+      policyNumber: searchParams.get('policyNumber') || undefined,
+      search: searchParams.get('search') || undefined,
+    }
+
+    // Add pagination to filter if provided
+    if (page !== undefined || limit !== undefined) {
+      filter.pagination = { page, limit }
+    }
+
+    // Backward compatible: if no pagination params, log warning
+    if (!filter.pagination) {
+      console.warn('[API POLICIES] Pagination not used - returning all policies. Consider using ?page=1&limit=50')
     }
 
     const result = await listPoliciesUseCase.execute(filter)
 
-    return NextResponse.json(result)
+    // Backward compatible response format
+    if (Array.isArray(result)) {
+      // Old format - array of policies
+      return NextResponse.json({ policies: result })
+    } else {
+      // New format - paginated response
+      return NextResponse.json(result)
+    }
   } catch (error: any) {
     console.error('List policies error:', error)
     return NextResponse.json(

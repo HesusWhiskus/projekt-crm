@@ -1,3 +1,5 @@
+import { PaginationParams } from '@/lib/types/pagination'
+
 export interface CalculationFilterDTO {
   status?: 'DRAFT' | 'SENT' | 'ACCEPTED' | 'REJECTED'
   clientId?: string
@@ -9,5 +11,6 @@ export interface CalculationFilterDTO {
     from?: string // ISO date string
     to?: string // ISO date string
   }
+  pagination?: PaginationParams
 }
 

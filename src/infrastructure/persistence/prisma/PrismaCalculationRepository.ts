@@ -6,6 +6,7 @@ import {
 } from '@/domain/calculations/repositories/ICalculationRepository'
 import { db } from '@/lib/db'
 import { Prisma } from '@prisma/client'
+import { calculatePagination } from '@/lib/types/pagination'
 
 /**
  * Prisma implementation of ICalculationRepository
@@ -134,9 +135,25 @@ export class PrismaCalculationRepository implements ICalculationRepository {
       orderBy.updatedAt = 'desc'
     }
 
+    // Handle pagination
+    const usePagination = options?.pagination !== undefined
+    let skip: number | undefined
+    let take: number | undefined
+
+    if (usePagination && options.pagination) {
+      const { skip: calculatedSkip, limit } = calculatePagination(
+        options.pagination.page,
+        options.pagination.limit,
+        50
+      )
+      skip = calculatedSkip
+      take = limit
+    }
+
     const calculationDataList = await db.calculation.findMany({
       where,
       orderBy,
+      ...(usePagination && { skip, take }),
     })
 
     return calculationDataList.map((data) =>
