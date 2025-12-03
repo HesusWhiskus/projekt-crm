@@ -62,3 +62,452 @@
 - `src/lib/changelog.ts` - changelog dla UI
 - `package.json` - wersja projektu
 
+## Security & Quality Rules
+
+### 🔒 AUTOMATYCZNE SECURITY CHECKS (PRZED KAŻDYM COMMITEM)
+
+**WAŻNE:** Te checks są wykonywane AUTOMATYCZNIE przed każdym commitem, razem z Release Checklist.
+
+#### quick-security-scan
+
+**ZAWSZE przed commitem wykonaj quick-security-scan zmienionego kodu:**
+
+Przeprowadź szybki security scan wszystkich zmienionych plików. Sprawdź TYLKO:
+
+1. **Injection vulnerabilities:**
+   - SQL Injection (parametryzowane zapytania, prepared statements)
+   - NoSQL Injection (walidacja inputu przed zapytaniami)
+   - Command Injection (bezpieczne użycie exec/spawn)
+   - HTML/JavaScript Injection (sanitizacja przed renderowaniem)
+
+2. **Dostęp do wrażliwych plików:**
+   - Path Traversal (walidacja ścieżek, brak `../` w user input)
+   - Bezpośredni dostęp do plików systemowych
+   - Odczyt plików konfiguracyjnych przez user input
+
+3. **Praca z siecią:**
+   - Fetch/axios/request - walidacja URL (brak SSRF)
+   - Sprawdzanie protokołów (tylko HTTPS w produkcji)
+   - Timeout i limity rozmiaru odpowiedzi
+
+4. **Komunikacja baza → API:**
+   - Parametryzowane zapytania
+   - Brak bezpośredniej interpolacji stringów w SQL
+   - Walidacja typów przed zapisem do bazy
+
+5. **Obsługa błędów:**
+   - Brak wycieku stacktrace do użytkownika
+   - Brak wycieku informacji o strukturze bazy
+   - Ogólne komunikaty błędów dla użytkownika
+
+6. **Logi i wycieki danych:**
+   - Brak logowania haseł, tokenów, PII
+   - Maskowanie wrażliwych danych w logach
+   - Brak pełnych obiektów użytkownika w logach
+
+**Format odpowiedzi:**
+- Jeśli znajdziesz problemy: podaj skrócony opis + poprawioną wersję kodu
+- Jeśli wszystko OK: "✅ Quick security scan: brak podatności"
+
+#### secrets-cicd-safety
+
+**ZAWSZE przed commitem sprawdź secrets i CI/CD:**
+
+Przeprowadź przegląd bezpieczeństwa sekretów i pipeline'ów:
+
+1. **Wycieki sekretów:**
+   - Brak API keys, tokens, passwords w kodzie
+   - Brak sekretów w commitach (sprawdź historię)
+   - Brak sekretów w plikach konfiguracyjnych commitowanych do repo
+
+2. **Trzymanie sekretów:**
+   - Sekrety tylko w `.env` (dodanym do `.gitignore`)
+   - Używanie zmiennych środowiskowych zamiast hardcoded wartości
+   - Brak sekretów w Dockerfile, docker-compose.yml (commitowanych)
+
+3. **Bezpieczeństwo CI/CD:**
+   - Pipeline nie loguje sekretów
+   - Sekrety przekazywane jako secrets/variables, nie jako plain text
+   - Brak sekretów w artifactach builda
+
+4. **Konfiguracja .env:**
+   - `.env.example` bez prawdziwych wartości
+   - `.env` w `.gitignore`
+   - Dokumentacja jak ustawić zmienne środowiskowe
+
+5. **Izolacja środowisk:**
+   - Różne sekrety dla dev/staging/prod
+   - Brak sekretów produkcyjnych w środowisku dev
+   - Osobne konta/klucze dla każdego środowiska
+
+6. **Rotacja kluczy i tokenów:**
+   - Dokumentacja procesu rotacji
+   - Możliwość łatwej zmiany sekretów bez redeploy całej aplikacji
+
+**Format odpowiedzi:**
+- Lista problemów + konkretne działania do wykonania
+- Jeśli wszystko OK: "✅ Secrets & CI/CD safety: brak problemów"
+
+### 🛡️ SECURITY REVIEWS (NA ŻĄDANIE LUB PRZY ZMIANACH)
+
+#### full-security-review
+
+**Wykonaj gdy:**
+- Przy większych zmianach kodu (nowe moduły, refaktoryzacja)
+- Przed release'em większej funkcjonalności
+- Na żądanie użytkownika
+- Po wykryciu potencjalnej podatności
+
+**Przeprowadź pełny security review kodu. Sprawdź i wypisz:**
+
+1. **Walidacja i sanitacja danych wejściowych:**
+   - User input (formularze, query params, body)
+   - Parametry API (typy, zakresy, formaty)
+   - Walidacja po stronie serwera (nie tylko frontend)
+   - Sanitizacja przed zapisem do bazy
+   - Whitelisting vs blacklisting
+
+2. **Możliwe luki bezpieczeństwa:**
+   - **SQL Injection:** parametryzowane zapytania, ORM query builders
+   - **XSS:** sanitizacja HTML, CSP headers, encoding
+   - **CSRF:** tokeny CSRF, SameSite cookies, weryfikacja origin
+   - **RCE:** brak eval(), bezpieczne exec/spawn, walidacja command input
+   - **Path Traversal:** walidacja ścieżek, canonicalizacja, whitelisting
+   - **IDOR:** weryfikacja uprawnień do zasobów, nie ufanie tylko ID z requestu
+   - **SSRF:** walidacja URL, whitelisting domen, blokowanie private IPs
+
+3. **Miejsca wycieku danych:**
+   - Logi (brak PII, tokenów, haseł)
+   - Odpowiedzi API (brak overfetching, maskowanie wrażliwych pól)
+   - Błędy (brak stacktrace, szczegółów bazy, ścieżek plików)
+   - Stacktrace tylko w dev/staging, nie w produkcji
+
+4. **Uwierzytelnianie i autoryzacja:**
+   - Kto może co zrobić (RBAC, permissions)
+   - Weryfikacja uprawnień na każdym endpointzie
+   - Brak podatności na privilege escalation
+   - Bezpieczne przechowywanie haseł (hashing, salt)
+   - Session management (timeout, rotation, secure cookies)
+
+5. **Bezpieczeństwo danych wrażliwych (PII):**
+   - Szyfrowanie w spoczynku (at rest)
+   - Szyfrowanie w transporcie (HTTPS, TLS)
+   - Maskowanie w UI (np. karty kredytowe: ****1234)
+   - Ograniczenia dostępu (kto może zobaczyć jakie dane)
+   - Zgodność z RODO/GDPR
+
+6. **Bezpieczne użycie bibliotek/SDK:**
+   - Sprawdź czy nie są deprecated
+   - Sprawdź czy są aktualne (brak znanych CVE)
+   - Sprawdź czy nie mają znanych podatności
+   - Używaj tylko zaufanych źródeł (npm audit, Snyk)
+
+7. **Bezpieczne generowanie tokenów, sesji, kluczy:**
+   - Kryptograficznie bezpieczne generatory (crypto.randomBytes)
+   - Wystarczająca entropia
+   - Brak przewidywalnych sekwencji
+   - Bezpieczne przechowywanie kluczy
+
+8. **Zgodność z OWASP ASVS:**
+   - Level 1 (basic security) - minimum
+   - Level 2 (standard security) - zalecane
+   - Level 3 (advanced security) - dla krytycznych aplikacji
+
+**Format odpowiedzi:**
+Dla każdej znalezionej podatności:
+- Wyjaśnij dlaczego jest niebezpieczna
+- Podaj przykład exploita (konkretny payload/scenariusz)
+- Zaproponuj poprawę z kodem (przed/po)
+
+#### clean-code-review
+
+**Wykonaj gdy:**
+- Przy każdej zmianie kodu
+- Przed commitem większych zmian
+- Przy refaktoryzacji
+
+**Przeprowadź przegląd kodu pod kątem best practices:**
+
+1. **SOLID principles:**
+   - Single Responsibility: każda klasa/funkcja ma jedną odpowiedzialność
+   - Open/Closed: otwarte na rozszerzenia, zamknięte na modyfikacje
+   - Liskov Substitution: podtypy muszą być zamienne z bazowymi
+   - Interface Segregation: małe, specyficzne interfejsy
+   - Dependency Inversion: zależności od abstrakcji, nie konkretów
+
+2. **KISS (Keep It Simple, Stupid):**
+   - Brak niepotrzebnej złożoności
+   - Proste rozwiązania zamiast over-engineering
+   - Czytelny kod bez magic numbers/strings
+
+3. **DRY (Don't Repeat Yourself):**
+   - Brak zduplikowanego kodu
+   - Wspólne funkcje/komponenty dla powtarzającej się logiki
+   - Reusable utilities
+
+4. **Dead code:**
+   - Brak nieużywanych funkcji/klas/zmiennych
+   - Brak zakomentowanego kodu
+   - Brak nieużywanych importów
+
+5. **Wielkość funkcji/klas:**
+   - Funkcje < 50 linii (optymalnie < 20)
+   - Klasy < 300 linii
+   - Metody < 20 linii
+
+6. **Warstwowość (Separation of Concerns):**
+   - Rozdzielenie logiki biznesowej od UI
+   - Rozdzielenie warstwy danych od logiki
+   - Brak logiki biznesowej w komponentach UI
+   - Service layer dla logiki biznesowej
+
+7. **Obsługa błędów:**
+   - Try-catch dla operacji które mogą się nie powieść
+   - Właściwe typy błędów (custom Error classes)
+   - Logowanie błędów
+   - Graceful degradation
+
+8. **Typowanie TypeScript:**
+   - Wszystkie funkcje mają typy parametrów i zwracanych wartości
+   - Brak `any` (lub uzasadnione użycie)
+   - Właściwe interfejsy/typy dla obiektów
+   - Strict mode w tsconfig.json
+
+9. **Dokumentacja i komentarze:**
+   - JSDoc dla publicznych funkcji/klas
+   - Komentarze wyjaśniające "dlaczego", nie "co"
+   - README dla modułów
+   - Brak oczywistych komentarzy (kod powinien być samodokumentujący)
+
+**Format odpowiedzi:**
+- Lista problemów z konkretnymi lokalizacjami (pliki, linie)
+- Dla każdego problemu: wersja poprawiona z wyjaśnieniem
+
+#### test-coverage-review
+
+**Wykonaj gdy:**
+- Przy dodawaniu nowych funkcji
+- Przy zmianach w istniejących funkcjach
+- Przed release'em większej funkcjonalności
+
+**Na podstawie kodu wygeneruj:**
+
+1. **Testy jednostkowe:**
+   - Pokrycie wszystkich funkcji/metod
+   - Edge cases (null, undefined, empty, max values, min values)
+   - Happy path i error paths
+   - Mockowanie zależności zewnętrznych
+   - Testy izolowane (nie zależne od siebie)
+
+2. **Testy bezpieczeństwa:**
+   - **Złośliwe inputy:**
+     - SQLi payloads: `' OR '1'='1`, `'; DROP TABLE users--`
+     - XSS payloads: `<script>alert('XSS')</script>`, `javascript:alert(1)`
+     - Command injection: `; rm -rf /`, `| cat /etc/passwd`
+     - Path traversal: `../../../etc/passwd`, `..\\..\\windows\\system32`
+     - Binary injection: null bytes, control characters
+   
+   - **Payloady wywołujące wyjątki:**
+     - Przepełnienie bufora (jeśli dotyczy)
+     - Nieskończone rekurencje
+     - Memory exhaustion (bardzo duże inputy)
+     - Type confusion (string zamiast number, etc.)
+   
+   - **Fuzzing inputu:**
+     - Random strings różnej długości
+     - Unicode characters
+     - Special characters
+     - Boundary values
+
+**Format odpowiedzi:**
+- Gotowe pliki testów (zachowaj strukturę projektu)
+- Opis braków w pokryciu (co nie jest przetestowane i dlaczego)
+- Rekomendacje co jeszcze przetestować
+
+#### api-vulnerability-review
+
+**Wykonaj gdy:**
+- Przy każdej zmianie w endpointach API
+- Przy dodawaniu nowych endpointów
+- Przy zmianach w routingu/autoryzacji
+
+**Przeanalizuj API pod kątem:**
+
+1. **IDOR (Insecure Direct Object Reference):**
+   - Czy użytkownik może dostać się do zasobów innych użytkowników zmieniając ID?
+   - Weryfikacja uprawnień przed zwróceniem danych
+   - Nie ufanie tylko ID z requestu
+
+2. **Niewłaściwe sprawdzenie uprawnień:**
+   - Każdy endpoint sprawdza uprawnienia
+   - Brak endpointów dostępnych bez autoryzacji (jeśli powinny być chronione)
+   - Właściwa weryfikacja roli/permissions
+   - Brak podatności na privilege escalation
+
+3. **Brak rate limiting:**
+   - Ograniczenia requestów na użytkownika/IP
+   - Ochrona przed brute force
+   - Ochrona przed DDoS
+   - Różne limity dla różnych endpointów
+
+4. **Brak limitów wielkości payloadu:**
+   - Max body size (np. 10MB dla uploadów)
+   - Max query string length
+   - Max array/object depth
+   - Ochrona przed memory exhaustion
+
+5. **Zbyt bogate odpowiedzi (overfetching):**
+   - Zwracanie tylko potrzebnych pól
+   - Brak niepotrzebnych danych w odpowiedzi
+   - Możliwość wyboru pól (GraphQL field selection lub query params)
+
+6. **Ekspozycja stacktrace lub konfiguracji:**
+   - Brak stacktrace w odpowiedziach błędów (produkcja)
+   - Brak szczegółów bazy danych w błędach
+   - Brak ścieżek plików w błędach
+   - Ogólne komunikaty błędów dla klienta
+
+7. **Problemy CORS:**
+   - Właściwa konfiguracja originów (nie `*` w produkcji)
+   - Właściwe metody HTTP
+   - Właściwe headers
+   - Credentials tylko gdy potrzebne
+
+**Format odpowiedzi:**
+- Lista znalezionych problemów z konkretnymi endpointami
+- Rekomendacje + kod z poprawkami dla każdego problemu
+
+#### secure-architecture-review
+
+**Wykonaj gdy:**
+- Przy zmianach struktury projektu
+- Przy dodawaniu nowych warstw/komponentów
+- Przy zmianach w architekturze komunikacji
+- Przed większymi refaktoryzacjami
+
+**Przeanalizuj projekt z perspektywy architektury bezpieczeństwa:**
+
+1. **Rozdzielenie warstw:**
+   - API layer (routing, walidacja inputu)
+   - Service layer (logika biznesowa)
+   - Data layer (dostęp do bazy)
+   - Brak logiki biznesowej w warstwie prezentacji
+   - Właściwe granice między warstwami
+
+2. **Minimalizacja uprawnień (Principle of Least Privilege):**
+   - Każdy komponent ma tylko potrzebne uprawnienia
+   - Użytkownicy mają tylko potrzebne role
+   - Serwisy mają tylko potrzebne dostęp do zasobów
+   - Brak nadmiernych uprawnień
+
+3. **Bezpieczeństwo konfiguracji:**
+   - Konfiguracja przez zmienne środowiskowe
+   - Różne konfiguracje dla różnych środowisk
+   - Brak sekretów w konfiguracji commitowanej do repo
+   - Właściwe domyślne wartości (secure by default)
+
+4. **Izolacja kontenerów (jeśli używane):**
+   - Właściwe network policies
+   - Brak niepotrzebnych uprawnień kontenerów
+   - Read-only filesystem gdzie możliwe
+   - Non-root user w kontenerach
+
+5. **Zabezpieczenie komunikacji:**
+   - HTTPS wszędzie (nie HTTP)
+   - HSTS headers
+   - Właściwa konfiguracja TLS (minimalna wersja, cipher suites)
+   - Certificate pinning (jeśli aplikacja mobilna)
+
+6. **Single Point of Failure (SPOF):**
+   - Brak pojedynczych punktów awarii
+   - Redundancja krytycznych komponentów
+   - Fallback mechanisms
+   - Graceful degradation
+
+7. **Bezpieczny data flow:**
+   - Dane wrażliwe nie przechodzą przez niepotrzebne warstwy
+   - Właściwa walidacja na każdym etapie
+   - Brak wycieków danych w logach między warstwami
+   - Szyfrowanie danych wrażliwych w transporcie
+
+**Format odpowiedzi:**
+- Uproszczony diagram architektury (text-based ASCII lub mermaid)
+- Lista zaleceń z priorytetami (critical, high, medium, low)
+- Konkretne działania do wykonania
+
+#### simulate-attack
+
+**Wykonaj gdy:**
+- Przy zmianach w funkcjach obsługujących user input
+- Przy zmianach w autoryzacji/uwierzytelnianiu
+- Przy zmianach w funkcjach wykonujących wrażliwe operacje
+- Na żądanie użytkownika
+
+**Weź funkcję i spróbuj ją złamać:**
+
+Dla każdej funkcji obsługującej user input, wygeneruj i przetestuj:
+
+1. **Payload SQL Injection:**
+   - `' OR '1'='1`
+   - `'; DROP TABLE users--`
+   - `1' UNION SELECT NULL--`
+   - `1'; WAITFOR DELAY '00:00:05'--`
+
+2. **Payload XSS:**
+   - `<script>alert('XSS')</script>`
+   - `<img src=x onerror=alert(1)>`
+   - `javascript:alert(1)`
+   - `<svg onload=alert(1)>`
+
+3. **Payload SSRF:**
+   - `http://localhost:8080/admin`
+   - `http://127.0.0.1/internal`
+   - `file:///etc/passwd`
+   - `gopher://internal-server:8080`
+
+4. **Payload powodujący crash aplikacji:**
+   - Bardzo duże inputy (memory exhaustion)
+   - Nieskończone rekurencje
+   - Null pointer dereference
+   - Type confusion (nieoczekiwane typy)
+
+5. **Payload przekraczający limity:**
+   - Bardzo duże pliki (dysk)
+   - Bardzo długie stringi (CPU/memory)
+   - Głębokie zagnieżdżenia (stack overflow)
+   - Wiele równoczesnych requestów (rate limiting)
+
+**Format odpowiedzi:**
+- Lista payloadów które powodują problemy
+- Dla każdego problematycznego payloadu:
+  - Opis co się dzieje
+  - Przykład exploita
+  - Poprawiona wersja funkcji (odporna na atak)
+
+#### before-production-checklist
+
+**Wykonaj gdy:**
+- Przed każdym deploymentem do produkcji
+- Przed release'em większej wersji
+- Na żądanie użytkownika przed go-live
+
+**Zrób finalną checklistę bezpieczeństwa:**
+
+Sprawdź każdy punkt i wypisz TYLKO elementy które są NIEPOPRAWNE:
+
+1. ✅ **Autoryzacja:** Czy wszystkie endpointy mają autoryzację? (jeśli powinny)
+2. ✅ **Walidacja inputu:** Czy każdy input jest walidowany? (typy, zakresy, formaty)
+3. ✅ **Logi:** Czy żadne logi nie wyciekają wrażliwych danych? (PII, tokeny, hasła)
+4. ✅ **Testy:** Czy testy przechodzą? (wszystkie testy jednostkowe, integracyjne, e2e)
+5. ✅ **Zależności:** Czy zależności są aktualne? (brak znanych CVE, npm audit clean)
+6. ✅ **Szyfrowanie:** Czy dane wrażliwe są szyfrowane? (w spoczynku i w transporcie)
+7. ✅ **Sekrety:** Czy klucze są trzymane poza repozytorium? (tylko w .env, nie commitowane)
+8. ✅ **Rate limiting:** Czy rate limiting działa? (ochrona przed brute force, DDoS)
+9. ✅ **Błędy:** Czy błędy są ustandaryzowane? (brak stacktrace w produkcji, ogólne komunikaty)
+10. ✅ **HTTPS:** Czy komunikacja jest szyfrowana? (HTTPS wszędzie, HSTS headers)
+
+**Format odpowiedzi:**
+- Tylko lista elementów które są NIEPOPRAWNE
+- Dla każdego niepoprawnego elementu: krótki opis problemu + działanie do wykonania
+- Jeśli wszystko OK: "✅ Before Production Checklist: wszystkie punkty poprawne"
+

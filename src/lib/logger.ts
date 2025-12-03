@@ -106,3 +106,45 @@ export function getAuthLogs() {
   }
 }
 
+/**
+ * SECURITY-FIX: [ERROR-LOG-2] Helper function do bezpiecznego logowania błędów
+ * Data: 2025-01-27
+ * Sanitizuje błędy i nie loguje stacktrace w produkcji
+ */
+export function logError(message: string, error: unknown, context?: Record<string, any>): void {
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  
+  // Sanitize error
+  let errorMessage = 'Unknown error'
+  let errorName = 'Error'
+  
+  if (error instanceof Error) {
+    errorMessage = error.message
+    errorName = error.name
+  } else if (typeof error === 'string') {
+    errorMessage = error
+  } else {
+    errorMessage = String(error)
+  }
+  
+  // Sanitize context
+  const sanitizedContext = context ? sanitizeLogData(context) : {}
+  
+  // Log structure
+  const logData = {
+    message,
+    error: errorMessage,
+    errorName,
+    ...sanitizedContext,
+    // Only include stacktrace in development
+    ...(isDevelopment && error instanceof Error && error.stack ? { stack: error.stack } : {}),
+  }
+  
+  if (isDevelopment) {
+    console.error(`[ERROR] ${message}`, logData)
+  } else {
+    // In production, log only message and error name (no stacktrace, no sensitive data)
+    console.error(`[ERROR] ${message}: ${errorName} - ${errorMessage}`)
+  }
+}
+

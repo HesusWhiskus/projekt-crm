@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.18-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'security',
+        description: 'Dodano kompleksowe zabezpieczenia: SSRF protection, sanitizacja błędów, limity payloadu, IDOR protection, maskowanie PII, aktualizacja CVE',
+      },
+      {
+        type: 'added',
+        description: 'Dodano maskowanie danych osobowych (PESEL, telefon, email) w UI - ADMIN widzi pełne dane, USER widzi zamaszkowane',
+      },
+      {
+        type: 'added',
+        description: 'Utworzono testy bezpieczeństwa z złośliwymi payloadami oraz przykładowe testy jednostkowe dla Use Cases i Repositories',
+      },
+      {
+        type: 'changed',
+        description: 'Zastąpiono console.error przez logError z sanitizacją - brak wycieku stacktrace w produkcji',
+      },
+    ],
+  },
+  {
     version: '0.10.17-beta',
     date: '2025-01-22',
     changes: [

@@ -6,13 +6,16 @@ import { CreatePolicyDTO, PolicyFilterDTO } from '@/application/policies/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const policyRepository = new PrismaPolicyRepository()
 const createPolicyUseCase = new CreatePolicyUseCase(policyRepository)
 const listPoliciesUseCase = new ListPoliciesUseCase(policyRepository)
 
 const createPolicySchema = z.object({
-  policyNumber: z.string().min(1, 'Numer polisy jest wymagany'),
+  // SECURITY-FIX: [VALIDATION-20] Dodano max length dla wszystkich pól string
+  // Data: 2025-01-27
+  policyNumber: z.string().min(1, 'Numer polisy jest wymagany').max(100, 'Numer polisy może mieć maksymalnie 100 znaków'),
   issueDate: z.string().datetime(),
   validFrom: z.string().datetime(),
   validTo: z.string().datetime(),
@@ -23,11 +26,11 @@ const createPolicySchema = z.object({
   insuranceCompanyId: z.string().min(1, 'ID Towarzystwa Ubezpieczeniowego jest wymagane'),
   agentId: z.string().optional().nullable(),
   organizationId: z.string().optional().nullable(),
-  externalId: z.string().optional().nullable(),
+  externalId: z.string().max(255, 'External ID może mieć maksymalnie 255 znaków').optional().nullable(),
   configurationType: z.enum(['STANDARD', 'LEASING', 'CREDIT']).optional().nullable(),
-  leasingCompany: z.string().optional().nullable(),
-  creditProvider: z.string().optional().nullable(),
-  contractNumber: z.string().optional().nullable(),
+  leasingCompany: z.string().max(200, 'Firma leasingowa może mieć maksymalnie 200 znaków').optional().nullable(),
+  creditProvider: z.string().max(200, 'Dostawca kredytu może mieć maksymalnie 200 znaków').optional().nullable(),
+  contractNumber: z.string().max(100, 'Numer umowy może mieć maksymalnie 100 znaków').optional().nullable(),
 })
 
 export async function POST(request: Request) {
@@ -72,7 +75,7 @@ export async function POST(request: Request) {
     }, request)
 
     return NextResponse.json({ policy }, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -80,10 +83,14 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error('Create policy error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Create policy error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas tworzenia polisy'
+    const isBadRequest = errorMessage.includes('już istnieje') || errorMessage.includes('Nieprawidłowy')
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas tworzenia polisy' },
-      { status: error.message?.includes('już istnieje') || error.message?.includes('Nieprawidłowy') ? 400 : 500 }
+      { error: errorMessage },
+      { status: isBadRequest ? 400 : 500 }
     )
   }
 }
@@ -145,8 +152,10 @@ export async function GET(request: Request) {
       // New format - paginated response
       return NextResponse.json(result)
     }
-  } catch (error: any) {
-    console.error('List policies error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('List policies error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania polis' },
       { status: 500 }

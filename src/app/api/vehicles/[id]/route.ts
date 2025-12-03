@@ -5,6 +5,8 @@ import { PrismaVehicleRepository } from '@/infrastructure/persistence/prisma'
 import { UpdateVehicleDTO } from '@/application/vehicles/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
+import { db } from '@/lib/db'
 
 // Initialize dependencies
 const vehicleRepository = new PrismaVehicleRepository()
@@ -75,15 +77,39 @@ export async function GET(
       return NextResponse.json({ error: 'Nieprawidłowy format ID' }, { status: 400 })
     }
 
-    const vehicle = await getVehicleUseCase.execute(params.id.trim())
-
-    return NextResponse.json({ vehicle })
-  } catch (error: any) {
-    if (error.message?.includes('nie znaleziony')) {
-      return NextResponse.json({ error: error.message }, { status: 404 })
+    const vehicleId = params.id.trim()
+    
+    // SECURITY-FIX: [IDOR-10] Sprawdzenie uprawnień przed zwróceniem pojazdu
+    // Data: 2025-01-27
+    // Get user with organizationId
+    const userWithOrg = await db.user.findUnique({
+      where: { id: user.id },
+      select: { organizationId: true },
+    })
+    
+    // Get vehicle to check access
+    const vehicle = await getVehicleUseCase.execute(vehicleId)
+    
+    if (!vehicle) {
+      return NextResponse.json({ error: 'Pojazd nie znaleziony' }, { status: 404 })
+    }
+    
+    // Check authorization: ADMIN sees all vehicles in organization, USER sees only vehicles in their organization
+    if (user.role !== 'ADMIN' && vehicle.organizationId !== userWithOrg?.organizationId) {
+      await logApiActivity(user.id, 'API_UNAUTHORIZED_ACCESS_ATTEMPT', 'Vehicle', vehicleId, {}, request)
+      return NextResponse.json({ error: 'Brak uprawnień' }, { status: 403 })
     }
 
-    console.error('Get vehicle error:', error)
+    return NextResponse.json({ vehicle })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Get vehicle error', error)
+    
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+    
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania pojazdu' },
       { status: 500 }
@@ -217,10 +243,13 @@ export async function PUT(
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Update vehicle error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Update vehicle error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji pojazdu'
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas aktualizacji pojazdu' },
-      { status: error.message?.includes('już istnieje') ? 400 : 500 }
+      { error: errorMessage },
+      { status: errorMessage.includes('już istnieje') ? 400 : 500 }
     )
   }
 }

@@ -17,3 +17,17 @@ cursor_*.md
 
 # Pliki testowe Excel
 test-*.xlsx
+
+# Test results and coverage
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# k6 results
+k6-results/
+
+# Test database
+*.test.db
+*.test.sqlite

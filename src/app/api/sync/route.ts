@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
+import { logError } from "@/lib/logger"
 
 const syncRequestSchema = z.object({
   entityType: z.enum(["clients", "contacts", "tasks"]),
@@ -222,7 +223,9 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error("Sync error:", error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Sync error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas synchronizacji" },
       { status: 500 }

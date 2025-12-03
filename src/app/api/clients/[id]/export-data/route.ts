@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { requireAuth } from '@/presentation/api/middleware/auth'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
+import { logError } from '@/lib/logger'
 
 export async function GET(
   request: Request,
@@ -41,9 +42,14 @@ export async function GET(
 
     await logApiActivity(user.id, 'CLIENT_DATA_EXPORTED', 'Client', client.id, {}, request)
 
-    return NextResponse.json({ data: client })
-  } catch (error: any) {
-    console.error('Export client data error:', error)
+    return NextResponse.json({ 
+      data: client,
+      exportedAt: new Date().toISOString(),
+    })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Export client data error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas eksportu danych klienta' },
       { status: 500 }

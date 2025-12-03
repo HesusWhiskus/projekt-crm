@@ -10,6 +10,7 @@ import { validateQueryParams, contactQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 import { calculatePagination, PaginatedResponse } from "@/lib/types/pagination"
+import { logError } from "@/lib/logger"
 
 const createContactSchema = z.object({
   type: z.nativeEnum(ContactType).optional(), // Optional for notes (isNote=true)
@@ -298,16 +299,20 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({ contact }, { status: 201 })
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
-      console.error("[DEBUG CONTACTS POST] ZodError details:", JSON.stringify(error.errors, null, 2))
+      // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+      // Data: 2025-01-27
+      logError("Contact creation validation error", error, { errors: error.errors })
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }
       )
     }
 
-    console.error("Contact creation error:", error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Contact creation error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas tworzenia kontaktu" },
       { status: 500 }

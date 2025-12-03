@@ -5,6 +5,39 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.18-beta] - 2025-01-27
+
+### Security
+- **SSRF Protection:** Dodano walidację private IPs i whitelist domen w ExternalSystemClient, zapobiegając atakom Server-Side Request Forgery
+- **Sanitizacja błędów:** Zastąpiono wszystkie `console.error` przez `logError` z sanitizacją - stacktrace nie jest logowany w produkcji
+- **Usunięcie sekretów:** Usunięto prawdziwy NEXTAUTH_SECRET z dokumentacji, dodano instrukcje bezpiecznej generacji
+- **Limity payloadu:** Dodano walidację rozmiaru body (max 10MB), query string (max 2048 znaków) i głębokości JSON (max 10 poziomów)
+- **Limity uploadów:** Dodano walidację rozmiaru plików (max 10MB) w endpointach z uploadami
+- **IDOR Protection:** Dodano sprawdzanie uprawnień w endpointach vehicles/[id], calculations/[id], policies/[id] - użytkownicy widzą tylko swoje zasoby
+- **CVE Updates:** Zaktualizowano next-auth do 4.24.13 i nodemailer do 7.0.11, naprawiono znane CVE
+- **Testy bezpieczeństwa:** Utworzono testy z złośliwymi payloadami (SQLi, XSS, Command Injection, Path Traversal, Binary Injection)
+
+### Dodano
+- **Maskowanie PII:** Dodano funkcje maskujące PESEL, telefon i email w UI - ADMIN widzi pełne dane, USER widzi zamaszkowane
+- **Custom Error classes:** Utworzono `src/lib/errors.ts` z ValidationError, NotFoundError, UnauthorizedError, ForbiddenError, etc.
+- **API Wrapper:** Utworzono `src/lib/api-wrapper.ts` z `withApiHandler` dla ujednoliconej obsługi endpointów
+- **Testy jednostkowe:** Utworzono przykładowe testy dla Use Cases, Repositories i API endpoints
+- **Dokumentacja bezpieczeństwa:** Utworzono SECURITY_CVE_STATUS.md, SECURITY_CONFIG_REVIEW.md, GDPR_COMPLIANCE.md
+
+### Zmieniono
+- **Walidacja pól:** Dodano max length dla wszystkich pól string w schematach calculations, policies, vehicles
+- **CSRF Protection:** Dodano konfigurację bezpiecznych cookies w NextAuth (httpOnly, sameSite, secure)
+- **Error handling:** Zastąpiono `catch (error: any)` przez `catch (error: unknown)` z type guards w endpointach API
+
+### Naprawiono
+- **Error logging:** Wszystkie endpointy API używają teraz `logError` zamiast `console.error` - brak wycieku stacktrace w produkcji
+- **RODO compliance:** Poprawiono endpointy export-data i personal-data - dodano daty eksportu/usunięcia
+
+### Uwagi techniczne
+- Wszystkie zmiany bezpieczeństwa są oznaczone komentarzami `SECURITY-FIX: [ID-problemu]` z datą
+- Railway PostgreSQL automatycznie zapewnia szyfrowanie at rest - zgodne z RODO
+- Znane CVE bez dostępnej poprawki: xlsx (HIGH), eslint-config-next (HIGH) - udokumentowano w SECURITY_CVE_STATUS.md
+
 ## [0.10.17-beta] - 2025-01-22
 
 ### Naprawiono

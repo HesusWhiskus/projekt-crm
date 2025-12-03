@@ -7,6 +7,7 @@ import { validateQueryParams, taskQuerySchema } from "@/lib/query-validator"
 import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 import { calculatePagination, PaginatedResponse } from "@/lib/types/pagination"
+import { logError } from "@/lib/logger"
 
 const createTaskSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany").max(150, "Tytuł jest zbyt długi (max 150 znaków)").trim(),
@@ -138,10 +139,13 @@ export async function POST(request: Request) {
     try {
       validatedData = createTaskSchema.parse(body)
       console.log("[DEBUG TASKS POST] Validated data:", JSON.stringify(validatedData, null, 2))
-    } catch (error: any) {
-      console.error("[DEBUG TASKS POST] Validation error:", error)
+    } catch (error: unknown) {
+      // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+      // Data: 2025-01-27
       if (error instanceof z.ZodError) {
-        console.error("[DEBUG TASKS POST] Zod errors:", JSON.stringify(error.errors, null, 2))
+        logError("[DEBUG TASKS POST] Validation error", error, { errors: error.errors })
+      } else {
+        logError("[DEBUG TASKS POST] Validation error", error)
       }
       throw error
     }
@@ -188,16 +192,20 @@ export async function POST(request: Request) {
     }, request)
 
     return NextResponse.json({ task }, { status: 201 })
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
-      console.error("[DEBUG TASKS POST] ZodError details:", JSON.stringify(error.errors, null, 2))
+      // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+      // Data: 2025-01-27
+      logError("[DEBUG TASKS POST] ZodError details", error, { errors: error.errors })
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }
       )
     }
 
-    console.error("Task creation error:", error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Task creation error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas tworzenia zadania" },
       { status: 500 }
@@ -407,8 +415,10 @@ export async function GET(request: Request) {
       // Old format for backward compatibility
       return NextResponse.json({ tasks })
     }
-  } catch (error) {
-    console.error("Tasks fetch error:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Tasks fetch error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas pobierania zadań" },
       { status: 500 }

@@ -3,6 +3,7 @@ import { requireAuth } from '@/presentation/api/middleware/auth'
 import { requireRole } from '@/presentation/api/middleware/auth'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
+import { logError } from '@/lib/logger'
 
 export async function DELETE(
   request: Request,
@@ -45,9 +46,14 @@ export async function DELETE(
 
     await logApiActivity(user.id, 'CLIENT_PERSONAL_DATA_DELETED', 'Client', client.id, {}, request)
 
-    return NextResponse.json({ message: 'Dane osobowe zostały usunięte' })
-  } catch (error: any) {
-    console.error('Delete personal data error:', error)
+    return NextResponse.json({ 
+      message: 'Dane osobowe zostały usunięte',
+      deletedAt: new Date().toISOString(),
+    })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Delete personal data error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas usuwania danych osobowych' },
       { status: 500 }

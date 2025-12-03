@@ -37,6 +37,7 @@ import {
 } from "@/lib/status-config"
 import { ContactType } from "@prisma/client"
 import Link from "next/link"
+import { maskPhone, maskEmail, maskPhoneIfNeeded, maskEmailIfNeeded } from "@/lib/pii-masking"
 
 interface ClientDetailProps {
   client: any
@@ -231,11 +232,15 @@ export function ClientDetail({
               <CardContent className="space-y-2">
                 <div>
                   <span className="text-sm font-medium">Email:</span>{" "}
-                  {client.email || "-"}
+                  {/* SECURITY-FIX: [PII-14] Maskowanie email w UI */}
+                  {/* Data: 2025-01-27 */}
+                  {client.email ? maskEmailIfNeeded(client.email, currentUser.role) : "-"}
                 </div>
                 <div>
                   <span className="text-sm font-medium">Telefon:</span>{" "}
-                  {client.phone || "-"}
+                  {/* SECURITY-FIX: [PII-14] Maskowanie telefonu w UI */}
+                  {/* Data: 2025-01-27 */}
+                  {client.phone ? maskPhoneIfNeeded(client.phone, currentUser.role) : "-"}
                 </div>
                 <div>
                   <span className="text-sm font-medium">Strona WWW:</span>{" "}

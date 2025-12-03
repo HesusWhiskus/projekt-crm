@@ -1,11 +1,19 @@
 # 🚀 Instrukcja wdrożenia projektu na Railway
 
-## Wygenerowany NEXTAUTH_SECRET:
-```
-WiziyWuxozwE/zmjJsPVrdhAQKOU9Fegrr6dOj9bAhI=
+## SECURITY-FIX: [SECRET-3] Usunięto sekret z dokumentacji
+## Data: 2025-01-27
+
+**WAŻNE:** NEXTAUTH_SECRET musi być wygenerowany osobno dla każdego środowiska!
+
+### Jak wygenerować NEXTAUTH_SECRET:
+
+```bash
+openssl rand -base64 32
 ```
 
-**Zapisz ten klucz - będziesz go potrzebować w Railway!**
+Lub użyj online generatora: https://generate-secret.vercel.app/32
+
+**NIE UŻYWAJ** tego samego sekretu w różnych środowiskach (dev, staging, prod)!
 
 ---
 

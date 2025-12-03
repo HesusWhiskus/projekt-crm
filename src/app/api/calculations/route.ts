@@ -5,6 +5,7 @@ import { PrismaCalculationRepository } from '@/infrastructure/persistence/prisma
 import { CreateCalculationDTO, CalculationFilterDTO } from '@/application/calculations/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 // Initialize dependencies
 const calculationRepository = new PrismaCalculationRepository()
@@ -12,22 +13,24 @@ const createCalculationUseCase = new CreateCalculationUseCase(calculationReposit
 const listCalculationsUseCase = new ListCalculationsUseCase(calculationRepository)
 
 const createCalculationSchema = z.object({
-  pesel: z.string().optional().nullable(),
-  firstName: z.string().optional().nullable(),
-  lastName: z.string().optional().nullable(),
-  previousLastName: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
-  email: z.string().email().optional().nullable(),
-  postalCode: z.string().optional().nullable(),
-  city: z.string().optional().nullable(),
-  street: z.string().optional().nullable(),
-  houseNumber: z.string().optional().nullable(),
-  apartmentNumber: z.string().optional().nullable(),
+  // SECURITY-FIX: [VALIDATION-20] Dodano max length dla wszystkich pól string
+  // Data: 2025-01-27
+  pesel: z.string().max(11, 'PESEL może mieć maksymalnie 11 znaków').optional().nullable(),
+  firstName: z.string().max(50, 'Imię może mieć maksymalnie 50 znaków').optional().nullable(),
+  lastName: z.string().max(50, 'Nazwisko może mieć maksymalnie 50 znaków').optional().nullable(),
+  previousLastName: z.string().max(50, 'Poprzednie nazwisko może mieć maksymalnie 50 znaków').optional().nullable(),
+  phone: z.string().max(30, 'Telefon może mieć maksymalnie 30 znaków').optional().nullable(),
+  email: z.string().email('Nieprawidłowy format email').max(255, 'Email może mieć maksymalnie 255 znaków').optional().nullable(),
+  postalCode: z.string().max(10, 'Kod pocztowy może mieć maksymalnie 10 znaków').optional().nullable(),
+  city: z.string().max(100, 'Miasto może mieć maksymalnie 100 znaków').optional().nullable(),
+  street: z.string().max(200, 'Ulica może mieć maksymalnie 200 znaków').optional().nullable(),
+  houseNumber: z.string().max(20, 'Numer domu może mieć maksymalnie 20 znaków').optional().nullable(),
+  apartmentNumber: z.string().max(20, 'Numer mieszkania może mieć maksymalnie 20 znaków').optional().nullable(),
   correspondenceAddress: z.record(z.any()).optional().nullable(),
   hasDrivingLicense: z.boolean().optional().nullable(),
   drivingLicenseDate: z.string().datetime().optional().nullable(),
-  occupation: z.string().optional().nullable(),
-  maritalStatus: z.string().optional().nullable(),
+  occupation: z.string().max(100, 'Zawód może mieć maksymalnie 100 znaków').optional().nullable(),
+  maritalStatus: z.string().max(50, 'Status cywilny może mieć maksymalnie 50 znaków').optional().nullable(),
   hasChildUnder26: z.boolean().optional().nullable(),
   clientId: z.string().optional().nullable(),
   vehicleId: z.string().optional().nullable(),
@@ -102,7 +105,7 @@ export async function POST(request: Request) {
     }, request)
 
     return NextResponse.json({ calculation }, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -110,9 +113,12 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error('Create calculation error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Create calculation error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas tworzenia kalkulacji'
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas tworzenia kalkulacji' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

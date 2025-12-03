@@ -22,6 +22,7 @@ import {
   clientStatusLabels,
   clientPriorityLabels,
 } from "@/lib/status-config"
+import { maskPhone, maskEmail, maskPhoneIfNeeded, maskEmailIfNeeded } from "@/lib/pii-masking"
 
 interface Client {
   id: string
@@ -177,7 +178,9 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
     {
       key: "email",
       header: "Email",
-      accessor: (client: typeof clients[0]) => client.email || "-",
+      // SECURITY-FIX: [PII-14] Maskowanie email w liście klientów
+      // Data: 2025-01-27
+      accessor: (client: typeof clients[0]) => client.email ? maskEmailIfNeeded(client.email, currentUser.role) : "-",
       sortable: true,
       priority: "mobile-hidden" as const,
       width: "200px",
@@ -185,7 +188,9 @@ export const ClientsList = memo(function ClientsList({ clients, users, groups, c
     {
       key: "phone",
       header: "Telefon",
-      accessor: (client: typeof clients[0]) => client.phone || "-",
+      // SECURITY-FIX: [PII-14] Maskowanie telefonu w liście klientów
+      // Data: 2025-01-27
+      accessor: (client: typeof clients[0]) => client.phone ? maskPhoneIfNeeded(client.phone, currentUser.role) : "-",
       sortable: true,
       priority: "optional" as const,
       width: "120px",

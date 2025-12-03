@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { parseExcelFile, importExcelData } from "@/lib/excel-importer"
+import { MAX_FILE_SIZE } from "@/lib/file-upload"
+import { logError } from "@/lib/logger"
 
 export async function POST(request: Request) {
   try {
@@ -23,6 +25,15 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Brak pliku do importu" },
         { status: 400 }
+      )
+    }
+
+    // SECURITY-FIX: [UPLOAD-5] Walidacja rozmiaru pliku
+    // Data: 2025-01-27
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: `Plik jest zbyt duży. Maksymalny rozmiar: ${MAX_FILE_SIZE / 1024 / 1024}MB` },
+        { status: 413 }
       )
     }
 
@@ -80,13 +91,16 @@ export async function POST(request: Request) {
         warnings: importResult.warnings,
       },
     })
-  } catch (error: any) {
-    console.error("Import error:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Import error", error)
+    const errorMessage = error instanceof Error ? error.message : "Wystąpił nieoczekiwany błąd"
     return NextResponse.json(
       {
         success: false,
         error: "Wystąpił błąd podczas importu danych",
-        message: error.message || "Wystąpił nieoczekiwany błąd",
+        message: errorMessage,
         details: {
           clientsImported: 0,
           contactsImported: 0,

@@ -197,6 +197,32 @@ npm run admin:create
 npx prisma studio
 ```
 
+## 🔐 Bezpieczeństwo i szyfrowanie
+
+### Szyfrowanie w transporcie (HTTPS)
+
+- ✅ **Railway automatycznie zapewnia HTTPS** - wszystkie połączenia są szyfrowane
+- ✅ **HSTS** - Strict-Transport-Security header wymusza HTTPS
+- ✅ **TLS 1.2+** - Railway używa nowoczesnych wersji TLS
+
+### Szyfrowanie w spoczynku (at rest)
+
+**Railway PostgreSQL:**
+- ✅ **Automatyczne szyfrowanie** - Railway PostgreSQL ma włączone szyfrowanie at rest domyślnie
+- ✅ **Szyfrowane backupi** - wszystkie backupi są szyfrowane
+- ✅ **SSL/TLS połączenia** - połączenia do bazy są szyfrowane
+
+**Weryfikacja szyfrowania:**
+```sql
+-- Sprawdź czy połączenie używa SSL
+SHOW ssl;
+-- Powinno zwrócić: on
+```
+
+**Zgodność z RODO:**
+- ✅ Railway PostgreSQL spełnia wymagania RODO dotyczące szyfrowania danych
+- ✅ Zobacz `GDPR_COMPLIANCE.md` dla szczegółów zgodności z RODO
+
 ## 🔐 Bezpieczeństwo
 
 1. **Nigdy nie commituj `.env` do Git**
@@ -204,6 +230,68 @@ npx prisma studio
 3. **Włącz HTTPS** (automatyczne na Railway/Vercel)
 4. **Regularnie aktualizuj zależności**
 5. **Ogranicz dostęp do bazy danych** (tylko z aplikacji)
+
+## 🔄 Rotacja sekretów
+
+### SECURITY-FIX: [SECRETS-13] Dokumentacja rotacji sekretów
+### Data: 2025-01-27
+
+### Jak wygenerować nowy sekret:
+
+```bash
+openssl rand -base64 32
+```
+
+Lub użyj online generatora: https://generate-secret.vercel.app/32
+
+### Rotacja NEXTAUTH_SECRET w Railway:
+
+1. **Wygeneruj nowy sekret:**
+   ```bash
+   openssl rand -base64 32
+   ```
+
+2. **Zaktualizuj w Railway:**
+   - Wejdź do projektu Railway
+   - Otwórz zakładkę **"Variables"**
+   - Znajdź `NEXTAUTH_SECRET`
+   - Kliknij **"Edit"** i wklej nowy sekret
+   - Kliknij **"Save"**
+
+3. **Railway automatycznie zrestartuje aplikację** z nowym sekretem
+
+4. **Wszyscy użytkownicy będą musieli się zalogować ponownie** (stare sesje będą nieważne)
+
+### Rotacja NEXTAUTH_SECRET lokalnie:
+
+1. **Wygeneruj nowy sekret** (jak wyżej)
+
+2. **Zaktualizuj w `.env`:**
+   ```env
+   NEXTAUTH_SECRET="nowy-wygenerowany-sekret"
+   ```
+
+3. **Zrestartuj aplikację:**
+   ```bash
+   npm run dev
+   ```
+
+### Co zrobić jeśli sekret został skompromitowany:
+
+1. **Natychmiast wygeneruj nowy sekret** i zaktualizuj go w Railway
+2. **Wymuś wylogowanie wszystkich użytkowników:**
+   - W Railway zrestartuj aplikację (automatycznie po zmianie sekretu)
+   - Wszystkie sesje będą nieważne
+3. **Sprawdź logi** pod kątem podejrzanej aktywności
+4. **Rozważ rotację innych sekretów** (Google OAuth, SMTP) jeśli były przechowywane razem
+
+### Best Practices:
+
+- ✅ **Używaj różnych sekretów** dla dev, staging i prod
+- ✅ **Rotuj sekrety regularnie** (co 90 dni lub po incydencie)
+- ✅ **Nie udostępniaj sekretów** przez email, chat, etc.
+- ✅ **Używaj menedżera sekretów** (np. Railway Variables, AWS Secrets Manager)
+- ✅ **Dokumentuj datę ostatniej rotacji** w dokumentacji projektu
 
 ## 💰 Szacunkowe koszty
 

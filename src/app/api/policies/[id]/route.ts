@@ -5,6 +5,8 @@ import { PrismaPolicyRepository } from '@/infrastructure/persistence/prisma'
 import { UpdatePolicyDTO } from '@/application/policies/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
+import { db } from '@/lib/db'
 
 const policyRepository = new PrismaPolicyRepository()
 const getPolicyUseCase = new GetPolicyUseCase(policyRepository)
@@ -43,15 +45,47 @@ export async function GET(
       return NextResponse.json({ error: 'Nieprawidłowy format ID' }, { status: 400 })
     }
 
-    const policy = await getPolicyUseCase.execute(params.id.trim())
-
-    return NextResponse.json({ policy })
-  } catch (error: any) {
-    if (error.message?.includes('nie znaleziony')) {
-      return NextResponse.json({ error: error.message }, { status: 404 })
+    const policyId = params.id.trim()
+    
+    // SECURITY-FIX: [IDOR-10] Sprawdzenie uprawnień przed zwróceniem polisy
+    // Data: 2025-01-27
+    // Get user with organizationId
+    const userWithOrg = await db.user.findUnique({
+      where: { id: user.id },
+      select: { organizationId: true },
+    })
+    
+    // Get policy to check access
+    const policy = await getPolicyUseCase.execute(policyId)
+    
+    if (!policy) {
+      return NextResponse.json({ error: 'Polisa nie znaleziona' }, { status: 404 })
+    }
+    
+    // Check authorization: ADMIN sees all policies in organization, USER sees only their own policies
+    if (user.role !== 'ADMIN') {
+      if (policy.organizationId !== userWithOrg?.organizationId || policy.agentId !== user.id) {
+        await logApiActivity(user.id, 'API_UNAUTHORIZED_ACCESS_ATTEMPT', 'Policy', policyId, {}, request)
+        return NextResponse.json({ error: 'Brak uprawnień' }, { status: 403 })
+      }
+    } else {
+      // ADMIN can see all policies in their organization
+      if (policy.organizationId !== userWithOrg?.organizationId) {
+        await logApiActivity(user.id, 'API_UNAUTHORIZED_ACCESS_ATTEMPT', 'Policy', policyId, {}, request)
+        return NextResponse.json({ error: 'Brak uprawnień' }, { status: 403 })
+      }
     }
 
-    console.error('Get policy error:', error)
+    return NextResponse.json({ policy })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Get policy error', error)
+    
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+    
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania polisy' },
       { status: 500 }
@@ -113,10 +147,14 @@ export async function PUT(
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Update policy error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Update policy error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji polisy'
+    const isBadRequest = errorMessage.includes('już istnieje') || errorMessage.includes('Nieprawidłowy')
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas aktualizacji polisy' },
-      { status: error.message?.includes('już istnieje') || error.message?.includes('Nieprawidłowy') ? 400 : 500 }
+      { error: errorMessage },
+      { status: isBadRequest ? 400 : 500 }
     )
   }
 }

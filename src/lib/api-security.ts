@@ -85,9 +85,73 @@ export async function logApiActivity(
 
 
 /**
+ * SECURITY-FIX: [PAYLOAD-4] Dodano walidację limitów wielkości payloadu
+ * Data: 2025-01-27
+ * Sprawdza Content-Length i query string length przed przetworzeniem requestu
+ */
+export function validatePayloadLimits(request: Request): NextResponse | null {
+  // Sprawdź Content-Length header
+  const contentLength = request.headers.get('content-length')
+  if (contentLength) {
+    const size = parseInt(contentLength, 10)
+    if (isNaN(size) || size > 10 * 1024 * 1024) { // 10MB
+      return NextResponse.json(
+        { error: 'Payload jest zbyt duży (max 10MB)' },
+        { status: 413 }
+      )
+    }
+  }
+  
+  // Sprawdź query string length
+  try {
+    const url = new URL(request.url)
+    if (url.search.length > 2048) {
+      return NextResponse.json(
+        { error: 'Query string jest zbyt długi (max 2048 znaków)' },
+        { status: 414 }
+      )
+    }
+  } catch {
+    // Jeśli nie można sparsować URL, zwróć null (middleware zwróci błąd)
+    return null
+  }
+  
+  return null
+}
+
+/**
+ * SECURITY-FIX: [PAYLOAD-4] Dodano walidację głębokości JSON
+ * Data: 2025-01-27
+ * Sprawdza czy JSON nie jest zbyt głęboko zagnieżdżony (ochrona przed stack overflow)
+ */
+function getJSONDepth(obj: any, depth = 0, maxDepth = 10): number {
+  if (depth > maxDepth) return depth // Max depth exceeded
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+    return depth
+  }
+  
+  const depths = Object.values(obj).map(v => getJSONDepth(v, depth + 1, maxDepth))
+  return depths.length > 0 ? Math.max(...depths) : depth
+}
+
+export function validateJSONDepth(data: any, maxDepth = 10): { valid: boolean; error?: string } {
+  const depth = getJSONDepth(data, 0, maxDepth)
+  if (depth > maxDepth) {
+    return {
+      valid: false,
+      error: `JSON jest zbyt głęboko zagnieżdżony (max ${maxDepth} poziomów)`,
+    }
+  }
+  return { valid: true }
+}
+
+/**
  * Helper function to sanitize string input
  */
 export function sanitizeString(input: string): string {
+  if (input == null || typeof input !== 'string') {
+    return ''
+  }
   return input
     .trim()
     .replace(/[<>]/g, "") // Remove potential HTML tags

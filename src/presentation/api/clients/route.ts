@@ -6,7 +6,8 @@ import { ClientStatusChangeService } from '@/domain/clients/services'
 import { CreateClientDTO, ClientFilterDTO } from '@/application/clients/dto'
 import { validateQueryParams, clientQuerySchema } from '@/lib/query-validator'
 import { z } from 'zod'
-import { applyRateLimit, logApiActivity } from '@/lib/api-security'
+import { applyRateLimit, logApiActivity, validatePayloadLimits, validateJSONDepth } from '@/lib/api-security'
+import { logError } from '@/lib/logger'
 
 // Initialize dependencies (in production, use DI container)
 const clientRepository = new PrismaClientRepository()
@@ -123,6 +124,11 @@ const listClientsUseCase = new ListClientsUseCase(clientRepository)
  */
 export async function POST(request: Request) {
   try {
+    // SECURITY-FIX: [PAYLOAD-4] Walidacja limitów payloadu przed przetworzeniem
+    // Data: 2025-01-27
+    const payloadLimitResponse = validatePayloadLimits(request)
+    if (payloadLimitResponse) return payloadLimitResponse
+    
     // Rate limiting
     const rateLimitResponse = await applyRateLimit(request, "api")
     if (rateLimitResponse) return rateLimitResponse
@@ -137,6 +143,16 @@ export async function POST(request: Request) {
 
     // Parse and validate request body
     const body = await request.json()
+    
+    // SECURITY-FIX: [PAYLOAD-4] Walidacja głębokości JSON
+    // Data: 2025-01-27
+    const depthValidation = validateJSONDepth(body)
+    if (!depthValidation.valid) {
+      return NextResponse.json(
+        { error: depthValidation.error },
+        { status: 400 }
+      )
+    }
     
     // Basic validation (detailed validation in use case)
     const createClientSchema = z.object({
@@ -177,11 +193,13 @@ export async function POST(request: Request) {
     const client = await createClientUseCase.execute(validatedData, user)
 
     return NextResponse.json({ client }, { status: 201 })
-  } catch (error: any) {
-    console.error('Client creation error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Client creation error', error, { userId: user.id })
     
     // Handle domain errors
-    if (error.message) {
+    if (error instanceof Error && error.message) {
       return NextResponse.json(
         { error: error.message },
         { status: 400 }

@@ -6,6 +6,7 @@ import { CreateVehicleDTO, VehicleFilterDTO } from '@/application/vehicles/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 // Initialize dependencies
 const vehicleRepository = new PrismaVehicleRepository()
@@ -13,14 +14,16 @@ const createVehicleUseCase = new CreateVehicleUseCase(vehicleRepository)
 const listVehiclesUseCase = new ListVehiclesUseCase(vehicleRepository)
 
 const createVehicleSchema = z.object({
-  vin: z.string().optional().nullable(),
-  registrationNumber: z.string().optional().nullable(),
+  // SECURITY-FIX: [VALIDATION-20] Dodano max length dla wszystkich pól string
+  // Data: 2025-01-27
+  vin: z.string().max(17, 'VIN może mieć maksymalnie 17 znaków').optional().nullable(),
+  registrationNumber: z.string().max(20, 'Numer rejestracyjny może mieć maksymalnie 20 znaków').optional().nullable(),
   firstRegistrationDate: z.string().datetime().optional().nullable(),
-  brand: z.string().optional().nullable(),
-  model: z.string().optional().nullable(),
+  brand: z.string().max(100, 'Marka może mieć maksymalnie 100 znaków').optional().nullable(),
+  model: z.string().max(100, 'Model może mieć maksymalnie 100 znaków').optional().nullable(),
   productionYear: z.number().int().min(1900).max(2100).optional().nullable(),
-  infoEkspertId: z.string().optional().nullable(),
-  eurotaxId: z.string().optional().nullable(),
+  infoEkspertId: z.string().max(100, 'Info-Ekspert ID może mieć maksymalnie 100 znaków').optional().nullable(),
+  eurotaxId: z.string().max(100, 'Eurotax ID może mieć maksymalnie 100 znaków').optional().nullable(),
   eurotaxData: z.record(z.any()).optional().nullable(),
   infoEkspertData: z.record(z.any()).optional().nullable(),
   importedFromAbroad: z.boolean().optional().nullable(),
@@ -163,10 +166,13 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error('Create vehicle error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Create vehicle error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas tworzenia pojazdu'
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas tworzenia pojazdu' },
-      { status: error.message?.includes('już istnieje') ? 400 : 500 }
+      { error: errorMessage },
+      { status: errorMessage.includes('już istnieje') ? 400 : 500 }
     )
   }
 }
@@ -246,8 +252,10 @@ export async function GET(request: Request) {
     const result = await listVehiclesUseCase.execute(filter)
 
     return NextResponse.json(result)
-  } catch (error: any) {
-    console.error('List vehicles error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('List vehicles error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania pojazdów' },
       { status: 500 }

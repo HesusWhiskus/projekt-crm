@@ -5,6 +5,8 @@ import { PrismaCalculationRepository } from '@/infrastructure/persistence/prisma
 import { UpdateCalculationDTO } from '@/application/calculations/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
+import { db } from '@/lib/db'
 
 const calculationRepository = new PrismaCalculationRepository()
 const getCalculationUseCase = new GetCalculationUseCase(calculationRepository)
@@ -57,15 +59,47 @@ export async function GET(
       return NextResponse.json({ error: 'Nieprawidłowy format ID' }, { status: 400 })
     }
 
-    const calculation = await getCalculationUseCase.execute(params.id.trim())
-
-    return NextResponse.json({ calculation })
-  } catch (error: any) {
-    if (error.message?.includes('nie znaleziony')) {
-      return NextResponse.json({ error: error.message }, { status: 404 })
+    const calculationId = params.id.trim()
+    
+    // SECURITY-FIX: [IDOR-10] Sprawdzenie uprawnień przed zwróceniem kalkulacji
+    // Data: 2025-01-27
+    // Get user with organizationId
+    const userWithOrg = await db.user.findUnique({
+      where: { id: user.id },
+      select: { organizationId: true },
+    })
+    
+    // Get calculation to check access
+    const calculation = await getCalculationUseCase.execute(calculationId)
+    
+    if (!calculation) {
+      return NextResponse.json({ error: 'Kalkulacja nie znaleziona' }, { status: 404 })
+    }
+    
+    // Check authorization: ADMIN sees all calculations in organization, USER sees only their own calculations
+    if (user.role !== 'ADMIN') {
+      if (calculation.organizationId !== userWithOrg?.organizationId || calculation.agentId !== user.id) {
+        await logApiActivity(user.id, 'API_UNAUTHORIZED_ACCESS_ATTEMPT', 'Calculation', calculationId, {}, request)
+        return NextResponse.json({ error: 'Brak uprawnień' }, { status: 403 })
+      }
+    } else {
+      // ADMIN can see all calculations in their organization
+      if (calculation.organizationId !== userWithOrg?.organizationId) {
+        await logApiActivity(user.id, 'API_UNAUTHORIZED_ACCESS_ATTEMPT', 'Calculation', calculationId, {}, request)
+        return NextResponse.json({ error: 'Brak uprawnień' }, { status: 403 })
+      }
     }
 
-    console.error('Get calculation error:', error)
+    return NextResponse.json({ calculation })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Get calculation error', error)
+    
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+    
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania kalkulacji' },
       { status: 500 }
@@ -142,9 +176,12 @@ export async function PUT(
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Update calculation error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Update calculation error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji kalkulacji'
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas aktualizacji kalkulacji' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

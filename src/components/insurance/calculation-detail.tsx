@@ -9,6 +9,7 @@ import { CalculationForm } from "./calculation-form"
 import { OffersList } from "./offers-list"
 import Link from "next/link"
 import { InsuranceScope } from "@prisma/client"
+import { maskPESEL, maskPhone, maskEmail } from "@/lib/pii-masking"
 
 interface CalculationDetailProps {
   calculation: {
@@ -166,19 +167,25 @@ export function CalculationDetail({ calculation }: CalculationDetailProps) {
             {calculation.pesel && (
               <div>
                 <p className="text-sm text-muted-foreground">PESEL</p>
-                <p className="font-medium">{calculation.pesel}</p>
+                {/* SECURITY-FIX: [PII-14] Maskowanie PESEL w UI */}
+                {/* Data: 2025-01-27 */}
+                <p className="font-medium">{maskPESEL(calculation.pesel)}</p>
               </div>
             )}
             {calculation.phone && (
               <div>
                 <p className="text-sm text-muted-foreground">Telefon</p>
-                <p className="font-medium">{calculation.phone}</p>
+                {/* SECURITY-FIX: [PII-14] Maskowanie telefonu w UI */}
+                {/* Data: 2025-01-27 */}
+                <p className="font-medium">{maskPhone(calculation.phone)}</p>
               </div>
             )}
             {calculation.email && (
               <div>
                 <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium">{calculation.email}</p>
+                {/* SECURITY-FIX: [PII-14] Maskowanie email w UI */}
+                {/* Data: 2025-01-27 */}
+                <p className="font-medium">{maskEmail(calculation.email)}</p>
               </div>
             )}
           </CardContent>

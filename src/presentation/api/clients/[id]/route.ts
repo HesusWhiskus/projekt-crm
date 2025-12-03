@@ -6,6 +6,7 @@ import { ClientStatusChangeService } from '@/domain/clients/services'
 import { UpdateClientDTO } from '@/application/clients/dto'
 import { z } from 'zod'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
+import { logError } from '@/lib/logger'
 
 // Initialize dependencies (in production, use DI container)
 const clientRepository = new PrismaClientRepository()
@@ -99,15 +100,19 @@ export async function GET(
     const client = await getClientUseCase.execute(clientId, user)
 
     return NextResponse.json({ client })
-  } catch (error: any) {
-    console.error('Client fetch error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Client fetch error', error)
     
     // Handle domain errors
-    if (error.message === 'Klient nie znaleziony') {
-      return NextResponse.json({ error: error.message }, { status: 404 })
-    }
-    if (error.message === 'Brak uprawnień') {
-      return NextResponse.json({ error: error.message }, { status: 403 })
+    if (error instanceof Error) {
+      if (error.message === 'Klient nie znaleziony') {
+        return NextResponse.json({ error: error.message }, { status: 404 })
+      }
+      if (error.message === 'Brak uprawnień') {
+        return NextResponse.json({ error: error.message }, { status: 403 })
+      }
     }
 
     return NextResponse.json(
@@ -302,21 +307,25 @@ export async function PATCH(
     await logApiActivity(user.id, "CLIENT_UPDATED", "Client", clientId, {}, request)
 
     return NextResponse.json({ client })
-  } catch (error: any) {
-    console.error('Client update error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Client update error', error)
     
     // Handle domain errors
-    if (error.message === 'Klient nie znaleziony') {
-      return NextResponse.json({ error: error.message }, { status: 404 })
-    }
-    if (error.message === 'Brak uprawnień') {
-      return NextResponse.json({ error: error.message }, { status: 403 })
-    }
-    if (error.message) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      )
+    if (error instanceof Error) {
+      if (error.message === 'Klient nie znaleziony') {
+        return NextResponse.json({ error: error.message }, { status: 404 })
+      }
+      if (error.message === 'Brak uprawnień') {
+        return NextResponse.json({ error: error.message }, { status: 403 })
+      }
+      if (error.message) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 400 }
+        )
+      }
     }
 
     return NextResponse.json(
@@ -410,15 +419,19 @@ export async function DELETE(
     await logApiActivity(user.id, "CLIENT_DELETED", "Client", clientId, {}, request)
 
     return NextResponse.json({ message: 'Klient został usunięty' })
-  } catch (error: any) {
-    console.error('Client deletion error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Client deletion error', error)
     
     // Handle domain errors
-    if (error.message === 'Klient nie znaleziony') {
-      return NextResponse.json({ error: error.message }, { status: 404 })
-    }
-    if (error.message === 'Brak uprawnień') {
-      return NextResponse.json({ error: error.message }, { status: 403 })
+    if (error instanceof Error) {
+      if (error.message === 'Klient nie znaleziony') {
+        return NextResponse.json({ error: error.message }, { status: 404 })
+      }
+      if (error.message === 'Brak uprawnień') {
+        return NextResponse.json({ error: error.message }, { status: 403 })
+      }
     }
 
     return NextResponse.json(

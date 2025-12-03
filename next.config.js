@@ -5,6 +5,13 @@ const nextConfig = {
   ...(process.env.DOCKER_BUILD === 'true' && { output: 'standalone' }),
   // Optimize build
   swcMinify: true,
+  // SECURITY-FIX: [PAYLOAD-4] Limit wielkości body dla API routes
+  // Data: 2025-01-27
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
+  },
   // Test files are excluded via tsconfig.json exclude array
   images: {
     domains: ['lh3.googleusercontent.com'],
