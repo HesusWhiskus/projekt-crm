@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { validateFile, validateFiles, sanitizeFilename, generateSafeFilename, MAX_FILE_SIZE, MAX_FILES_PER_UPLOAD } from '@/lib/file-upload'
+import { describe, it, expect } from 'vitest'
+import { validateFile, validateFiles, sanitizeFilename, generateSafeFilename, MAX_FILES_PER_UPLOAD } from '@/lib/file-upload'
 import { createMockFile } from '../helpers/mocks'
 import { testFiles } from '../fixtures/test-data'
 

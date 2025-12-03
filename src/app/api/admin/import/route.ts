@@ -104,7 +104,7 @@ export async function POST(request: Request) {
         details: {
           clientsImported: 0,
           contactsImported: 0,
-          errors: [error.message || "Nieznany błąd"],
+          errors: [errorMessage],
           warnings: [],
         },
       },

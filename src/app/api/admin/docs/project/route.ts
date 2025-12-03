@@ -41,6 +41,7 @@ export async function GET() {
         { status: 200 }
       )
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("[Project Docs Endpoint] Error reading README.md:", error)
     return NextResponse.json(

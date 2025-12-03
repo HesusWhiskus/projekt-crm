@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Car, Shield, TrendingUp, Clock, AlertCircle } from "lucide-react"
+import { FileText, Car, Shield, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 

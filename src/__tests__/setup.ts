@@ -1,4 +1,5 @@
 import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient } from '@prisma/client'
 
 // Setup test environment

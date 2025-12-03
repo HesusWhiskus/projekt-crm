@@ -46,6 +46,7 @@ export async function GET(request: Request) {
     }))
 
     return NextResponse.json({ logs }, { status: 200 })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("[Auth Logs API] Error fetching logs:", error)
     return NextResponse.json(

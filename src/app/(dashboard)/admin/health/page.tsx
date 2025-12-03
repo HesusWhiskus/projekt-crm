@@ -11,7 +11,19 @@ export default async function AdminHealthPage() {
   }
 
   // Fetch health status from API endpoint
-  let health: any = null
+  let health: {
+    status?: string
+    version?: string
+    timestamp?: string
+    checks?: Record<string, { status: string; message?: string }>
+    performance?: {
+      averageResponseTime: number
+      p95ResponseTime: number
+      p99ResponseTime: number
+      totalRequests: number
+      requestsLastHour: number
+    }
+  } | null = null
   
   try {
     const headersList = await headers()
@@ -31,7 +43,7 @@ export default async function AdminHealthPage() {
     if (response.ok) {
       health = await response.json()
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[AdminHealthPage] Error fetching health status:", error)
   }
 
@@ -74,18 +86,18 @@ export default async function AdminHealthPage() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Ogólny status</span>
-                <span className={`text-lg font-semibold ${getStatusColor(health.status)}`}>
+                <span className={`text-lg font-semibold ${getStatusColor(health.status || "error")}`}>
                   {health.status === "ok" ? "Działa poprawnie" : health.status === "degraded" ? "Działa z ograniczeniami" : "Błąd"}
                 </span>
               </CardTitle>
               <CardDescription>
-                Wersja systemu: {health.version} | Ostatnia aktualizacja: {new Date(health.timestamp).toLocaleString("pl-PL")}
+                Wersja systemu: {health.version || "unknown"} | Ostatnia aktualizacja: {health.timestamp ? new Date(health.timestamp).toLocaleString("pl-PL") : "brak danych"}
               </CardDescription>
             </CardHeader>
           </Card>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {Object.entries(health.checks || {}).map(([key, check]: [string, any]) => (
+            {Object.entries(health.checks || {}).map(([key, check]: [string, { status: string; message?: string }]) => (
               <Card key={key}>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">

@@ -62,6 +62,7 @@ describe('Security Headers Tests', () => {
       expect(headerConfig?.source).toBe('/:path*')
       
       const cspHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'Content-Security-Policy'
       )
       
@@ -74,6 +75,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const cspHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'Content-Security-Policy'
       )
       
@@ -91,6 +93,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const cspHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'Content-Security-Policy'
       )
       
@@ -106,6 +109,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const frameOptionsHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'X-Frame-Options'
       )
       
@@ -117,6 +121,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const contentTypeHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'X-Content-Type-Options'
       )
       
@@ -128,6 +133,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const xssHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'X-XSS-Protection'
       )
       
@@ -139,6 +145,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const hstsHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'Strict-Transport-Security'
       )
       
@@ -150,6 +157,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const referrerHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'Referrer-Policy'
       )
       
@@ -161,6 +169,7 @@ describe('Security Headers Tests', () => {
       const headers = await mockHeaders()
       const headerConfig = headers?.[0]
       const permissionsHeader = headerConfig?.headers?.find(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (h: any) => h.key === 'Permissions-Policy'
       )
       

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { requireAuth } from '@/presentation/api/middleware/auth'
 import { requireRole } from '@/presentation/api/middleware/auth'
 import { applyRateLimit } from '@/lib/api-security'
 import { db } from '@/lib/db'
@@ -37,6 +36,7 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({ logs })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Get personal data audit logs error:', error)
     return NextResponse.json(

@@ -28,6 +28,7 @@ export default async function InsuranceAgentSettingsPage() {
     redirect("/dashboard")
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const settings = insuranceAgent.settings as any || {}
 
   return (

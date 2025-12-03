@@ -38,9 +38,10 @@ export default async function ProjectDocsPage() {
       const errorData = await response.json().catch(() => ({}))
       content = `# Dokumentacja projektu\n\nNie udało się wczytać dokumentacji projektu.\n\n**Status:** ${response.status}\n\n**Błąd:** ${errorData.error || "Nieznany błąd"}\n\n${errorData.details ? `**Szczegóły:** ${errorData.details}` : ""}`
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[ProjectDocsPage] Error fetching project documentation:", error)
-    content = `# Dokumentacja projektu\n\nNie udało się wczytać dokumentacji projektu.\n\n**Błąd:** ${error?.message || "Nieznany błąd"}`
+    const errorMessage = error instanceof Error ? error.message : "Nieznany błąd"
+    content = `# Dokumentacja projektu\n\nNie udało się wczytać dokumentacji projektu.\n\n**Błąd:** ${errorMessage}`
   }
 
   return (

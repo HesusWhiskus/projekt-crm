@@ -41,6 +41,7 @@ export async function GET() {
         { status: 200 }
       )
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("[API Docs Endpoint] Error reading API_DOCUMENTATION.md:", error)
     return NextResponse.json(

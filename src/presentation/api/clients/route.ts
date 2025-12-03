@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { requireAuth } from '../middleware/auth'
+import type { UserContext } from '@/application/shared/types/UserContext'
 import { CreateClientUseCase, ListClientsUseCase } from '@/application/clients/use-cases'
 import { PrismaClientRepository } from '@/infrastructure/persistence/prisma'
 import { ClientStatusChangeService } from '@/domain/clients/services'
@@ -123,6 +124,7 @@ const listClientsUseCase = new ListClientsUseCase(clientRepository)
  *               $ref: '#/components/schemas/Error'
  */
 export async function POST(request: Request) {
+  let user: UserContext | undefined = undefined
   try {
     // SECURITY-FIX: [PAYLOAD-4] Walidacja limitów payloadu przed przetworzeniem
     // Data: 2025-01-27
@@ -139,7 +141,7 @@ export async function POST(request: Request) {
       await logApiActivity(null, "API_UNAUTHORIZED_ATTEMPT", "Client", null, {}, request)
       return authResult.response
     }
-    const { user } = authResult
+    user = authResult.user
 
     // Parse and validate request body
     const body = await request.json()
@@ -196,7 +198,7 @@ export async function POST(request: Request) {
   } catch (error: unknown) {
     // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
     // Data: 2025-01-27
-    logError('Client creation error', error, { userId: user.id })
+    logError('Client creation error', error, { userId: user?.id || 'unknown' })
     
     // Handle domain errors
     if (error instanceof Error && error.message) {

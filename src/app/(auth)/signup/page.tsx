@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { AuthHeader } from "@/components/auth-header"
 import SignUpForm from "./signup-form"
 import { db } from "@/lib/db"

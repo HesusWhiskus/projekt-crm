@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
-import { checkFeature, FEATURE_KEYS, PRO_FEATURES, getEnabledFeatures } from "@/lib/feature-flags"
+import { checkFeature, FEATURE_KEYS, PRO_FEATURES } from "@/lib/feature-flags"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Check, X, ArrowRight, Sparkles } from "lucide-react"
@@ -59,8 +59,8 @@ export default async function ProFeaturesPage() {
     organizationPlan = organization?.plan || null
   }
 
-  // Get enabled features
-  const enabledFeatures = await getEnabledFeatures(organizationId)
+  // Get enabled features (not used but kept for future use)
+  // const enabledFeatures = await getEnabledFeatures(organizationId)
 
   // Check each PRO feature
   const featureStatuses = await Promise.all(

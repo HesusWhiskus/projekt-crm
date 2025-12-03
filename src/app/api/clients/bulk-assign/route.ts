@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { requireAuth, requireRole } from '@/presentation/api/middleware/auth'
+import { requireAuth } from '@/presentation/api/middleware/auth'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
 import { db } from '@/lib/db'

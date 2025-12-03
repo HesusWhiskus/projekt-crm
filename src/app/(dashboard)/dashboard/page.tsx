@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import { DashboardWidgets } from "@/components/dashboard/dashboard-widgets"
-import { Users, FileText, CheckSquare, Calendar, Clock, AlertCircle, Shield, Car, TrendingUp } from "lucide-react"
+import { } from "lucide-react"
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()

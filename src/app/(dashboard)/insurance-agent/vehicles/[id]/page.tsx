@@ -38,6 +38,7 @@ export default async function VehicleDetailPage({
 
   // Build where clause - ADMIN sees all vehicles in organization
   // For non-admin agents, we need to check if vehicle is accessible through their clients
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {
     id: params.id,
     organizationId: userWithOrg?.organizationId || undefined,

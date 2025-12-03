@@ -38,9 +38,10 @@ export default async function ApiDocsPage() {
       const errorData = await response.json().catch(() => ({}))
       content = `# Dokumentacja API\n\nNie udało się wczytać dokumentacji API.\n\n**Status:** ${response.status}\n\n**Błąd:** ${errorData.error || "Nieznany błąd"}\n\n${errorData.details ? `**Szczegóły:** ${errorData.details}` : ""}`
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[ApiDocsPage] Error fetching API documentation:", error)
-    content = `# Dokumentacja API\n\nNie udało się wczytać dokumentacji API.\n\n**Błąd:** ${error?.message || "Nieznany błąd"}`
+    const errorMessage = error instanceof Error ? error.message : "Nieznany błąd"
+    content = `# Dokumentacja API\n\nNie udało się wczytać dokumentacji API.\n\n**Błąd:** ${errorMessage}`
   }
 
   return (

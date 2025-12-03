@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Settings, UserCheck, Shield, FileSpreadsheet, Building2, Flag, Code, FileText, BookOpen, Activity, Heart, History } from "lucide-react"
+import { Users, Settings, UserCheck, FileSpreadsheet, Building2, Code, FileText, BookOpen, Activity, Heart, History } from "lucide-react"
 
 export default async function AdminPage() {
   const user = await getCurrentUser()

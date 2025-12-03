@@ -207,7 +207,8 @@ describe('Security: Malicious Payloads', () => {
     })
 
     it('should reject deeply nested JSON', () => {
-      let deeplyNested: any = {}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const deeplyNested: any = {}
       let current = deeplyNested
       for (let i = 0; i < 15; i++) {
         current.nested = {}
@@ -311,9 +312,13 @@ describe('Security: Malicious Payloads', () => {
   describe('Edge Cases', () => {
     it('should handle null and undefined safely', () => {
       // sanitizeString teraz obsługuje null/undefined gracefully (zwraca pusty string)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => sanitizeString(null as any)).not.toThrow()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(() => sanitizeString(undefined as any)).not.toThrow()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(sanitizeString(null as any)).toBe('')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(sanitizeString(undefined as any)).toBe('')
     })
 

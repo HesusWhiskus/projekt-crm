@@ -43,6 +43,7 @@ export async function POST(
     }, request)
 
     return NextResponse.json({ syncResult })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })

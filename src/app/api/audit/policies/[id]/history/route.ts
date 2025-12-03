@@ -26,6 +26,7 @@ export async function GET(
     })
 
     return NextResponse.json({ history })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Get policy history error:', error)
     return NextResponse.json(

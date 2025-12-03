@@ -14,6 +14,7 @@ export default async function TasksPage({
     redirect("/signin")
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {}
 
   if (user.role !== "ADMIN") {

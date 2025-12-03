@@ -296,7 +296,9 @@ async function generateClients(organizationId: string, count: number = 200) {
         phone: hasPhone ? generatePhone() : null,
         address: `${address.street} ${address.houseNumber}, ${address.postalCode} ${address.city}`,
         source: sources[Math.floor(Math.random() * sources.length)],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         status: ['NEW_LEAD', 'IN_CONTACT', 'ACTIVE_CLIENT', 'LOST'][Math.floor(Math.random() * 4)] as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         priority: ['LOW', 'MEDIUM', 'HIGH'][Math.floor(Math.random() * 3)] as any,
         organizationId,
         occupation: occupations[Math.floor(Math.random() * occupations.length)],
@@ -327,7 +329,9 @@ async function generateClients(organizationId: string, count: number = 200) {
         phone: hasPhone ? generatePhone() : null,
         address: `${address.street} ${address.houseNumber}, ${address.postalCode} ${address.city}`,
         source: sources[Math.floor(Math.random() * sources.length)],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         status: ['NEW_LEAD', 'IN_CONTACT', 'ACTIVE_CLIENT', 'LOST'][Math.floor(Math.random() * 4)] as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         priority: ['LOW', 'MEDIUM', 'HIGH'][Math.floor(Math.random() * 3)] as any,
         organizationId,
       }
@@ -470,6 +474,7 @@ async function generateCalculations(
         value: Math.floor(Math.random() * 5000) + 500,
         validUntil: randomFutureDate(90),
         variant,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         scopes: selectedScopes as any,
       }
     })
@@ -641,7 +646,9 @@ async function generateOffers(
           insuranceCompanyId: company.id,
           price: offerPrice,
           packageType,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           scopes: selectedScopes as any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           additionalOptions: additionalOptions as any,
           installments,
           installmentAmount: installmentAmount ? installmentAmount : null,
@@ -685,6 +692,7 @@ export async function POST() {
       }
     }, { status: 200 })
     
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error in generate-test-data endpoint:', error)
     return NextResponse.json(

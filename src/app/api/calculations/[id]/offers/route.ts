@@ -1,5 +1,4 @@
 import { getCurrentUser } from "@/lib/auth"
-import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
@@ -26,6 +25,7 @@ export async function GET(
   })
 
   // Build where clause
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {
     id: params.id,
     organizationId: userWithOrg?.organizationId || undefined,
@@ -84,6 +84,7 @@ export async function POST(
   })
 
   // Build where clause
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {
     id: params.id,
     organizationId: userWithOrg?.organizationId || undefined,

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -34,7 +34,7 @@ interface Log {
   entityId: string | null
   ip: string
   userAgent: string
-  details: any
+  details: Record<string, unknown> | null
   responseTimeMs: number | null
   success: boolean
   error: string | null
@@ -142,7 +142,7 @@ export function AdminLogsClient({
     document.body.removeChild(link)
   }
 
-  const formatDetails = (details: any): string => {
+  const formatDetails = (details: Record<string, unknown> | null): string => {
     if (!details) return "-"
     try {
       const filtered = { ...details }

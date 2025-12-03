@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { POST as registerPOST } from '@/app/api/auth/register/route'
 import { GET as tasksGET } from '@/app/api/tasks/route'
 import { rateLimiters } from '@/lib/rate-limit'
 import { createMockRequest } from '../helpers/mocks'
 import { createTestUser, deleteTestUser, TestUser } from '../helpers/auth'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { db } from '@/lib/db'
 
 describe('Rate Limiting Security Tests', () => {
@@ -134,11 +136,13 @@ describe('Rate Limiting Security Tests', () => {
       
       // Mock getCurrentUser to return test user
       const authModule = await import('@/lib/auth')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.spyOn(authModule, 'getCurrentUser').mockResolvedValue({
         id: testUser.id,
         email: testUser.email,
         role: 'USER',
         name: testUser.name,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       // Make 60 requests - all should succeed (rate limit is 60 per minute)
@@ -149,7 +153,8 @@ describe('Rate Limiting Security Tests', () => {
           ip: testIP,
         })
 
-        const response = await tasksGET(request)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const response: any = await tasksGET(request)
         // Should not be rate limited (429), but may be 401 if not authenticated
         expect(response.status).not.toBe(429)
       }
@@ -159,11 +164,13 @@ describe('Rate Limiting Security Tests', () => {
       const testIP = '192.168.1.301'
       
       const authModule = await import('@/lib/auth')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       vi.spyOn(authModule, 'getCurrentUser').mockResolvedValue({
         id: testUser.id,
         email: testUser.email,
         role: 'USER',
         name: testUser.name,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       // Make 60 requests first (rate limit is 60 per minute)
@@ -181,7 +188,8 @@ describe('Rate Limiting Security Tests', () => {
         ip: testIP,
       })
 
-      const response = await tasksGET(request)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response: any = await tasksGET(request)
       // Should be rate limited (429) if rate limit is exceeded
       // Note: This test may fail if rate limit cache is cleared between requests
       expect([429, 401]).toContain(response.status)

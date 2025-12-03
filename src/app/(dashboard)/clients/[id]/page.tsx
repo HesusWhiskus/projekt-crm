@@ -164,8 +164,11 @@ export default async function ClientDetailPage({
   ])
 
   // Fetch insurance-related data if feature is enabled
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let vehicles: any[] = []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let calculations: any[] = []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let policies: any[] = []
 
   if (hasInsuranceAgents) {

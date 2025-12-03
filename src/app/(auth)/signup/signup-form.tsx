@@ -82,7 +82,7 @@ export default function SignUpForm() {
       }
 
       router.push("/signin?registered=true")
-    } catch (error) {
+    } catch {
       setError("Wystąpił błąd podczas rejestracji")
     } finally {
       setIsLoading(false)

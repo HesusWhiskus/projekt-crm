@@ -164,6 +164,7 @@ export async function PUT(
     }, request)
 
     return NextResponse.json({ calculation })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

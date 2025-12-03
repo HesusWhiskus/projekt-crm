@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Key, AlertCircle, ArrowRight, Plus } from "lucide-react"
+import { Key, AlertCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { ApiKeysList } from "@/components/settings/api-keys-list"
 

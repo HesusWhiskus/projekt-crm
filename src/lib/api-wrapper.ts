@@ -11,11 +11,11 @@
  */
 
 import { NextResponse } from 'next/server'
-import { requireAuth, requireRole, AuthResult } from '@/presentation/api/middleware/auth'
+import { requireAuth, requireRole } from '@/presentation/api/middleware/auth'
 import { applyRateLimit, logApiActivity, validatePayloadLimits, validateJSONDepth } from '@/lib/api-security'
 import { logError } from '@/lib/logger'
 import { getHttpStatusCode } from './errors'
-import type { UserContext } from '@/lib/auth'
+import type { UserContext } from '@/application/shared/types/UserContext'
 
 export interface ApiHandlerOptions {
   requireAuth?: boolean
@@ -29,7 +29,7 @@ export interface ApiHandlerOptions {
 export type ApiHandler<T = any> = (
   request: Request,
   user: UserContext,
-  params?: T
+  params?: T | undefined
 ) => Promise<NextResponse>
 
 /**
@@ -54,8 +54,8 @@ export type ApiHandler<T = any> = (
 export function withApiHandler<T = any>(
   handler: ApiHandler<T>,
   options: ApiHandlerOptions = {}
-): (request: Request, context?: { params?: T }) => Promise<NextResponse> {
-  return async (request: Request, context?: { params?: T }) => {
+): (request: Request, context?: { params?: T | undefined }) => Promise<NextResponse> {
+  return async (request: Request, context?: { params?: T | undefined }): Promise<NextResponse> => {
     try {
       // 1. Rate limiting
       const rateLimitType = options.rateLimit || 'api'
@@ -77,7 +77,7 @@ export function withApiHandler<T = any>(
           const depthValidation = validateJSONDepth(body)
           if (!depthValidation.valid) {
             return NextResponse.json(
-              { error: depthValidation.error },
+              { error: depthValidation.error || 'Invalid JSON depth' },
               { status: 400 }
             )
           }
@@ -85,11 +85,12 @@ export function withApiHandler<T = any>(
           // Note: In Next.js, we need to pass body separately or re-parse
         } catch (error) {
           // If body parsing fails, continue (handler will handle it)
+          // This is OK - handler will handle parsing errors
         }
       }
 
       // 3. Authentication
-      let authResult: AuthResult
+      let authResult: { user: UserContext; response?: never } | { user?: never; response: NextResponse }
       if (options.requireRole) {
         authResult = await requireRole(options.requireRole)
       } else if (options.requireAuth !== false) {
@@ -118,13 +119,22 @@ export function withApiHandler<T = any>(
             request
           )
         }
-        return authResult.response
+        // TypeScript guard: if 'response' is in authResult, it's always NextResponse
+        return authResult.response as NextResponse
       }
 
       const { user } = authResult
 
       // 4. Execute handler
       const response = await handler(request, user, context?.params)
+      
+      // Ensure response is always NextResponse
+      if (!response) {
+        return NextResponse.json(
+          { error: 'Handler did not return a response' },
+          { status: 500 }
+        )
+      }
 
       // 5. Log activity (if enabled)
       if (options.logActivity !== false && options.entityType) {

@@ -37,9 +37,10 @@ export default async function AdminChangelogPage() {
       const errorData = await response.json().catch(() => ({}))
       content = `# Changelog\n\nNie udało się wczytać changelog.\n\n**Status:** ${response.status}\n\n**Błąd:** ${errorData.error || "Nieznany błąd"}\n\n${errorData.details ? `**Szczegóły:** ${errorData.details}` : ""}`
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[AdminChangelogPage] Error fetching changelog:", error)
-    content = `# Changelog\n\nNie udało się wczytać changelog.\n\n**Błąd:** ${error?.message || "Nieznany błąd"}`
+    const errorMessage = error instanceof Error ? error.message : "Nieznany błąd"
+    content = `# Changelog\n\nNie udało się wczytać changelog.\n\n**Błąd:** ${errorMessage}`
   }
 
   return (

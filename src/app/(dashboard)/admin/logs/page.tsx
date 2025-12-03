@@ -26,6 +26,7 @@ export default async function AdminLogsPage({
   const skip = (page - 1) * limit
 
   // Build where clause for filtering
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {}
   
   if (searchParams.action) {
@@ -53,7 +54,27 @@ export default async function AdminLogsPage({
   }
 
   // Fetch activity logs with pagination
-  let logs: any[] = []
+  interface LogEntry {
+    id: string
+    timestamp: string
+    userId: string
+    email: string
+    name: string | null
+    action: string
+    entityType: string | null
+    entityId: string | null
+    ip: string
+    userAgent: string
+    details: Record<string, unknown> | null
+    responseTimeMs: number | null
+    success: boolean
+    error: string | null
+    method: string | null
+    path: string | null
+    statusCode: number | null
+  }
+  
+  let logs: LogEntry[] = []
   let total = 0
   
   try {
@@ -80,7 +101,7 @@ export default async function AdminLogsPage({
 
     // Map to format expected by the frontend
     logs = activityLogs.map((log) => {
-      const details = log.details as any
+      const details = (log.details as Record<string, unknown>) || {}
       return {
         id: log.id,
         timestamp: log.createdAt.toISOString(),
@@ -93,15 +114,15 @@ export default async function AdminLogsPage({
         ip: log.ipAddress || "-",
         userAgent: log.userAgent || "-",
         details: details,
-        responseTimeMs: details?.responseTimeMs || null,
-        success: details?.success !== false, // Default to true if not specified
-        error: details?.error || null,
-        method: details?.method || null,
-        path: details?.path || null,
-        statusCode: details?.statusCode || null,
+        responseTimeMs: (details.responseTimeMs as number) || null,
+        success: details.success !== false, // Default to true if not specified
+        error: (details.error as string) || null,
+        method: (details.method as string) || null,
+        path: (details.path as string) || null,
+        statusCode: (details.statusCode as number) || null,
       }
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[AdminLogsPage] Error fetching logs:", error)
   }
 

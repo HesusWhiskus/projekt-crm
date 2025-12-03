@@ -2,7 +2,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, AlertCircle, ArrowRight } from "lucide-react"
+import { AlertCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ReportsDashboard } from "@/components/reports/reports-dashboard"
@@ -53,11 +53,11 @@ export default async function SalesReportPage() {
         ],
       }
 
-  // Get user with organizationId
-  const userWithOrg = await db.user.findUnique({
-    where: { id: user.id },
-    select: { organizationId: true },
-  })
+  // Get user with organizationId (not used but kept for future use)
+  // const userWithOrg = await db.user.findUnique({
+  //   where: { id: user.id },
+  //   select: { organizationId: true },
+  // })
 
   // Get clients grouped by status
   const statusCounts = await Promise.all([

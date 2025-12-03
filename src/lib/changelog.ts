@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.19-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono wszystkie błędy kompilacji TypeScript i ESLint - aplikacja buduje się poprawnie',
+      },
+      {
+        type: 'fixed',
+        description: 'Poprawiono typy w admin/health/page.tsx, api-wrapper.ts i clients/route.ts',
+      },
+      {
+        type: 'fixed',
+        description: 'Usunięto nieużywane importy i zmienne, dodano komentarze ESLint disable dla uzasadnionych użyć any',
+      },
+    ],
+  },
+  {
     version: '0.10.18-beta',
     date: '2025-01-27',
     changes: [

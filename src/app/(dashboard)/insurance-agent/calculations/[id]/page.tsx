@@ -37,6 +37,7 @@ export default async function CalculationDetailPage({
   })
 
   // Build where clause - ADMIN sees all calculations in organization, agents see only their own
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {
     id: params.id,
     organizationId: userWithOrg?.organizationId || undefined,
@@ -106,6 +107,7 @@ export default async function CalculationDetailPage({
           ? parseFloat(offer.installmentAmount)
           : offer.installmentAmount)
         : null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       scopes: offer.scopes as any, // scopes is already InsuranceScope[] from Prisma
     })),
   }

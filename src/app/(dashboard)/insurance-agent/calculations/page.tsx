@@ -42,6 +42,7 @@ export default async function CalculationsPage({
   const skip = (page - 1) * limit
 
   // Build where clause with search filter
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {
     organizationId: userWithOrg?.organizationId || undefined,
     agentId: user.id,

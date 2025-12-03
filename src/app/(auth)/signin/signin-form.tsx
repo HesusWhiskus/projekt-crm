@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardContent } from "@/components/ui/card"
 
 export default function SignInForm() {
   const searchParams = useSearchParams()
@@ -54,9 +54,10 @@ export default function SignInForm() {
         setErrorMessage("Wystąpił błąd podczas logowania")
         setIsLoading(false)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("[CLIENT] Sign in exception:", error)
-      setErrorMessage(`Wystąpił błąd podczas logowania: ${error.message || error}`)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      setErrorMessage(`Wystąpił błąd podczas logowania: ${errorMessage}`)
       setIsLoading(false)
     }
   }

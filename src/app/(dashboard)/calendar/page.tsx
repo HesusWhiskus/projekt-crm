@@ -54,9 +54,10 @@ export default async function CalendarPage() {
     },
   })
 
-  const [users, groups, clients] = await Promise.all([
+  const [users, groups] = await Promise.all([
     getCachedUsers(),
     getCachedGroups(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     db.client.findMany({
       where:
         user.role === "ADMIN"

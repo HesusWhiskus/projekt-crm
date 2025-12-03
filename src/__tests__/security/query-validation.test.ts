@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { validateQueryParams, clientQuerySchema, contactQuerySchema, taskQuerySchema, uuidSchema } from '@/lib/query-validator'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { testQueryParams } from '../fixtures/test-data'
 
 describe('Query Parameter Validation Security Tests', () => {

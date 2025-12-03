@@ -27,7 +27,9 @@ export default async function ClientsPage({
     redirect("/signin")
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const andConditions: any[] = []
 
   // Apply access control
@@ -120,6 +122,7 @@ export default async function ClientsPage({
   const sortBy = searchParams.sortBy || 'updatedAt'
   const sortOrder = (searchParams.sortOrder === 'asc' ? 'asc' : 'desc') as 'asc' | 'desc'
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderBy = (): any => {
     switch (sortBy) {
       case 'firstName':

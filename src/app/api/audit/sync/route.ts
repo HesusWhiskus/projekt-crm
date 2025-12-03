@@ -19,6 +19,7 @@ export async function GET(request: Request) {
     const entityType = searchParams.get('entityType') || undefined
     const status = searchParams.get('status') || undefined
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {}
     if (entityType) where.entityType = entityType
     if (status) where.status = status
@@ -31,6 +32,7 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({ syncs })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Get sync audit logs error:', error)
     return NextResponse.json(

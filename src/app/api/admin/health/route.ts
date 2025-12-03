@@ -23,7 +23,7 @@ export async function GET() {
         const packageJsonPath = join(process.cwd(), "package.json")
         const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"))
         version = packageJson.version || "unknown"
-      } catch (fileError) {
+      } catch {
         // Silently fail - package.json may not be available in standalone build
         // This is expected in production deployments
       }
@@ -70,6 +70,7 @@ export async function GET() {
     await db.$queryRaw`SELECT 1`
     health.checks.database.status = "ok"
     health.checks.database.message = "Database connection successful"
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     health.checks.database.status = "error"
     health.checks.database.message = error?.message || "Database connection failed"
@@ -115,6 +116,7 @@ export async function GET() {
     if (recentLogs.length > 0) {
       // Filter logs that have responseTimeMs in details
       const logsWithResponseTime = recentLogs.filter((log) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const details = log.details as any
         return details?.responseTimeMs && typeof details.responseTimeMs === 'number' && details.responseTimeMs > 0
       })
@@ -122,6 +124,7 @@ export async function GET() {
       if (logsWithResponseTime.length > 0) {
         const responseTimes = logsWithResponseTime
           .map((log) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const details = log.details as any
             return details.responseTimeMs as number
           })

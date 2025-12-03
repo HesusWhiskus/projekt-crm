@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Webhook, AlertCircle, ArrowRight, Plus } from "lucide-react"
+import { Webhook, AlertCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { WebhooksList } from "@/components/settings/webhooks-list"
 

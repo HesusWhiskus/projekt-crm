@@ -156,6 +156,7 @@ export async function GET(request: Request) {
     const limit = limitParam ? parseInt(limitParam, 10) : undefined
 
     const filter: CalculationFilterDTO = {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       status: searchParams.get('status') as any || undefined,
       clientId: searchParams.get('clientId') || undefined,
       vehicleId: searchParams.get('vehicleId') || undefined,
@@ -184,6 +185,7 @@ export async function GET(request: Request) {
       // New format - paginated response
       return NextResponse.json(result)
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('List calculations error:', error)
     return NextResponse.json(
