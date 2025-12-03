@@ -5,6 +5,18 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.20-beta] - 2025-01-27
+
+### Fixed
+- **Naprawa błędów ESLint:** Naprawiono wszystkie błędy ESLint związane z `catch (error: any)` - zastąpiono przez `catch (error: unknown)` z type guards
+- **Bezpieczne logowanie błędów:** Zastąpiono wszystkie `console.error` przez `logError` zgodnie z SECURITY-FIX [ERROR-LOG-2] w 22 plikach API
+- **Type guards:** Dodano `error instanceof Error` przed dostępem do `error.message` we wszystkich blokach catch
+- **Importy:** Dodano importy `logError` w wszystkich plikach API gdzie były potrzebne
+
+### Security
+- **Error handling:** Wszystkie endpointy API używają teraz bezpiecznego logowania błędów przez `logError` z sanitizacją
+- **Type safety:** Wszystkie bloki catch używają type guards przed dostępem do właściwości błędów
+
 ## [0.10.19-beta] - 2025-01-27
 
 ### Fixed
