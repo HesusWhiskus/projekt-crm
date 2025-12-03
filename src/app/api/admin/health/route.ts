@@ -28,9 +28,12 @@ export async function GET() {
         // This is expected in production deployments
       }
     }
-  } catch (error) {
+  } catch (error: unknown) {
     // Silently fail - version is not critical for health check
-    console.error("[Health Endpoint] Error reading version:", error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError("[Health Endpoint] Error reading version", error)
   }
 
   const health: {
@@ -70,10 +73,10 @@ export async function GET() {
     await db.$queryRaw`SELECT 1`
     health.checks.database.status = "ok"
     health.checks.database.message = "Database connection successful"
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Database connection failed"
     health.checks.database.status = "error"
-    health.checks.database.message = error?.message || "Database connection failed"
+    health.checks.database.message = errorMessage
     health.status = "degraded"
   }
 
@@ -150,8 +153,11 @@ export async function GET() {
         }
       }
     }
-  } catch (error) {
-    console.error("[Health Endpoint] Error calculating performance metrics:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError("[Health Endpoint] Error calculating performance metrics", error)
     // Don't fail health check if performance metrics fail - keep default empty values
   }
 

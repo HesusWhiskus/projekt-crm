@@ -5,6 +5,7 @@ import { TaskStatus } from "@prisma/client"
 import { z } from "zod"
 import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
+import { logError } from "@/lib/logger"
 
 const updateTaskSchema = z.object({
   title: z.string().min(1, "Tytuł jest wymagany").max(150, "Tytuł jest zbyt długi (max 150 znaków)").trim().optional(),
@@ -131,8 +132,10 @@ export async function GET(
     }
 
     return NextResponse.json({ task })
-  } catch (error) {
-    console.error("Task fetch error:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Task fetch error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas pobierania zadania" },
       { status: 500 }
@@ -256,8 +259,10 @@ export async function PATCH(
     try {
       validatedData = updateTaskSchema.parse(body)
       console.log("[DEBUG TASKS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
-    } catch (error: any) {
-      console.error("[DEBUG TASKS PATCH] Validation error:", error)
+    } catch (error: unknown) {
+      // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+      // Data: 2025-01-27
+      logError("[DEBUG TASKS PATCH] Validation error", error)
       if (error instanceof z.ZodError) {
         console.error("[DEBUG TASKS PATCH] Zod errors:", JSON.stringify(error.errors, null, 2))
       }
@@ -322,7 +327,7 @@ export async function PATCH(
     await logApiActivity(user.id, "TASK_UPDATED", "Task", validatedId, {}, request)
 
     return NextResponse.json({ task: updatedTask })
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       console.error("[DEBUG TASKS PATCH] ZodError details:", JSON.stringify(error.errors, null, 2))
       return NextResponse.json(
@@ -331,7 +336,9 @@ export async function PATCH(
       )
     }
 
-    console.error("Task update error:", error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Task update error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas aktualizacji zadania" },
       { status: 500 }
@@ -452,8 +459,10 @@ export async function DELETE(
     await logApiActivity(user.id, "TASK_DELETED", "Task", validatedId, {}, request)
 
     return NextResponse.json({ message: "Zadanie zostało usunięte" })
-  } catch (error) {
-    console.error("Task deletion error:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Task deletion error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas usuwania zadania" },
       { status: 500 }

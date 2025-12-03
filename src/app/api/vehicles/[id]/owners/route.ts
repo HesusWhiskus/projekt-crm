@@ -5,6 +5,7 @@ import { PrismaVehicleRepository } from '@/infrastructure/persistence/prisma'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
 import { db } from '@/lib/db'
+import { logError } from '@/lib/logger'
 
 // Initialize dependencies
 const vehicleRepository = new PrismaVehicleRepository()
@@ -104,7 +105,7 @@ export async function POST(
     }, request)
 
     return NextResponse.json({ message: 'Właściciel został przypisany' })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -112,13 +113,17 @@ export async function POST(
       )
     }
 
-    if (error.message?.includes('nie znaleziony')) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Assign vehicle owner error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas przypisywania właściciela'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Assign vehicle owner error:', error)
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas przypisywania właściciela' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

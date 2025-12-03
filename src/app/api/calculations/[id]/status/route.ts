@@ -4,6 +4,7 @@ import { ChangeCalculationStatusUseCase } from '@/application/calculations/use-c
 import { PrismaCalculationRepository } from '@/infrastructure/persistence/prisma'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const calculationRepository = new PrismaCalculationRepository()
 const changeCalculationStatusUseCase = new ChangeCalculationStatusUseCase(calculationRepository)
@@ -55,8 +56,7 @@ export async function POST(
     }, request)
 
     return NextResponse.json({ calculation })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -64,13 +64,17 @@ export async function POST(
       )
     }
 
-    if (error.message?.includes('nie znaleziony')) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Change calculation status error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas zmiany statusu kalkulacji'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Change calculation status error:', error)
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas zmiany statusu kalkulacji' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

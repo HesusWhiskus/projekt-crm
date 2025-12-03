@@ -185,9 +185,10 @@ export async function GET(request: Request) {
       // New format - paginated response
       return NextResponse.json(result)
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error('List calculations error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('List calculations error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania kalkulacji' },
       { status: 500 }

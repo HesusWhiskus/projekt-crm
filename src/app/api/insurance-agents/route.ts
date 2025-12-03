@@ -5,6 +5,7 @@ import { PrismaInsuranceAgentRepository } from '@/infrastructure/persistence/pri
 import { CreateInsuranceAgentDTO } from '@/application/insurance-agents/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const insuranceAgentRepository = new PrismaInsuranceAgentRepository()
 const createInsuranceAgentUseCase = new CreateInsuranceAgentUseCase(insuranceAgentRepository)
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
     }, request)
 
     return NextResponse.json({ agent }, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -61,10 +62,13 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error('Create insurance agent error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Create insurance agent error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas tworzenia agenta'
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas tworzenia agenta' },
-      { status: error.message?.includes('już istnieje') ? 400 : 500 }
+      { error: errorMessage },
+      { status: errorMessage.includes('już istnieje') ? 400 : 500 }
     )
   }
 }

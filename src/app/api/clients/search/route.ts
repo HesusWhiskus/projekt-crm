@@ -4,6 +4,7 @@ import { PrismaClientRepository } from '@/infrastructure/persistence/prisma'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
 import { db } from '@/lib/db'
+import { logError } from '@/lib/logger'
 
 // Force dynamic rendering - this route uses request headers and requires database connection
 export const dynamic = 'force-dynamic'
@@ -130,8 +131,10 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({ clients })
-  } catch (error: any) {
-    console.error('Client search error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Client search error', error)
     
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas wyszukiwania klientów' },

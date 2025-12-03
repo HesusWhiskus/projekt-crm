@@ -26,9 +26,11 @@ export async function GET(
     })
 
     return NextResponse.json({ history })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error('Get calculation history error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError('Get calculation history error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania historii kalkulacji' },
       { status: 500 }

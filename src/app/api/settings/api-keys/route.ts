@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
-import { db } from "@/lib/db"
 import crypto from "crypto"
 
 export async function GET() {
@@ -19,9 +18,13 @@ export async function GET() {
     // TODO: Implement when ApiKey model exists
     // For now, return empty array
     return NextResponse.json({ apiKeys: [] })
-  } catch (error: any) {
-    console.error("Error fetching API keys:", error)
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError("Error fetching API keys", error)
+    const errorMessage = error instanceof Error ? error.message : "Internal server error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
 
@@ -46,7 +49,8 @@ export async function POST(request: Request) {
 
     // Generate API key
     const apiKey = `vib_${crypto.randomBytes(32).toString("hex")}`
-    const keyHash = crypto.createHash("sha256").update(apiKey).digest("hex")
+    // TODO: Hash and save to database when ApiKey model exists
+    // const keyHash = crypto.createHash("sha256").update(apiKey).digest("hex")
 
     // TODO: Save to database when ApiKey model exists
     // For now, return the key (in production, this should be saved to DB)
@@ -56,9 +60,13 @@ export async function POST(request: Request) {
       apiKey, // Only shown once
       createdAt: new Date().toISOString(),
     })
-  } catch (error: any) {
-    console.error("Error creating API key:", error)
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError("Error creating API key", error)
+    const errorMessage = error instanceof Error ? error.message : "Internal server error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
 

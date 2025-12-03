@@ -152,8 +152,11 @@ export async function POST(request: Request) {
       success: true,
       updated: result.count,
     })
-  } catch (error: any) {
-    console.error('Bulk assign error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError('Bulk assign error', error)
     
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas masowego przypisywania klientów' },

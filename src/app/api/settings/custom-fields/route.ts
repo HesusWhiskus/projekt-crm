@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import { db } from "@/lib/db"
+import { logError } from "@/lib/logger"
 
 export async function GET() {
   try {
@@ -27,9 +28,12 @@ export async function GET() {
     })
 
     return NextResponse.json({ fields })
-  } catch (error: any) {
-    console.error("Error fetching custom fields:", error)
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Error fetching custom fields", error)
+    const errorMessage = error instanceof Error ? error.message : "Internal server error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
 
@@ -96,9 +100,12 @@ export async function POST(request: Request) {
       options: field.options,
       createdAt: field.createdAt.toISOString(),
     })
-  } catch (error: any) {
-    console.error("Error creating custom field:", error)
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Error creating custom field", error)
+    const errorMessage = error instanceof Error ? error.message : "Internal server error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
 

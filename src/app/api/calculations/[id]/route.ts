@@ -164,8 +164,7 @@ export async function PUT(
     }, request)
 
     return NextResponse.json({ calculation })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -173,14 +172,15 @@ export async function PUT(
       )
     }
 
-    if (error.message?.includes('nie znaleziony')) {
-      return NextResponse.json({ error: error.message }, { status: 404 })
-    }
-
     // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
     // Data: 2025-01-27
     logError('Update calculation error', error)
     const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji kalkulacji'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
+      return NextResponse.json({ error: error.message }, { status: 404 })
+    }
+
     return NextResponse.json(
       { error: errorMessage },
       { status: 500 }

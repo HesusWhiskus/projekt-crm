@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { checkFeature, FEATURE_KEYS } from "@/lib/feature-flags"
 import crypto from "crypto"
+import { logError } from "@/lib/logger"
 
 export async function GET() {
   try {
@@ -18,9 +19,12 @@ export async function GET() {
     // TODO: Implement when Webhook model exists
     // For now, return empty array
     return NextResponse.json({ webhooks: [] })
-  } catch (error: any) {
-    console.error("Error fetching webhooks:", error)
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Error fetching webhooks", error)
+    const errorMessage = error instanceof Error ? error.message : "Internal server error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
 
@@ -64,9 +68,12 @@ export async function POST(request: Request) {
       enabled: true,
       createdAt: new Date().toISOString(),
     })
-  } catch (error: any) {
-    console.error("Error creating webhook:", error)
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 })
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Error creating webhook", error)
+    const errorMessage = error instanceof Error ? error.message : "Internal server error"
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
 

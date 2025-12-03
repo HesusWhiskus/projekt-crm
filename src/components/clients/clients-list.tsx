@@ -22,7 +22,7 @@ import {
   clientStatusLabels,
   clientPriorityLabels,
 } from "@/lib/status-config"
-import { maskPhone, maskEmail, maskPhoneIfNeeded, maskEmailIfNeeded } from "@/lib/pii-masking"
+import { maskPhoneIfNeeded, maskEmailIfNeeded } from "@/lib/pii-masking"
 
 interface Client {
   id: string
@@ -73,8 +73,6 @@ interface ClientsListProps {
 }
 
 
-type SortField = "firstName" | "lastName" | "companyName" | "email" | "phone" | "status" | "priority" | "assignee" | null
-
 // Helper function to get client display name
 function getClientDisplayName(client: Client): string {
   if (client.type === "COMPANY") {
@@ -83,7 +81,6 @@ function getClientDisplayName(client: Client): string {
   const name = [client.firstName, client.lastName].filter(Boolean).join(" ")
   return name || "Brak imienia i nazwiska"
 }
-type SortDirection = "asc" | "desc" | null
 
 export const ClientsList = memo(function ClientsList({ clients, users, groups, currentUser, insuranceAgentsEnabled = false, total, page, limit, totalPages }: ClientsListProps) {
   const router = useRouter()

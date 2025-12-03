@@ -3,6 +3,7 @@ import { requireAuth } from '@/presentation/api/middleware/auth'
 import { PESEL } from '@/domain/calculations/value-objects'
 import { applyRateLimit } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const validatePeselSchema = z.object({
   pesel: z.string().min(1, 'PESEL jest wymagany'),
@@ -24,10 +25,11 @@ export async function POST(request: Request) {
         return NextResponse.json({ valid: false, error: 'PESEL jest wymagany' }, { status: 400 })
       }
       return NextResponse.json({ valid: true, pesel: pesel.getValue() })
-    } catch (error: any) {
-      return NextResponse.json({ valid: false, error: error.message }, { status: 400 })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Nieprawidłowy PESEL'
+      return NextResponse.json({ valid: false, error: errorMessage }, { status: 400 })
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -35,7 +37,9 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error('Validate PESEL error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Validate PESEL error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas walidacji PESEL' },
       { status: 500 }

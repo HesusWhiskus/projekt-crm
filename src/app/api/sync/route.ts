@@ -109,10 +109,11 @@ export async function POST(request: Request) {
               results.synced.push({ id: change.id, action: "delete" })
             }
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const errorMessage = error instanceof Error ? error.message : "Wystąpił błąd"
           results.errors.push({
             id: change.id,
-            error: error.message || "Wystąpił błąd",
+            error: errorMessage,
           })
         }
       }

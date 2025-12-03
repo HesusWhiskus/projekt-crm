@@ -3,6 +3,7 @@ import { requireAuth } from '@/presentation/api/middleware/auth'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const createConsentSchema = z.object({
   consentType: z.string().min(1),
@@ -34,8 +35,10 @@ export async function GET(
     })
 
     return NextResponse.json({ consents })
-  } catch (error: any) {
-    console.error('Get consents error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Get consents error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania zgód' },
       { status: 500 }
@@ -80,7 +83,7 @@ export async function POST(
     }, request)
 
     return NextResponse.json({ consent }, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -88,7 +91,9 @@ export async function POST(
       )
     }
 
-    console.error('Create consent error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Create consent error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas tworzenia zgody' },
       { status: 500 }

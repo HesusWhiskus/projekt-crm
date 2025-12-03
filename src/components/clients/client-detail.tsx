@@ -3,10 +3,10 @@
 import { useState, useMemo, useCallback, memo } from "react"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ClientStatus, ClientPriority, UserRole } from "@prisma/client"
-import { Edit, Plus } from "lucide-react"
+import { Edit } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 
 // Lazy load forms
@@ -37,7 +37,7 @@ import {
 } from "@/lib/status-config"
 import { ContactType } from "@prisma/client"
 import Link from "next/link"
-import { maskPhone, maskEmail, maskPhoneIfNeeded, maskEmailIfNeeded } from "@/lib/pii-masking"
+import { maskPhoneIfNeeded, maskEmailIfNeeded } from "@/lib/pii-masking"
 
 interface ClientDetailProps {
   client: any
@@ -135,16 +135,6 @@ export function ClientDetail({
     router.refresh()
   }, [router])
 
-  const handleCloseNote = useCallback(() => {
-    setIsAddingContact(false)
-    setAddingNote(false)
-  }, [])
-
-  const handleNoteSuccess = useCallback(() => {
-    setIsAddingContact(false)
-    setAddingNote(false)
-    router.refresh()
-  }, [router])
 
   return (
     <div className="space-y-6">

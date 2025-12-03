@@ -41,13 +41,16 @@ export async function GET() {
         { status: 200 }
       )
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error("[API Docs Endpoint] Error reading API_DOCUMENTATION.md:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError("[API Docs Endpoint] Error reading API_DOCUMENTATION.md", error)
+    const errorMessage = error instanceof Error ? error.message : "Nieznany błąd"
     return NextResponse.json(
       { 
         error: "Nie udało się wczytać dokumentacji API",
-        details: error?.message || "Nieznany błąd"
+        details: errorMessage
       },
       { status: 500 }
     )

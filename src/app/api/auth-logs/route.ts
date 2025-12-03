@@ -46,11 +46,14 @@ export async function GET(request: Request) {
     }))
 
     return NextResponse.json({ logs }, { status: 200 })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error("[Auth Logs API] Error fetching logs:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError("[Auth Logs API] Error fetching logs", error)
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch logs"
     return NextResponse.json(
-      { error: "Failed to fetch logs", details: error?.message },
+      { error: "Failed to fetch logs", details: errorMessage },
       { status: 500 }
     )
   }

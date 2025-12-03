@@ -3,6 +3,7 @@ import { requireAuth } from '@/presentation/api/middleware/auth'
 import { PrismaVehicleRepository } from '@/infrastructure/persistence/prisma'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
+import { logError } from '@/lib/logger'
 
 // Initialize dependencies
 const vehicleRepository = new PrismaVehicleRepository()
@@ -103,8 +104,10 @@ export async function DELETE(
     }, request)
 
     return NextResponse.json({ message: 'Właściciel został usunięty' })
-  } catch (error: any) {
-    console.error('Remove vehicle owner error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Remove vehicle owner error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas usuwania właściciela' },
       { status: 500 }

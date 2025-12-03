@@ -4,6 +4,7 @@ import { SendCalculationToExternalUseCase } from '@/application/calculations/use
 import { PrismaCalculationRepository, PrismaExternalSyncRepository } from '@/infrastructure/persistence/prisma'
 import { ExternalSystemClient } from '@/infrastructure/external/ExternalSystemClient'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
+import { logError } from '@/lib/logger'
 
 const calculationRepository = new PrismaCalculationRepository()
 const externalClient = new ExternalSystemClient({
@@ -43,15 +44,18 @@ export async function POST(
     }, request)
 
     return NextResponse.json({ syncResult })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (error.message?.includes('nie znaleziony')) {
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Sync calculation error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas synchronizacji kalkulacji'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Sync calculation error:', error)
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas synchronizacji kalkulacji' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

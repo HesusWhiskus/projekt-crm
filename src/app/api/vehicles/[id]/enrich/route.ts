@@ -3,6 +3,7 @@ import { requireAuth } from '@/presentation/api/middleware/auth'
 import { EnrichVehicleDataUseCase } from '@/application/vehicles/use-cases'
 import { PrismaVehicleRepository } from '@/infrastructure/persistence/prisma'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
+import { logError } from '@/lib/logger'
 
 // Initialize dependencies
 const vehicleRepository = new PrismaVehicleRepository()
@@ -59,14 +60,18 @@ export async function POST(
     await logApiActivity(user.id, 'VEHICLE_DATA_ENRICHED', 'Vehicle', vehicle.id, {}, request)
 
     return NextResponse.json({ vehicle })
-  } catch (error: any) {
-    if (error.message?.includes('nie znaleziony')) {
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Enrich vehicle data error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas wzbogacania danych pojazdu'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Enrich vehicle data error:', error)
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas wzbogacania danych pojazdu' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

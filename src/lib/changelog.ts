@@ -14,6 +14,19 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.20-beta',
+    date: '2025-01-27',
+    type: 'fix',
+    title: 'Naprawa błędów ESLint - migracja catch (error: any) → catch (error: unknown)',
+    description: 'Naprawiono wszystkie błędy ESLint związane z niepoprawną obsługą błędów. Wszystkie bloki catch używają teraz typu `unknown` z type guards i bezpiecznego logowania przez `logError`.',
+    items: [
+      'Zastąpiono `catch (error: any)` przez `catch (error: unknown)` w 22 plikach API',
+      'Dodano type guards (`error instanceof Error`) przed dostępem do `error.message`',
+      'Zastąpiono wszystkie `console.error` przez `logError` zgodnie z SECURITY-FIX [ERROR-LOG-2]',
+      'Dodano importy `logError` w wszystkich plikach gdzie były potrzebne',
+    ],
+  },
+  {
     version: '0.10.19-beta',
     date: '2025-01-27',
     changes: [

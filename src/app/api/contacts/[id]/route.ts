@@ -5,6 +5,7 @@ import { ContactType } from "@prisma/client"
 import { z } from "zod"
 import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
+import { logError } from "@/lib/logger"
 
 const updateContactSchema = z.object({
   type: z.nativeEnum(ContactType).optional(),
@@ -164,8 +165,10 @@ export async function PATCH(
     try {
       validatedData = updateContactSchema.parse(parsedData)
       console.log("[DEBUG CONTACTS PATCH] Validated data:", JSON.stringify(validatedData, null, 2))
-    } catch (error: any) {
-      console.error("[DEBUG CONTACTS PATCH] Validation error:", error)
+    } catch (error: unknown) {
+      // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+      // Data: 2025-01-27
+      logError("[DEBUG CONTACTS PATCH] Validation error", error)
       if (error instanceof z.ZodError) {
         console.error("[DEBUG CONTACTS PATCH] Zod errors:", JSON.stringify(error.errors, null, 2))
       }
@@ -257,7 +260,7 @@ export async function PATCH(
     }, request)
 
     return NextResponse.json({ contact })
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       console.error("[DEBUG CONTACTS PATCH] ZodError details:", JSON.stringify(error.errors, null, 2))
       return NextResponse.json(
@@ -266,7 +269,9 @@ export async function PATCH(
       )
     }
 
-    console.error("Contact update error:", error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Contact update error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas aktualizacji kontaktu" },
       { status: 500 }
@@ -388,8 +393,10 @@ export async function DELETE(
     await logApiActivity(user.id, "CONTACT_DELETED", "Contact", validatedId, {}, request)
 
     return NextResponse.json({ message: "Kontakt został usunięty" })
-  } catch (error) {
-    console.error("Contact deletion error:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Contact deletion error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas usuwania kontaktu" },
       { status: 500 }

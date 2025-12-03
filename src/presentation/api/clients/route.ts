@@ -3,7 +3,6 @@ import { requireAuth } from '../middleware/auth'
 import type { UserContext } from '@/application/shared/types/UserContext'
 import { CreateClientUseCase, ListClientsUseCase } from '@/application/clients/use-cases'
 import { PrismaClientRepository } from '@/infrastructure/persistence/prisma'
-import { ClientStatusChangeService } from '@/domain/clients/services'
 import { CreateClientDTO, ClientFilterDTO } from '@/application/clients/dto'
 import { validateQueryParams, clientQuerySchema } from '@/lib/query-validator'
 import { z } from 'zod'
@@ -12,7 +11,6 @@ import { logError } from '@/lib/logger'
 
 // Initialize dependencies (in production, use DI container)
 const clientRepository = new PrismaClientRepository()
-const statusChangeService = new ClientStatusChangeService()
 const createClientUseCase = new CreateClientUseCase(clientRepository)
 const listClientsUseCase = new ListClientsUseCase(clientRepository)
 

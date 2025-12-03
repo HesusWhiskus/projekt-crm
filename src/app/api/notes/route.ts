@@ -7,6 +7,7 @@ import { join } from "path"
 import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib/file-upload"
 import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
+import { logError } from "@/lib/logger"
 
 const createNoteSchema = z.object({
   date: z.string().refine(
@@ -135,8 +136,10 @@ export async function POST(request: Request) {
     try {
       validatedData = createNoteSchema.parse(parsedData)
       console.log("[DEBUG NOTES POST] Validated data:", JSON.stringify(validatedData, null, 2))
-    } catch (error: any) {
-      console.error("[DEBUG NOTES POST] Validation error:", error)
+    } catch (error: unknown) {
+      // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+      // Data: 2025-01-27
+      logError("[DEBUG NOTES POST] Validation error", error)
       if (error instanceof z.ZodError) {
         console.error("[DEBUG NOTES POST] Zod errors:", JSON.stringify(error.errors, null, 2))
         const firstError = error.errors[0]
@@ -252,7 +255,7 @@ export async function POST(request: Request) {
     await logApiActivity(user.id, "NOTE_CREATED", "Note", note.id, { clientId: validatedData.clientId }, request)
 
     return NextResponse.json({ contact: noteWithRelations }, { status: 201 })
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       console.error("[DEBUG NOTES POST] ZodError details:", JSON.stringify(error.errors, null, 2))
       return NextResponse.json(
@@ -261,7 +264,9 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error("Note creation error:", error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError("Note creation error", error)
     return NextResponse.json(
       { error: "Wystąpił błąd podczas tworzenia notatki" },
       { status: 500 }

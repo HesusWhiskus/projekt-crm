@@ -5,6 +5,7 @@ import { PrismaInsuranceAgentRepository } from '@/infrastructure/persistence/pri
 import { UpdateInsuranceAgentDTO } from '@/application/insurance-agents/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const insuranceAgentRepository = new PrismaInsuranceAgentRepository()
 const getInsuranceAgentUseCase = new GetInsuranceAgentUseCase(insuranceAgentRepository)
@@ -39,14 +40,18 @@ export async function GET(
     const agent = await getInsuranceAgentUseCase.execute(params.id.trim())
 
     return NextResponse.json({ agent })
-  } catch (error: any) {
-    if (error.message?.includes('nie znaleziony')) {
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Get insurance agent error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas pobierania agenta'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Get insurance agent error:', error)
     return NextResponse.json(
-      { error: 'Wystąpił błąd podczas pobierania agenta' },
+      { error: errorMessage },
       { status: 500 }
     )
   }
@@ -92,7 +97,7 @@ export async function PUT(
     }, request)
 
     return NextResponse.json({ agent })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -100,13 +105,17 @@ export async function PUT(
       )
     }
 
-    if (error.message?.includes('nie znaleziony')) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Update insurance agent error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji agenta'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Update insurance agent error:', error)
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas aktualizacji agenta' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

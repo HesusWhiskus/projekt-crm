@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { requireAuth } from '@/presentation/api/middleware/auth'
 import { DownloadPolicyDocumentUseCase } from '@/application/policies/use-cases'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
+import { logError } from '@/lib/logger'
 
 const downloadPolicyDocumentUseCase = new DownloadPolicyDocumentUseCase()
 
@@ -43,14 +44,18 @@ export async function GET(
 
     // Return document info with path (client should fetch from path)
     return NextResponse.json({ document })
-  } catch (error: any) {
-    if (error.message?.includes('nie znaleziony')) {
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Download policy document error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas pobierania dokumentu'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Download policy document error:', error)
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas pobierania dokumentu' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

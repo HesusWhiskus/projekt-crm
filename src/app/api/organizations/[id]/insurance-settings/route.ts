@@ -4,6 +4,7 @@ import { requireRole } from '@/presentation/api/middleware/auth'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const updateInsuranceSettingsSchema = z.object({
   validationLevel: z.enum(['STRICT', 'RELAXED']).optional(),
@@ -37,8 +38,10 @@ export async function GET(
     })
 
     return NextResponse.json({ settings })
-  } catch (error: any) {
-    console.error('Get insurance settings error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Get insurance settings error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania ustawień' },
       { status: 500 }
@@ -82,7 +85,7 @@ export async function PUT(
     }, request)
 
     return NextResponse.json({ settings })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -90,7 +93,9 @@ export async function PUT(
       )
     }
 
-    console.error('Update insurance settings error:', error)
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Update insurance settings error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas aktualizacji ustawień' },
       { status: 500 }

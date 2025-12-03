@@ -32,9 +32,11 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({ syncs })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error('Get sync audit logs error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError('Get sync audit logs error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas pobierania logów synchronizacji' },
       { status: 500 }

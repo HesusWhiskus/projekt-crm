@@ -667,9 +667,9 @@ async function generateOffers(
 
 export async function POST() {
   try {
-    const user = await getCurrentUser()
+    const currentUser = await getCurrentUser()
     
-    if (!user || user.role !== "ADMIN") {
+    if (!currentUser || currentUser.role !== "ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -692,11 +692,14 @@ export async function POST() {
       }
     }, { status: 200 })
     
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error('Error in generate-test-data endpoint:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError('Error in generate-test-data endpoint', error)
+    const errorMessage = error instanceof Error ? error.message : "Wystąpił błąd podczas uruchamiania generowania danych"
     return NextResponse.json(
-      { error: "Wystąpił błąd podczas uruchamiania generowania danych", details: error?.message },
+      { error: "Wystąpił błąd podczas uruchamiania generowania danych", details: errorMessage },
       { status: 500 }
     )
   }

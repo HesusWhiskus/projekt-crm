@@ -5,9 +5,8 @@ import { ContactType } from "@prisma/client"
 import { z } from "zod"
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
-import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib/file-upload"
+import { validateFiles, generateSafeFilename } from "@/lib/file-upload"
 import { validateQueryParams, contactQuerySchema } from "@/lib/query-validator"
-import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 import { calculatePagination, PaginatedResponse } from "@/lib/types/pagination"
 import { logError } from "@/lib/logger"
@@ -176,8 +175,10 @@ export async function POST(request: Request) {
     try {
       validatedData = createContactSchema.parse(parsedData)
       console.log("[DEBUG CONTACTS POST] Validated data:", JSON.stringify(validatedData, null, 2))
-    } catch (error: any) {
-      console.error("[DEBUG CONTACTS POST] Validation error:", error)
+    } catch (error: unknown) {
+      // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+      // Data: 2025-01-27
+      logError("[DEBUG CONTACTS POST] Validation error", error)
       if (error instanceof z.ZodError) {
         console.error("[DEBUG CONTACTS POST] Zod errors:", JSON.stringify(error.errors, null, 2))
         // Zwróć bardziej szczegółowy błąd walidacji

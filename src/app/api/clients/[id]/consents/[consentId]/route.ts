@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { requireAuth } from '@/presentation/api/middleware/auth'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { db } from '@/lib/db'
+import { logError } from '@/lib/logger'
 
 export async function DELETE(
   request: Request,
@@ -41,8 +42,10 @@ export async function DELETE(
     }, request)
 
     return NextResponse.json({ message: 'Zgoda została cofnięta' })
-  } catch (error: any) {
-    console.error('Revoke consent error:', error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Revoke consent error', error)
     return NextResponse.json(
       { error: 'Wystąpił błąd podczas cofania zgody' },
       { status: 500 }

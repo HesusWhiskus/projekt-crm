@@ -5,6 +5,7 @@ import { PrismaInsuranceAgentRepository } from '@/infrastructure/persistence/pri
 import { UpdateVisibilitySettingsDTO } from '@/application/insurance-agents/dto'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
 import { z } from 'zod'
+import { logError } from '@/lib/logger'
 
 const insuranceAgentRepository = new PrismaInsuranceAgentRepository()
 const updateAgentVisibilitySettingsUseCase = new UpdateAgentVisibilitySettingsUseCase(insuranceAgentRepository)
@@ -51,7 +52,7 @@ export async function PUT(
     const agent = await getInsuranceAgentUseCase.execute(params.id.trim())
 
     return NextResponse.json({ agent })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -59,13 +60,17 @@ export async function PUT(
       )
     }
 
-    if (error.message?.includes('nie znaleziony')) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    logError('Update visibility settings error', error)
+    const errorMessage = error instanceof Error ? error.message : 'Wystąpił błąd podczas aktualizacji ustawień widoczności'
+
+    if (error instanceof Error && error.message?.includes('nie znaleziony')) {
       return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    console.error('Update visibility settings error:', error)
     return NextResponse.json(
-      { error: error.message || 'Wystąpił błąd podczas aktualizacji ustawień widoczności' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

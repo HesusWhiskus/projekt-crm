@@ -41,13 +41,16 @@ export async function GET() {
         { status: 200 }
       )
     }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error("[Project Docs Endpoint] Error reading README.md:", error)
+  } catch (error: unknown) {
+    // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
+    // Data: 2025-01-27
+    const { logError } = await import('@/lib/logger')
+    logError("[Project Docs Endpoint] Error reading README.md", error)
+    const errorMessage = error instanceof Error ? error.message : "Nieznany błąd"
     return NextResponse.json(
       { 
         error: "Nie udało się wczytać dokumentacji projektu",
-        details: error?.message || "Nieznany błąd"
+        details: errorMessage
       },
       { status: 500 }
     )
