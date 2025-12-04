@@ -5,7 +5,6 @@ import { WidgetRegistry, WidgetConfig } from "./widgets/widget-registry"
 import { WidgetSettingsDialog } from "./widgets/widget-settings-dialog"
 import { Users, FileText, CheckSquare, Clock, AlertCircle, Calendar, Shield, Car, TrendingUp, FileCheck, Settings2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 
 interface DashboardWidgetsProps {
   stats: {
@@ -39,8 +38,39 @@ interface DashboardWidgetsProps {
     policiesActive: number
     policiesExpiringSoon: number
     vehiclesCount: number
-    recentCalculations: Array<any>
-    upcomingRenewals: Array<any>
+    recentCalculations: Array<{
+      id: string
+      status: string
+      createdAt: Date | string
+      client?: {
+        id: string
+        firstName?: string | null
+        lastName?: string | null
+        companyName?: string | null
+        type: string
+      } | null
+      vehicle?: {
+        id: string
+        vin?: string | null
+        registrationNumber?: string | null
+      } | null
+    }>
+    upcomingRenewals: Array<{
+      id: string
+      policyNumber: string
+      validTo: Date | string
+      client?: {
+        id: string
+        firstName?: string | null
+        lastName?: string | null
+        companyName?: string | null
+        type: string
+      } | null
+      insuranceCompany?: {
+        id: string
+        name: string
+      } | null
+    }>
   } | null
 }
 
@@ -310,7 +340,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
     return baseWidgets
   }, [stats, upcomingTasks, insuranceStats, getClientDisplayName])
 
-  const handleWidgetConfigSave = useCallback((config: Record<string, { enabled: boolean; order: number; size?: "small" | "large" }>) => {
+  const handleWidgetConfigSave = useCallback(() => {
     // Konfiguracja jest zapisywana w localStorage w dialogu
     // Tutaj możemy dodać dodatkową logikę jeśli potrzeba
   }, [])

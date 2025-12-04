@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useState, useCallback, useMemo, useEffect } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 import { ResponsiveGrid } from "@/components/ui/responsive-grid"
 import { StatsWidget, StatsWidgetProps } from "./stats-widget"
 import { ChartWidget, ChartWidgetProps } from "./chart-widget"
@@ -15,7 +15,6 @@ import {
   DragEndEvent,
   DragStartEvent,
   DragOverEvent,
-  DragCancelEvent,
   DragOverlay,
 } from "@dnd-kit/core"
 import {
@@ -76,16 +75,14 @@ const widgetComponents = {
 
 function SortableWidget({
   widget,
-  Component,
   activeId,
   overId,
 }: {
   widget: WidgetConfig
-  Component: React.ComponentType<any>
   activeId: string | null
   overId: string | null
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: widget.id,
   })
 
@@ -107,6 +104,20 @@ function SortableWidget({
     ? "col-span-1 md:col-span-4 lg:col-span-4 xl:col-span-4 row-span-2 md:row-span-4 lg:row-span-4 xl:row-span-4"
     : "col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2 row-span-2 md:row-span-2 lg:row-span-2 xl:row-span-2"
 
+  // Render widget based on type
+  const renderWidgetContent = () => {
+    if (widget.type === "stats") {
+      return <widgetComponents.stats {...(widget as StatsWidgetConfig).props} />
+    }
+    if (widget.type === "chart") {
+      return <widgetComponents.chart {...(widget as ChartWidgetConfig).props} />
+    }
+    if (widget.type === "list") {
+      return <widgetComponents.list {...(widget as ListWidgetConfig).props} />
+    }
+    return null
+  }
+
   return (
     <div ref={setNodeRef} style={style} className={`relative ${sizeClasses}`}>
       {isOver && !isActive && (
@@ -120,7 +131,7 @@ function SortableWidget({
         >
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
-        <Component {...(widget as any).props} />
+        {renderWidgetContent()}
       </div>
     </div>
   )
@@ -267,40 +278,14 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
 
 
   const renderWidget = (widget: WidgetConfig) => {
-    if (widget.type === "stats") {
-      return (
-        <SortableWidget
-          key={widget.id}
-          widget={widget}
-          Component={widgetComponents.stats}
-          activeId={activeId}
-          overId={overId}
-        />
-      )
-    }
-    if (widget.type === "chart") {
-      return (
-        <SortableWidget
-          key={widget.id}
-          widget={widget}
-          Component={widgetComponents.chart}
-          activeId={activeId}
-          overId={overId}
-        />
-      )
-    }
-    if (widget.type === "list") {
-      return (
-        <SortableWidget
-          key={widget.id}
-          widget={widget}
-          Component={widgetComponents.list}
-          activeId={activeId}
-          overId={overId}
-        />
-      )
-    }
-    return null
+    return (
+      <SortableWidget
+        key={widget.id}
+        widget={widget}
+        activeId={activeId}
+        overId={overId}
+      />
+    )
   }
 
   const dragOverlayContent = useMemo(() => {
@@ -309,13 +294,13 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     if (!activeWidget) return null
 
     if (activeWidget.type === "stats") {
-      return <widgetComponents.stats key={activeWidget.id} {...(activeWidget as any).props} />
+      return <widgetComponents.stats key={activeWidget.id} {...(activeWidget as StatsWidgetConfig).props} />
     }
     if (activeWidget.type === "chart") {
-      return <widgetComponents.chart key={activeWidget.id} {...(activeWidget as any).props} />
+      return <widgetComponents.chart key={activeWidget.id} {...(activeWidget as ChartWidgetConfig).props} />
     }
     if (activeWidget.type === "list") {
-      return <widgetComponents.list key={activeWidget.id} {...(activeWidget as any).props} />
+      return <widgetComponents.list key={activeWidget.id} {...(activeWidget as ListWidgetConfig).props} />
     }
     return null
   }, [activeId, items])

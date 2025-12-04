@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
-import { LucideIcon, Plus } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import Link from "next/link"
 
 export interface ListWidgetItem {

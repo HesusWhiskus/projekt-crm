@@ -26,7 +26,7 @@ interface WidgetSettingsDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   widgets: WidgetConfig[]
-  onSave: (config: Record<string, { enabled: boolean; order: number; size?: "small" | "large" }>) => void
+  onSave: () => void
 }
 
 export function WidgetSettingsDialog({
@@ -98,7 +98,7 @@ export function WidgetSettingsDialog({
     if (typeof window !== "undefined") {
       localStorage.setItem("dashboard-widget-config", JSON.stringify(config))
     }
-    onSave(config)
+    onSave()
     onOpenChange(false)
     // Odśwież stronę aby zastosować zmiany
     window.location.reload()
