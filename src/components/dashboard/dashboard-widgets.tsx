@@ -80,6 +80,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
   insuranceStats,
 }: DashboardWidgetsProps) {
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [configVersion, setConfigVersion] = useState(0)
 
   const getClientDisplayName = useCallback((client: DashboardWidgetsProps["upcomingTasks"][0]["client"]) => {
     if (!client) return "-"
@@ -98,6 +99,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       id: "clients",
       type: "stats",
       title: "Klienci",
+      enabled: true,
       order: 1,
       size: "small",
       props: {
@@ -112,6 +114,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       id: "contacts",
       type: "stats",
       title: "Kontakty",
+      enabled: true,
       order: 2,
       size: "small",
       props: {
@@ -126,6 +129,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       id: "tasks",
       type: "stats",
       title: "Zadania",
+      enabled: true,
       order: 3,
       size: "small",
       props: {
@@ -141,6 +145,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       id: "noContact7Days",
       type: "stats",
       title: "Bez kontaktu 7+ dni",
+      enabled: true,
       order: 4,
       size: "small",
       props: {
@@ -155,6 +160,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       id: "noContact30Days",
       type: "stats",
       title: "Bez kontaktu 30+ dni",
+      enabled: true,
       order: 5,
       size: "small",
       props: {
@@ -169,6 +175,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       id: "followUpToday",
       type: "stats",
       title: "Follow-up dzisiaj",
+      enabled: true,
       order: 6,
       size: "small",
       props: {
@@ -184,6 +191,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       id: "upcomingTasks",
       type: "list",
       title: "Nadchodzące zadania",
+      enabled: true,
       order: 7,
       size: "large",
       props: {
@@ -218,6 +226,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         id: "insuranceCalculations",
         type: "stats",
         title: "Kalkulacje",
+        enabled: true,
         order: 8,
         size: "small",
         props: {
@@ -232,6 +241,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         id: "insurancePolicies",
         type: "stats",
         title: "Polisy",
+        enabled: true,
         order: 9,
         size: "small",
         props: {
@@ -246,6 +256,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         id: "insuranceVehicles",
         type: "stats",
         title: "Pojazdy",
+        enabled: true,
         order: 10,
         size: "small",
         props: {
@@ -260,6 +271,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         id: "insuranceAccepted",
         type: "stats",
         title: "Akceptacje",
+        enabled: true,
         order: 11,
         size: "small",
         props: {
@@ -274,6 +286,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         id: "recentCalculations",
         type: "list",
         title: "Ostatnie kalkulacje",
+        enabled: true,
         order: 12,
         size: "large",
         props: {
@@ -306,6 +319,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         id: "upcomingRenewals",
         type: "list",
         title: "Nadchodzące odnowienia",
+        enabled: true,
         order: 13,
         size: "large",
         props: {
@@ -341,8 +355,8 @@ export const DashboardWidgets = memo(function DashboardWidgets({
   }, [stats, upcomingTasks, insuranceStats, getClientDisplayName])
 
   const handleWidgetConfigSave = useCallback(() => {
-    // Konfiguracja jest zapisywana w localStorage w dialogu
-    // Tutaj możemy dodać dodatkową logikę jeśli potrzeba
+    // Wymuś re-render WidgetRegistry aby wczytać nową konfigurację z localStorage
+    setConfigVersion(prev => prev + 1)
   }, [])
 
   return (
@@ -358,7 +372,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
           Konfiguruj widgety
         </Button>
       </div>
-      <WidgetRegistry widgets={widgets} />
+      <WidgetRegistry key={configVersion} widgets={widgets} />
       <WidgetSettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}

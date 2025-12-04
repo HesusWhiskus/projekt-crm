@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server'
 import { requireAuth } from '@/presentation/api/middleware/auth'
-import { PrismaClientRepository } from '@/infrastructure/persistence/prisma'
 import { applyRateLimit, logApiActivity } from '@/lib/api-security'
-import { z } from 'zod'
 import { db } from '@/lib/db'
 import { logError } from '@/lib/logger'
 
 // Force dynamic rendering - this route uses request headers and requires database connection
 export const dynamic = 'force-dynamic'
-
-const clientRepository = new PrismaClientRepository()
 
 /**
  * @swagger

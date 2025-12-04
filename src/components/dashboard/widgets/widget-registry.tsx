@@ -172,7 +172,10 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
       // Zapewnij że wszystkie wymagane pola są zdefiniowane
       const enabled = saved?.enabled !== undefined ? saved.enabled : (widget.enabled ?? true)
       const order = saved?.order !== undefined ? saved.order : (widget.order ?? 0)
-      const size = saved?.size || widget.size || (widget.gridCols?.desktop === 2 || widget.gridCols?.wide === 2 ? "large" : "small")
+      // Priorytet: saved?.size > widget.size > fallback z gridCols
+      const size = saved?.size !== undefined 
+        ? saved.size 
+        : (widget.size || (widget.gridCols?.desktop === 2 || widget.gridCols?.wide === 2 ? "large" : "small"))
       
       return {
         ...widget,

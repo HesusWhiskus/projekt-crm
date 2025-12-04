@@ -98,10 +98,9 @@ export function WidgetSettingsDialog({
     if (typeof window !== "undefined") {
       localStorage.setItem("dashboard-widget-config", JSON.stringify(config))
     }
-    onSave()
+    onSave() // Ten callback wymusi aktualizację widgetów
     onOpenChange(false)
-    // Odśwież stronę aby zastosować zmiany
-    window.location.reload()
+    // Usunięto window.location.reload() - zmiany będą widoczne natychmiast przez callback
   }
 
   // Sortuj widgety według order

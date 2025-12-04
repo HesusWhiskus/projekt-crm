@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.24-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono logikę wczytywania rozmiaru widgetów - zapisany rozmiar ma teraz priorytet nad domyślnym',
+      },
+      {
+        type: 'fixed',
+        description: 'Usunięto przeładowanie strony - zmiany rozmiaru widgetów są widoczne natychmiast',
+      },
+    ],
+  },
+  {
     version: '0.10.23-beta',
     date: '2025-01-27',
     changes: [

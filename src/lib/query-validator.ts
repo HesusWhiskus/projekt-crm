@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { ClientStatus, ContactType, TaskStatus } from '@prisma/client'
 
 /**
  * Schema for validating client query parameters

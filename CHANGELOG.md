@@ -5,6 +5,12 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.24-beta] - 2025-01-27
+
+### Fixed
+- **Naprawa zmiany rozmiaru widgetów:** Naprawiono logikę wczytywania rozmiaru z localStorage - zapisany rozmiar ma teraz priorytet nad domyślnym
+- **Reaktywna aktualizacja widgetów:** Usunięto `window.location.reload()` - zmiany rozmiaru widgetów są widoczne natychmiast bez przeładowania strony
+
 ## [0.10.23-beta] - 2025-01-27
 
 ### Fixed
