@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.23-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono niezgodność typów między WidgetConfig a NormalizedWidgetConfigType w dragOverlayContent',
+      },
+      {
+        type: 'fixed',
+        description: 'Wszystkie rzutowania w dragOverlayContent używają teraz znormalizowanych typów',
+      },
+    ],
+  },
+  {
     version: '0.10.22-beta',
     date: '2025-01-27',
     changes: [

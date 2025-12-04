@@ -33,9 +33,9 @@ export interface BaseWidgetConfig {
   id: string
   type: WidgetType
   title: string
-  enabled?: boolean
-  order?: number
-  size?: "small" | "large"  // Mały widget: 2 kolumny × 2 wiersze, Duży widget: 4 kolumny × 4 wiersze
+  enabled?: boolean  // Opcjonalne w input, zawsze zdefiniowane po normalizacji
+  order?: number     // Opcjonalne w input, zawsze zdefiniowane po normalizacji
+  size?: "small" | "large"  // Opcjonalne w input, zawsze zdefiniowane po normalizacji
   // Deprecated: gridCols - użyj size zamiast tego
   gridCols?: {
     mobile?: number
@@ -43,6 +43,13 @@ export interface BaseWidgetConfig {
     desktop?: number
     wide?: number
   }
+}
+
+// Znormalizowany typ widgetu - wszystkie pola wymagane
+export interface NormalizedWidgetConfig extends Omit<BaseWidgetConfig, 'enabled' | 'order' | 'size'> {
+  enabled: boolean
+  order: number
+  size: "small" | "large"
 }
 
 export interface StatsWidgetConfig extends BaseWidgetConfig {
@@ -62,6 +69,12 @@ export interface ListWidgetConfig extends BaseWidgetConfig {
 
 export type WidgetConfig = StatsWidgetConfig | ChartWidgetConfig | ListWidgetConfig
 
+// Znormalizowane typy widgetów
+export type NormalizedStatsWidgetConfig = NormalizedWidgetConfig & { type: "stats"; props: StatsWidgetProps }
+export type NormalizedChartWidgetConfig = NormalizedWidgetConfig & { type: "chart"; props: ChartWidgetProps }
+export type NormalizedListWidgetConfig = NormalizedWidgetConfig & { type: "list"; props: ListWidgetProps }
+export type NormalizedWidgetConfigType = NormalizedStatsWidgetConfig | NormalizedChartWidgetConfig | NormalizedListWidgetConfig
+
 export interface WidgetRegistryProps {
   widgets: WidgetConfig[]
   onWidgetUpdate?: (widgetId: string, updates: Partial<WidgetConfig>) => void
@@ -78,7 +91,7 @@ function SortableWidget({
   activeId,
   overId,
 }: {
-  widget: WidgetConfig
+  widget: NormalizedWidgetConfigType
   activeId: string | null
   overId: string | null
 }) {
@@ -107,13 +120,13 @@ function SortableWidget({
   // Render widget based on type
   const renderWidgetContent = () => {
     if (widget.type === "stats") {
-      return <widgetComponents.stats {...(widget as StatsWidgetConfig).props} />
+      return <widgetComponents.stats {...(widget as NormalizedStatsWidgetConfig).props} />
     }
     if (widget.type === "chart") {
-      return <widgetComponents.chart {...(widget as ChartWidgetConfig).props} />
+      return <widgetComponents.chart {...(widget as NormalizedChartWidgetConfig).props} />
     }
     if (widget.type === "list") {
-      return <widgetComponents.list {...(widget as ListWidgetConfig).props} />
+      return <widgetComponents.list {...(widget as NormalizedListWidgetConfig).props} />
     }
     return null
   }
@@ -139,7 +152,7 @@ function SortableWidget({
 
 export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps) {
   // Funkcja pomocnicza do wczytania i merge konfiguracji
-  const loadWidgetsConfig = useCallback(() => {
+  const loadWidgetsConfig = useCallback((): NormalizedWidgetConfigType[] => {
     // Wczytaj konfigurację z localStorage
     let savedConfig: Record<string, { enabled?: boolean; order?: number; size?: "small" | "large" }> = {}
     if (typeof window !== "undefined") {
@@ -154,14 +167,19 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     }
 
     // Merge domyślnej konfiguracji z zapisaną
-    const mergedWidgets = widgets.map((widget) => {
+    const mergedWidgets: NormalizedWidgetConfigType[] = widgets.map((widget) => {
       const saved = savedConfig[widget.id]
+      // Zapewnij że wszystkie wymagane pola są zdefiniowane
+      const enabled = saved?.enabled !== undefined ? saved.enabled : (widget.enabled ?? true)
+      const order = saved?.order !== undefined ? saved.order : (widget.order ?? 0)
+      const size = saved?.size || widget.size || (widget.gridCols?.desktop === 2 || widget.gridCols?.wide === 2 ? "large" : "small")
+      
       return {
         ...widget,
-        enabled: saved?.enabled !== undefined ? saved.enabled : widget.enabled !== false,
-        order: saved?.order !== undefined ? saved.order : widget.order || 0,
-        size: saved?.size || widget.size || (widget.gridCols?.desktop === 2 || widget.gridCols?.wide === 2 ? "large" : "small"),
-      }
+        enabled,
+        order,
+        size: size as "small" | "large",
+      } as NormalizedWidgetConfigType
     })
 
     const enabledWidgets = mergedWidgets
@@ -170,7 +188,7 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     return enabledWidgets
   }, [widgets])
 
-  const [items, setItems] = useState(() => loadWidgetsConfig())
+  const [items, setItems] = useState<NormalizedWidgetConfigType[]>(() => loadWidgetsConfig())
 
   // Aktualizuj widgety gdy zmienią się props widgets
   useEffect(() => {
@@ -179,7 +197,7 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
 
   const [activeId, setActiveId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
-  const [originalItems, setOriginalItems] = useState<WidgetConfig[]>([])
+  const [originalItems, setOriginalItems] = useState<NormalizedWidgetConfigType[]>(() => [])
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -277,7 +295,7 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
   }
 
 
-  const renderWidget = (widget: WidgetConfig) => {
+  const renderWidget = (widget: NormalizedWidgetConfigType) => {
     return (
       <SortableWidget
         key={widget.id}
@@ -294,13 +312,13 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
     if (!activeWidget) return null
 
     if (activeWidget.type === "stats") {
-      return <widgetComponents.stats key={activeWidget.id} {...(activeWidget as StatsWidgetConfig).props} />
+      return <widgetComponents.stats key={activeWidget.id} {...(activeWidget as NormalizedStatsWidgetConfig).props} />
     }
     if (activeWidget.type === "chart") {
-      return <widgetComponents.chart key={activeWidget.id} {...(activeWidget as ChartWidgetConfig).props} />
+      return <widgetComponents.chart key={activeWidget.id} {...(activeWidget as NormalizedChartWidgetConfig).props} />
     }
     if (activeWidget.type === "list") {
-      return <widgetComponents.list key={activeWidget.id} {...(activeWidget as ListWidgetConfig).props} />
+      return <widgetComponents.list key={activeWidget.id} {...(activeWidget as NormalizedListWidgetConfig).props} />
     }
     return null
   }, [activeId, items])

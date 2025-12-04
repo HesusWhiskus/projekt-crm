@@ -5,6 +5,12 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.23-beta] - 2025-01-27
+
+### Fixed
+- **Naprawa błędów TypeScript w widget-registry:** Naprawiono niezgodność typów między `WidgetConfig` a `NormalizedWidgetConfigType` w `dragOverlayContent`
+- **Rzutowania typów:** Wszystkie rzutowania w `dragOverlayContent` używają teraz znormalizowanych typów (`NormalizedStatsWidgetConfig`, `NormalizedChartWidgetConfig`, `NormalizedListWidgetConfig`)
+
 ## [0.10.22-beta] - 2025-01-27
 
 ### Changed
