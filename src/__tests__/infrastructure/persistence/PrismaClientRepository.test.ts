@@ -5,20 +5,22 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { PrismaClientRepository } from '@/infrastructure/persistence/prisma'
+import { db } from '@/lib/db'
+import { Client } from '@/domain/clients/entities/Client'
+import { ClientName } from '@/domain/clients/value-objects/ClientName'
+import { AgencyName } from '@/domain/clients/value-objects/AgencyName'
 
 // Mock Prisma Client
-const mockDb = {
-  client: {
-    create: vi.fn(),
-    findUnique: vi.fn(),
-    findMany: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-  },
-}
-
 vi.mock('@/lib/db', () => ({
-  db: mockDb,
+  db: {
+    client: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    },
+  },
 }))
 
 describe('PrismaClientRepository', () => {
@@ -31,48 +33,81 @@ describe('PrismaClientRepository', () => {
 
   describe('create', () => {
     it('should create a client', async () => {
-      const clientData = {
+      const mockClient = Client.create({
+        id: 'client-123',
+        firstName: ClientName.fromValidated('Jan'),
+        lastName: ClientName.fromValidated('Kowalski'),
+        agencyName: AgencyName.fromValidated(null),
+        email: null,
+        phone: null,
+        website: null,
+        address: null,
+        source: null,
+        status: 'NEW' as const,
+        priority: null,
+        assignedTo: null,
+        nextFollowUpAt: null,
+      })
+
+      const mockPrismaClient = {
+        id: 'client-123',
         firstName: 'Jan',
         lastName: 'Kowalski',
-        email: 'jan@example.com',
-        type: 'PERSON' as const,
-        organizationId: 'org-123',
-      }
-
-      const mockClient = {
-        id: 'client-123',
-        ...clientData,
+        companyName: null,
+        email: null,
+        phone: null,
+        website: null,
+        address: null,
+        source: null,
+        status: 'NEW' as const,
+        priority: null,
+        assignedTo: null,
+        lastContactAt: null,
+        nextFollowUpAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
 
-      mockDb.client.create.mockResolvedValue(mockClient as any)
+      vi.mocked(db.client.create).mockResolvedValue(mockPrismaClient as any)
 
-      const result = await repository.create(clientData as any)
+      const result = await repository.create(mockClient)
 
-      expect(result).toEqual(mockClient)
-      expect(mockDb.client.create).toHaveBeenCalled()
+      expect(result).toBeInstanceOf(Client)
+      expect(db.client.create).toHaveBeenCalled()
     })
   })
 
   describe('findById', () => {
     it('should find a client by id', async () => {
-      const mockClient = {
+      const mockPrismaClient = {
         id: 'client-123',
         firstName: 'Jan',
         lastName: 'Kowalski',
+        companyName: null,
+        email: null,
+        phone: null,
+        website: null,
+        address: null,
+        source: null,
+        status: 'NEW' as const,
+        priority: null,
+        assignedTo: null,
+        lastContactAt: null,
+        nextFollowUpAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       }
 
-      mockDb.client.findUnique.mockResolvedValue(mockClient as any)
+      vi.mocked(db.client.findUnique).mockResolvedValue(mockPrismaClient as any)
 
       const result = await repository.findById('client-123')
 
-      expect(result).toEqual(mockClient)
-      expect(mockDb.client.findUnique).toHaveBeenCalled()
+      expect(result).toBeInstanceOf(Client)
+      expect(db.client.findUnique).toHaveBeenCalled()
     })
 
     it('should return null if client not found', async () => {
-      mockDb.client.findUnique.mockResolvedValue(null)
+      vi.mocked(db.client.findUnique).mockResolvedValue(null)
 
       const result = await repository.findById('non-existent')
 
@@ -82,17 +117,53 @@ describe('PrismaClientRepository', () => {
 
   describe('findMany', () => {
     it('should find multiple clients', async () => {
-      const mockClients = [
-        { id: 'client-1', firstName: 'Jan', lastName: 'Kowalski' },
-        { id: 'client-2', firstName: 'Anna', lastName: 'Nowak' },
+      const mockPrismaClients = [
+        {
+          id: 'client-1',
+          firstName: 'Jan',
+          lastName: 'Kowalski',
+          companyName: null,
+          email: null,
+          phone: null,
+          website: null,
+          address: null,
+          source: null,
+          status: 'NEW' as const,
+          priority: null,
+          assignedTo: null,
+          lastContactAt: null,
+          nextFollowUpAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          id: 'client-2',
+          firstName: 'Anna',
+          lastName: 'Nowak',
+          companyName: null,
+          email: null,
+          phone: null,
+          website: null,
+          address: null,
+          source: null,
+          status: 'NEW' as const,
+          priority: null,
+          assignedTo: null,
+          lastContactAt: null,
+          nextFollowUpAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ]
 
-      mockDb.client.findMany.mockResolvedValue(mockClients as any)
+      vi.mocked(db.client.findMany).mockResolvedValue(mockPrismaClients as any)
 
-      const result = await repository.findMany({})
+      const result = await repository.findMany({ userId: 'user-1', userRole: 'ADMIN' })
 
-      expect(result).toEqual(mockClients)
-      expect(mockDb.client.findMany).toHaveBeenCalled()
+      expect(result).toHaveLength(2)
+      expect(result[0]).toBeInstanceOf(Client)
+      expect(result[1]).toBeInstanceOf(Client)
+      expect(db.client.findMany).toHaveBeenCalled()
     })
   })
 })

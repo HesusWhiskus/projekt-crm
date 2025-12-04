@@ -6,7 +6,11 @@ import { PrismaClient } from '@prisma/client'
 beforeAll(async () => {
   // Set test environment variables
   process.env.NODE_ENV = 'test'
-  process.env.DATABASE_URL = process.env.DATABASE_URL_TEST || process.env.DATABASE_URL || ''
+  // Only set DATABASE_URL if it's actually available (not localhost:5432)
+  const dbUrl = process.env.DATABASE_URL_TEST || process.env.DATABASE_URL
+  if (dbUrl && !dbUrl.includes('localhost:5432')) {
+    process.env.DATABASE_URL = dbUrl
+  }
   process.env.NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET || 'test-secret-key-min-32-chars-long'
   process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL || 'http://localhost:3000'
 })

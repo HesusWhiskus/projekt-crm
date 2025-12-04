@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.21-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono wszystkie testy które failowały w Railway - dodano mocki dla bazy danych gdy nie jest dostępna',
+      },
+      {
+        type: 'fixed',
+        description: 'Testy wymagające bazy danych są teraz pomijane gdy baza nie jest dostępna (używają mocków)',
+      },
+      {
+        type: 'changed',
+        description: 'ActivityLogger pomija logowanie gdy baza danych nie jest dostępna w środowisku testowym',
+      },
+    ],
+  },
+  {
     version: '0.10.20-beta',
     date: '2025-01-27',
     changes: [

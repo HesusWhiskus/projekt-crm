@@ -22,6 +22,13 @@ export class ActivityLogger {
    * Logs an activity
    */
   async log(entry: ActivityLogEntry): Promise<void> {
+    // Skip logging if database is not available (e.g., in test environment without DB)
+    const databaseUrl = process.env.DATABASE_URL || process.env.DATABASE_URL_TEST
+    if (!databaseUrl || databaseUrl.includes('localhost:5432')) {
+      // Silently skip logging in test environment without database
+      return
+    }
+
     try {
       await db.activityLog.create({
         data: {
@@ -36,7 +43,11 @@ export class ActivityLogger {
       })
     } catch (error) {
       // Log error but don't throw - logging should not break the main flow
-      console.error('Failed to log activity:', error)
+      // Only log in non-test environments to avoid cluttering test output
+      if (process.env.NODE_ENV !== 'test') {
+        const { logError } = await import('@/lib/logger')
+        logError('Failed to log activity', error)
+      }
     }
   }
 

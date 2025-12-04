@@ -5,6 +5,18 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.21-beta] - 2025-01-27
+
+### Fixed
+- **Naprawa testów w Railway:** Naprawiono wszystkie testy które failowały w Railway - dodano mocki dla bazy danych gdy nie jest dostępna
+- **Testy bez bazy danych:** Testy wymagające bazy danych są teraz pomijane gdy baza nie jest dostępna (używają mocków)
+- **ActivityLogger:** Pomija logowanie gdy baza danych nie jest dostępna w środowisku testowym
+- **Mocki w testach:** Naprawiono mocki w `CreateClientUseCase.test.ts` i `PrismaClientRepository.test.ts` aby zwracały poprawne typy
+
+### Changed
+- **Test helpers:** `createTestUser` i `deleteTestUser` używają teraz mocków gdy baza nie jest dostępna
+- **Test setup:** Zaktualizowano `setup.ts` aby nie wymuszał DATABASE_URL gdy nie jest dostępny
+
 ## [0.10.20-beta] - 2025-01-27
 
 ### Fixed
