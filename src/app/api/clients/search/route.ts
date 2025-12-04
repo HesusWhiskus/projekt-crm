@@ -85,7 +85,21 @@ export async function GET(request: Request) {
     }
 
     // Build where clause with access control
-    const where: any = {
+    const where: {
+      OR: Array<{
+        companyName?: { contains: string; mode: 'insensitive' }
+        firstName?: { contains: string; mode: 'insensitive' }
+        lastName?: { contains: string; mode: 'insensitive' }
+        email?: { contains: string; mode: 'insensitive' }
+        phone?: { contains: string; mode: 'insensitive' }
+      }>
+      AND?: Array<{
+        OR: Array<{
+          assignedTo?: string
+          sharedGroups?: { some: { users: { some: { userId: string } } } }
+        }>
+      }>
+    } = {
       OR: [
         { companyName: { contains: query, mode: 'insensitive' } },
         { firstName: { contains: query, mode: 'insensitive' } },

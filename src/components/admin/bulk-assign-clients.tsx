@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -51,7 +51,7 @@ const ITEMS_PER_PAGE = 100
 
 export function BulkAssignClients({ clients: initialClients, users }: BulkAssignClientsProps) {
   const router = useRouter()
-  const [clients, setClients] = useState<Client[]>(initialClients)
+  const [clients] = useState<Client[]>(initialClients)
   const [selectedClientIds, setSelectedClientIds] = useState<Set<string>>(new Set())
   const [assignedTo, setAssignedTo] = useState<string>("none")
   const [isLoading, setIsLoading] = useState(false)
@@ -164,7 +164,6 @@ export function BulkAssignClients({ clients: initialClients, users }: BulkAssign
   }
 
   const allPageSelected = paginatedClients.every((c) => selectedClientIds.has(c.id))
-  const somePageSelected = paginatedClients.some((c) => selectedClientIds.has(c.id))
 
   return (
     <div className="space-y-6">

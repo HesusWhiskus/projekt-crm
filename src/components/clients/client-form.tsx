@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClientStatus, ClientPriority, ClientType, UserRole } from "@prisma/client"
 import { utcDateToLocalDateTime } from "@/lib/timezone"
-import { FileText, Shield, Car, Plus } from "lucide-react"
+import { FileText, Shield, Car } from "lucide-react"
 import Link from "next/link"
 
 interface ClientFormProps {

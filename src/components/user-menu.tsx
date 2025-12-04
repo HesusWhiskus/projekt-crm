@@ -1,10 +1,8 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { User, Settings, Shield, MoreHorizontal, LogOut, Sparkles, Settings as SettingsIcon } from "lucide-react"
+import { User, Settings, Shield, LogOut, Sparkles, Settings as SettingsIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -29,7 +27,6 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user, enabledFeatures, isPro }: UserMenuProps) {
-  const pathname = usePathname()
 
   const moreItems = [
     {

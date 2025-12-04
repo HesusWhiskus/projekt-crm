@@ -6,7 +6,6 @@ import {
   User,
   Lock,
   Palette,
-  Settings as SettingsIcon,
   Crown,
   Key,
   Webhook,

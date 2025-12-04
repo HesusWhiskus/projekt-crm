@@ -1,8 +1,9 @@
 "use client"
 
+import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { BarChart3, Key, Webhook, Settings, Sparkles } from "lucide-react"
+import { BarChart3 } from "lucide-react"
 import { FEATURE_KEYS } from "@/lib/feature-flags"
 import { useIsMobile } from "@/hooks/use-media-query"
 import { cn } from "@/lib/utils"
@@ -24,7 +25,7 @@ export function ProNavItems({ enabledFeatures, onItemClick, collapsed: propColla
   const proNavItems: Array<{
     name: string
     href: string
-    icon: any
+    icon: React.ComponentType<{ className?: string; 'aria-hidden'?: string }>
     featureKey?: string
     alwaysVisible?: boolean
   }> = [

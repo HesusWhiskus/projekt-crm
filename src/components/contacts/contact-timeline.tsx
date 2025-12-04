@@ -8,7 +8,7 @@ import { contactTypeLabels } from "@/lib/status-config"
 import { ContactForm } from "./contact-form"
 import { EmptyState } from "@/components/ui/empty-state"
 import Link from "next/link"
-import { format, isToday, isYesterday, isThisWeek, isThisMonth, formatDistanceToNow } from "date-fns"
+import { format, isToday, isYesterday, isThisWeek, isThisMonth } from "date-fns"
 import { pl } from "date-fns/locale"
 
 interface Contact {

@@ -18,7 +18,6 @@ import {
   Settings,
   Menu,
   X,
-  Crown,
   Sparkles,
 } from "lucide-react"
 import { WhatsNewButton } from "@/components/whats-new-button"
