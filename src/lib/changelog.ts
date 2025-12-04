@@ -14,6 +14,28 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.22-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'changed',
+        description: 'Standaryzacja układu widgetów dashboardu - wprowadzono system 8 kolumn zamiast 3/4 kolumn',
+      },
+      {
+        type: 'changed',
+        description: 'System rozmiarów widgetów - małe widgety zajmują 2 kolumny × 2 wiersze, duże widgety 4 kolumny × 4 wiersze',
+      },
+      {
+        type: 'added',
+        description: 'Konfigurowalność widgetów - użytkownik może teraz dodawać/usuwać widgety z dashboardu przez dialog konfiguracji',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono problem z wcięciem między widgetami - teraz można je układać dowolnie na siatce 8 kolumn',
+      },
+    ],
+  },
+  {
     version: '0.10.21-beta',
     date: '2025-01-27',
     changes: [

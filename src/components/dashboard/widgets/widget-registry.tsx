@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useState, useCallback, useMemo } from "react"
+import { ReactNode, useState, useCallback, useMemo, useEffect } from "react"
 import { ResponsiveGrid } from "@/components/ui/responsive-grid"
 import { StatsWidget, StatsWidgetProps } from "./stats-widget"
 import { ChartWidget, ChartWidgetProps } from "./chart-widget"
@@ -36,6 +36,8 @@ export interface BaseWidgetConfig {
   title: string
   enabled?: boolean
   order?: number
+  size?: "small" | "large"  // Mały widget: 2 kolumny × 2 wiersze, Duży widget: 4 kolumny × 4 wiersze
+  // Deprecated: gridCols - użyj size zamiast tego
   gridCols?: {
     mobile?: number
     tablet?: number
@@ -96,15 +98,17 @@ function SortableWidget({
     opacity: isActive ? 0.3 : 1,
   }
 
-  const gridColsClass = `
-    ${widget.gridCols?.mobile === 2 ? "col-span-2" : ""}
-    ${widget.gridCols?.tablet === 2 ? "md:col-span-2" : ""}
-    ${widget.gridCols?.desktop === 2 ? "lg:col-span-2" : ""}
-    ${widget.gridCols?.wide === 2 ? "xl:col-span-2" : ""}
-  `
+  // Determine size - prefer new 'size' field, fallback to gridCols for backward compatibility
+  const widgetSize = widget.size || (widget.gridCols?.desktop === 2 || widget.gridCols?.wide === 2 ? "large" : "small")
+  
+  // Mały widget: 2 kolumny × 2 wiersze
+  // Duży widget: 4 kolumny × 4 wiersze
+  const sizeClasses = widgetSize === "large"
+    ? "col-span-1 md:col-span-4 lg:col-span-4 xl:col-span-4 row-span-2 md:row-span-4 lg:row-span-4 xl:row-span-4"
+    : "col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2 row-span-2 md:row-span-2 lg:row-span-2 xl:row-span-2"
 
   return (
-    <div ref={setNodeRef} style={style} className={`relative ${gridColsClass}`}>
+    <div ref={setNodeRef} style={style} className={`relative ${sizeClasses}`}>
       {isOver && !isActive && (
         <div className="absolute inset-0 border-2 border-dashed border-primary rounded-lg bg-primary/5 transition-all animate-pulse z-10 pointer-events-none" />
       )}
@@ -123,12 +127,44 @@ function SortableWidget({
 }
 
 export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps) {
-  const [items, setItems] = useState(() => {
-    const enabledWidgets = widgets
+  // Funkcja pomocnicza do wczytania i merge konfiguracji
+  const loadWidgetsConfig = useCallback(() => {
+    // Wczytaj konfigurację z localStorage
+    let savedConfig: Record<string, { enabled?: boolean; order?: number; size?: "small" | "large" }> = {}
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("dashboard-widget-config")
+        if (saved) {
+          savedConfig = JSON.parse(saved)
+        }
+      } catch (e) {
+        console.warn("Failed to load widget config from localStorage", e)
+      }
+    }
+
+    // Merge domyślnej konfiguracji z zapisaną
+    const mergedWidgets = widgets.map((widget) => {
+      const saved = savedConfig[widget.id]
+      return {
+        ...widget,
+        enabled: saved?.enabled !== undefined ? saved.enabled : widget.enabled !== false,
+        order: saved?.order !== undefined ? saved.order : widget.order || 0,
+        size: saved?.size || widget.size || (widget.gridCols?.desktop === 2 || widget.gridCols?.wide === 2 ? "large" : "small"),
+      }
+    })
+
+    const enabledWidgets = mergedWidgets
       .filter((widget) => widget.enabled !== false)
       .sort((a, b) => (a.order || 0) - (b.order || 0))
     return enabledWidgets
-  })
+  }, [widgets])
+
+  const [items, setItems] = useState(() => loadWidgetsConfig())
+
+  // Aktualizuj widgety gdy zmienią się props widgets
+  useEffect(() => {
+    setItems(loadWidgetsConfig())
+  }, [loadWidgetsConfig])
 
   const [activeId, setActiveId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
@@ -202,11 +238,22 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
 
         // Call onWidgetUpdate for each moved widget
         updatedItems.forEach((item) => {
-          onWidgetUpdate?.(item.id, { order: item.order })
+          onWidgetUpdate?.(item.id, { order: item.order, size: item.size })
         })
 
-        // Save to localStorage
+        // Save to localStorage - pełna konfiguracja (enabled, order, size)
         if (typeof window !== "undefined") {
+          const config: Record<string, { enabled: boolean; order: number; size?: "small" | "large" }> = {}
+          updatedItems.forEach((item) => {
+            config[item.id] = {
+              enabled: item.enabled !== false,
+              order: item.order || 0,
+              size: item.size,
+            }
+          })
+          localStorage.setItem("dashboard-widget-config", JSON.stringify(config))
+          
+          // Zachowaj backward compatibility z starym kluczem
           localStorage.setItem(
             "dashboard-widget-order",
             JSON.stringify(updatedItems.map((item) => ({ id: item.id, order: item.order })))
@@ -289,10 +336,10 @@ export function WidgetRegistry({ widgets, onWidgetUpdate }: WidgetRegistryProps)
       <SortableContext items={items.map((w) => w.id)} strategy={rectSortingStrategy}>
         <ResponsiveGrid
           columns={{
-            mobile: 1,
-            tablet: 2,
-            desktop: 3,
-            wide: 4,
+            mobile: 2,  // 2 kolumny na mobile
+            tablet: 4,  // 4 kolumny na tablet
+            desktop: 8, // 8 kolumn na desktop
+            wide: 8,    // 8 kolumn na wide
           }}
           gap="md"
         >

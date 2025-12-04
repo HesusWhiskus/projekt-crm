@@ -1,8 +1,10 @@
 "use client"
 
-import { useMemo, useCallback, memo } from "react"
+import { useMemo, useCallback, memo, useState } from "react"
 import { WidgetRegistry, WidgetConfig } from "./widgets/widget-registry"
-import { Users, FileText, CheckSquare, Clock, AlertCircle, Calendar, Shield, Car, TrendingUp, FileCheck } from "lucide-react"
+import { WidgetSettingsDialog } from "./widgets/widget-settings-dialog"
+import { Users, FileText, CheckSquare, Clock, AlertCircle, Calendar, Shield, Car, TrendingUp, FileCheck, Settings2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 interface DashboardWidgetsProps {
@@ -47,6 +49,8 @@ export const DashboardWidgets = memo(function DashboardWidgets({
   upcomingTasks,
   insuranceStats,
 }: DashboardWidgetsProps) {
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
   const getClientDisplayName = useCallback((client: DashboardWidgetsProps["upcomingTasks"][0]["client"]) => {
     if (!client) return "-"
     if (client.type === "COMPANY") {
@@ -65,7 +69,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       type: "stats",
       title: "Klienci",
       order: 1,
-      gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+      size: "small",
       props: {
         title: "Klienci",
         value: stats.clientsCount,
@@ -79,7 +83,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       type: "stats",
       title: "Kontakty",
       order: 2,
-      gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+      size: "small",
       props: {
         title: "Kontakty",
         value: stats.contactsCount,
@@ -93,7 +97,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       type: "stats",
       title: "Zadania",
       order: 3,
-      gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+      size: "small",
       props: {
         title: "Zadania",
         value: stats.tasksCount,
@@ -108,7 +112,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       type: "stats",
       title: "Bez kontaktu 7+ dni",
       order: 4,
-      gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+      size: "small",
       props: {
         title: "Bez kontaktu 7+ dni",
         value: stats.noContact7Days,
@@ -122,7 +126,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       type: "stats",
       title: "Bez kontaktu 30+ dni",
       order: 5,
-      gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+      size: "small",
       props: {
         title: "Bez kontaktu 30+ dni",
         value: stats.noContact30Days,
@@ -136,7 +140,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       type: "stats",
       title: "Follow-up dzisiaj",
       order: 6,
-      gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+      size: "small",
       props: {
         title: "Follow-up dzisiaj",
         value: stats.followUpToday,
@@ -151,7 +155,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
       type: "list",
       title: "Nadchodzące zadania",
       order: 7,
-      gridCols: { mobile: 1, tablet: 1, desktop: 2, wide: 2 },
+      size: "large",
       props: {
         title: "Nadchodzące zadania",
         description: "Zadania przypisane do Ciebie",
@@ -185,7 +189,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         type: "stats",
         title: "Kalkulacje",
         order: 8,
-        gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+        size: "small",
         props: {
           title: "Kalkulacje",
           value: insuranceStats.calculationsCount,
@@ -199,7 +203,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         type: "stats",
         title: "Polisy",
         order: 9,
-        gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+        size: "small",
         props: {
           title: "Polisy",
           value: insuranceStats.policiesCount,
@@ -213,7 +217,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         type: "stats",
         title: "Pojazdy",
         order: 10,
-        gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+        size: "small",
         props: {
           title: "Pojazdy",
           value: insuranceStats.vehiclesCount,
@@ -227,7 +231,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         type: "stats",
         title: "Akceptacje",
         order: 11,
-        gridCols: { mobile: 1, tablet: 1, desktop: 1, wide: 1 },
+        size: "small",
         props: {
           title: "Akceptacje",
           value: insuranceStats.calculationsAccepted,
@@ -241,7 +245,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         type: "list",
         title: "Ostatnie kalkulacje",
         order: 12,
-        gridCols: { mobile: 1, tablet: 1, desktop: 2, wide: 2 },
+        size: "large",
         props: {
           title: "Ostatnie kalkulacje",
           description: "Najnowsze kalkulacje ubezpieczeniowe",
@@ -273,7 +277,7 @@ export const DashboardWidgets = memo(function DashboardWidgets({
         type: "list",
         title: "Nadchodzące odnowienia",
         order: 13,
-        gridCols: { mobile: 1, tablet: 1, desktop: 2, wide: 2 },
+        size: "large",
         props: {
           title: "Nadchodzące odnowienia",
           description: "Polisy wymagające odnowienia w ciągu 30 dni",
@@ -306,6 +310,32 @@ export const DashboardWidgets = memo(function DashboardWidgets({
     return baseWidgets
   }, [stats, upcomingTasks, insuranceStats, getClientDisplayName])
 
-  return <WidgetRegistry widgets={widgets} />
+  const handleWidgetConfigSave = useCallback((config: Record<string, { enabled: boolean; order: number; size?: "small" | "large" }>) => {
+    // Konfiguracja jest zapisywana w localStorage w dialogu
+    // Tutaj możemy dodać dodatkową logikę jeśli potrzeba
+  }, [])
+
+  return (
+    <>
+      <div className="flex justify-end mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setSettingsOpen(true)}
+          className="gap-2"
+        >
+          <Settings2 className="h-4 w-4" />
+          Konfiguruj widgety
+        </Button>
+      </div>
+      <WidgetRegistry widgets={widgets} />
+      <WidgetSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        widgets={widgets}
+        onSave={handleWidgetConfigSave}
+      />
+    </>
+  )
 })
 

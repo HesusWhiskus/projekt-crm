@@ -16,10 +16,10 @@ export interface ResponsiveGridProps {
 }
 
 const defaultColumns = {
-  mobile: 1,
-  tablet: 2,
-  desktop: 3,
-  wide: 4,
+  mobile: 2,  // 2 kolumny na mobile (mały widget = 1 kolumna, duży = 2 kolumny)
+  tablet: 4,  // 4 kolumny na tablet (mały widget = 2 kolumny, duży = 4 kolumny)
+  desktop: 8, // 8 kolumn na desktop (mały widget = 2 kolumny, duży = 4 kolumny)
+  wide: 8,    // 8 kolumn na wide (mały widget = 2 kolumny, duży = 4 kolumny)
 }
 
 const gapStyles = {
@@ -37,6 +37,8 @@ const gridColsClasses = {
   4: "grid-cols-4",
   5: "grid-cols-5",
   6: "grid-cols-6",
+  7: "grid-cols-7",
+  8: "grid-cols-8",
 }
 
 const gridColsMdClasses = {
@@ -46,6 +48,8 @@ const gridColsMdClasses = {
   4: "md:grid-cols-4",
   5: "md:grid-cols-5",
   6: "md:grid-cols-6",
+  7: "md:grid-cols-7",
+  8: "md:grid-cols-8",
 }
 
 const gridColsLgClasses = {
@@ -55,6 +59,8 @@ const gridColsLgClasses = {
   4: "lg:grid-cols-4",
   5: "lg:grid-cols-5",
   6: "lg:grid-cols-6",
+  7: "lg:grid-cols-7",
+  8: "lg:grid-cols-8",
 }
 
 const gridColsXlClasses = {
@@ -64,6 +70,8 @@ const gridColsXlClasses = {
   4: "xl:grid-cols-4",
   5: "xl:grid-cols-5",
   6: "xl:grid-cols-6",
+  7: "xl:grid-cols-7",
+  8: "xl:grid-cols-8",
 }
 
 export function ResponsiveGrid({
@@ -90,6 +98,7 @@ export function ResponsiveGrid({
         gapStyles[gap],
         className
       )}
+      style={{ gridAutoFlow: 'dense' }}
     >
       {children}
     </div>

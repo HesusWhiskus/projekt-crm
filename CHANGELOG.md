@@ -5,6 +5,21 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.22-beta] - 2025-01-27
+
+### Changed
+- **Standaryzacja układu widgetów dashboardu:** Wprowadzono system 8 kolumn zamiast 3/4 kolumn
+- **System rozmiarów widgetów:** Małe widgety zajmują 2 kolumny × 2 wiersze, duże widgety 4 kolumny × 4 wiersze
+- **Grid auto-flow dense:** Dodano `grid-auto-flow: dense` aby widgety mogły wypełniać puste miejsca w gridzie
+
+### Added
+- **Konfigurowalność widgetów:** Użytkownik może teraz dodawać/usuwać widgety z dashboardu przez dialog konfiguracji
+- **Dialog zarządzania widgetami:** Nowy komponent `WidgetSettingsDialog` pozwala na włączanie/wyłączanie widgetów i zmianę ich rozmiarów
+- **Zapis konfiguracji:** Konfiguracja widgetów jest zapisywana w localStorage (`dashboard-widget-config`)
+
+### Fixed
+- **Układ widgetów:** Naprawiono problem z wcięciem między widgetami - teraz można je układać dowolnie na siatce 8 kolumn
+
 ## [0.10.21-beta] - 2025-01-27
 
 ### Fixed

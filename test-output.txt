@@ -1,0 +1,298 @@
+﻿
+> internal-crm@0.10.21-beta test
+> vitest run
+
+node.exe : [33mThe CJS build of Vite's Node API is deprecated. See https://vit
+e.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+[39m
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([33mThe CJS bu...e details.[39m 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mE:/VibeCode/Projekt CRM[39m
+
+ [32mΓ£ô[39m src/__tests__/security/log-sanitization.test.ts [2m ([22m[2m3 tests[22m[2m)[22m[90m 2[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/security/security-headers.test.ts [2m ([22m[2m9 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/security/ssrf-protection.test.ts [2m ([22m[2m10 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/security/query-validation.test.ts [2m ([22m[2m25 tests[22m[2m)[22m[90m 28[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/security/file-upload.test.ts [2m ([22m[2m24 tests[22m[2m)[22m[90m 17[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/security/malicious-payloads.test.ts [2m ([22m[2m117 tests[22m[2m)[22m[90m 57[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/application/clients/CreateClientUseCase.test.ts [2m ([22m[2m3 tests[22m[2m)[22m[90m 8[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/infrastructure/persistence/PrismaClientRepository.test.ts [2m ([22m[2m4 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/api/clients.test.ts [2m ([22m[2m4 tests[22m[2m)[22m[33m 496[2mms[22m[39m
+[90mstderr[2m | src/__tests__/api/clients.test.ts[2m > [22m[2mAPI /api/cli
+ents[2m > [22m[2mGET[2m > [22m[2mshould return clients list for authentic
+ated user[22m[39m
+[API CLIENTS] Pagination not used - returning all clients. Consider using ?page
+=1&limit=50
+
+[90mstderr[2m | src/__tests__/api/clients.test.ts[2m > [22m[2mAPI /api/cli
+ents[2m > [22m[2mPOST[2m > [22m[2mshould return 400 if validation fails[
+22m[39m
+[ERROR] Client creation error: Error - Imi─Ö i nazwisko s─à wymagane dla osoby 
+fizycznej
+
+ [32mΓ£ô[39m src/__tests__/security/rate-limiting.test.ts [2m ([22m[2m8 tests[22m [2m|[22m [33m2 skipped[39m[2m)[22m[90m 18[2mms[22m[39m
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mGET /api/tasks - Unauthorized Access[2m > [22m[2mshould reject request without authentication[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mGET /api/tasks - Unauthorized Access[2m > [22m[2mshould reject request without authentication[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mGET /api/tasks - Unauthorized Access[2m > [22m[2mshould accept request with valid authentication[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mGET /api/tasks - Unauthorized Access[2m > [22m[2mshould accept request with valid authentication[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22m[2mshould distinguish between ADMIN and USER roles[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22m[2mshould distinguish between ADMIN and USER roles[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstderr[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mA
+uthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22
+m[2mshould distinguish between ADMIN and USER roles[22m[39m
+[API TASKS] Pagination not used - returning all tasks. Consider using ?page=1&l
+imit=50
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22m[2mshould distinguish between ADMIN and USER roles[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22m[2mshould distinguish between ADMIN and USER roles[22m[39m
+prisma:error 
+Invalid `db.task.findMany()` invocation in
+E:\VibeCode\Projekt CRM\src\app\api\tasks\route.ts:372:15
+
+  369 
+  370 // Fetch tasks and total count in parallel
+  371 const [tasks, total] = await Promise.all([
+ΓåÆ 372   db.task.findMany(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+prisma:error 
+Invalid `db.task.count()` invocation in
+E:\VibeCode\Projekt CRM\src\app\api\tasks\route.ts:397:15
+
+  394   },
+  395   ...(usePagination && { skip, take: validLimit }),
+  396 }),
+ΓåÆ 397 db.task.count(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstderr[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mA
+uthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22
+m[2mshould distinguish between ADMIN and USER roles[22m[39m
+[ERROR] Tasks fetch error: PrismaClientInitializationError - 
+Invalid `db.task.findMany()` invocation in
+E:\VibeCode\Projekt CRM\src\app\api\tasks\route.ts:372:15
+
+  369 
+  370 // Fetch tasks and total count in parallel
+  371 const [tasks, total] = await Promise.all([
+ΓåÆ 372   db.task.findMany(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+[API TASKS] Pagination not used - returning all tasks. Consider using ?page=1&l
+imit=50
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22m[2mshould distinguish between ADMIN and USER roles[22m[39m
+prisma:error 
+Invalid `db.task.findMany()` invocation in
+E:\VibeCode\Projekt CRM\src\app\api\tasks\route.ts:372:15
+
+  369 
+  370 // Fetch tasks and total count in parallel
+  371 const [tasks, total] = await Promise.all([
+ΓåÆ 372   db.task.findMany(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+prisma:error 
+Invalid `db.task.count()` invocation in
+E:\VibeCode\Projekt CRM\src\app\api\tasks\route.ts:397:15
+
+  394   },
+  395   ...(usePagination && { skip, take: validLimit }),
+  396 }),
+ΓåÆ 397 db.task.count(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstderr[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mA
+uthorization Security Tests[2m > [22m[2mRole-Based Access Control[2m > [22
+m[2mshould distinguish between ADMIN and USER roles[22m[39m
+[ERROR] Tasks fetch error: PrismaClientInitializationError - 
+Invalid `db.task.findMany()` invocation in
+E:\VibeCode\Projekt CRM\src\app\api\tasks\route.ts:372:15
+
+  369 
+  370 // Fetch tasks and total count in parallel
+  371 const [tasks, total] = await Promise.all([
+ΓåÆ 372   db.task.findMany(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mInvalid Token Handling[2m > [22m[2mshould reject request with invalid session[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+[90mstdout[2m | src/__tests__/security/authorization.test.ts[2m > [22m[2mAuthorization Security Tests[2m > [22m[2mInvalid Token Handling[2m > [22m[2mshould reject request with invalid session[22m[39m
+prisma:error 
+Invalid `db.user.create()` invocation in
+E:\VibeCode\Projekt CRM\src\__tests__\helpers\auth.ts:28:32
+
+  25 try {
+  26   const hashedPassword = await bcrypt.hash(password, 10)
+  27   
+ΓåÆ 28   const user = await db.user.create(
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+
+ [33mΓ¥»[39m src/__tests__/security/authorization.test.ts [2m ([22m[2m7 tests[22m [2m|[22m [31m3 failed[39m [2m|[22m [33m3 skipped[39m[2m)[22m[33m 47270[2mms[22m[39m
+[31m   [33mΓ¥»[31m src/__tests__/security/authorization.test.ts[2m > [22mAuthorization Security Tests[2m > [22mGET /api/tasks - Unauthorized Access[2m > [22mshould reject request without authentication[39m
+[31m     ΓåÆ Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".[39m
+[31m   [33mΓ¥»[31m src/__tests__/security/authorization.test.ts[2m > [22mAuthorization Security Tests[2m > [22mGET /api/tasks - Unauthorized Access[2m > [22mshould accept request with valid authentication[39m
+[31m     ΓåÆ Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".[39m
+[31m   [33mΓ¥»[31m src/__tests__/security/authorization.test.ts[2m > [22mAuthorization Security Tests[2m > [22mInvalid Token Handling[2m > [22mshould reject request with invalid session[39m
+[31m     ΓåÆ Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".[39m
+
+[31mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1m[7m Failed Tests 3 [27m[22mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»Γ
+Ä»[39m
+
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/security/authorization.test.ts
+[2m > [22mAuthorization Security Tests[2m > [22mGET /api/tasks - Unauthoriz
+ed Access[2m > [22mshould reject request without authentication
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/security/authorization.test.ts
+[2m > [22mAuthorization Security Tests[2m > [22mGET /api/tasks - Unauthoriz
+ed Access[2m > [22mshould accept request with valid authentication
+[31m[1m[7m FAIL [27m[22m[39m src/__tests__/security/authorization.test.ts
+[2m > [22mAuthorization Security Tests[2m > [22mInvalid Token Handling[2m 
+> [22mshould reject request with invalid session
+[31m[1mError[22m: Hook timed out in 10000ms.
+If this is a long-running hook, pass a timeout value as the last argument or co
+nfigure it globally with "hookTimeout".[39m
+[31m[2mΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»Γ
+Ä»[1/3]ΓÄ»[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m10 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m206 passed[39m[22m[2m | [22m[33m5 skipped[39m[90m (214)[39m
+[2m   Start at [22m 10:21:40
+[2m   Duration [22m 49.08s[2m (transform 1.46s, setup 334ms, collect 3.78s, tests 47.92s, environment 2ms, prepare 7.68s)[22m
+
