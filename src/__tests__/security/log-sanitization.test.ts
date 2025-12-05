@@ -5,22 +5,36 @@
  * Testy sprawdzające czy wrażliwe dane są rzeczywiście redagowane w logach
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, afterAll, vi } from 'vitest'
 import { logError } from '@/lib/logger'
 
-// Mock console.error to capture log output
-const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-
 describe('Log Sanitization Security Tests', () => {
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>
+
   beforeEach(() => {
-    consoleErrorSpy.mockClear()
+    // Create spy before each test to ensure it's fresh
+    // Use mockImplementation with args to capture all calls
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation((...args: any[]) => {
+      // Store the call for later inspection
+      return undefined
+    })
     // Set NODE_ENV to development to ensure we can capture full log data
     // logError only logs full data in development mode
     process.env.NODE_ENV = 'development'
   })
 
   afterEach(() => {
-    consoleErrorSpy.mockRestore()
+    // Clear calls but don't restore - we'll restore in afterAll
+    if (consoleErrorSpy) {
+      consoleErrorSpy.mockClear()
+    }
+  })
+
+  afterAll(() => {
+    // Restore console.error after all tests
+    if (consoleErrorSpy) {
+      consoleErrorSpy.mockRestore()
+    }
   })
 
   describe('logError - Password Sanitization', () => {
