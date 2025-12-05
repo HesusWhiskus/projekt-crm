@@ -14,8 +14,9 @@ const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 describe('Log Sanitization Security Tests', () => {
   beforeEach(() => {
     consoleErrorSpy.mockClear()
-    // Set NODE_ENV to test to ensure we can capture logs
-    process.env.NODE_ENV = 'test'
+    // Set NODE_ENV to development to ensure we can capture full log data
+    // logError only logs full data in development mode
+    process.env.NODE_ENV = 'development'
   })
 
   afterEach(() => {
