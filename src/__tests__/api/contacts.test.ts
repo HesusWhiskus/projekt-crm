@@ -37,7 +37,6 @@ describe('API /api/contacts', () => {
           email: 'test-client-contacts@test.com',
           type: 'PERSON',
           assignedTo: testUser.id,
-          organizationId: 'org-123',
         },
       })
     }

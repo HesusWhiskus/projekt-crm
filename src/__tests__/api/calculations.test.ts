@@ -66,7 +66,6 @@ describe('API /api/calculations', () => {
           lastName: 'Calculation',
           status: 'DRAFT',
           agentId: testUser.id,
-          organizationId: 'org-123',
         },
       })
 

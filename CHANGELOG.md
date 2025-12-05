@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.32-beta] - 2025-12-05
+
+### Naprawiono
+- **Testy - foreign key constraint:** Usunięto `organizationId: 'org-123'` z tworzenia encji testowych w testach API, ponieważ organizacja nie istnieje w bazie. Pole `organizationId` jest opcjonalne i nie jest wymagane w testach
+
 ## [0.10.31-beta] - 2025-12-05
 
 ### Naprawiono

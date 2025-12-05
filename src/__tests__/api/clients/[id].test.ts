@@ -91,7 +91,6 @@ describe('API /api/clients/[id]', () => {
           email: 'test-client-id@clients-id-test.com',
           type: 'PERSON',
           assignedTo: testUser.id,
-          organizationId: 'org-123',
         },
       })
 
@@ -142,7 +141,6 @@ describe('API /api/clients/[id]', () => {
           email: 'test-client-id-update@clients-id-test.com',
           type: 'PERSON',
           assignedTo: testUser.id,
-          organizationId: 'org-123',
         },
       })
 
@@ -195,7 +193,6 @@ describe('API /api/clients/[id]', () => {
           email: 'test-client-id-delete@clients-id-test.com',
           type: 'PERSON',
           assignedTo: testUser.id,
-          organizationId: 'org-123',
         },
       })
 

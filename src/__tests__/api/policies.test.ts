@@ -77,7 +77,6 @@ describe('API /api/policies', () => {
           status: 'ACTIVE',
           insuranceCompanyId: insuranceCompany.id,
           agentId: testUser.id,
-          organizationId: 'org-123',
         },
       })
 

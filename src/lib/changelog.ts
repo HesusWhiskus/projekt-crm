@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.32-beta',
+    date: '2025-12-05',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błędy foreign key constraint w testach API - usunięto nieistniejące organizationId z tworzenia encji testowych',
+      },
+    ],
+  },
+  {
     version: '0.10.31-beta',
     date: '2025-12-05',
     changes: [
