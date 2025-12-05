@@ -25,7 +25,7 @@ export function ProNavItems({ enabledFeatures, onItemClick, collapsed: propColla
   const proNavItems: Array<{
     name: string
     href: string
-    icon: React.ComponentType<{ className?: string; 'aria-hidden'?: string }>
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
     featureKey?: string
     alwaysVisible?: boolean
   }> = [
