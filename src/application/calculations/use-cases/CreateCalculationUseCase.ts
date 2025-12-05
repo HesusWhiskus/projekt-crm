@@ -2,7 +2,6 @@ import { Calculation } from '@/domain/calculations/entities/Calculation'
 import { ICalculationRepository } from '@/domain/calculations/repositories/ICalculationRepository'
 import { CreateCalculationDTO, CalculationDTO } from '../dto'
 import { PESEL, PostalCode, InsuranceVariant, InsuranceScope } from '@/domain/calculations/value-objects'
-import { CalculationStatus } from '@prisma/client'
 import { UserContext } from '@/application/shared/types/UserContext'
 import { db } from '@/lib/db'
 

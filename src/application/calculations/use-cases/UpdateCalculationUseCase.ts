@@ -1,7 +1,7 @@
 import { Calculation } from '@/domain/calculations/entities/Calculation'
 import { ICalculationRepository } from '@/domain/calculations/repositories/ICalculationRepository'
 import { UpdateCalculationDTO, CalculationDTO } from '../dto'
-import { PESEL, PostalCode, InsuranceVariant, InsuranceScope } from '@/domain/calculations/value-objects'
+import { PESEL, PostalCode, InsuranceScope } from '@/domain/calculations/value-objects'
 import { UserContext } from '@/application/shared/types/UserContext'
 import { db } from '@/lib/db'
 
@@ -22,16 +22,14 @@ export class UpdateCalculationUseCase {
     const data = calculation.toPersistence()
 
     // Update value objects if provided
-    if (dto.pesel !== undefined) {
-      const pesel = dto.pesel ? PESEL.create(dto.pesel) : null
-      // Note: Calculation entity doesn't have updatePESEL method, so we'll recreate it
-      // For now, we'll update via toPersistence and recreate
-    }
-
-    if (dto.postalCode !== undefined) {
-      const postalCode = dto.postalCode ? PostalCode.create(dto.postalCode) : null
-      // Similar note as above
-    }
+    // Note: Calculation entity doesn't have updatePESEL/updatePostalCode methods,
+    // so we'll update via toPersistence and recreate (handled in updatedData below)
+    // if (dto.pesel !== undefined) {
+    //   const pesel = dto.pesel ? PESEL.create(dto.pesel) : null
+    // }
+    // if (dto.postalCode !== undefined) {
+    //   const postalCode = dto.postalCode ? PostalCode.create(dto.postalCode) : null
+    // }
 
     if (dto.status !== undefined) {
       calculation.changeStatus(dto.status)

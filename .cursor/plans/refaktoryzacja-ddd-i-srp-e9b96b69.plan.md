@@ -1,4 +1,42 @@
-<!-- e9b96b69-37e9-4628-b847-bfc600e4b75b 5361f460-a35e-4141-81f5-d5485291b741 -->
+---
+name: Plan rozszerzenia CRM o nowe domeny (DDD/SRP)
+overview: ""
+todos:
+  - id: 04ff625f-fe96-49c5-b15e-e0297f69ba14
+    content: Utworzenie Value Objects dla Client (Email, Phone, Website, ClientName, AgencyName) z walidacją i logiką biznesową
+    status: pending
+  - id: 2aeec92c-0d9c-4aa4-b90c-c96bd61a554b
+    content: Utworzenie Client Entity z metodami biznesowymi (changeStatus, updatePriority, assignTo) i enkapsulacją logiki
+    status: pending
+  - id: d6aa3217-befa-4313-8609-756d3f0b86ef
+    content: Utworzenie interfejsów repozytoriów (IClientRepository, IContactRepository, ITaskRepository) z metodami CRUD
+    status: pending
+  - id: 50dad371-a186-47f3-9ff0-23e82ebccad9
+    content: Utworzenie Domain Services (ClientStatusChangeService) dla logiki wymagającej wielu encji
+    status: pending
+  - id: 6b9ce90a-1060-48cb-aa44-dce7717473df
+    content: Utworzenie Use Cases dla Client (CreateClient, UpdateClient, DeleteClient, GetClient, ListClients) z obsługą autoryzacji
+    status: pending
+  - id: e1aaa56a-e4bd-430b-837b-8096b87bd3a3
+    content: Utworzenie DTO (Data Transfer Objects) dla komunikacji między warstwami (CreateClientDTO, UpdateClientDTO, ClientDTO)
+    status: pending
+  - id: c193a2db-746a-4ff2-8594-7ab0dc636a6c
+    content: Implementacja repozytoriów Prisma (PrismaClientRepository, PrismaContactRepository, PrismaTaskRepository) implementujących interfejsy domenowe
+    status: pending
+  - id: 36f873cb-f565-4899-8770-ab1cea8a0401
+    content: Utworzenie ActivityLogger jako serwisu infrastruktury z integracją domain events
+    status: pending
+  - id: 8f115e8a-b787-4e6d-b753-9ce76b5751f4
+    content: Refaktoryzacja API routes (clients, contacts, tasks) - uproszczenie do delegacji do use cases, dodanie middleware autoryzacji
+    status: pending
+  - id: 8a03bd57-f469-4308-b463-dfffa54d254f
+    content: Powtórzenie struktury DDD dla Contact domain (entities, value objects, repositories, use cases)
+    status: pending
+  - id: 762b2193-8709-4b65-8901-1e46501e7057
+    content: Powtórzenie struktury DDD dla Task domain (entities, value objects, repositories, use cases)
+    status: pending
+---
+
 # Plan rozszerzenia CRM o nowe domeny (DDD/SRP)
 
 ## Kontekst biznesowy
@@ -239,17 +277,3 @@ System CRM dla firmy technologicznej sprzedającej rozwiązania agencjom ubezpie
 - File storage może być lokalny (na start) lub S3-compatible (w przyszłości)
 - Reminders mogą być triggerowane przez cron job lub background worker
 - Reports używają read-only queries (nie modyfikują danych)
-
-### To-dos
-
-- [ ] Utworzenie Value Objects dla Client (Email, Phone, Website, ClientName, AgencyName) z walidacją i logiką biznesową
-- [ ] Utworzenie Client Entity z metodami biznesowymi (changeStatus, updatePriority, assignTo) i enkapsulacją logiki
-- [ ] Utworzenie interfejsów repozytoriów (IClientRepository, IContactRepository, ITaskRepository) z metodami CRUD
-- [ ] Utworzenie Domain Services (ClientStatusChangeService) dla logiki wymagającej wielu encji
-- [ ] Utworzenie Use Cases dla Client (CreateClient, UpdateClient, DeleteClient, GetClient, ListClients) z obsługą autoryzacji
-- [ ] Utworzenie DTO (Data Transfer Objects) dla komunikacji między warstwami (CreateClientDTO, UpdateClientDTO, ClientDTO)
-- [ ] Implementacja repozytoriów Prisma (PrismaClientRepository, PrismaContactRepository, PrismaTaskRepository) implementujących interfejsy domenowe
-- [ ] Utworzenie ActivityLogger jako serwisu infrastruktury z integracją domain events
-- [ ] Refaktoryzacja API routes (clients, contacts, tasks) - uproszczenie do delegacji do use cases, dodanie middleware autoryzacji
-- [ ] Powtórzenie struktury DDD dla Contact domain (entities, value objects, repositories, use cases)
-- [ ] Powtórzenie struktury DDD dla Task domain (entities, value objects, repositories, use cases)

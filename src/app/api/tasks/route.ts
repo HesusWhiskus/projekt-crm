@@ -352,18 +352,11 @@ export async function GET(request: Request) {
       where.clientId = validatedClientId
     }
 
-    // Parse pagination parameters
+    // Parse pagination parameters - always use pagination with defaults
     const pageParam = searchParams.get("page")
     const limitParam = searchParams.get("limit")
-    const page = pageParam ? parseInt(pageParam, 10) : undefined
-    const limit = limitParam ? parseInt(limitParam, 10) : undefined
-
-    // Backward compatible: if no pagination params, return all tasks (with warning in logs)
-    const usePagination = page !== undefined || limit !== undefined
-
-    if (!usePagination) {
-      console.warn("[API TASKS] Pagination not used - returning all tasks. Consider using ?page=1&limit=50")
-    }
+    const page = pageParam ? parseInt(pageParam, 10) : 1
+    const limit = limitParam ? parseInt(limitParam, 10) : 50
 
     const { page: validPage, limit: validLimit, skip } = calculatePagination(page, limit, 50)
 
@@ -392,29 +385,25 @@ export async function GET(request: Request) {
         orderBy: {
           dueDate: "asc",
         },
-        ...(usePagination && { skip, take: validLimit }),
+        skip,
+        take: validLimit,
       }),
       db.task.count({ where }),
     ])
 
-    // Backward compatible response format
-    if (usePagination) {
-      const totalPages = Math.ceil(total / validLimit)
-      const response: PaginatedResponse<typeof tasks[0]> = {
-        data: tasks,
-        pagination: {
-          page: validPage,
-          limit: validLimit,
-          total,
-          totalPages,
-          hasMore: validPage * validLimit < total,
-        },
-      }
-      return NextResponse.json(response)
-    } else {
-      // Old format for backward compatibility
-      return NextResponse.json({ tasks })
+    // Always return paginated response
+    const totalPages = Math.ceil(total / validLimit)
+    const response: PaginatedResponse<typeof tasks[0]> = {
+      data: tasks,
+      pagination: {
+        page: validPage,
+        limit: validLimit,
+        total,
+        totalPages,
+        hasMore: validPage * validLimit < total,
+      },
     }
+    return NextResponse.json(response)
   } catch (error: unknown) {
     // SECURITY-FIX: [ERROR-LOG-2] Zastąpiono console.error przez logError z sanitizacją
     // Data: 2025-01-27

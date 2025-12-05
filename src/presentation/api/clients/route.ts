@@ -338,33 +338,20 @@ export async function GET(request: Request) {
       throw error
     }
 
-    // Parse pagination parameters
+    // Parse pagination parameters - always use pagination with defaults
     const pageParam = searchParams.get("page")
     const limitParam = searchParams.get("limit")
-    const page = pageParam ? parseInt(pageParam, 10) : undefined
-    const limit = limitParam ? parseInt(limitParam, 10) : undefined
+    const page = pageParam ? parseInt(pageParam, 10) : 1
+    const limit = limitParam ? parseInt(limitParam, 10) : 50
 
-    // Add pagination to filter if provided
-    if (page !== undefined || limit !== undefined) {
-      validatedParams.pagination = { page, limit }
-    }
-
-    // Backward compatible: if no pagination params, log warning
-    if (!validatedParams.pagination) {
-      console.warn("[API CLIENTS] Pagination not used - returning all clients. Consider using ?page=1&limit=50")
-    }
+    // Always add pagination to filter
+    validatedParams.pagination = { page, limit }
 
     // Execute use case
     const result = await listClientsUseCase.execute(validatedParams, user)
 
-    // Backward compatible response format
-    if (Array.isArray(result)) {
-      // Old format - array of clients
-      return NextResponse.json({ clients: result })
-    } else {
-      // New format - paginated response
-      return NextResponse.json(result)
-    }
+    // Always return paginated response (use case returns PaginatedResponse when pagination is set)
+    return NextResponse.json(result)
   } catch (error: any) {
     console.error('Clients fetch error:', error)
     

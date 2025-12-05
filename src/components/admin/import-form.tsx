@@ -149,7 +149,7 @@ export function ImportForm() {
             <div>
               <h3 className="font-medium mb-2">Arkusz z klientami</h3>
               <p className="text-sm text-muted-foreground mb-2">
-                Plik powinien zawierać arkusz z nazwą zawierającą "klienci" lub "clients".
+                Plik powinien zawierać arkusz z nazwą zawierającą &quot;klienci&quot; lub &quot;clients&quot;.
                 Wspierane kolumny:
               </p>
               <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
@@ -168,7 +168,7 @@ export function ImportForm() {
             <div>
               <h3 className="font-medium mb-2">Arkusz z kontaktami (opcjonalnie)</h3>
               <p className="text-sm text-muted-foreground mb-2">
-                Jeśli chcesz zaimportować kontakty, dodaj arkusz z nazwą zawierającą "kontakty" lub "contacts".
+                Jeśli chcesz zaimportować kontakty, dodaj arkusz z nazwą zawierającą &quot;kontakty&quot; lub &quot;contacts&quot;.
                 Wspierane kolumny:
               </p>
               <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">

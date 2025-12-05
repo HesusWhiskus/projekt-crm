@@ -12,9 +12,9 @@ export async function POST(request: Request) {
     if (rateLimitResponse) return rateLimitResponse
 
     const body = await request.json()
-    const signature = request.headers.get('x-signature') || undefined
-
     // TODO: Validate signature if needed
+    // const signature = request.headers.get('x-signature') || undefined
+
     const result = await webhookHandler.processWebhook(body)
 
     return NextResponse.json({ success: true, result })

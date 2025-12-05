@@ -1,4 +1,3 @@
-import { Calculation } from '@/domain/calculations/entities/Calculation'
 import { ICalculationRepository } from '@/domain/calculations/repositories/ICalculationRepository'
 import { CalculationStatusService } from '@/domain/calculations/services/CalculationStatusService'
 // CalculationStatus is defined in schema.prisma enum, will be available after Prisma generate

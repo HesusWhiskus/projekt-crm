@@ -1,4 +1,3 @@
-import { InsuranceAgent } from '@/domain/insurance-agents/entities/InsuranceAgent'
 import { IInsuranceAgentRepository } from '@/domain/insurance-agents/repositories/IInsuranceAgentRepository'
 import { AgentVisibilityService } from '@/domain/insurance-agents/services/AgentVisibilityService'
 import { UpdateVisibilitySettingsDTO } from '../dto'

@@ -71,8 +71,8 @@ export function OrganizationsList({ organizations: initialOrganizations }: Organ
           setOrganizations(data.organizations)
         }
       }
-    } catch (error) {
-      console.error("Error fetching organizations:", error)
+    } catch (_error) {
+      console.error("Error fetching organizations:", _error)
     }
     router.refresh()
     handleClose()

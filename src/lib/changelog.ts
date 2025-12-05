@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.29-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono generowanie coverage report w GitHub Actions - teraz zawsze generowany jest raport pokrycia kodu',
+      },
+      {
+        type: 'security',
+        description: 'Wymuszono paginację we wszystkich endpointach API - eliminuje problemy wydajnościowe i bezpieczeństwa związane z pobieraniem wszystkich rekordów naraz',
+      },
+      {
+        type: 'changed',
+        description: 'Wszystkie endpointy API teraz zawsze zwracają paginowane odpowiedzi (domyślnie page=1, limit=50)',
+      },
+    ],
+  },
+  {
     version: '0.10.28-beta',
     date: '2025-01-27',
     changes: [

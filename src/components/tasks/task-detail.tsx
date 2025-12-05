@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TaskStatus, UserRole } from "@prisma/client"
 import { Edit, Calendar as CalendarIcon } from "lucide-react"
@@ -72,8 +72,8 @@ export function TaskDetail({ task, users, clients, groups, currentUser }: TaskDe
       }
 
       alert("Zadanie zostało zsynchronizowane z kalendarzem Google")
-    } catch (error) {
-      console.error(error)
+    } catch (_error) {
+      console.error(_error)
       alert("Wystąpił błąd podczas synchronizacji")
     } finally {
       setIsSyncing(false)

@@ -1,4 +1,3 @@
-import { Vehicle } from '@/domain/vehicles/entities/Vehicle'
 import { IVehicleRepository } from '@/domain/vehicles/repositories/IVehicleRepository'
 import { VehicleDataEnrichmentService } from '@/domain/vehicles/services/VehicleDataEnrichmentService'
 import { VehicleDTO } from '../dto'

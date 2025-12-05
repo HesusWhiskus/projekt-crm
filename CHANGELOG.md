@@ -5,6 +5,15 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.29-beta] - 2025-01-27
+
+### Naprawiono
+- **GitHub Actions - coverage report:** Naprawiono generowanie coverage report w workflow test-unit.yml - zmieniono `npm run test:unit` na `npm run test:coverage` aby zawsze generować raport pokrycia kodu
+- **API - wymuszenie paginacji:** Wymuszono paginację we wszystkich endpointach API (`/api/tasks`, `/api/clients`, `/api/contacts`, `/api/calculations`, `/api/policies`) - teraz zawsze używają domyślnych wartości (`page=1`, `limit=50`) jeśli nie podano parametrów, eliminując problemy wydajnościowe i bezpieczeństwa związane z pobieraniem wszystkich rekordów naraz
+
+### Zmieniono
+- **API - backward compatibility:** Usunięto backward compatible mode który zwracał wszystkie rekordy bez paginacji - teraz wszystkie endpointy zawsze zwracają paginowane odpowiedzi dla bezpieczeństwa i wydajności
+
 ## [0.10.28-beta] - 2025-01-27
 
 ### Naprawiono

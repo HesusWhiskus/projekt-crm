@@ -46,8 +46,8 @@ export function Pagination({ currentPage, totalPages, total, limit, basePath }: 
       pages.push(1)
 
       // Oblicz zakres stron wokół aktualnej strony
-      let start = Math.max(2, currentPage - 1)
-      let end = Math.min(totalPages - 1, currentPage + 1)
+      const start = Math.max(2, currentPage - 1)
+      const end = Math.min(totalPages - 1, currentPage + 1)
 
       // Jeśli jest przerwa na początku, dodaj elipsę
       if (start > 2) {

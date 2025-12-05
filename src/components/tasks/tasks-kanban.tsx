@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { EmptyState } from "@/components/ui/empty-state"
 import { CheckSquare, Clock, CheckCircle2 } from "lucide-react"
-import { taskStatusLabels } from "@/lib/status-config"
 import Link from "next/link"
 
 interface Task {

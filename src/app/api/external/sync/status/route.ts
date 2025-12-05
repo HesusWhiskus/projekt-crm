@@ -18,8 +18,6 @@ export async function GET(request: Request) {
       await logApiActivity(null, 'API_UNAUTHORIZED_ATTEMPT', 'ExternalSync', null, {}, request)
       return authResult.response
     }
-    const { user } = authResult
-
     const { searchParams } = new URL(request.url)
     const entityType = searchParams.get('entityType')
     const entityId = searchParams.get('entityId')

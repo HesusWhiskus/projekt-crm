@@ -471,18 +471,11 @@ export async function GET(request: Request) {
       where.userId = validatedParams.userId
     }
 
-    // Parse pagination parameters
+    // Parse pagination parameters - always use pagination with defaults
     const pageParam = searchParams.get("page")
     const limitParam = searchParams.get("limit")
-    const page = pageParam ? parseInt(pageParam, 10) : undefined
-    const limit = limitParam ? parseInt(limitParam, 10) : undefined
-
-    // Backward compatible: if no pagination params, return all contacts (with warning in logs)
-    const usePagination = page !== undefined || limit !== undefined
-
-    if (!usePagination) {
-      console.warn("[API CONTACTS] Pagination not used - returning all contacts. Consider using ?page=1&limit=50")
-    }
+    const page = pageParam ? parseInt(pageParam, 10) : 1
+    const limit = limitParam ? parseInt(limitParam, 10) : 50
 
     const { page: validPage, limit: validLimit, skip } = calculatePagination(page, limit, 50)
 
@@ -518,29 +511,25 @@ export async function GET(request: Request) {
         orderBy: {
           date: "desc",
         },
-        ...(usePagination && { skip, take: validLimit }),
+        skip,
+        take: validLimit,
       }),
       db.contact.count({ where }),
     ])
 
-    // Backward compatible response format
-    if (usePagination) {
-      const totalPages = Math.ceil(total / validLimit)
-      const response: PaginatedResponse<typeof contacts[0]> = {
-        data: contacts,
-        pagination: {
-          page: validPage,
-          limit: validLimit,
-          total,
-          totalPages,
-          hasMore: validPage * validLimit < total,
-        },
-      }
-      return NextResponse.json(response)
-    } else {
-      // Old format for backward compatibility
-      return NextResponse.json({ contacts })
+    // Always return paginated response
+    const totalPages = Math.ceil(total / validLimit)
+    const response: PaginatedResponse<typeof contacts[0]> = {
+      data: contacts,
+      pagination: {
+        page: validPage,
+        limit: validLimit,
+        total,
+        totalPages,
+        hasMore: validPage * validLimit < total,
+      },
     }
+    return NextResponse.json(response)
   } catch (error) {
     console.error("Contacts fetch error:", error)
     return NextResponse.json(

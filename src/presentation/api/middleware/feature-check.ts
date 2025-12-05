@@ -10,7 +10,7 @@ import { db } from "@/lib/db"
  * @returns Middleware function
  */
 export function requireFeature(featureKey: FeatureKey) {
-  return async (request: Request): Promise<NextResponse | null> => {
+  return async (_request: Request): Promise<NextResponse | null> => {
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: "Nieautoryzowany" }, { status: 401 })

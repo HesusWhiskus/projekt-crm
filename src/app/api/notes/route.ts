@@ -5,7 +5,6 @@ import { z } from "zod"
 import { writeFile, mkdir } from "fs/promises"
 import { join } from "path"
 import { validateFiles, generateSafeFilename, MAX_FILES_PER_UPLOAD } from "@/lib/file-upload"
-import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 import { logError } from "@/lib/logger"
 

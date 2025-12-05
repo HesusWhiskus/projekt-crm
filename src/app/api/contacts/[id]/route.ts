@@ -3,7 +3,6 @@ import { getCurrentUser } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { ContactType } from "@prisma/client"
 import { z } from "zod"
-import { textFieldSchema } from "@/lib/field-validators"
 import { applyRateLimit, logApiActivity } from "@/lib/api-security"
 import { logError } from "@/lib/logger"
 
