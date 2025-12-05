@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.25-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd w komponencie kontaktów - usunięto nieużywaną zmienną stanu która powodowała błędy kompilacji',
+      },
+    ],
+  },
+  {
     version: '0.10.24-beta',
     date: '2025-01-27',
     changes: [

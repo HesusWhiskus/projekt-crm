@@ -77,7 +77,6 @@ export function ContactsList({
   const searchParams = useSearchParams()
   const [isCreating, setIsCreating] = useState(false)
   const [editingContactId, setEditingContactId] = useState<string | null>(null)
-  const [selectedClientId] = useState<string>("")
   const [filters, setFilters] = useState({
     type: searchParams.get("type") || "all",
     clientId: searchParams.get("clientId") || "all",
@@ -125,11 +124,9 @@ export function ContactsList({
           currentUser={currentUser}
           onClose={() => {
             setIsCreating(false)
-            setSelectedClientId("")
           }}
           onSuccess={() => {
             setIsCreating(false)
-            setSelectedClientId("")
             router.refresh()
           }}
           onAddClient={handleAddClient}
