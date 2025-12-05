@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.31-beta',
+    date: '2025-12-05',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd foreign key constraint przy usuwaniu użytkowników testowych - teraz najpierw usuwa powiązane activity_logs',
+      },
+      {
+        type: 'added',
+        description: 'Dodano testy integracyjne dla endpointów API: clients/[id], calculations, policies, contacts - zwiększono pokrycie testami',
+      },
+      {
+        type: 'added',
+        description: 'Dodano testy jednostkowe dla utility functions (utils, errors) i use cases (UpdateClientUseCase, DeleteClientUseCase, GetClientUseCase)',
+      },
+    ],
+  },
+  {
     version: '0.10.30-beta',
     date: '2025-01-27',
     changes: [

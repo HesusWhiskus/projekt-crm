@@ -5,6 +5,28 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.31-beta] - 2025-12-05
+
+### Naprawiono
+- **Testy - foreign key constraint:** Naprawiono `deleteTestUser` aby usuwał powiązane `activity_logs` przed usunięciem użytkownika, eliminując błędy foreign key constraint w logach PostgreSQL
+
+### Dodano
+- **Testy - API endpoints:** Dodano testy integracyjne dla endpointów API:
+  - `src/__tests__/api/clients/[id].test.ts` - testy GET, PATCH, DELETE dla `/api/clients/[id]`
+  - `src/__tests__/api/calculations.test.ts` - testy GET, POST dla `/api/calculations`
+  - `src/__tests__/api/policies.test.ts` - testy GET, POST dla `/api/policies`
+  - `src/__tests__/api/contacts.test.ts` - testy GET, POST dla `/api/contacts` (z obsługą FormData)
+- **Testy - utility functions:** Dodano testy jednostkowe:
+  - `src/__tests__/lib/utils.test.ts` - testy dla funkcji `cn` (100% coverage)
+  - `src/__tests__/lib/errors.test.ts` - testy dla wszystkich custom error classes (100% coverage)
+- **Testy - use cases:** Dodano testy jednostkowe dla use cases klientów:
+  - `src/__tests__/application/clients/UpdateClientUseCase.test.ts` - testy aktualizacji klienta
+  - `src/__tests__/application/clients/DeleteClientUseCase.test.ts` - testy usuwania klienta
+  - `src/__tests__/application/clients/GetClientUseCase.test.ts` - testy pobierania klienta
+
+### Zmieniono
+- **Testy - mockowanie:** Rozszerzono `createMockRequest` w `src/__tests__/helpers/mocks.ts` o obsługę FormData dla testów endpointów używających multipart/form-data
+
 ## [0.10.30-beta] - 2025-01-27
 
 ### Zmieniono

@@ -10,6 +10,7 @@ export function createMockRequest(
     method?: string
     headers?: Record<string, string>
     body?: any
+    formData?: FormData
     ip?: string
   } = {}
 ): NextRequest {
@@ -17,6 +18,7 @@ export function createMockRequest(
     method = 'GET',
     headers = {},
     body,
+    formData,
     ip = '127.0.0.1',
   } = options
 
@@ -31,7 +33,12 @@ export function createMockRequest(
     headers: requestHeaders,
   }
 
-  if (body) {
+  if (formData) {
+    // FormData - don't set Content-Type header, browser will set it with boundary
+    requestInit.body = formData as any
+    // Remove Content-Type header if it was set - FormData sets it automatically
+    requestHeaders.delete('Content-Type')
+  } else if (body) {
     requestInit.body = typeof body === 'string' ? body : JSON.stringify(body)
   }
 
