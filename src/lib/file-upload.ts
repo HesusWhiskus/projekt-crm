@@ -34,8 +34,12 @@ export const MAX_FILES_PER_UPLOAD = 5
  * Sanitizes filename by removing path traversal attempts and special characters
  */
 export function sanitizeFilename(filename: string): string {
+  // Normalize path separators - convert Windows separators to Unix separators
+  // This ensures basename() works correctly on all platforms
+  const normalized = filename.replace(/\\/g, '/')
+  
   // Remove path traversal attempts - only keep basename
-  const sanitized = basename(filename)
+  const sanitized = basename(normalized)
   
   // Remove special characters, keep only alphanumeric, dots, dashes, underscores, and spaces
   return sanitized.replace(/[^a-zA-Z0-9._\s-]/g, '_')

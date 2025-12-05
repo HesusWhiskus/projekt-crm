@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.27-beta] - 2025-01-27
+
+### Naprawiono
+- **File upload - sanitizacja nazw plików Windows:** Naprawiono funkcję `sanitizeFilename` - teraz poprawnie obsługuje Windows path separators (`\`) poprzez normalizację do Unix separators (`/`) przed użyciem `basename()`
+
 ## [0.10.26-beta] - 2025-01-27
 
 ### Naprawiono

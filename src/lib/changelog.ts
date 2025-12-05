@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.27-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono sanitizację nazw plików - teraz poprawnie obsługuje Windows path separators',
+      },
+    ],
+  },
+  {
     version: '0.10.26-beta',
     date: '2025-01-27',
     changes: [
