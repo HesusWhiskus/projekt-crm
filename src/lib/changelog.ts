@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.26-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błąd kompilacji TypeScript w pro-nav-items - poprawione typowanie ikony',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono konfigurację testów jednostkowych - testy teraz działają poprawnie',
+      },
+      {
+        type: 'fixed',
+        description: 'Zaktualizowano GitHub Actions workflow do najnowszych wersji',
+      },
+    ],
+  },
+  {
     version: '0.10.25-beta',
     date: '2025-01-27',
     changes: [

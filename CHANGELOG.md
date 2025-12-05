@@ -5,6 +5,13 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.26-beta] - 2025-01-27
+
+### Naprawiono
+- **TypeScript - typowanie ikony w pro-nav-items:** Naprawiono błąd kompilacji TypeScript w `pro-nav-items.tsx` - zmieniono typ ikony na `React.ComponentType<React.SVGProps<SVGSVGElement>>` dla kompatybilności z lucide-react
+- **Testy jednostkowe - konfiguracja vitest:** Naprawiono skrypt `test:unit` - usunięto flagę `--dir` aby vitest używał konfiguracji z `vitest.config.ts`
+- **GitHub Actions - deprecated upload-artifact:** Zaktualizowano wszystkie workflow do `actions/upload-artifact@v4` (z v3) w `test-e2e.yml`, `test-security.yml`, `test-performance.yml`
+
 ## [0.10.25-beta] - 2025-01-27
 
 ### Naprawiono
