@@ -181,7 +181,7 @@ describe('API /api/clients/[id]', () => {
     })
 
     it('should delete client successfully', async () => {
-      if (!testUser || testUser.id.startsWith('mock-')) {
+      if (!adminUser || adminUser.id.startsWith('mock-')) {
         throw new Error('Test requires real database connection')
       }
 
@@ -192,9 +192,18 @@ describe('API /api/clients/[id]', () => {
           lastName: 'User',
           email: 'test-client-id-delete@clients-id-test.com',
           type: 'PERSON',
-          assignedTo: testUser.id,
+          assignedTo: testUser?.id || adminUser.id,
         },
       })
+
+      // Mock getCurrentUser to return admin user for DELETE endpoint
+      vi.spyOn(authModule, 'getCurrentUser').mockResolvedValue({
+        id: adminUser.id,
+        email: adminUser.email,
+        role: adminUser.role,
+        name: adminUser.name,
+        organizationId: 'org-123',
+      } as any)
 
       const request = createMockRequest(`http://localhost:3000/api/clients/${client.id}`, {
         method: 'DELETE',

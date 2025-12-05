@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.33-beta',
+    date: '2025-12-05',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono test DELETE dla endpointu clients/[id] - teraz używa użytkownika z rolą ADMIN zgodnie z wymaganiami endpointu',
+      },
+    ],
+  },
+  {
     version: '0.10.32-beta',
     date: '2025-12-05',
     changes: [
