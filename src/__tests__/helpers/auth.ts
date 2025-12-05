@@ -22,11 +22,12 @@ export async function createTestUser(
   role: 'ADMIN' | 'USER' = 'USER',
   password: string = 'TestPassword123!'
 ): Promise<TestUser> {
-  // Check if we're in CI/CD or have DATABASE_URL - tests should always use real database
+  // Check if we're in CI/CD, Railway, or have DATABASE_URL - tests should always use real database
   const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true'
+  const isRailway = !!process.env.RAILWAY_ENVIRONMENT || !!process.env.RAILWAY_PROJECT_ID
   const hasDatabaseUrl = !!process.env.DATABASE_URL || !!process.env.DATABASE_URL_TEST
   
-  if (isCI || hasDatabaseUrl) {
+  if (isCI || isRailway || hasDatabaseUrl) {
     // In CI/CD or with DATABASE_URL, always use real database - fail if not available
     const hashedPassword = await bcrypt.hash(password, 10)
     
@@ -54,11 +55,11 @@ export async function createTestUser(
         name: user.name || '',
       }
     } catch (error: any) {
-      // In CI/CD, fail with clear error message
+      // In CI/CD or Railway, fail with clear error message
       throw new Error(
         `Failed to create test user in database: ${error?.message || error}. ` +
         `DATABASE_URL: ${process.env.DATABASE_URL ? 'set' : 'not set'}, ` +
-        `CI: ${isCI}, ` +
+        `CI: ${isCI}, Railway: ${isRailway}, ` +
         `This test requires a real database connection.`
       )
     }
