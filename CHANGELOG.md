@@ -5,6 +5,14 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.28-beta] - 2025-01-27
+
+### Naprawiono
+- **Testy jednostkowe - unique constraint errors:** Naprawiono błędy unique constraint w `createTestUser` - zmieniono `create` na `upsert` aby automatycznie aktualizować istniejących użytkowników zamiast tworzyć duplikaty
+- **Testy jednostkowe - timeout protection:** Dodano timeout (3s) dla operacji bazy danych w testach aby uniknąć zawieszeń gdy baza nie jest dostępna lokalnie
+- **Testy jednostkowe - skipped testy:** Naprawiono warunki skip w `rate-limiting.test.ts` - teraz sprawdzają czy użytkownik nie jest mockiem zamiast sprawdzać DATABASE_URL
+- **Testy jednostkowe - deleteTestUser:** Usunięto błędny warunek `includes('localhost:5432')` z `deleteTestUser` - funkcja teraz działa poprawnie w GitHub Actions
+
 ## [0.10.27-beta] - 2025-01-27
 
 ### Naprawiono

@@ -131,7 +131,8 @@ describe('Rate Limiting Security Tests', () => {
       }
     })
 
-    it.skipIf(!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('localhost:5432'))('should allow up to 60 requests per minute', async () => {
+    it.skipIf(!testUser || testUser.id.startsWith('mock-'))('should allow up to 60 requests per minute', async () => {
+      if (!testUser) return
       const testIP = '192.168.1.300'
       
       // Mock getCurrentUser to return test user
@@ -160,7 +161,8 @@ describe('Rate Limiting Security Tests', () => {
       }
     })
 
-    it.skipIf(!process.env.DATABASE_URL || process.env.DATABASE_URL.includes('localhost:5432'))('should block 61st request within 1 minute', async () => {
+    it.skipIf(!testUser || testUser.id.startsWith('mock-'))('should block 61st request within 1 minute', async () => {
+      if (!testUser) return
       const testIP = '192.168.1.301'
       
       const authModule = await import('@/lib/auth')

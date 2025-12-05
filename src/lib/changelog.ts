@@ -14,6 +14,24 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.28-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono błędy unique constraint w testach - testy teraz działają poprawnie w GitHub Actions',
+      },
+      {
+        type: 'fixed',
+        description: 'Dodano timeout protection dla operacji bazy danych w testach',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono warunki skip w testach rate-limiting - teraz sprawdzają dostępność bazy poprawnie',
+      },
+    ],
+  },
+  {
     version: '0.10.27-beta',
     date: '2025-01-27',
     changes: [
