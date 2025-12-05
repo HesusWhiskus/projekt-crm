@@ -89,7 +89,15 @@ export async function deleteTestUser(userId: string): Promise<void> {
   }
 
   try {
-    // Najpierw usuń powiązane activity_logs (foreign key constraint)
+    // Najpierw usuń powiązane encje (foreign key constraints)
+    // 1. Contacts
+    await db.contact.deleteMany({
+      where: { userId },
+    }).catch(() => {
+      // Ignore errors if contacts don't exist
+    })
+
+    // 2. Activity logs
     await db.activityLog.deleteMany({
       where: { userId },
     }).catch(() => {

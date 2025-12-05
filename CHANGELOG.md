@@ -5,6 +5,11 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.34-beta] - 2025-12-05
+
+### Naprawiono
+- **Testy - foreign key constraint:** Naprawiono `deleteTestUser` aby usuwał powiązane `contacts` przed usunięciem użytkownika, eliminując błędy foreign key constraint `contacts_userId_fkey` w logach PostgreSQL
+
 ## [0.10.33-beta] - 2025-12-05
 
 ### Naprawiono

@@ -14,6 +14,16 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.34-beta',
+    date: '2025-12-05',
+    changes: [
+      {
+        type: 'fixed',
+        description: 'Naprawiono deleteTestUser - teraz usuwa powiązane contacts przed usunięciem użytkownika, eliminując błędy foreign key constraint',
+      },
+    ],
+  },
+  {
     version: '0.10.33-beta',
     date: '2025-12-05',
     changes: [
