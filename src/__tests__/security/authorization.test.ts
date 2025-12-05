@@ -12,7 +12,8 @@ describe('Authorization Security Tests', () => {
   let adminUser: TestUser | null = null
 
   beforeEach(async () => {
-    // Create test users (will use mocks if database is not available)
+    // Create test users - always use real database in CI/CD
+    // Tests should fail if database is not available, not use mocks
     testUser = await createTestUser('user1@test.com', 'USER')
     otherUser = await createTestUser('user2@test.com', 'USER')
     adminUser = await createTestUser('admin@test.com', 'ADMIN')
@@ -41,9 +42,8 @@ describe('Authorization Security Tests', () => {
     })
 
     it('should accept request with valid authentication', async () => {
-      if (!testUser) {
-        // Skip if user is not available (mock)
-        return
+      if (!testUser || testUser.id.startsWith('mock-')) {
+        throw new Error('Test requires real database connection - testUser is a mock')
       }
       vi.spyOn(authModule, 'getCurrentUser').mockResolvedValue({
         id: testUser.id,
@@ -67,31 +67,24 @@ describe('Authorization Security Tests', () => {
     let taskId: string
 
     beforeEach(async () => {
-      // Skip if users are mocks (database not available)
+      // Fail if users are mocks (database not available) - tests should always run in CI/CD
       if (!testUser || !otherUser || !adminUser || 
           testUser.id.startsWith('mock-') || 
           otherUser.id.startsWith('mock-') || 
           adminUser.id.startsWith('mock-')) {
-        taskId = 'mock-task-id'
-        return
+        throw new Error('Test requires real database connection - users are mocks')
       }
 
       // Create a task assigned to testUser
-      try {
-        const task = await db.task.create({
-          data: {
-            title: 'Test Task',
-            description: 'Test Description',
-            assignedTo: testUser.id,
-            status: 'TODO',
-          },
-        })
-        taskId = task.id
-      } catch (error) {
-        // Skip if database is not available
-        console.warn('Database not available, skipping task creation:', error)
-        taskId = 'mock-task-id'
-      }
+      const task = await db.task.create({
+        data: {
+          title: 'Test Task',
+          description: 'Test Description',
+          assignedTo: testUser.id,
+          status: 'TODO',
+        },
+      })
+      taskId = task.id
     })
 
     afterEach(async () => {
@@ -104,8 +97,10 @@ describe('Authorization Security Tests', () => {
       }
     })
 
-    it.skipIf(!testUser || taskId.startsWith('mock-'))('should allow owner to access their task', async () => {
-      if (!testUser) return
+    it('should allow owner to access their task', async () => {
+      if (!testUser || taskId.startsWith('mock-')) {
+        throw new Error('Test requires real database connection')
+      }
       vi.spyOn(authModule, 'getCurrentUser').mockResolvedValue({
         id: testUser.id,
         email: testUser.email,
@@ -121,8 +116,10 @@ describe('Authorization Security Tests', () => {
       expect(response.status).toBe(200)
     })
 
-    it.skipIf(!otherUser || taskId.startsWith('mock-'))('should reject access from other user to task they do not own', async () => {
-      if (!otherUser) return
+    it('should reject access from other user to task they do not own', async () => {
+      if (!otherUser || taskId.startsWith('mock-')) {
+        throw new Error('Test requires real database connection')
+      }
       vi.spyOn(authModule, 'getCurrentUser').mockResolvedValue({
         id: otherUser.id,
         email: otherUser.email,
@@ -141,8 +138,10 @@ describe('Authorization Security Tests', () => {
       expect(data.error).toContain('Brak uprawnień')
     })
 
-    it.skipIf(!adminUser || taskId.startsWith('mock-'))('should allow admin to access any task', async () => {
-      if (!adminUser) return
+    it('should allow admin to access any task', async () => {
+      if (!adminUser || taskId.startsWith('mock-')) {
+        throw new Error('Test requires real database connection')
+      }
       vi.spyOn(authModule, 'getCurrentUser').mockResolvedValue({
         id: adminUser.id,
         email: adminUser.email,
@@ -161,9 +160,8 @@ describe('Authorization Security Tests', () => {
 
   describe('Role-Based Access Control', () => {
     it('should distinguish between ADMIN and USER roles', async () => {
-      if (!testUser || !adminUser) {
-        // Skip if users are not available (mocks)
-        return
+      if (!testUser || !adminUser || testUser.id.startsWith('mock-') || adminUser.id.startsWith('mock-')) {
+        throw new Error('Test requires real database connection - users are mocks')
       }
 
       const userRequest = createMockRequest('http://localhost:3000/api/tasks', {

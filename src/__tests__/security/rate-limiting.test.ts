@@ -131,8 +131,10 @@ describe('Rate Limiting Security Tests', () => {
       }
     })
 
-    it.skipIf(!testUser || testUser.id.startsWith('mock-'))('should allow up to 60 requests per minute', async () => {
-      if (!testUser) return
+    it('should allow up to 60 requests per minute', async () => {
+      if (!testUser || testUser.id.startsWith('mock-')) {
+        throw new Error('Test requires real database connection - testUser is a mock')
+      }
       const testIP = '192.168.1.300'
       
       // Mock getCurrentUser to return test user
@@ -161,8 +163,10 @@ describe('Rate Limiting Security Tests', () => {
       }
     })
 
-    it.skipIf(!testUser || testUser.id.startsWith('mock-'))('should block 61st request within 1 minute', async () => {
-      if (!testUser) return
+    it('should block 61st request within 1 minute', async () => {
+      if (!testUser || testUser.id.startsWith('mock-')) {
+        throw new Error('Test requires real database connection - testUser is a mock')
+      }
       const testIP = '192.168.1.301'
       
       const authModule = await import('@/lib/auth')

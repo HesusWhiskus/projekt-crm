@@ -14,7 +14,7 @@ export interface TestUser {
 
 /**
  * Creates a test user in the database
- * Returns a mock user if DATABASE_URL is not available (e.g., in Railway CI)
+ * Throws error if database is not available - tests should always use real database
  * If user with email already exists, updates it instead of creating new one
  */
 export async function createTestUser(
@@ -22,14 +22,16 @@ export async function createTestUser(
   role: 'ADMIN' | 'USER' = 'USER',
   password: string = 'TestPassword123!'
 ): Promise<TestUser> {
-  // Try to create user in database, fallback to mock if fails
-  try {
+  // Check if we're in CI/CD or have DATABASE_URL - tests should always use real database
+  const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true'
+  const hasDatabaseUrl = !!process.env.DATABASE_URL || !!process.env.DATABASE_URL_TEST
+  
+  if (isCI || hasDatabaseUrl) {
+    // In CI/CD or with DATABASE_URL, always use real database - fail if not available
     const hashedPassword = await bcrypt.hash(password, 10)
     
-    // Use upsert to handle existing users - update if exists, create if not
-    // Add timeout to prevent hanging if database is not available
-    const user = await Promise.race([
-      db.user.upsert({
+    try {
+      const user = await db.user.upsert({
         where: { email },
         update: {
           password: hashedPassword,
@@ -42,33 +44,36 @@ export async function createTestUser(
           role,
           name: `Test User ${Date.now()}`,
         },
-      }),
-      new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('Database connection timeout')), 3000)
-      ),
-    ])
+      })
 
-    return {
-      id: user.id,
-      email: user.email!,
-      password,
-      role: user.role as 'ADMIN' | 'USER',
-      name: user.name || '',
+      return {
+        id: user.id,
+        email: user.email!,
+        password,
+        role: user.role as 'ADMIN' | 'USER',
+        name: user.name || '',
+      }
+    } catch (error: any) {
+      // In CI/CD, fail with clear error message
+      throw new Error(
+        `Failed to create test user in database: ${error?.message || error}. ` +
+        `DATABASE_URL: ${process.env.DATABASE_URL ? 'set' : 'not set'}, ` +
+        `CI: ${isCI}, ` +
+        `This test requires a real database connection.`
+      )
     }
-  } catch (error: any) {
-    // If database connection fails or times out, return mock user
-    // Don't log warning in test environment to avoid cluttering output
-    if (process.env.NODE_ENV !== 'test') {
-      console.warn('Database not available, using mock user:', error)
-    }
-    const mockId = `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    return {
-      id: mockId,
-      email,
-      password,
-      role,
-      name: `Test User ${Date.now()}`,
-    }
+  }
+  
+  // Local development without DATABASE_URL - allow mock for convenience
+  // But warn that tests should use real database
+  console.warn('⚠️  Running tests without DATABASE_URL - using mock user. Tests should use real database.')
+  const mockId = `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return {
+    id: mockId,
+    email,
+    password,
+    role,
+    name: `Test User ${Date.now()}`,
   }
 }
 
