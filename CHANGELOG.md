@@ -5,6 +5,17 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
+## [0.10.30-beta] - 2025-01-27
+
+### Zmieniono
+- **Testy - przepisanie testów integracyjnych:** Przepisano `clients.test.ts` aby używał rzeczywistej bazy danych zamiast mocków - testy teraz faktycznie sprawdzają aplikację, nie tylko że "przechodzą"
+- **Testy - przepisanie testów sanitizacji logów:** Przepisano `log-sanitization.test.ts` aby testował rzeczywistą sanitizację z `src/lib/logger.ts` - sprawdza czy wrażliwe dane (password, token, secret) są redagowane
+- **Testy - przepisanie testów nagłówków bezpieczeństwa:** Przepisano `security-headers.test.ts` aby testował konfigurację `next.config.js` i rzeczywiste nagłówki HTTP zamiast mocków
+
+### Naprawiono
+- **Testy - nadmierne mockowanie:** Usunięto nadmierne mockowanie w testach integracyjnych - teraz mockowany jest tylko `getCurrentUser`, reszta używa rzeczywistej bazy danych i endpointów API
+- **Testy - placeholder testy:** Zastąpiono placeholder testy rzeczywistymi testami które sprawdzają funkcjonalność aplikacji
+
 ## [0.10.29-beta] - 2025-01-27
 
 ### Naprawiono

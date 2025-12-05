@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.30-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'changed',
+        description: 'Przepisano testy integracyjne aby używały rzeczywistej bazy danych - testy teraz faktycznie sprawdzają aplikację',
+      },
+      {
+        type: 'fixed',
+        description: 'Zastąpiono placeholder testy rzeczywistymi testami sanitizacji logów i nagłówków bezpieczeństwa',
+      },
+    ],
+  },
+  {
     version: '0.10.29-beta',
     date: '2025-01-27',
     changes: [
