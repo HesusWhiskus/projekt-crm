@@ -234,7 +234,7 @@ SHOW ssl;
 ## 🔄 Rotacja sekretów
 
 ### SECURITY-FIX: [SECRETS-13] Dokumentacja rotacji sekretów
-### Data: 2025-01-27
+### Data: 2025-12-21
 
 ### Jak wygenerować nowy sekret:
 

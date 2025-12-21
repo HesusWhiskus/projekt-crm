@@ -31,3 +31,40 @@ k6-results/
 # Test database
 *.test.db
 *.test.sqlite
+
+# Backup files
+backup_*.ps1
+przywroc_*.ps1
+export_*.py
+backup_state.vscdb
+*_BACKUP*.md
+HISTORIA_CZATOW*.md
+HISTORIA_CZATOW*.json
+
+# Build and error logs
+build-error.txt
+build-output.txt
+eslint-errors*.txt
+test-*.txt
+test-*.log
+*.log
+
+# Internal documentation (plans, analyses, reports)
+cursor_*.md
+TEST_*.md
+TESTING_*.md
+ANALIZA_*.md
+SECURITY_*.md
+PLAN_*.md
+*_ANALYSIS.md
+*_PROPOSAL.md
+REMAINING_*.md
+ROLLBACK_*.md
+MIGRACJA_*.md
+RAILWAY_*.md
+DEPLOY_INSTRUKCJA.md
+RULES.md
+
+# Internal data files
+railway_db_url.txt
+test-clients-*.xlsx

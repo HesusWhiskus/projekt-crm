@@ -1,8 +1,7 @@
 # Zgodność z RODO/GDPR
 
-**Data:** 2025-01-27  
+**Data:** 2025-12-21  
 **SECURITY-FIX: [GDPR-15] Dokumentacja zgodności z RODO/GDPR**
-**Data: 2025-01-27**
 
 ## Status zgodności: ✅ Zgodne z podstawowymi wymogami RODO
 
@@ -34,7 +33,7 @@ Authorization: Bearer {token}
     "calculations": [...],
     "policies": [...]
   },
-  "exportedAt": "2025-01-27T12:00:00.000Z"
+  "exportedAt": "2025-12-21T12:00:00.000Z"
 }
 ```
 
@@ -60,7 +59,7 @@ Authorization: Bearer {token}
 ```json
 {
   "message": "Dane osobowe zostały usunięte",
-  "deletedAt": "2025-01-27T12:00:00.000Z"
+  "deletedAt": "2025-12-21T12:00:00.000Z"
 }
 ```
 
