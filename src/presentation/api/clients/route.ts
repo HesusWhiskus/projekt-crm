@@ -34,21 +34,41 @@ const listClientsUseCase = new ListClientsUseCase(clientRepository)
  *               - firstName
  *               - lastName
  *             properties:
+ *               type:
+ *                 type: string
+ *                 enum: [PERSON, COMPANY, SOLE_PROPRIETORSHIP, LIMITED_LIABILITY_COMPANY, JOINT_STOCK_COMPANY, CIVIL_PARTNERSHIP]
+ *                 default: PERSON
+ *                 description: Typ klienta
  *               firstName:
  *                 type: string
  *                 minLength: 1
  *                 maxLength: 50
- *                 description: Imię klienta
+ *                 description: Imię klienta (wymagane dla typu PERSON)
  *               lastName:
  *                 type: string
  *                 minLength: 1
  *                 maxLength: 50
- *                 description: Nazwisko klienta
- *               agencyName:
+ *                 description: Nazwisko klienta (wymagane dla typu PERSON)
+ *               pesel:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 11
+ *                 description: Numer PESEL (dla typu PERSON)
+ *               companyName:
  *                 type: string
  *                 nullable: true
  *                 maxLength: 150
- *                 description: Nazwa agencji
+ *                 description: Nazwa firmy (dla typów COMPANY)
+ *               taxId:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 20
+ *                 description: NIP / Tax ID (dla typów COMPANY)
+ *               regon:
+ *                 type: string
+ *                 nullable: true
+ *                 maxLength: 20
+ *                 description: REGON (dla typów COMPANY)
  *               email:
  *                 type: string
  *                 format: email

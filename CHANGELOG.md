@@ -5,7 +5,21 @@ Wszystkie znaczące zmiany w projekcie będą dokumentowane w tym pliku.
 Format oparty na [Keep a Changelog](https://keepachangelog.com/pl/1.0.0/),
 i projekt przestrzega [Semantic Versioning](https://semver.org/lang/pl/).
 
-## [0.10.34-beta] - 2025-12-05
+## [0.10.35-beta] - 2025-01-27
+
+### Zmieniono
+- **Dokumentacja API:** Zaktualizowano dokumentację API zgodnie z aktualnym stanem projektu:
+  - Zastąpiono przestarzałe pole `agencyName` przez `companyName` i `type` (ClientType)
+  - Dodano pełną dokumentację dla endpointów ofert: `GET/POST /api/calculations/[id]/offers` i `PUT /api/offers/[id]/select`
+  - Rozszerzono ClientType o wszystkie dostępne wartości enum (PERSON, COMPANY, SOLE_PROPRIETORSHIP, LIMITED_LIABILITY_COMPANY, JOINT_STOCK_COMPANY, CIVIL_PARTNERSHIP)
+  - Zaktualizowano przykłady request/response z polami `type`, `companyName`, `taxId`, `regon`
+  - Zaktualizowano JSDoc w kodzie źródłowym
+  - Zaktualizowano `README_API.md` z brakującymi endpointami ofert
+
+### Naprawiono
+- **Dokumentacja:** Naprawiono niespójności między dokumentacją a rzeczywistym kodem API
+
+## [0.10.34-beta] - 2025-12-21
 
 ### Naprawiono
 - **Testy - foreign key constraint:** Naprawiono `deleteTestUser` aby usuwał powiązane `contacts` przed usunięciem użytkownika, eliminując błędy foreign key constraint `contacts_userId_fkey` w logach PostgreSQL

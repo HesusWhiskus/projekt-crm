@@ -14,6 +14,20 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    version: '0.10.35-beta',
+    date: '2025-01-27',
+    changes: [
+      {
+        type: 'changed',
+        description: 'Zaktualizowano dokumentację API - zastąpiono przestarzałe pole agencyName przez companyName i type, dodano dokumentację dla endpointów ofert',
+      },
+      {
+        type: 'fixed',
+        description: 'Naprawiono niespójności między dokumentacją API a rzeczywistym kodem - dokumentacja teraz w pełni zgodna z implementacją',
+      },
+    ],
+  },
+  {
     version: '0.10.34-beta',
     date: '2025-12-05',
     changes: [

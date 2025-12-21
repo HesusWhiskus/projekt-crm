@@ -133,6 +133,90 @@ Zmiana statusu kalkulacji.
 #### POST /api/calculations/[id]/sync
 Synchronizacja kalkulacji z systemem zewnętrznym.
 
+#### GET /api/calculations/[id]/offers
+Pobranie listy ofert dla kalkulacji.
+
+**Response:**
+```json
+{
+  "offers": [
+    {
+      "id": "string",
+      "calculationId": "string",
+      "insuranceCompanyId": "string",
+      "price": 1500.00,
+      "packageType": "string | null",
+      "scopes": ["OC", "AC"],
+      "installments": 12,
+      "installmentAmount": 125.00,
+      "validUntil": "2024-12-31T00:00:00.000Z",
+      "status": "dostępna",
+      "isSelected": false,
+      "insuranceCompany": {
+        "id": "string",
+        "name": "string",
+        "logoUrl": "string | null"
+      }
+    }
+  ]
+}
+```
+
+#### POST /api/calculations/[id]/offers
+Import ofert z systemu zewnętrznego (np. iBooster) dla kalkulacji.
+
+**Request Body:**
+```json
+{
+  "offers": [
+    {
+      "insuranceCompanyId": "string (required)",
+      "price": 1500.00,
+      "packageType": "string (optional)",
+      "scopes": ["OC", "AC"],
+      "installments": 12,
+      "installmentAmount": 125.00,
+      "validUntil": "2024-12-31T00:00:00.000Z",
+      "status": "dostępna",
+      "externalId": "string (optional)",
+      "metadata": {}
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "offers": [...],
+  "count": 5
+}
+```
+
+### Oferty (Offers)
+
+#### PUT /api/offers/[id]/select
+Wybór oferty jako wybranej dla kalkulacji. Automatycznie odznacza wszystkie inne oferty dla tej samej kalkulacji.
+
+**Response:**
+```json
+{
+  "offer": {
+    "id": "string",
+    "calculationId": "string",
+    "insuranceCompanyId": "string",
+    "price": 1500.00,
+    "isSelected": true,
+    "status": "wybrana",
+    "insuranceCompany": {
+      "id": "string",
+      "name": "string",
+      "logoUrl": "string | null"
+    }
+  }
+}
+```
+
 ### Polisy (Policies)
 
 #### POST /api/policies
@@ -142,8 +226,8 @@ Utworzenie nowej polisy.
 ```json
 {
   "policyNumber": "POL-2025-001",
-  "issueDate": "2025-01-19T00:00:00Z",
-  "validFrom": "2025-01-20T00:00:00Z",
+  "issueDate": "2025-12-21T00:00:00Z",
+  "validFrom": "2025-12-22T00:00:00Z",
   "validTo": "2026-01-20T00:00:00Z",
   "status": "ACTIVE",
   "calculationId": "calc-id",

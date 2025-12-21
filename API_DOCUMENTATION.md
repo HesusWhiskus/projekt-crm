@@ -106,9 +106,13 @@ Pobiera listę klientów.
   "clients": [
     {
       "id": "string",
-      "firstName": "string",
-      "lastName": "string",
-      "agencyName": "string | null",
+      "type": "PERSON | COMPANY | SOLE_PROPRIETORSHIP | LIMITED_LIABILITY_COMPANY | JOINT_STOCK_COMPANY | CIVIL_PARTNERSHIP",
+      "firstName": "string | null",
+      "lastName": "string | null",
+      "pesel": "string | null",
+      "companyName": "string | null",
+      "taxId": "string | null",
+      "regon": "string | null",
       "email": "string | null",
       "phone": "string | null",
       "website": "string | null",
@@ -131,7 +135,7 @@ Pobiera listę klientów.
         }
       ],
       "createdAt": "2024-01-01T00:00:00.000Z",
-      "updatedAt": "2024-01-01T00:00:00.000Z"
+      "updatedAt": "2025-12-21T00:00:00.000Z"
     }
   ]
 }
@@ -144,9 +148,13 @@ Tworzy nowego klienta.
 **Request Body:**
 ```json
 {
-  "firstName": "string (required)",
-  "lastName": "string (required)",
-  "agencyName": "string (optional)",
+  "type": "PERSON | COMPANY | SOLE_PROPRIETORSHIP | LIMITED_LIABILITY_COMPANY | JOINT_STOCK_COMPANY | CIVIL_PARTNERSHIP (optional, default: PERSON)",
+  "firstName": "string (required for PERSON type)",
+  "lastName": "string (required for PERSON type)",
+  "pesel": "string (optional, for PERSON type)",
+  "companyName": "string (optional, for COMPANY types)",
+  "taxId": "string (optional, NIP for companies)",
+  "regon": "string (optional, REGON for companies)",
   "email": "string (optional)",
   "phone": "string (optional)",
   "website": "string (optional)",
@@ -181,9 +189,13 @@ Pobiera szczegóły klienta.
 {
   "client": {
     "id": "string",
-    "firstName": "string",
-    "lastName": "string",
-    "agencyName": "string | null",
+    "type": "PERSON | COMPANY | SOLE_PROPRIETORSHIP | LIMITED_LIABILITY_COMPANY | JOINT_STOCK_COMPANY | CIVIL_PARTNERSHIP",
+    "firstName": "string | null",
+    "lastName": "string | null",
+    "pesel": "string | null",
+    "companyName": "string | null",
+    "taxId": "string | null",
+    "regon": "string | null",
     "email": "string | null",
     "phone": "string | null",
     "website": "string | null",
@@ -207,9 +219,13 @@ Aktualizuje klienta.
 **Request Body:** (wszystkie pola opcjonalne)
 ```json
 {
+  "type": "PERSON | COMPANY | SOLE_PROPRIETORSHIP | LIMITED_LIABILITY_COMPANY | JOINT_STOCK_COMPANY | CIVIL_PARTNERSHIP",
   "firstName": "string",
   "lastName": "string",
-  "agencyName": "string",
+  "pesel": "string",
+  "companyName": "string",
+  "taxId": "string",
+  "regon": "string",
   "email": "string",
   "phone": "string",
   "website": "string",
@@ -241,7 +257,7 @@ Wyszukuje klientów po nazwie, emailu lub telefonie. Zwraca maksymalnie 50 wynik
       "firstName": "string | null",
       "lastName": "string | null",
       "companyName": "string | null",
-      "type": "PERSON | COMPANY",
+      "type": "PERSON | COMPANY | SOLE_PROPRIETORSHIP | LIMITED_LIABILITY_COMPANY | JOINT_STOCK_COMPANY | CIVIL_PARTNERSHIP",
       "email": "string | null"
     }
   ]
@@ -324,9 +340,10 @@ Pobiera listę kontaktów.
       "clientId": "string",
       "client": {
         "id": "string",
-        "firstName": "string",
-        "lastName": "string",
-        "agencyName": "string | null"
+        "type": "PERSON | COMPANY | SOLE_PROPRIETORSHIP | LIMITED_LIABILITY_COMPANY | JOINT_STOCK_COMPANY | CIVIL_PARTNERSHIP",
+        "firstName": "string | null",
+        "lastName": "string | null",
+        "companyName": "string | null"
       },
       "user": {
         "id": "string",
@@ -544,9 +561,10 @@ Pobiera listę zadań.
       },
       "client": {
         "id": "string",
-        "firstName": "string",
-        "lastName": "string",
-        "agencyName": "string | null"
+        "type": "PERSON | COMPANY | SOLE_PROPRIETORSHIP | LIMITED_LIABILITY_COMPANY | JOINT_STOCK_COMPANY | CIVIL_PARTNERSHIP",
+        "firstName": "string | null",
+        "lastName": "string | null",
+        "companyName": "string | null"
       },
       "sharedGroups": [
         {
@@ -555,7 +573,7 @@ Pobiera listę zadań.
         }
       ],
       "createdAt": "2024-01-01T00:00:00.000Z",
-      "updatedAt": "2024-01-01T00:00:00.000Z"
+      "updatedAt": "2025-12-21T00:00:00.000Z"
     }
   ]
 }
@@ -981,9 +999,9 @@ curl -X POST "http://localhost:3000/api/clients" \
   -H "Content-Type: application/json" \
   -H "Cookie: next-auth.session-token=YOUR_SESSION_TOKEN" \
   -d '{
+    "type": "PERSON",
     "firstName": "Jan",
     "lastName": "Kowalski",
-    "agencyName": "Agencja Testowa",
     "email": "jan@example.com",
     "status": "NEW_LEAD",
     "sharedGroupIds": ["group-id-1", "group-id-2"]
@@ -1478,6 +1496,107 @@ Synchronizuje kalkulację z systemem zewnętrznym.
 }
 ```
 
+### GET /api/calculations/[id]/offers
+
+Pobiera listę ofert dla kalkulacji. Wymaga feature flag `INSURANCE_AGENTS` i aktywnego agenta ubezpieczeniowego.
+
+**Response:**
+```json
+{
+  "offers": [
+    {
+      "id": "string",
+      "calculationId": "string",
+      "insuranceCompanyId": "string",
+      "price": 1500.00,
+      "packageType": "string | null",
+      "scopes": ["OC", "AC"],
+      "additionalOptions": {},
+      "installments": 12,
+      "installmentAmount": 125.00,
+      "validUntil": "2024-12-31T00:00:00.000Z",
+      "status": "dostępna",
+      "isSelected": false,
+      "externalId": "string | null",
+      "metadata": {},
+      "insuranceCompany": {
+        "id": "string",
+        "name": "string",
+        "logoUrl": "string | null"
+      },
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Kody odpowiedzi:**
+- `200` - Sukces
+- `401` - Nieautoryzowany
+- `403` - Brak uprawnień (wymaga feature flag INSURANCE_AGENTS)
+- `404` - Kalkulacja nie znaleziona
+
+**Uwagi:**
+- Oferty są sortowane według ceny (rosnąco)
+- Tylko agent przypisany do kalkulacji (lub ADMIN) może pobrać oferty
+
+### POST /api/calculations/[id]/offers
+
+Importuje oferty z systemu zewnętrznego (np. iBooster) dla kalkulacji. Wymaga feature flag `INSURANCE_AGENTS` i aktywnego agenta ubezpieczeniowego.
+
+**Request Body:**
+```json
+{
+  "offers": [
+    {
+      "insuranceCompanyId": "string (required, CUID)",
+      "price": "number (required)",
+      "packageType": "string (optional)",
+      "scopes": ["OC", "AC"] (optional, array),
+      "additionalOptions": {} (optional),
+      "installments": "number (optional)",
+      "installmentAmount": "number (optional)",
+      "validUntil": "string (optional, ISO datetime)",
+      "status": "string (optional, default: 'dostępna')",
+      "externalId": "string (optional)",
+      "metadata": {} (optional)
+    }
+  ]
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "offers": [
+    {
+      "id": "string",
+      "calculationId": "string",
+      "insuranceCompanyId": "string",
+      "price": 1500.00,
+      "insuranceCompany": {
+        "id": "string",
+        "name": "string",
+        "logoUrl": "string | null"
+      }
+    }
+  ],
+  "count": 5
+}
+```
+
+**Kody odpowiedzi:**
+- `200` - Oferty zostały zaimportowane
+- `400` - Błąd walidacji (nieprawidłowe dane ofert)
+- `401` - Nieautoryzowany
+- `403` - Brak uprawnień (wymaga feature flag INSURANCE_AGENTS)
+- `404` - Kalkulacja nie znaleziona
+
+**Uwagi:**
+- Wszystkie oferty są importowane w jednej transakcji
+- Oferty są automatycznie przypisane do kalkulacji
+- Domyślnie `isSelected` jest ustawione na `false`
+
 ---
 
 ## Polisy (Policies)
@@ -1509,8 +1628,8 @@ Tworzy nową polisę ubezpieczeniową. Wymaga feature flag `INSURANCE_AGENTS` i 
   "policy": {
     "id": "string",
     "policyNumber": "POL-2025-001",
-    "issueDate": "2025-01-19T00:00:00.000Z",
-    "validFrom": "2025-01-20T00:00:00.000Z",
+    "issueDate": "2025-12-21T00:00:00.000Z",
+    "validFrom": "2025-12-22T00:00:00.000Z",
     "validTo": "2026-01-20T00:00:00.000Z",
     "status": "ACTIVE",
     "insuranceCompany": {
@@ -1568,8 +1687,8 @@ Pobiera szczegóły polisy.
   "policy": {
     "id": "string",
     "policyNumber": "POL-2025-001",
-    "issueDate": "2025-01-19T00:00:00.000Z",
-    "validFrom": "2025-01-20T00:00:00.000Z",
+    "issueDate": "2025-12-21T00:00:00.000Z",
+    "validFrom": "2025-12-22T00:00:00.000Z",
     "validTo": "2026-01-20T00:00:00.000Z",
     "status": "ACTIVE",
     "insuranceCompany": {...},
@@ -1622,6 +1741,45 @@ Przesyła dokument polisy.
 Pobiera dokument polisy.
 
 **Response:** Plik binarny z odpowiednimi nagłówkami Content-Type i Content-Disposition
+
+---
+
+## Oferty (Offers)
+
+### PUT /api/offers/[id]/select
+
+Wybiera ofertę jako wybraną dla kalkulacji. Automatycznie odznacza wszystkie inne oferty dla tej samej kalkulacji. Wymaga feature flag `INSURANCE_AGENTS` i aktywnego agenta ubezpieczeniowego.
+
+**Response:** `200 OK`
+```json
+{
+  "offer": {
+    "id": "string",
+    "calculationId": "string",
+    "insuranceCompanyId": "string",
+    "price": 1500.00,
+    "isSelected": true,
+    "status": "wybrana",
+    "insuranceCompany": {
+      "id": "string",
+      "name": "string",
+      "logoUrl": "string | null"
+    }
+  }
+}
+```
+
+**Kody odpowiedzi:**
+- `200` - Oferta została wybrana
+- `401` - Nieautoryzowany
+- `403` - Brak uprawnień (wymaga feature flag INSURANCE_AGENTS lub nie jesteś agentem przypisanym do kalkulacji)
+- `404` - Oferta nie znaleziona
+
+**Uwagi:**
+- Tylko jedna oferta może być wybrana dla danej kalkulacji
+- Wybór oferty automatycznie odznacza wszystkie inne oferty dla tej kalkulacji
+- Status oferty jest automatycznie zmieniany na "wybrana"
+- Tylko agent przypisany do kalkulacji (lub ADMIN) może wybrać ofertę
 
 ---
 
